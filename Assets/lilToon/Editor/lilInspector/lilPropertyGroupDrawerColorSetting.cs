@@ -136,7 +136,8 @@ namespace lilToon
                         LocalizedProperty(shadowBorder);
                         LocalizedProperty(shadowBlur);
                         LocalizedProperty(shadowNormalStrength);
-                        LocalizedProperty(shadowReceive);
+                        if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("sReceiveShadow"), GetLoc("sBlendR")), shadowReceiveMask, shadowReceive);
+                        else LocalizedProperty(shadowReceive);
                     EditorGUI.indentLevel -= 2;
                     lilEditorGUI.DrawLine();
                     LocalizedPropertyTexture(shadow2ndColorRGBAContent, shadow2ndColorTex, shadow2ndColor);
@@ -147,7 +148,8 @@ namespace lilToon
                             LocalizedProperty(shadow2ndBorder);
                             LocalizedProperty(shadow2ndBlur);
                             LocalizedProperty(shadow2ndNormalStrength);
-                            LocalizedProperty(shadow2ndReceive);
+                            if(shadow2ndReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("sReceiveShadow"), GetLoc("sBlendR")), shadow2ndReceiveMask, shadow2ndReceive);
+                            else LocalizedProperty(shadow2ndReceive);
                         }
                     EditorGUI.indentLevel -= 2;
                     lilEditorGUI.DrawLine();
@@ -159,7 +161,8 @@ namespace lilToon
                             LocalizedProperty(shadow3rdBorder);
                             LocalizedProperty(shadow3rdBlur);
                             LocalizedProperty(shadow3rdNormalStrength);
-                            LocalizedProperty(shadow3rdReceive);
+                            if(shadow3rdReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("sReceiveShadow"), GetLoc("sBlendR")), shadow3rdReceiveMask, shadow3rdReceive);
+                            else LocalizedProperty(shadow3rdReceive);
                         }
                     EditorGUI.indentLevel -= 2;
                     lilEditorGUI.DrawLine();

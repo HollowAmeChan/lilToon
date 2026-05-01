@@ -152,8 +152,11 @@ namespace lilToon
         private readonly lilMaterialProperty shadowBorderColor          = new lilMaterialProperty("_ShadowBorderColor", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBorderRange          = new lilMaterialProperty("_ShadowBorderRange", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowReceive              = new lilMaterialProperty("_ShadowReceive", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty shadowReceiveMask          = new lilMaterialProperty("_ShadowReceiveMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadow2ndReceive           = new lilMaterialProperty("_Shadow2ndReceive", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty shadow2ndReceiveMask       = new lilMaterialProperty("_Shadow2ndReceiveMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadow3rdReceive           = new lilMaterialProperty("_Shadow3rdReceive", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty shadow3rdReceiveMask       = new lilMaterialProperty("_Shadow3rdReceiveMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowMaskType             = new lilMaterialProperty("_ShadowMaskType", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBorder           = new lilMaterialProperty("_ShadowFlatBorder", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBlur             = new lilMaterialProperty("_ShadowFlatBlur", PropertyBlock.Shadow);
@@ -761,8 +764,11 @@ namespace lilToon
                 shadowBorderColor,
                 shadowBorderRange,
                 shadowReceive,
+                shadowReceiveMask,
                 shadow2ndReceive,
+                shadow2ndReceiveMask,
                 shadow3rdReceive,
+                shadow3rdReceiveMask,
                 shadowMaskType,
                 shadowFlatBorder,
                 shadowFlatBlur,
