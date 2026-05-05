@@ -295,6 +295,15 @@ float3 lilGetOutlineVector(float3x3 tbnOS, float2 uv, float outlineVectorScale, 
     return outlineVector;
 }
 
+float3 lilGetOutlineVertexColorVector(float4 color, float3 normalOS, float3x3 tbnOS)
+{
+    // Fallback to the mesh normal when the vertex color is left at the default
+    // black/white value, so empty areas do not get decoded as an outline vector.
+    bool isDefaultBlack = all(color.rgb <= 0.0001);
+    bool isDefaultWhite = all(color.rgb >= 0.9999);
+    return (isDefaultBlack || isDefaultWhite) ? normalOS : mul(color.rgb * 2.0 - 1.0, tbnOS);
+}
+
 void lilCalcOutlinePosition(inout float3 positionOS, float2 uvs[4], float4 color, float3 normalOS, float3x3 tbnOS, float outlineWidth, TEXTURE2D(outlineWidthMask), uint outlineVertexR2Width, float outlineFixWidth, float outlineZBias, float outlineVectorScale, uint outlineVectorUVMode, TEXTURE2D(outlineVectorTex) LIL_SAMP_IN_FUNC(samp))
 {
     float3 positionWS = lilToAbsolutePositionWS(lilOptMul(LIL_MATRIX_M, positionOS).xyz);
@@ -303,7 +312,7 @@ void lilCalcOutlinePosition(inout float3 positionOS, float2 uvs[4], float4 color
     #if defined(LIL_FEATURE_OutlineVectorTex)
         outlineN = lilGetOutlineVector(tbnOS, uvs[outlineVectorUVMode], outlineVectorScale, outlineVectorTex LIL_SAMP_IN(samp));
     #endif
-    if(outlineVertexR2Width == 2) outlineN = mul(color.rgb * 2.0 - 1.0, tbnOS);
+    if(outlineVertexR2Width == 2) outlineN = lilGetOutlineVertexColorVector(color, normalOS, tbnOS);
     positionOS += outlineN * width;
     float3 V = lilIsPerspective() ? lilViewDirectionOS(positionOS) : mul((float3x3)LIL_MATRIX_I_M, LIL_MATRIX_V._m20_m21_m22);
     positionOS -= normalize(V) * outlineZBias;
@@ -314,7 +323,7 @@ void lilCalcOutlinePositionLite(inout float3 positionOS, float2 uv, float4 color
     float3 positionWS = lilToAbsolutePositionWS(lilOptMul(LIL_MATRIX_M, positionOS).xyz);
     float width = lilGetOutlineWidth(positionOS, positionWS, uv, color, outlineWidth, outlineWidthMask, outlineVertexR2Width, outlineFixWidth LIL_SAMP_IN(samp));
     float3 outlineN = normalOS;
-    if(outlineVertexR2Width == 2) outlineN = mul(color.rgb * 2.0 - 1.0, tbnOS);
+    if(outlineVertexR2Width == 2) outlineN = lilGetOutlineVertexColorVector(color, normalOS, tbnOS);
     positionOS += outlineN * width;
     float3 V = lilIsPerspective() ? lilViewDirectionOS(positionOS) : mul((float3x3)LIL_MATRIX_I_M, LIL_MATRIX_V._m20_m21_m22);
     positionOS -= normalize(V) * outlineZBias;
