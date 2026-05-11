@@ -131,3 +131,16 @@
 3. **min 阴影可选**——默认 0，拉开 slider 渐入
 4. **无 toggle 无 keyword**——所有 URP 材质统一行为
 5. **不创建新函数**——全部复用已有 API + PS 内联循环
+
+---
+
+## 7. Review 后修正
+
+2026-05-12 复查后做了以下调整：
+
+- `_MultiLightIntensity` 默认值改为 `0`，避免 Refresh shaders 后旧材质默认变亮；需要 HDR 附加光时手动拉开。
+- `_MultiLightIntensity` 和 `_MultiLightCastShadowStrength` 都放回 `UnityPerMaterial` CBUFFER，不再在 `lil_common_vert.hlsl` 顶层声明。
+- 多光源 UI 移到 Lighting > Advanced，不再放在 Shadow 面板里。
+- `DefaultLite.lilblock` 也补上两个属性，避免 Lite pass 有代码但材质没有入口。
+- pass 内的重复 URP 裸循环收敛为 `LIL_APPLY_ADDITIONAL_LIGHT_HDR`，非 URP 管线宏展开为空。
+- 新 helper 保留 `_LIGHT_LAYERS` 过滤和 Forward+/clustered directional 处理，避免绕开原有 URP 分支规则。

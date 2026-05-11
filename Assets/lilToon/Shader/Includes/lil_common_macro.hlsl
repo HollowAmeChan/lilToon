@@ -1916,6 +1916,70 @@ float3 lilGetObjectPosition()
     #define LIL_LIGHTDIRECTION_ORIG LIL_MAINLIGHT_DIRECTION
 #endif
 
+#if defined(LIL_URP)
+    void lilGetAdditionalLightHDR(float3 positionWS, float4 positionCS, inout float3 lightColor, inout float minShadow)
+    {
+        uint renderingLayers = lilGetRenderingLayer();
+
+        #if defined(_ADDITIONAL_LIGHTS) || defined(_ADDITIONAL_LIGHTS_VERTEX)
+            uint lightsCount = GetAdditionalLightsCount();
+            #if defined(LIGHT_LOOP_BEGIN)
+                InputData inputData = (InputData)0;
+                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(positionCS);
+                inputData.positionWS = positionWS;
+                LIGHT_LOOP_BEGIN(lightsCount)
+            #else
+                for(uint lightIndex = 0; lightIndex < lightsCount; lightIndex++)
+                {
+            #endif
+
+                Light light = GetAdditionalLight(lightIndex, positionWS);
+                #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
+                    if((light.layerMask & renderingLayers) != 0)
+                #endif
+                {
+                    lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation;
+                    minShadow = min(minShadow, light.shadowAttenuation);
+                }
+
+            #if defined(LIGHT_LOOP_END)
+                LIGHT_LOOP_END
+            #else
+                }
+            #endif
+        #endif
+
+        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
+            #if defined(URP_FP_DIRECTIONAL_LIGHTS_COUNT)
+                for(uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
+            #else
+                for(uint lightIndex = 0; lightIndex < min(_AdditionalLightsDirectionalCount, MAX_VISIBLE_LIGHTS); lightIndex++)
+            #endif
+            {
+                Light light = GetAdditionalLight(lightIndex, positionWS);
+                #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
+                    if((light.layerMask & renderingLayers) != 0)
+                #endif
+                {
+                    lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation;
+                    minShadow = min(minShadow, light.shadowAttenuation);
+                }
+            }
+        #endif
+    }
+
+    #define LIL_APPLY_ADDITIONAL_LIGHT_HDR(input,fd) \
+        { \
+            float3 lilAdditionalLightHDR = 0.0; \
+            float lilAdditionalLightMinShadow = 1.0; \
+            lilGetAdditionalLightHDR(input.positionWS, input.positionCS, lilAdditionalLightHDR, lilAdditionalLightMinShadow); \
+            fd.col.rgb += fd.albedo * lilAdditionalLightHDR * _MultiLightIntensity; \
+            fd.col.rgb *= lerp(1.0, lilAdditionalLightMinShadow, _MultiLightCastShadowStrength); \
+        }
+#else
+    #define LIL_APPLY_ADDITIONAL_LIGHT_HDR(input,fd)
+#endif
+
 //------------------------------------------------------------------------------------------------------------------------------
 // Pi
 #define LIL_PI              3.14159265359f

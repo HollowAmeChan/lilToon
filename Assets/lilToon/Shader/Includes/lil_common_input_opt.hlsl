@@ -282,6 +282,8 @@ float   _VertexLightStrength;
 float   _LightMinLimit;
 float   _LightMaxLimit;
 float   _MonochromeLighting;
+float   _MultiLightIntensity;
+float   _MultiLightCastShadowStrength;
 float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;

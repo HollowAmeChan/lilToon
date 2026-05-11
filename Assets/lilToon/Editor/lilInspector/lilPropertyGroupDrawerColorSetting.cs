@@ -130,8 +130,6 @@ namespace lilToon
                         LocalizedProperty(shadowStrengthMaskLOD, 2);
                     }
                     if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent("接收阴影蒙版"), shadowReceiveMask);
-                    if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
-                    if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "次级定向光阴影强度");
                     lilEditorGUI.DrawLine();
                     LocalizedProperty(shadowColorType);
                     LocalizedPropertyTexture(shadow1stColorRGBAContent, shadowColorTex, shadowColor);

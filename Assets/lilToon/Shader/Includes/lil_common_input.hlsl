@@ -129,6 +129,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _LightMaxLimit;
     float   _MonochromeLighting;
     float   _MultiLightIntensity;
+    float   _MultiLightCastShadowStrength;
     float   _AAStrength;
     #if defined(LIL_BRP)
         float   _AlphaBoostFA;
@@ -390,6 +391,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _LightMaxLimit;
     float   _MonochromeLighting;
     float   _MultiLightIntensity;
+    float   _MultiLightCastShadowStrength;
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;

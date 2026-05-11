@@ -471,6 +471,8 @@ namespace lilToon
                         asUnlit.floatValue = 0.0f;
                     }
                     LocalizedProperty(vertexLightStrength);
+                    if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
+                    if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "附加光阴影强度");
                     LocalizedProperty(lightDirectionOverride);
                     if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();
