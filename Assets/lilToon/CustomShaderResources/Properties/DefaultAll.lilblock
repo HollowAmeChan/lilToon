@@ -189,14 +189,12 @@
                         _Shadow2ndNormalStrength    ("sNormalStrength", Range(0, 1)) = 1.0
                         _Shadow2ndBorder            ("sBorder", Range(0, 1)) = 0.15
                         _Shadow2ndBlur              ("sBlur", Range(0, 1)) = 0.1
-        [NoScaleOffset] _Shadow2ndReceiveMask       ("sMask", 2D) = "white" {}
                         _Shadow2ndReceive           ("sReceiveShadow", Range(0, 1)) = 0
                         _Shadow3rdColor             ("sColor", Color) = (0,0,0,0)
         [NoScaleOffset] _Shadow3rdColorTex          ("sColor", 2D) = "black" {}
                         _Shadow3rdNormalStrength    ("sNormalStrength", Range(0, 1)) = 1.0
                         _Shadow3rdBorder            ("sBorder", Range(0, 1)) = 0.25
                         _Shadow3rdBlur              ("sBlur", Range(0, 1)) = 0.1
-        [NoScaleOffset] _Shadow3rdReceiveMask       ("sMask", 2D) = "white" {}
                         _Shadow3rdReceive           ("sReceiveShadow", Range(0, 1)) = 0
                         _ShadowBorderColor          ("sShadowBorderColor", Color) = (1,0.1,0,1)
                         _ShadowBorderRange          ("sShadowBorderRange", Range(0, 1)) = 0.08

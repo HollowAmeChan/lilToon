@@ -975,25 +975,13 @@
                 shadowReceiveMask = LIL_SAMPLE_2D(_ShadowReceiveMask, samp, fd.uvMain).r;
             #endif
 
-            float shadow2ndReceiveMask = 1.0;
-            #if defined(LIL_FEATURE_Shadow2ndReceiveMask)
-                shadow2ndReceiveMask = LIL_SAMPLE_2D(_Shadow2ndReceiveMask, samp, fd.uvMain).r;
-            #endif
-
-            #if defined(LIL_FEATURE_SHADOW_3RD)
-                float shadow3rdReceiveMask = 1.0;
-                #if defined(LIL_FEATURE_Shadow3rdReceiveMask)
-                    shadow3rdReceiveMask = LIL_SAMPLE_2D(_Shadow3rdReceiveMask, samp, fd.uvMain).r;
-                #endif
-            #endif
-
             // Shadow
             #if (defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK)) && defined(LIL_FEATURE_RECEIVE_SHADOW)
                 float calculatedShadow = saturate(fd.attenuation + distance(fd.L, fd.origL));
                 lns.x *= lerp(1.0, calculatedShadow, _ShadowReceive * shadowReceiveMask);
-                lns.y *= lerp(1.0, calculatedShadow, _Shadow2ndReceive * shadow2ndReceiveMask);
+                lns.y *= lerp(1.0, calculatedShadow, _Shadow2ndReceive * shadowReceiveMask);
                 #if defined(LIL_FEATURE_SHADOW_3RD)
-                    lns.z *= lerp(1.0, calculatedShadow, _Shadow3rdReceive * shadow3rdReceiveMask);
+                    lns.z *= lerp(1.0, calculatedShadow, _Shadow3rdReceive * shadowReceiveMask);
                 #endif
             #endif
 

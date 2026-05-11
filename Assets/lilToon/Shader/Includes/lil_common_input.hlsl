@@ -854,8 +854,6 @@ TEXTURE2D(_ShadowColorTex);
 TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
-TEXTURE2D(_Shadow2ndReceiveMask);
-TEXTURE2D(_Shadow3rdReceiveMask);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);
 TEXTURE2D(_SmoothnessTex);

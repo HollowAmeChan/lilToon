@@ -270,8 +270,6 @@
 #define LIL_FEATURE_Shadow2ndColorTex
 #define LIL_FEATURE_Shadow3rdColorTex
 #define LIL_FEATURE_ShadowReceiveMask
-#define LIL_FEATURE_Shadow2ndReceiveMask
-#define LIL_FEATURE_Shadow3rdReceiveMask
 #define LIL_FEATURE_RimShadeMask
 #define LIL_FEATURE_BacklightColorTex
 #define LIL_FEATURE_SmoothnessTex
