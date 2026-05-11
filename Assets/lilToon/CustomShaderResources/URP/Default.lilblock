@@ -8,7 +8,6 @@
             #pragma fragmentoption ARB_precision_hint_fastest
 
             #pragma lil_skip_variants_decals
-            #pragma lil_skip_variants_addlightshadows
             #pragma lil_skip_variants_probevolumes
             #pragma lil_skip_variants_ao
         ENDHLSL

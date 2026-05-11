@@ -210,6 +210,20 @@
         float4 baseCol = fd.col;
         fd.col.rgb *= 0.75;
 
+        {
+            float3 addCol = 0.0;
+            float addMinShadow = 1.0;
+            uint lightsCount = GetAdditionalLightsCount();
+            for(uint i = 0; i < lightsCount; i++)
+            {
+                Light light = GetAdditionalLight(i, input.positionWS);
+                addCol += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation * _MultiLightIntensity;
+                addMinShadow = min(addMinShadow, light.shadowAttenuation);
+            }
+            fd.col.rgb += fd.albedo * addCol;
+            fd.col.rgb *= lerp(1.0, addMinShadow, _MultiLightCastShadowStrength);
+        }
+
         //------------------------------------------------------------------------------------------------------------------------------
         // Refraction
         float2 ref = mul((float3x3)LIL_MATRIX_V, fd.N).xy;

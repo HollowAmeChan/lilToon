@@ -200,6 +200,8 @@
                         _ShadowBorderRange          ("sShadowBorderRange", Range(0, 1)) = 0.08
                         _ShadowMainStrength         ("sContrast", Range(0, 1)) = 0
                         _ShadowEnvStrength          ("sShadowEnvStrength", Range(0, 1)) = 0
+                        _MultiLightIntensity        ("sMultiLightIntensity", Range(0, 5)) = 1
+                        _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
         [lilEnum]       _ShadowMaskType             ("sShadowMaskTypes", Int) = 0
                         _ShadowFlatBorder           ("sBorder", Range(-2, 2)) = 1
                         _ShadowFlatBlur             ("sBlur", Range(0.001, 2)) = 1

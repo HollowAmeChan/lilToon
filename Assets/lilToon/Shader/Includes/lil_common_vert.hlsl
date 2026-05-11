@@ -1,6 +1,9 @@
 #ifndef LIL_VERTEX_INCLUDED
 #define LIL_VERTEX_INCLUDED
 
+float _MultiLightIntensity;
+float _MultiLightCastShadowStrength;
+
 #if defined(LIL_V2F_OUT_BASE)
     #undef LIL_V2F_OUT_BASE
 #endif

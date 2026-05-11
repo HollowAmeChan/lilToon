@@ -159,6 +159,8 @@ namespace lilToon
         private readonly lilMaterialProperty shadowFlatBorder           = new lilMaterialProperty("_ShadowFlatBorder", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBlur             = new lilMaterialProperty("_ShadowFlatBlur", PropertyBlock.Shadow);
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
+        private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Shadow, PropertyBlock.Lighting);
+        private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Shadow);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -769,6 +771,8 @@ namespace lilToon
                 shadowFlatBorder,
                 shadowFlatBlur,
                 lilShadowCasterBias,
+                multiLightIntensity,
+                multiLightCastShadowStrength,
 
                 useRimShade,
                 rimShadeColor,

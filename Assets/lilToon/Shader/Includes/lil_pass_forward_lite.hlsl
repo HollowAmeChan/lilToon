@@ -204,11 +204,25 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
 
             fd.lightColor += fd.addLightColor;
             fd.shadowmix += lilLuminance(fd.addLightColor);
-            fd.col.rgb += fd.albedo * fd.addLightColor;
 
             fd.lightColor = min(fd.lightColor, _LightMaxLimit);
             fd.shadowmix = saturate(fd.shadowmix);
+
+            fd.col.rgb += fd.albedo * fd.addLightColor;
             fd.col.rgb = min(fd.col.rgb, fd.albedo * _LightMaxLimit);
+            {
+                float3 addCol = 0.0;
+                float addMinShadow = 1.0;
+                uint lightsCount = GetAdditionalLightsCount();
+                for(uint i = 0; i < lightsCount; i++)
+                {
+                    Light light = GetAdditionalLight(i, input.positionWS);
+                    addCol += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation * _MultiLightIntensity;
+                    addMinShadow = min(addMinShadow, light.shadowAttenuation);
+                }
+                fd.col.rgb += fd.albedo * addCol;
+                fd.col.rgb *= lerp(1.0, addMinShadow, _MultiLightCastShadowStrength);
+            }
         #else
             OVERRIDE_SHADOW
         #endif

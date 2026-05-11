@@ -192,6 +192,19 @@ float4 frag(v2f input) : SV_Target
             OVERRIDE_SHADOW
             fd.col.rgb += fd.albedo * fd.addLightColor;
             fd.col.rgb = min(fd.col.rgb, fd.albedo * _LightMaxLimit);
+            {
+                float3 addCol = 0.0;
+                float addMinShadow = 1.0;
+                uint lightsCount = GetAdditionalLightsCount();
+                for(uint i = 0; i < lightsCount; i++)
+                {
+                    Light light = GetAdditionalLight(i, input.positionWS);
+                    addCol += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation * _MultiLightIntensity;
+                    addMinShadow = min(addMinShadow, light.shadowAttenuation);
+                }
+                fd.col.rgb += fd.albedo * addCol;
+                fd.col.rgb *= lerp(1.0, addMinShadow, _MultiLightCastShadowStrength);
+            }
         #else
             fd.col.rgb *= saturate(fd.lightColor + fd.addLightColor);
         #endif
