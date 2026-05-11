@@ -542,6 +542,7 @@ float   _EnvRimBlur;
     float _UDIMDiscardRow0_3;
 #endif
 float   _lilShadowCasterBias;
+float   _lilOITEnabled;
 
 #if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
     float   _OutlineLitScale;

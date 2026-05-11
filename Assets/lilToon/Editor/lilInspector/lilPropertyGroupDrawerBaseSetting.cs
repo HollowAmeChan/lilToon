@@ -116,6 +116,10 @@ namespace lilToon
                     {
                         LocalizedProperty(cutoff);
                     }
+                    if(isTransparent && lilOITEnabled.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                    {
+                        LocalizedProperty(lilOITEnabled, "Weighted OIT");
+                    }
                     if(!isGem && !isFakeShadow)
                     {
                         LocalizedProperty(cull);

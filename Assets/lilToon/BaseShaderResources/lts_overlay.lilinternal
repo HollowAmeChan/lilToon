@@ -10,7 +10,7 @@ Shader "_lil/[Optional] lilToonOverlay"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest+10"}
     lilSubShaderBRP "DefaultUsePassOverlay"
     lilSubShaderLWRP "DefaultUsePassOverlay"
-    lilSubShaderURP "DefaultUsePassOverlay"
+    lilSubShaderURP "DefaultUsePassOverlayOIT"
     lilSubShaderHDRP "DefaultUsePassOverlay"
 
     CustomEditor "*LIL_EDITOR_NAME*"

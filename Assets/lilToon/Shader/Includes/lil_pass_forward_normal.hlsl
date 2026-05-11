@@ -109,7 +109,17 @@
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
 
-float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
+#if defined(LIL_OIT_PASS)
+    #include "lil_oit.hlsl"
+    #define LIL_FORWARD_FRAGMENT_RETURN_TYPE LIL_OIT_FRAGMENT_RETURN_TYPE
+    #define LIL_FORWARD_FRAGMENT_TARGET LIL_OIT_FRAGMENT_TARGET
+#else
+    float _lilOITActive;
+    #define LIL_FORWARD_FRAGMENT_RETURN_TYPE float4
+    #define LIL_FORWARD_FRAGMENT_TARGET : SV_Target
+#endif
+
+LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_FRAGMENT_TARGET
 {
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
@@ -144,6 +154,11 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
     OVERRIDE_UNPACK_V2F
     LIL_COPY_VFACE(fd.facing);
     LIL_GET_HDRPDATA(input,fd);
+    #if defined(LIL_OIT_PASS)
+        clip(_lilOITEnabled - 0.5);
+    #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION) && !defined(LIL_OUTLINE)
+        clip(0.5 - _lilOITEnabled * _lilOITActive);
+    #endif
     #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD)
         LIL_LIGHT_ATTENUATION(fd.attenuation, input);
     #endif
@@ -617,7 +632,11 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
     OVERRIDE_FOG
 
     BEFORE_OUTPUT
-    OVERRIDE_OUTPUT
+    #if defined(LIL_OIT_PASS)
+        LIL_OIT_RETURN(fd.col, input.positionCS);
+    #else
+        OVERRIDE_OUTPUT
+    #endif
 }
 
 #if defined(LIL_TESSELLATION)

@@ -1,5 +1,6 @@
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
+        [lilToggle]                                     _lilOITEnabled      ("Weighted OIT", Int) = 0
         [lilEnum]                                       _Cull               ("Cull Mode|Off|Front|Back", Int) = 2
         [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlend           ("sSrcBlendRGB", Int) = 1
         [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlend           ("sDstBlendRGB", Int) = 10

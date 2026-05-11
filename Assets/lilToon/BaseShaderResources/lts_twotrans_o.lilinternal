@@ -10,7 +10,7 @@ Shader "Hidden/lilToonTwoPassTransparentOutline"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest+10"}
     lilSubShaderBRP "DefaultUsePassOutlineNoForwardAddTwo"
     lilSubShaderLWRP "DefaultUsePassOutline"
-    lilSubShaderURP "DefaultUsePassOutlineTwoSide"
+    lilSubShaderURP "DefaultUsePassOutlineTwoSideOIT"
     lilSubShaderHDRP "DefaultUsePassOutlineTwoSide"
 
     CustomEditor "*LIL_EDITOR_NAME*"

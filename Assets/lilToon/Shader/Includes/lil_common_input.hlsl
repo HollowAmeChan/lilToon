@@ -151,6 +151,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _RimFresnelPower;
     float   _RimShadowMask;
     float   _lilShadowCasterBias;
+    float   _lilOITEnabled;
     float   _OutlineWidth;
     float   _OutlineEnableLighting;
     float   _OutlineFixWidth;
@@ -630,6 +631,7 @@ CBUFFER_START(UnityPerMaterial)
         float _UDIMDiscardRow0_3;
     #endif
     float   _lilShadowCasterBias;
+    float   _lilOITEnabled;
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         float   _OutlineLitScale;
         float   _OutlineLitOffset;

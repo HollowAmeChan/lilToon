@@ -10,7 +10,7 @@ Shader "Hidden/lilToonLiteOnePassTransparent"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest+10"}
     lilSubShaderBRP "DefaultUsePassNoForwardAdd"
     lilSubShaderLWRP "DefaultUsePass"
-    lilSubShaderURP "DefaultUsePass"
+    lilSubShaderURP "DefaultUsePassOIT"
     lilSubShaderHDRP "DefaultUsePass"
 
     CustomEditor "*LIL_EDITOR_NAME*"
