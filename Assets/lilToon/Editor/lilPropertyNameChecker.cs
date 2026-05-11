@@ -182,6 +182,14 @@ namespace lilToon
             return res;
         }
 
+        public static bool IsSSSProperty(string name)
+        {
+            bool res = false;
+            res = res || name == "_UseSSS";
+            res = res || name.Contains("_SSS");
+            return res;
+        }
+
         public static bool IsReflectionProperty(string name)
         {
             bool res = false;

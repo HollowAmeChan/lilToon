@@ -980,6 +980,40 @@ namespace lilToon
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
+                // SSS
+                if(!isGem && ShouldDrawBlock(PropertyBlock.SSS))
+                {
+                    edSet.isShowSSS = lilEditorGUI.Foldout("SSS", edSet.isShowSSS);
+                    DrawMenuButton("SSS", PropertyBlock.SSS);
+                    if(edSet.isShowSSS)
+                    {
+                        EditorGUILayout.BeginVertical(boxOuter);
+                        LocalizedProperty(useSSS, false);
+                        DrawMenuButton("SSS", PropertyBlock.SSS);
+                        if(useSSS.floatValue == 1)
+                        {
+                            EditorGUILayout.BeginVertical(boxInnerHalf);
+                            TextureGUI(ref edSet.isShowSSSThicknessMap, maskStrengthContent, sssThicknessMap);
+                            EditorGUI.indentLevel++;
+                            LocalizedPropertyAlpha(sssColor);
+                            LocalizedProperty(sssStrength);
+                            LocalizedProperty(sssReceiveShadow);
+                            LocalizedProperty(sssThicknessInvert);
+                            EditorGUI.indentLevel--;
+                            lilEditorGUI.DrawLine();
+                            LocalizedProperty(sssMainStrength);
+                            LocalizedProperty(sssNormalStrength);
+                            LocalizedProperty(sssViewStrength);
+                            LocalizedProperty(sssPower);
+                            lilEditorGUI.InvBorderGUI(sssBorder);
+                            LocalizedProperty(sssBlur);
+                            EditorGUILayout.EndVertical();
+                        }
+                        EditorGUILayout.EndVertical();
+                    }
+                }
+
+                //------------------------------------------------------------------------------------------------------------------------------
                 // Reflection
                 if(!isGem && ShouldDrawBlock(PropertyBlock.Reflection))
                 {

@@ -61,6 +61,7 @@ namespace lilToon
         RimLight,
         Glitter,
         Backlight,
+        SSS,
         Gem,
         Outline,
         Parallax,

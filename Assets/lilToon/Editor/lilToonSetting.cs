@@ -50,6 +50,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_RIMLIGHT_DIRECTION = true;
     public bool LIL_FEATURE_GLITTER = true;
     public bool LIL_FEATURE_BACKLIGHT = true;
+    public bool LIL_FEATURE_SSS = true;
     public bool LIL_FEATURE_PARALLAX = true;
     public bool LIL_FEATURE_POM = false;
     public bool LIL_FEATURE_CLIPPING_CANCELLER = false;
@@ -92,6 +93,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_ShadowReceiveMask = true;
     public bool LIL_FEATURE_RimShadeMask = true;
     public bool LIL_FEATURE_BacklightColorTex = true;
+    public bool LIL_FEATURE_SSSThicknessMap = true;
     public bool LIL_FEATURE_SmoothnessTex = true;
     public bool LIL_FEATURE_MetallicGlossMap = true;
     public bool LIL_FEATURE_ReflectionColorTex = true;
@@ -277,6 +279,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = false;
         shaderSetting.LIL_FEATURE_GLITTER = false;
         shaderSetting.LIL_FEATURE_BACKLIGHT = false;
+        shaderSetting.LIL_FEATURE_SSS = false;
         shaderSetting.LIL_FEATURE_PARALLAX = false;
         shaderSetting.LIL_FEATURE_POM = false;
         //shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER = false;
@@ -319,6 +322,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ShadowReceiveMask = false;
         shaderSetting.LIL_FEATURE_RimShadeMask = false;
         shaderSetting.LIL_FEATURE_BacklightColorTex = false;
+        shaderSetting.LIL_FEATURE_SSSThicknessMap = false;
         shaderSetting.LIL_FEATURE_SmoothnessTex = false;
         shaderSetting.LIL_FEATURE_MetallicGlossMap = false;
         shaderSetting.LIL_FEATURE_ReflectionColorTex = false;
@@ -388,6 +392,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = true;
         shaderSetting.LIL_FEATURE_GLITTER = true;
         shaderSetting.LIL_FEATURE_BACKLIGHT = true;
+        shaderSetting.LIL_FEATURE_SSS = true;
         shaderSetting.LIL_FEATURE_PARALLAX = true;
         shaderSetting.LIL_FEATURE_POM = true;
         //shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER = true;
@@ -433,6 +438,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_ShadowReceiveMask = true;
             shaderSetting.LIL_FEATURE_RimShadeMask = true;
             shaderSetting.LIL_FEATURE_BacklightColorTex = true;
+            shaderSetting.LIL_FEATURE_SSSThicknessMap = true;
             shaderSetting.LIL_FEATURE_SmoothnessTex = true;
             shaderSetting.LIL_FEATURE_MetallicGlossMap = true;
             shaderSetting.LIL_FEATURE_ReflectionColorTex = true;
@@ -602,6 +608,7 @@ public class lilToonSetting : ScriptableObject
         }
         if (shaderSetting.LIL_FEATURE_GLITTER) sb.AppendLine("#define LIL_FEATURE_GLITTER");
         if (shaderSetting.LIL_FEATURE_BACKLIGHT) sb.AppendLine("#define LIL_FEATURE_BACKLIGHT");
+        if (shaderSetting.LIL_FEATURE_SSS) sb.AppendLine("#define LIL_FEATURE_SSS");
         if (shaderSetting.LIL_FEATURE_PARALLAX)
         {
             sb.AppendLine("#define LIL_FEATURE_PARALLAX");
@@ -652,6 +659,7 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_ShadowReceiveMask) sb.AppendLine("#define LIL_FEATURE_ShadowReceiveMask");
         if (shaderSetting.LIL_FEATURE_RimShadeMask) sb.AppendLine("#define LIL_FEATURE_RimShadeMask");
         if (shaderSetting.LIL_FEATURE_BacklightColorTex) sb.AppendLine("#define LIL_FEATURE_BacklightColorTex");
+        if (shaderSetting.LIL_FEATURE_SSSThicknessMap) sb.AppendLine("#define LIL_FEATURE_SSSThicknessMap");
         if (shaderSetting.LIL_FEATURE_SmoothnessTex) sb.AppendLine("#define LIL_FEATURE_SmoothnessTex");
         if (shaderSetting.LIL_FEATURE_MetallicGlossMap) sb.AppendLine("#define LIL_FEATURE_MetallicGlossMap");
         if (shaderSetting.LIL_FEATURE_ReflectionColorTex) sb.AppendLine("#define LIL_FEATURE_ReflectionColorTex");
@@ -1187,6 +1195,11 @@ public class lilToonSetting : ScriptableObject
             logs.Add("[lilToon] LIL_FEATURE_BACKLIGHT : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_BACKLIGHT = true;
         }
+        if(!shaderSetting.LIL_FEATURE_SSS && material.HasProperty("_UseSSS") && material.GetFloat("_UseSSS") != 0.0f)
+        {
+            logs.Add("[lilToon] LIL_FEATURE_SSS : " + AssetDatabase.GetAssetPath(material));
+            shaderSetting.LIL_FEATURE_SSS = true;
+        }
         if(!shaderSetting.LIL_FEATURE_PARALLAX && material.HasProperty("_UseParallax") && material.GetFloat("_UseParallax") != 0.0f)
         {
             logs.Add("[lilToon] LIL_FEATURE_PARALLAX : " + AssetDatabase.GetAssetPath(material));
@@ -1331,6 +1344,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_RIMLIGHT = shaderSetting.LIL_FEATURE_RIMLIGHT || propname.Contains("_UseRim");
             shaderSetting.LIL_FEATURE_GLITTER = shaderSetting.LIL_FEATURE_GLITTER || propname.Contains("_UseGlitter");
             shaderSetting.LIL_FEATURE_BACKLIGHT = shaderSetting.LIL_FEATURE_BACKLIGHT || propname.Contains("_UseBacklight");
+            shaderSetting.LIL_FEATURE_SSS = shaderSetting.LIL_FEATURE_SSS || propname.Contains("_UseSSS");
             shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION || propname.Contains("_RimDirStrength");
             shaderSetting.LIL_FEATURE_PARALLAX = shaderSetting.LIL_FEATURE_PARALLAX || propname.Contains("_UseParallax");
             shaderSetting.LIL_FEATURE_POM = shaderSetting.LIL_FEATURE_POM || propname.Contains("_UsePOM");
@@ -1410,6 +1424,7 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_ShadowReceiveMask         , "_ShadowReceiveMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_RimShadeMask              , "_RimShadeMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_BacklightColorTex         , "_BacklightColorTex", material);
+        CheckTexture(ref shaderSetting.LIL_FEATURE_SSSThicknessMap           , "_SSSThicknessMap", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_SmoothnessTex             , "_SmoothnessTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_MetallicGlossMap          , "_MetallicGlossMap", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_ReflectionColorTex        , "_ReflectionColorTex", material);
@@ -1471,6 +1486,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ShadowReceiveMask          = shaderSetting.LIL_FEATURE_ShadowReceiveMask        || propname.Contains("_ShadowReceiveMask");
         shaderSetting.LIL_FEATURE_RimShadeMask               = shaderSetting.LIL_FEATURE_RimShadeMask             || propname.Contains("_RimShadeMask");
         shaderSetting.LIL_FEATURE_BacklightColorTex          = shaderSetting.LIL_FEATURE_BacklightColorTex        || propname.Contains("_BacklightColorTex");
+        shaderSetting.LIL_FEATURE_SSSThicknessMap            = shaderSetting.LIL_FEATURE_SSSThicknessMap          || propname.Contains("_SSSThicknessMap");
         shaderSetting.LIL_FEATURE_SmoothnessTex              = shaderSetting.LIL_FEATURE_SmoothnessTex            || propname.Contains("_SmoothnessTex");
         shaderSetting.LIL_FEATURE_MetallicGlossMap           = shaderSetting.LIL_FEATURE_MetallicGlossMap         || propname.Contains("_MetallicGlossMap");
         shaderSetting.LIL_FEATURE_ReflectionColorTex         = shaderSetting.LIL_FEATURE_ReflectionColorTex       || propname.Contains("_ReflectionColorTex");

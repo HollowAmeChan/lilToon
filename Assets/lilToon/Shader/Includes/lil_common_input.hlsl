@@ -266,6 +266,9 @@ CBUFFER_START(UnityPerMaterial)
         float4  _BacklightColor;
         float4  _BacklightColorTex_ST;
     #endif
+    #if defined(LIL_FEATURE_SSS)
+        float4  _SSSColor;
+    #endif
     #if defined(LIL_MULTI_INPUTS_EMISSION)
         float4  _EmissionColor;
         float4  _EmissionBlink;
@@ -458,6 +461,15 @@ CBUFFER_START(UnityPerMaterial)
         float   _BacklightViewStrength;
         float   _BacklightBackfaceMask;
         float   _BacklightMainStrength;
+    #endif
+    #if defined(LIL_FEATURE_SSS)
+        float   _SSSStrength;
+        float   _SSSPower;
+        float   _SSSBorder;
+        float   _SSSBlur;
+        float   _SSSMainStrength;
+        float   _SSSNormalStrength;
+        float   _SSSViewStrength;
     #endif
     #if defined(LIL_MULTI_INPUTS_NORMAL)
         float   _BumpScale;
@@ -754,6 +766,11 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_BACKLIGHT)
         lilBool _BacklightReceiveShadow;
     #endif
+    #if defined(LIL_FEATURE_SSS)
+        lilBool _UseSSS;
+        lilBool _SSSReceiveShadow;
+        lilBool _SSSThicknessInvert;
+    #endif
     #if defined(LIL_MULTI_INPUTS_ANISOTROPY)
         lilBool _Anisotropy2Reflection;
         lilBool _Anisotropy2MatCap;
@@ -860,6 +877,7 @@ TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);
+TEXTURE2D(_SSSThicknessMap);
 TEXTURE2D(_SmoothnessTex);
 TEXTURE2D(_MetallicGlossMap);
 TEXTURE2D(_ReflectionColorTex);

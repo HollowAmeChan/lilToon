@@ -166,6 +166,21 @@
         [lilToggle]     _BacklightBackfaceMask      ("sBackfaceMask", Int) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
+        // SSS
+        [lilToggleLeft] _UseSSS                     ("SSS", Int) = 0
+        [lilHDR]        _SSSColor                   ("sColor", Color) = (1.0,0.42,0.32,1.0)
+        [NoScaleOffset] _SSSThicknessMap            ("Thickness", 2D) = "white" {}
+                        _SSSStrength                ("sStrength", Range(0, 2)) = 0.35
+                        _SSSPower                   ("Power", Range(0.1, 8)) = 2.0
+                        _SSSBorder                  ("sBorder", Range(0, 1)) = 0.35
+                        _SSSBlur                    ("sBlur", Range(0, 1)) = 0.35
+                        _SSSMainStrength            ("sMainColorPower", Range(0, 1)) = 0.45
+                        _SSSNormalStrength          ("sNormalStrength", Range(0, 1)) = 0.5
+                        _SSSViewStrength            ("sViewDirectionStrength", Range(0, 1)) = 0.5
+        [lilToggle]     _SSSReceiveShadow           ("sReceiveShadow", Int) = 1
+        [lilToggle]     _SSSThicknessInvert         ("Invert Thickness", Int) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Shadow
         [lilToggleLeft] _UseShadow                  ("sShadow", Int) = 0
                         _ShadowStrength             ("sStrength", Range(0, 1)) = 1

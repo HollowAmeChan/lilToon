@@ -55,6 +55,8 @@ namespace lilToon
             public bool isShowMetallicGlossMap          = false;
             public bool isShowBacklight                 = false;
             public bool isShowBacklightColorTex         = false;
+            public bool isShowSSS                       = false;
+            public bool isShowSSSThicknessMap           = false;
             public bool isShowReflectionColorTex        = false;
             public bool isShowMatCap                    = false;
             public bool isShowMatCapBlendMask           = false;

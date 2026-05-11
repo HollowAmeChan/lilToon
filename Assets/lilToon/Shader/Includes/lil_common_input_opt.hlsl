@@ -91,6 +91,11 @@ float4  _MainTex_ST;
     float4  _BacklightColorTex_ST;
 #endif
 
+// SSS
+#if defined(LIL_FEATURE_SSS)
+    float4  _SSSColor;
+#endif
+
 // Emission
 #if defined(LIL_FEATURE_EMISSION_1ST)
     float4  _EmissionColor;
@@ -358,6 +363,15 @@ float   _EnvRimBlur;
     float   _BacklightViewStrength;
     float   _BacklightBackfaceMask;
     float   _BacklightMainStrength;
+#endif
+#if defined(LIL_FEATURE_SSS)
+    float   _SSSStrength;
+    float   _SSSPower;
+    float   _SSSBorder;
+    float   _SSSBlur;
+    float   _SSSMainStrength;
+    float   _SSSNormalStrength;
+    float   _SSSViewStrength;
 #endif
 #if defined(LIL_FEATURE_NORMAL_1ST)
     float   _BumpScale;
@@ -691,6 +705,11 @@ lilBool _Invisible;
 #if defined(LIL_FEATURE_BACKLIGHT)
     lilBool _UseBacklight;
     lilBool _BacklightReceiveShadow;
+#endif
+#if defined(LIL_FEATURE_SSS)
+    lilBool _UseSSS;
+    lilBool _SSSReceiveShadow;
+    lilBool _SSSThicknessInvert;
 #endif
 #if defined(LIL_FEATURE_NORMAL_1ST)
     lilBool _UseBumpMap;

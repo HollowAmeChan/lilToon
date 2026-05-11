@@ -82,6 +82,10 @@
     #define BEFORE_BACKLIGHT
 #endif
 
+#if !defined(BEFORE_SSS)
+    #define BEFORE_SSS
+#endif
+
 #if !defined(BEFORE_REFRACTION)
     #define BEFORE_REFRACTION
 #endif
@@ -1270,6 +1274,45 @@
 
 #if !defined(OVERRIDE_BACKLIGHT)
     #define OVERRIDE_BACKLIGHT lilBacklight(fd LIL_SAMP_IN(sampler_MainTex));
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
+// SSS
+#if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+    void lilSSS(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        if(_UseSSS)
+        {
+            float thickness = 1.0;
+            #if defined(LIL_FEATURE_SSSThicknessMap)
+                thickness = LIL_SAMPLE_2D(_SSSThicknessMap, samp, fd.uvMain).r;
+            #endif
+            if(_SSSThicknessInvert) thickness = 1.0 - thickness;
+
+            float3 sssN = fd.N;
+            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                sssN = normalize(lerp(fd.origN, fd.N, _SSSNormalStrength));
+            #endif
+
+            float3 sssL = normalize(lerp(fd.L, -fd.V, _SSSViewStrength));
+            float sssLN = dot(sssN, sssL) * 0.5 + 0.5;
+            sssLN = lilTooningScale(_AAStrength, sssLN, _SSSBorder, _SSSBlur);
+
+            float sssVL = pow(saturate(dot(-fd.L, fd.V) * 0.5 + 0.5), _SSSPower);
+            float sss = saturate(sssLN * sssVL) * thickness * _SSSStrength;
+
+            #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK)
+                if(_SSSReceiveShadow) sss *= saturate(fd.attenuation + distance(fd.L, fd.origL));
+            #endif
+
+            float3 sssColor = lerp(_SSSColor.rgb, _SSSColor.rgb * fd.albedo, _SSSMainStrength);
+            fd.col.rgb += sss * _SSSColor.a * sssColor * fd.lightColor;
+        }
+    }
+#endif
+
+#if !defined(OVERRIDE_SSS)
+    #define OVERRIDE_SSS lilSSS(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

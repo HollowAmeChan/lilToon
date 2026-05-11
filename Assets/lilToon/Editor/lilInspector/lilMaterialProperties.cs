@@ -245,6 +245,19 @@ namespace lilToon
         private readonly lilMaterialProperty backlightReceiveShadow     = new lilMaterialProperty("_BacklightReceiveShadow", PropertyBlock.Backlight);
         private readonly lilMaterialProperty backlightBackfaceMask      = new lilMaterialProperty("_BacklightBackfaceMask", PropertyBlock.Backlight);
 
+        private readonly lilMaterialProperty useSSS                     = new lilMaterialProperty("_UseSSS", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssColor                   = new lilMaterialProperty("_SSSColor", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssThicknessMap            = new lilMaterialProperty("_SSSThicknessMap", true, PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssStrength                = new lilMaterialProperty("_SSSStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssPower                   = new lilMaterialProperty("_SSSPower", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssBorder                  = new lilMaterialProperty("_SSSBorder", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssBlur                    = new lilMaterialProperty("_SSSBlur", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssMainStrength            = new lilMaterialProperty("_SSSMainStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssNormalStrength          = new lilMaterialProperty("_SSSNormalStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssViewStrength            = new lilMaterialProperty("_SSSViewStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssReceiveShadow           = new lilMaterialProperty("_SSSReceiveShadow", PropertyBlock.SSS);
+        private readonly lilMaterialProperty sssThicknessInvert         = new lilMaterialProperty("_SSSThicknessInvert", PropertyBlock.SSS);
+
         private readonly lilMaterialProperty useReflection                  = new lilMaterialProperty("_UseReflection", PropertyBlock.Reflection);
         private readonly lilMaterialProperty metallic                       = new lilMaterialProperty("_Metallic", PropertyBlock.Reflection, PropertyBlock.Gem);
         private readonly lilMaterialProperty metallicGlossMap               = new lilMaterialProperty("_MetallicGlossMap", true, PropertyBlock.Reflection, PropertyBlock.Gem);
@@ -856,6 +869,19 @@ namespace lilToon
                 backlightViewStrength,
                 backlightReceiveShadow,
                 backlightBackfaceMask,
+
+                useSSS,
+                sssColor,
+                sssThicknessMap,
+                sssStrength,
+                sssPower,
+                sssBorder,
+                sssBlur,
+                sssMainStrength,
+                sssNormalStrength,
+                sssViewStrength,
+                sssReceiveShadow,
+                sssThicknessInvert,
 
                 useReflection,
                 metallic,
