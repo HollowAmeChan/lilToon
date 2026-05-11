@@ -395,6 +395,11 @@ CBUFFER_START(UnityPerMaterial)
     float   _MonochromeLighting;
     float   _MultiLightIntensity;
     float   _MultiLightCastShadowStrength;
+    #if defined(LIL_FEATURE_SSAO)
+        float   _SSAOStrength;
+        float   _SSAODirectStrength;
+        float   _SSAOIndirectStrength;
+    #endif
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;
@@ -770,6 +775,9 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _UseSSS;
         lilBool _SSSReceiveShadow;
         lilBool _SSSThicknessInvert;
+    #endif
+    #if defined(LIL_FEATURE_SSAO)
+        lilBool _UseSSAO;
     #endif
     #if defined(LIL_MULTI_INPUTS_ANISOTROPY)
         lilBool _Anisotropy2Reflection;

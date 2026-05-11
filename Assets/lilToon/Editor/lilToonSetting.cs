@@ -50,6 +50,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_RIMLIGHT_DIRECTION = true;
     public bool LIL_FEATURE_GLITTER = true;
     public bool LIL_FEATURE_BACKLIGHT = true;
+    public bool LIL_FEATURE_SSAO = true;
     public bool LIL_FEATURE_SSS = true;
     public bool LIL_FEATURE_PARALLAX = true;
     public bool LIL_FEATURE_POM = false;
@@ -279,6 +280,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = false;
         shaderSetting.LIL_FEATURE_GLITTER = false;
         shaderSetting.LIL_FEATURE_BACKLIGHT = false;
+        shaderSetting.LIL_FEATURE_SSAO = false;
         shaderSetting.LIL_FEATURE_SSS = false;
         shaderSetting.LIL_FEATURE_PARALLAX = false;
         shaderSetting.LIL_FEATURE_POM = false;
@@ -392,6 +394,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = true;
         shaderSetting.LIL_FEATURE_GLITTER = true;
         shaderSetting.LIL_FEATURE_BACKLIGHT = true;
+        shaderSetting.LIL_FEATURE_SSAO = true;
         shaderSetting.LIL_FEATURE_SSS = true;
         shaderSetting.LIL_FEATURE_PARALLAX = true;
         shaderSetting.LIL_FEATURE_POM = true;
@@ -608,6 +611,7 @@ public class lilToonSetting : ScriptableObject
         }
         if (shaderSetting.LIL_FEATURE_GLITTER) sb.AppendLine("#define LIL_FEATURE_GLITTER");
         if (shaderSetting.LIL_FEATURE_BACKLIGHT) sb.AppendLine("#define LIL_FEATURE_BACKLIGHT");
+        if (shaderSetting.LIL_FEATURE_SSAO) sb.AppendLine("#define LIL_FEATURE_SSAO");
         if (shaderSetting.LIL_FEATURE_SSS) sb.AppendLine("#define LIL_FEATURE_SSS");
         if (shaderSetting.LIL_FEATURE_PARALLAX)
         {
@@ -1195,6 +1199,11 @@ public class lilToonSetting : ScriptableObject
             logs.Add("[lilToon] LIL_FEATURE_BACKLIGHT : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_BACKLIGHT = true;
         }
+        if(!shaderSetting.LIL_FEATURE_SSAO && material.HasProperty("_UseSSAO") && material.GetFloat("_UseSSAO") != 0.0f)
+        {
+            logs.Add("[lilToon] LIL_FEATURE_SSAO : " + AssetDatabase.GetAssetPath(material));
+            shaderSetting.LIL_FEATURE_SSAO = true;
+        }
         if(!shaderSetting.LIL_FEATURE_SSS && material.HasProperty("_UseSSS") && material.GetFloat("_UseSSS") != 0.0f)
         {
             logs.Add("[lilToon] LIL_FEATURE_SSS : " + AssetDatabase.GetAssetPath(material));
@@ -1344,6 +1353,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_RIMLIGHT = shaderSetting.LIL_FEATURE_RIMLIGHT || propname.Contains("_UseRim");
             shaderSetting.LIL_FEATURE_GLITTER = shaderSetting.LIL_FEATURE_GLITTER || propname.Contains("_UseGlitter");
             shaderSetting.LIL_FEATURE_BACKLIGHT = shaderSetting.LIL_FEATURE_BACKLIGHT || propname.Contains("_UseBacklight");
+            shaderSetting.LIL_FEATURE_SSAO = shaderSetting.LIL_FEATURE_SSAO || propname.Contains("_UseSSAO");
             shaderSetting.LIL_FEATURE_SSS = shaderSetting.LIL_FEATURE_SSS || propname.Contains("_UseSSS");
             shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION || propname.Contains("_RimDirStrength");
             shaderSetting.LIL_FEATURE_PARALLAX = shaderSetting.LIL_FEATURE_PARALLAX || propname.Contains("_UseParallax");

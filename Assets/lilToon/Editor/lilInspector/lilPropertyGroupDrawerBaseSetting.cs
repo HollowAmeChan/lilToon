@@ -473,6 +473,18 @@ namespace lilToon
                     LocalizedProperty(vertexLightStrength);
                     if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
                     if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "附加光阴影强度");
+                    if(useSSAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                    {
+                        LocalizedProperty(useSSAO, false);
+                        if(useSSAO.floatValue == 1)
+                        {
+                            EditorGUI.indentLevel++;
+                            LocalizedProperty(ssaoStrength);
+                            LocalizedProperty(ssaoDirectStrength);
+                            LocalizedProperty(ssaoIndirectStrength);
+                            EditorGUI.indentLevel--;
+                        }
+                    }
                     LocalizedProperty(lightDirectionOverride);
                     if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();

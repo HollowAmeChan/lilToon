@@ -69,6 +69,8 @@ namespace lilToon
             res = res || name == "_AlphaBoostFA";
             res = res || name == "_lilDirectionalLightStrength";
             res = res || name == "_LightDirectionOverride";
+            res = res || name == "_UseSSAO";
+            res = res || name.Contains("_SSAO");
             return res;
         }
 

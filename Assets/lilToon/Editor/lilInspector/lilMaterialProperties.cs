@@ -161,6 +161,10 @@ namespace lilToon
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
         private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty useSSAO                    = new lilMaterialProperty("_UseSSAO", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty ssaoStrength               = new lilMaterialProperty("_SSAOStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty ssaoDirectStrength         = new lilMaterialProperty("_SSAODirectStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty ssaoIndirectStrength       = new lilMaterialProperty("_SSAOIndirectStrength", PropertyBlock.Lighting);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -786,6 +790,10 @@ namespace lilToon
                 lilShadowCasterBias,
                 multiLightIntensity,
                 multiLightCastShadowStrength,
+                useSSAO,
+                ssaoStrength,
+                ssaoDirectStrength,
+                ssaoIndirectStrength,
 
                 useRimShade,
                 rimShadeColor,

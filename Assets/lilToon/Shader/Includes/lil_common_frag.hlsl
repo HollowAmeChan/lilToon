@@ -82,6 +82,10 @@
     #define BEFORE_BACKLIGHT
 #endif
 
+#if !defined(BEFORE_SSAO)
+    #define BEFORE_SSAO
+#endif
+
 #if !defined(BEFORE_SSS)
     #define BEFORE_SSS
 #endif
@@ -1274,6 +1278,29 @@
 
 #if !defined(OVERRIDE_BACKLIGHT)
     #define OVERRIDE_BACKLIGHT lilBacklight(fd LIL_SAMP_IN(sampler_MainTex));
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
+// SSAO
+#if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
+    void lilSSAO(inout lilFragData fd)
+    {
+        if(_UseSSAO)
+        {
+            float ssao = 1.0;
+            #if defined(_SCREEN_SPACE_OCCLUSION) && LIL_RENDER != 2
+                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(fd.positionCS));
+                float directAO = lerp(1.0, aoFactor.directAmbientOcclusion, _SSAODirectStrength);
+                float indirectAO = lerp(1.0, aoFactor.indirectAmbientOcclusion, _SSAOIndirectStrength);
+                ssao = min(directAO, indirectAO);
+            #endif
+            fd.col.rgb *= lerp(1.0, ssao, _SSAOStrength);
+        }
+    }
+#endif
+
+#if !defined(OVERRIDE_SSAO)
+    #define OVERRIDE_SSAO lilSSAO(fd);
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

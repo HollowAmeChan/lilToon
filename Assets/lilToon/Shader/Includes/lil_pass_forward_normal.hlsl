@@ -470,6 +470,11 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
                 if(_UseMain3rdTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color3rd.rgb, color3rd.a - color3rd.a * _Main3rdEnableLighting, _Main3rdTexBlendMode);
             #endif
 
+            BEFORE_SSAO
+            #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
+                OVERRIDE_SSAO
+            #endif
+
             BEFORE_SSS
             #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
                 OVERRIDE_SSS

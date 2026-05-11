@@ -1609,7 +1609,10 @@ namespace lilToon
 
         private static string GetSkipVariantsAO()
         {
-            return "#pragma skip_variants _SCREEN_SPACE_OCCLUSION";
+            return GenerateIndentText(0,
+                "#if !defined(LIL_FEATURE_SSAO)",
+                "    #pragma skip_variants _SCREEN_SPACE_OCCLUSION",
+                "#endif");
         }
 
         private static string GetSkipVariantsLightLists()
