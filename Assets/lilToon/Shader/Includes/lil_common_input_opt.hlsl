@@ -293,6 +293,8 @@ float   _MultiLightCastShadowStrength;
     float   _SSAOStrength;
     float   _SSAODirectStrength;
     float   _SSAOIndirectStrength;
+    float4  _SSAORemap;
+    float   _SSAOContrast;
 #endif
 float   _AAStrength;
 float   _EnvRimBorder;

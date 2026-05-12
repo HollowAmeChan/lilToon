@@ -138,6 +138,7 @@ public class lilToonPreset : ScriptableObject
         // Feature
         private bool shouldSaveBase = true;
         private bool shouldSaveLighting = true;
+        private bool shouldSaveGIAO = true;
         private bool shouldSaveUV = true;
         private bool shouldSaveMain = true;
         private bool shouldSaveMain2nd = true;
@@ -264,6 +265,7 @@ public class lilToonPreset : ScriptableObject
                 EditorGUI.indentLevel++;
                 shouldSaveBase                      = EditorGUILayout.ToggleLeft(GetLoc("sBaseSetting"), shouldSaveBase);
                 shouldSaveLighting                  = EditorGUILayout.ToggleLeft(GetLoc("sLightingSettings"), shouldSaveLighting);
+                shouldSaveGIAO                      = EditorGUILayout.ToggleLeft("GI / AO", shouldSaveGIAO);
                 shouldSaveUV                        = EditorGUILayout.ToggleLeft(GetLoc("sMainUV"), shouldSaveUV);
                 EditorGUI.indentLevel--;
 
@@ -408,6 +410,7 @@ public class lilToonPreset : ScriptableObject
                 if(!(
                     shouldSaveBase && lilPropertyNameChecker.IsBaseProperty(propName) ||
                     shouldSaveLighting && lilPropertyNameChecker.IsLightingProperty(propName) ||
+                    shouldSaveGIAO && lilPropertyNameChecker.IsGIAOProperty(propName) ||
                     shouldSaveUV && lilPropertyNameChecker.IsUVProperty(propName) ||
                     shouldSaveMain && lilPropertyNameChecker.IsMainProperty(propName) ||
                     shouldSaveMain2nd && lilPropertyNameChecker.IsMain2ndProperty(propName) ||
@@ -489,6 +492,7 @@ public class lilToonPreset : ScriptableObject
         {
             shouldSaveBase = val;
             shouldSaveLighting = val;
+            shouldSaveGIAO = val;
             shouldSaveUV = val;
             shouldSaveMain = val;
             shouldSaveMain2nd = val;

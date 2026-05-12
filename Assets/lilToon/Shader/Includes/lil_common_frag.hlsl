@@ -1283,7 +1283,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // SSAO
 #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
-    void lilSSAO(inout lilFragData fd)
+    void lilSSAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseSSAO)
         {
@@ -1294,13 +1294,22 @@
                 float indirectAO = lerp(1.0, aoFactor.indirectAmbientOcclusion, _SSAOIndirectStrength);
                 ssao = min(directAO, indirectAO);
             #endif
-            fd.col.rgb *= lerp(1.0, ssao, _SSAOStrength);
+            float ssaoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);
+            float ssaoMax = max(_SSAORemap.y, ssaoMin + 0.001);
+            ssao = saturate((ssao - ssaoMin) / max(ssaoMax - ssaoMin, 0.001));
+            ssao = saturate(1.0 - pow(saturate(1.0 - ssao), max(_SSAOContrast, 0.001)));
+
+            float ssaoMask = 1.0;
+            #if defined(LIL_FEATURE_SSAOMask)
+                ssaoMask = LIL_SAMPLE_2D(_SSAOMask, samp, fd.uvMain).r;
+            #endif
+            fd.col.rgb *= lerp(1.0, ssao, _SSAOStrength * ssaoMask);
         }
     }
 #endif
 
 #if !defined(OVERRIDE_SSAO)
-    #define OVERRIDE_SSAO lilSSAO(fd);
+    #define OVERRIDE_SSAO lilSSAO(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -162,10 +162,13 @@ namespace lilToon
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
         private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty useSSAO                    = new lilMaterialProperty("_UseSSAO", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty ssaoStrength               = new lilMaterialProperty("_SSAOStrength", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty ssaoDirectStrength         = new lilMaterialProperty("_SSAODirectStrength", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty ssaoIndirectStrength       = new lilMaterialProperty("_SSAOIndirectStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty useSSAO                    = new lilMaterialProperty("_UseSSAO", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoStrength               = new lilMaterialProperty("_SSAOStrength", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoDirectStrength         = new lilMaterialProperty("_SSAODirectStrength", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoIndirectStrength       = new lilMaterialProperty("_SSAOIndirectStrength", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -796,6 +799,9 @@ namespace lilToon
                 ssaoStrength,
                 ssaoDirectStrength,
                 ssaoIndirectStrength,
+                ssaoRemap,
+                ssaoContrast,
+                ssaoMask,
 
                 useRimShade,
                 rimShadeColor,

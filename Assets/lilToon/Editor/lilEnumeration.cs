@@ -38,6 +38,7 @@ namespace lilToon
     {
         Base,
         Lighting,
+        GIAO,
         UV,
         MainColor,
         MainColor1st,

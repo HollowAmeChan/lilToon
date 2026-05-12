@@ -400,6 +400,8 @@ CBUFFER_START(UnityPerMaterial)
         float   _SSAOStrength;
         float   _SSAODirectStrength;
         float   _SSAOIndirectStrength;
+        float4  _SSAORemap;
+        float   _SSAOContrast;
     #endif
     float   _AAStrength;
     float   _EnvRimBorder;
@@ -885,6 +887,7 @@ TEXTURE2D(_ShadowColorTex);
 TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
+TEXTURE2D(_SSAOMask);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);
 TEXTURE2D(_SSSThicknessMap);

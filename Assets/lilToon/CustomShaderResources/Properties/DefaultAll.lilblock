@@ -31,6 +31,9 @@
                         _SSAOStrength               ("sStrength", Range(0, 1)) = 1
                         _SSAODirectStrength         ("Direct Strength", Range(0, 1)) = 1
                         _SSAOIndirectStrength       ("Indirect Strength", Range(0, 1)) = 0.5
+        [lilVec2]       _SSAORemap                  ("SSAO Remap Min Max", Vector) = (0,1,0,0)
+                        _SSAOContrast               ("SSAO Contrast", Range(0, 4)) = 1
+        [NoScaleOffset] _SSAOMask                   ("SSAO Mask", 2D) = "white" {}
                         _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10
                         _lilDirectionalLightStrength ("sDirectionalLightStrength", Range(0,1)) = 1
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)

@@ -94,6 +94,8 @@ namespace lilToon
             public bool isShowWebPages                  = false;
             public bool isShowHelpPages                 = false;
             public bool isShowLightingSettings          = false;
+            public bool isShowGIAOSettings              = false;
+            public bool isShowSSAOMask                  = false;
             public bool isShowShaderSetting             = false;
             public bool isShowOptimizationSetting       = false;
             public bool isShowDefaultValueSetting       = false;

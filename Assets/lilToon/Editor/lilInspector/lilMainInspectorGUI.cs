@@ -29,8 +29,9 @@ namespace lilToon
                 DrawBaseSettings(material, sTransparentMode, sRenderingModeList, sRenderingModeListLite, sTransparentModeList);
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // Lighting
+                // Lighting / GI
                 DrawLightingSettings();
+                DrawGIAOSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV
@@ -549,8 +550,9 @@ namespace lilToon
                 DrawBaseSettings(material, sTransparentMode, sRenderingModeList, sRenderingModeListLite, sTransparentModeList);
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // Lighting
+                // Lighting / GI
                 DrawLightingSettings();
+                DrawGIAOSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV

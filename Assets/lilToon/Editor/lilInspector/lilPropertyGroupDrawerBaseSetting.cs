@@ -477,24 +477,63 @@ namespace lilToon
                     LocalizedProperty(vertexLightStrength);
                     if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
                     if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "附加光阴影强度");
-                    if(useSSAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
-                    {
-                        LocalizedProperty(useSSAO, false);
-                        if(useSSAO.floatValue == 1)
-                        {
-                            EditorGUI.indentLevel++;
-                            LocalizedProperty(ssaoStrength);
-                            LocalizedProperty(ssaoDirectStrength);
-                            LocalizedProperty(ssaoIndirectStrength);
-                            EditorGUI.indentLevel--;
-                        }
-                    }
                     LocalizedProperty(lightDirectionOverride);
                     if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();
                     LocalizedProperty(beforeExposureLimit);
                     LocalizedProperty(lilDirectionalLightStrength);
                 EditorGUILayout.EndVertical();
+            }
+        }
+
+        private void DrawGIAOSettings()
+        {
+            if(!ShouldDrawBlock(PropertyBlock.GIAO)) return;
+            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI / AO", edSet.isShowGIAOSettings);
+            lilEditorGUI.DrawHelpButton("GI / AO");
+            if(edSet.isShowGIAOSettings)
+            {
+                EditorGUILayout.BeginVertical(boxOuter);
+                EditorGUILayout.LabelField("Global Illumination / Ambient Occlusion", customToggleFont);
+                DrawMenuButton("GI / AO", PropertyBlock.GIAO);
+                EditorGUILayout.BeginVertical(boxInnerHalf);
+                if(useSSAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                {
+                    LocalizedProperty(useSSAO, false);
+                    if(useSSAO.floatValue == 1)
+                    {
+                        EditorGUI.indentLevel++;
+                        LocalizedProperty(ssaoStrength);
+                        LocalizedProperty(ssaoDirectStrength);
+                        LocalizedProperty(ssaoIndirectStrength);
+                        DrawSSAORemapGUI();
+                        LocalizedProperty(ssaoContrast);
+                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("SSAO Mask", "R: SSAO receive area"), ssaoMask);
+                        EditorGUI.indentLevel--;
+                    }
+                }
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndVertical();
+            }
+        }
+
+        private void DrawSSAORemapGUI()
+        {
+            if(ssaoRemap.p == null) return;
+            Vector4 remap = ssaoRemap.vectorValue;
+            float min = remap.x;
+            float max = remap.y;
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.showMixedValue = ssaoRemap.hasMixedValue;
+            min = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "SSAO Min", min, 0.0f, 1.0f);
+            max = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "SSAO Max", max, 0.0f, 1.0f);
+            EditorGUI.showMixedValue = false;
+
+            if(EditorGUI.EndChangeCheck())
+            {
+                if(min == max) max = Mathf.Min(min + 0.001f, 1.0f);
+                if(min >= max) min = Mathf.Max(max - 0.001f, 0.0f);
+                ssaoRemap.vectorValue = new Vector4(min, max, remap.z, remap.w);
             }
         }
 
