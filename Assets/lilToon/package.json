@@ -3,7 +3,7 @@
   "version": "2.3.2",
   "displayName": "lilToon",
   "description": "Feature-rich toon shader.",
-  "unity": "2022.3",
+  "unity": "6000.0",
   "documentationUrl": "https://lilxyzw.github.io/lilToon/",
   "changelogUrl": "https://lilxyzw.github.io/lilToon/#/en-us/other/changelog",
   "licensesUrl": "https://github.com/lilxyzw/lilToon/blob/master/Assets/lilToon/LICENSE",
