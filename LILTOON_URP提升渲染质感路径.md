@@ -185,6 +185,12 @@ lilToon 同步内容：
 - 在 `lilSSAO` 内加入 toon remap。
 - 可以和 Shadow 的 AO map 逻辑做视觉风格统一。
 
+待办：
+
+- URP 自带 SSAO 即使半径、强度、质量拉高，仍会在 toon 材质上暴露颗粒感；后续需要评估自定义 toon SSAO Renderer Feature，而不是继续只靠更强 blur。
+- 自定义方案方向：小半径、DepthNormals、blue noise / interleaved sampling、depth+normal bilateral filter、可选 temporal accumulation / history rejection。
+- 输出独立 AO 贴图后由 lilToon / lilPBR 接收端统一采样，并继续保留材质侧 remap、contrast、mask。
+
 ---
 
 ### 4.2 Contact Shadow / Micro Shadow
