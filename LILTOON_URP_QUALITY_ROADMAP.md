@@ -1,43 +1,46 @@
-# lilToon URP 质感提升路线图
+# lilToon / lilPBR 双仓质感提升路线图
 
-> 目标：记录后续可以提升 lilToon URP 质感、场景适配能力和半写实 NPR 表现力的功能方向。
+> 目标：记录后续 lilToon 与 lilPBR 的分工。lilToon 保持角色 toon 主线；lilPBR 承接 PBR、场景材质和管线实验。SSAO、OIT、SSS 等通用能力以后尽量两边一起设计，先在最适合的仓库落地，再同步另一边的接口和材质侧表现。
 
 ---
 
 ## 1. 总体方向
 
-当前 lilToon 更擅长角色 toon 材质。后续如果要把这个 fork 推成“角色 + 场景 + 半写实 NPR”的完整 URP 体系，可以按两条线推进：
+当前 lilToon 更擅长角色 toon 材质；lilPBR 已经是独立 PBR shader 包，适合承接场景、透明、SSS、OIT、SSR、玻璃和湿润材质等方向。后续不再把完整 PBR 主线塞回 lilToon，而是按三条线推进：
 
-1. 材质内增强：主要改 `Properties/*.lilblock`、Inspector 和 `Shader/Includes/*.hlsl`，不一定需要改 URP 管线。
-2. 管线增强：需要 URP Renderer Feature、额外 RT、后处理合成或 per-camera 资源管理。
+1. lilToon 角色线：SSAO toon remap、Fake SSS、透明排序接口、角色皮肤/头发/衣料表现。
+2. lilPBR 场景线：PBR/半写实 NPR、SSS、OIT、玻璃/镜子、湿润、SSR、decal、detail AO。
+3. 共享管线线：URP Renderer Feature、额外 RT、per-camera 资源、后处理合成。共享功能尽量做成可复用包或同名接口。
 
-建议先做能明显改善常见画面问题的功能，再做成本更高的完整管线。
+建议先做能明显改善常见画面问题、且能双仓复用的功能，再做成本更高的完整管线。
 
 ---
 
 ## 2. 优先级建议
 
-| 优先级 | 功能 | 主要收益 | 是否需要改管线 |
-| --- | --- | --- | --- |
-| P0 | Weighted OIT / 半透明排序改进 | 头发、玻璃、透明衣料排序更稳定 | 是 |
-| P0 | Scene NPR-PBR 材质模式 | 场景道具、建筑、金属、地面更有质感 | 可先不改 |
-| P0 | 玻璃 / 镜子专用材质 | 解决透明、折射、镜面反射参数不足 | 部分需要 |
-| P1 | SSAO Toon Remap | 让 URP SSAO 更适合 toon/NPR | 否 |
-| P1 | Contact Shadow / Micro Shadow | 增强接地感和缝隙暗部 | 部分需要 |
-| P1 | Stylized Reflection / SSR | 金属、湿地、镜面地板提升明显 | SSR 需要 |
-| P2 | NPR Decal / Dirt Layer | 污渍、磨损、贴花、场景细节 | 可接 URP Decal |
-| P2 | Detail AO / Bent Normal | 提升场景间接光和反射可信度 | 否 |
-| P2 | Shadow Ramp Atlas | 统一场景 shadow 色调和风格 | 可选 |
-| P3 | NPR Lighting Volume | 按区域控制 toon 光照、美术风格 | 需要运行时管理 |
-| P3 | Toon Deferred / GBuffer Path | 多光源、decals、SSAO、反射更统一 | 是，大工程 |
+| 优先级 | 功能 | 主落点 | 同步目标 | 是否需要改管线 |
+| --- | --- | --- | --- | --- |
+| P0 | SSAO Toon Remap / Receiver | lilToon 已有基础，lilPBR 补齐 | 两边统一 AO remap 参数和 URP 采样方式 | 否 |
+| P0 | Fake SSS / Thickness SSS | lilToon 已有基础，lilPBR 补齐 | 两边统一 thickness、rim、shadow 影响规则 | 否 |
+| P0 | Weighted OIT / 半透明排序改进 | 共享 URP Renderer Feature，先接 lilPBR/lilToon 透明材质 | 头发、玻璃、透明衣料排序更稳定 | 是 |
+| P0 | lilPBR Scene NPR-PBR 主线 | lilPBR | lilToon 只保留角色侧兼容和必要桥接 | 可先不改 |
+| P1 | 玻璃 / 镜子专用材质 | lilPBR | lilToon 可接透明/反射共享接口 | 部分需要 |
+| P1 | Contact Shadow / Micro Shadow | lilPBR 先做材质侧，lilToon 同步角色减弱规则 | 增强接地感和缝隙暗部 | 部分需要 |
+| P1 | Stylized Reflection / SSR | lilPBR | lilToon 可复用反射 remap / SSR fallback | SSR 需要 |
+| P2 | NPR Decal / Dirt Layer | lilPBR | lilToon 衣物污渍/贴纸可选接入 | 可接 URP Decal |
+| P2 | Detail AO / Bent Normal | lilPBR | lilToon 只在需要的角色材质中接入 | 否 |
+| P2 | Shadow Ramp Atlas | lilToon 主导，lilPBR 接场景 ramp | 统一角色和场景 shadow 色调 | 可选 |
+| P3 | NPR Lighting Volume | 共享运行时 | 两边按材质选择接收 volume | 需要运行时管理 |
+| P3 | Toon Deferred / GBuffer Path | lilPBR 或独立实验分支 | lilToon 暂不作为首发目标 | 是，大工程 |
 
 推荐推进顺序：
 
 ```text
-OIT
-Scene NPR-PBR
-Glass / Mirror
 SSAO Toon Remap
+Fake SSS / Thickness SSS
+Weighted OIT
+lilPBR Scene NPR-PBR polish
+Glass / Mirror
 Contact Shadow
 Stylized Reflection / SSR
 NPR Decal / Dirt Layer
@@ -85,46 +88,37 @@ Lighting Volume
 
 ---
 
-### 3.2 Scene NPR-PBR 材质模式
+### 3.2 lilPBR Scene NPR-PBR 主线
 
 目标：
 
-- 为场景、道具、建筑提供比当前角色向 lilToon 更完整的 NPR-PBR 参数。
-- 保留 toon ramp 和色彩控制，但补足金属、粗糙度、AO、细节法线等场景常用输入。
+- 不再在 lilToon 内新增完整 Scene NPR-PBR shader。
+- 把场景、道具、建筑、金属、地面等材质主线转到 lilPBR。
+- lilToon 只保留角色 toon 主线，以及必要的共享管线接口。
 
-建议做成独立模式：
+当前状态：
 
-```text
-Material Mode:
-  Character Toon
-  Scene NPR-PBR
-```
+- lilPBR 已经有独立 PBR shader、URP/Built-in 双 SubShader、clear coat、anisotropy、SSS、wetness、detail、POM、motion vectors 等。
+- lilToon 中临时加入的 Scene NPR-PBR 改动已经撤销。
 
-新增参数方向：
+下一步 lilPBR 优先补：
 
-- Metallic
-- Roughness / Smoothness remap
-- Specular Color / Specular Tint
-- Clear Coat
-- Detail Normal
-- Detail Albedo
-- Detail AO
-- Packed Mask：Metallic / AO / Roughness / Height
-- Toon Specular Ramp
-- Reflection Roughness Remap
-- Shadow Ramp / Shadow Tint
+- SSAO Toon Remap / Receiver。
+- Fake SSS / Thickness SSS 对齐 lilToon 经验。
+- Weighted OIT 透明路径。
+- NPR-friendly reflection / shadow / AO remap。
 
-实现建议：
+lilToon 同步内容：
 
-- 先 shader 内实现，不急着改管线。
-- UI 上单独做 `Scene NPR-PBR` foldout，避免污染角色常用面板。
-- 可以和现有 Reflection / MatCap / Shadow 共用部分逻辑，但不要把场景材质参数塞进角色默认流程。
+- 共享宏名、Renderer Feature 参数、材质开关命名。
+- 角色材质需要的 SSAO、SSS、OIT 接收逻辑。
+- 不迁移 lilPBR 的完整 PBR 参数面板。
 
 风险：
 
-- 参数过多会让 Inspector 变复杂。
-- 要明确和现有 Reflection、MatCap、Shadow 的优先关系。
-- 要避免角色材质默认变重。
+- 双仓属性命名容易漂移，需要每个功能先定义“共享字段”和“仓库私有字段”。
+- lilToon 的生成式架构和 lilPBR 的手写 shader 架构不同，同步时不能机械复制。
+- lilToon 角色默认路径要避免变重。
 
 ---
 
@@ -382,14 +376,15 @@ Material Mode:
 - Multi Light：提升 URP 附加光表现。
 - Fake SSS：让皮肤和薄物体更柔和。
 - SSAO Receiver：接 URP 内置 SSAO。
+- lilPBR：已有独立 PBR 主线，适合作为场景和管线功能首发仓库。
 
 下一步最自然的路线：
 
-1. 把 SSAO Receiver 做 toon remap。
-2. 做 Scene NPR-PBR 材质模式。
-3. 做 Weighted OIT 管线。
-4. 做 Glass / Mirror 专用材质。
-5. 做 Contact Shadow / Micro Shadow。
+1. 在 lilPBR 补 SSAO Receiver / Toon Remap，并和 lilToon 的参数设计对齐。
+2. 在 lilPBR 补 Fake SSS / Thickness SSS，把 lilToon 已走通的经验迁过去。
+3. 做共享 Weighted OIT Renderer Feature，再分别接 lilPBR 透明和 lilToon 透明/头发。
+4. lilPBR 做 Glass / Mirror 专用材质，lilToon 只同步必要透明接口。
+5. lilPBR 做 Contact Shadow / Micro Shadow，lilToon 接角色友好的弱化策略。
 
 ---
 
