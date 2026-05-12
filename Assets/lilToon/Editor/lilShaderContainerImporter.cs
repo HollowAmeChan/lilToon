@@ -1002,24 +1002,61 @@ namespace lilToon
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Multi Compile
+        private struct MultiCompileOptions
+        {
+            public bool skipLightmaps;
+            public bool skipDecals;
+            public bool skipAdditionalLightShadows;
+            public bool skipProbeVolumes;
+            public bool skipAmbientOcclusion;
+            public bool skipReflections;
+            public bool skipMainLightShadows;
+
+            public static MultiCompileOptions FromShaderText(string shaderText)
+            {
+                string mergedText = shaderText + "\n" + shaderSettingText;
+                return new MultiCompileOptions
+                {
+                    skipLightmaps =
+                        mergedText.Contains(SKIP_VARIANTS_LIGHTMAPS) ||
+                        mergedText.Contains("skip_variants LIGHTMAP_ON"),
+                    skipDecals =
+                        mergedText.Contains(SKIP_VARIANTS_DECALS) ||
+                        mergedText.Contains("skip_variants DECALS_OFF") ||
+                        mergedText.Contains("skip_variants _DBUFFER_MRT1"),
+                    skipAdditionalLightShadows =
+                        mergedText.Contains(SKIP_VARIANTS_ADDLIGHTSHADOWS) ||
+                        mergedText.Contains("skip_variants _ADDITIONAL_LIGHT_SHADOWS"),
+                    skipProbeVolumes =
+                        mergedText.Contains(SKIP_VARIANTS_PROBEVOLUMES),
+                    skipAmbientOcclusion =
+                        (!mergedText.Contains("#define LIL_FEATURE_SSAO") && mergedText.Contains(SKIP_VARIANTS_AO)) ||
+                        mergedText.Contains("skip_variants _SCREEN_SPACE_OCCLUSION"),
+                    skipReflections =
+                        mergedText.Contains(SKIP_VARIANTS_REFLECTIONS) ||
+                        mergedText.Contains("skip_variants _REFLECTION_PROBE_BLENDING"),
+                    skipMainLightShadows =
+                        mergedText.Contains(SKIP_VARIANTS_SHADOWS) ||
+                        (!useBaseShadow && mergedText.Contains(SKIP_VARIANTS_BASE_SHADOWS)) ||
+                        (!useOutlineShadow && mergedText.Contains(SKIP_VARIANTS_OUTLINE_SHADOWS)) ||
+                        Regex.IsMatch(mergedText, @"#pragma\s+skip_variants[^\r\n]*\b_MAIN_LIGHT_SHADOWS\b")
+                };
+            }
+        }
+
         private static void ReplaceMultiCompiles(ref StringBuilder sb, PackageVersionInfos version, int indent, bool isDots)
         {
-            sb.Replace(MULTI_COMPILE_FORWARDADD, GetMultiCompileForwardAdd(version, indent));
-            sb.Replace(MULTI_COMPILE_FORWARD, GetMultiCompileForward(version, indent));
-            sb.Replace(MULTI_COMPILE_SHADOWCASTER, GetMultiCompileShadowCaster(version, indent));
-            sb.Replace(MULTI_COMPILE_DEPTHONLY, GetMultiCompileDepthOnly(version, indent));
-            sb.Replace(MULTI_COMPILE_DEPTHNORMALS, GetMultiCompileDepthNormals(version, indent));
-            sb.Replace(MULTI_COMPILE_MOTIONVECTORS, GetMultiCompileMotionVectors(version, indent));
-            sb.Replace(MULTI_COMPILE_SCENESELECTION, GetMultiCompileSceneSelection(version, indent));
-            sb.Replace(MULTI_COMPILE_META, GetMultiCompileMeta(version, indent));
-            sb.Replace(MULTI_COMPILE_INSTANCING, GetMultiCompileInstancingLayer(version, indent, isDots));
+            string text = sb.ToString();
+            ReplaceMultiCompiles(ref text, version, indent, isDots);
+            sb.Clear();
+            sb.Append(text);
         }
 
         private static void ReplaceMultiCompiles(ref string sb, PackageVersionInfos version, int indent, bool isDots)
         {
-            sb = sb.Replace(MULTI_COMPILE_FORWARDADD, GetMultiCompileForwardAdd(version, indent))
-                   .Replace(MULTI_COMPILE_FORWARD, GetMultiCompileForward(version, indent))
-                   .Replace(MULTI_COMPILE_SHADOWCASTER, GetMultiCompileShadowCaster(version, indent))
+            sb = sb.Replace(MULTI_COMPILE_FORWARDADD, GetMultiCompileForwardAdd(version, indent));
+            sb = ReplaceForwardMultiCompiles(sb, version, indent);
+            sb = sb.Replace(MULTI_COMPILE_SHADOWCASTER, GetMultiCompileShadowCaster(version, indent))
                    .Replace(MULTI_COMPILE_DEPTHONLY, GetMultiCompileDepthOnly(version, indent))
                    .Replace(MULTI_COMPILE_DEPTHNORMALS, GetMultiCompileDepthNormals(version, indent))
                    .Replace(MULTI_COMPILE_MOTIONVECTORS, GetMultiCompileMotionVectors(version, indent))
@@ -1028,7 +1065,47 @@ namespace lilToon
                    .Replace(MULTI_COMPILE_INSTANCING, GetMultiCompileInstancingLayer(version, indent, isDots));
         }
 
+        private static string ReplaceForwardMultiCompiles(string shaderText, PackageVersionInfos version, int indent)
+        {
+            int searchStart = 0;
+            var sb = new StringBuilder();
+            while(true)
+            {
+                int pragmaIndex = shaderText.IndexOf(MULTI_COMPILE_FORWARD, searchStart, StringComparison.Ordinal);
+                if(pragmaIndex < 0) break;
+                sb.Append(shaderText, searchStart, pragmaIndex - searchStart);
+                string context = GetMultiCompileContext(shaderText, pragmaIndex);
+                sb.Append(GetMultiCompileForward(version, indent, MultiCompileOptions.FromShaderText(context)));
+                searchStart = pragmaIndex + MULTI_COMPILE_FORWARD.Length;
+            }
+            sb.Append(shaderText, searchStart, shaderText.Length - searchStart);
+            return sb.ToString();
+        }
+
+        private static string GetMultiCompileContext(string shaderText, int pragmaIndex)
+        {
+            var sb = new StringBuilder();
+            foreach(Match match in Regex.Matches(shaderText, @"HLSLINCLUDE[\s\S]*?ENDHLSL"))
+            {
+                sb.AppendLine(match.Value);
+            }
+
+            int programStart = shaderText.LastIndexOf("HLSLPROGRAM", pragmaIndex, StringComparison.Ordinal);
+            int programEnd = shaderText.IndexOf("ENDHLSL", pragmaIndex, StringComparison.Ordinal);
+            if(programStart >= 0 && programEnd > programStart)
+            {
+                programEnd += "ENDHLSL".Length;
+                sb.AppendLine(shaderText.Substring(programStart, programEnd - programStart));
+            }
+            return sb.ToString();
+        }
+
         private static string GetMultiCompileForward(PackageVersionInfos version, int indent)
+        {
+            return GetMultiCompileForward(version, indent, new MultiCompileOptions());
+        }
+
+        private static string GetMultiCompileForward(PackageVersionInfos version, int indent, MultiCompileOptions options)
         {
             if(version.RP == lilRenderPipeline.LWRP)
             {
@@ -1049,29 +1126,45 @@ namespace lilToon
             {
                 if(version.Major >= 17)
                 {
-                    return GenerateIndentText(indent,
-                        "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN",
-                        "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                        "#pragma multi_compile _ PROBE_VOLUMES_L1 PROBE_VOLUMES_L2",
-                        // Always calculate in vertex shader
-                        //"#pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX",
-                        "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                        "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
-                        "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
-                        "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                        "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
-                        "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
-                        "#pragma multi_compile _ _LIGHT_LAYERS",
-                        "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
-                        "#pragma multi_compile _ _CLUSTER_LIGHT_LOOP",
-                        "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                        "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                        "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                        "#pragma multi_compile _ LIGHTMAP_ON",
-                        "#pragma multi_compile _ DYNAMICLIGHTMAP_ON",
-                        "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                        "#pragma multi_compile_instancing",
-                        "#define LIL_PASS_FORWARD");
+                    var pragmas = new List<string>();
+
+                    if(!options.skipMainLightShadows) pragmas.Add("#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN");
+                    pragmas.Add("#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS");
+                    pragmas.Add("#pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX");
+                    if(!options.skipAdditionalLightShadows) pragmas.Add("#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS");
+                    if(!options.skipReflections)
+                    {
+                        pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING");
+                        pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION");
+                    }
+                    pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS");
+                    pragmas.Add("#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH");
+                    if(!options.skipAmbientOcclusion) pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION");
+                    pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_IRRADIANCE");
+                    if(!options.skipDecals) pragmas.Add("#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3");
+                    pragmas.Add("#pragma multi_compile_fragment _ _LIGHT_COOKIES");
+                    pragmas.Add("#pragma multi_compile _ _LIGHT_LAYERS");
+                    pragmas.Add("#pragma multi_compile _ _CLUSTER_LIGHT_LOOP");
+                    pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl\"");
+                    pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl\"");
+
+                    if(!options.skipLightmaps)
+                    {
+                        pragmas.Add("#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING");
+                        pragmas.Add("#pragma multi_compile _ SHADOWS_SHADOWMASK");
+                        pragmas.Add("#pragma multi_compile _ DIRLIGHTMAP_COMBINED");
+                        pragmas.Add("#pragma multi_compile _ LIGHTMAP_ON");
+                        pragmas.Add("#pragma multi_compile_fragment _ LIGHTMAP_BICUBIC_SAMPLING");
+                        pragmas.Add("#pragma multi_compile_fragment _ REFLECTION_PROBE_ROTATION");
+                        pragmas.Add("#pragma multi_compile _ DYNAMICLIGHTMAP_ON");
+                        pragmas.Add("#pragma multi_compile _ USE_LEGACY_LIGHTMAPS");
+                    }
+
+                    if(!options.skipProbeVolumes) pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/ProbeVolumeVariants.hlsl\"");
+                    pragmas.Add("#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2");
+                    pragmas.Add("#pragma multi_compile_instancing");
+                    pragmas.Add("#define LIL_PASS_FORWARD");
+                    return GenerateIndentText(indent, pragmas.ToArray());
                 }
                 if(version.Major >= 16)
                 {

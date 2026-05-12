@@ -57,7 +57,13 @@ struct v2f
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
 
-float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
+void frag(
+    v2f input LIL_VFACE(facing),
+    out float4 outNormalWS : SV_Target0
+    #if defined(LIL_URP) && defined(_WRITE_RENDERING_LAYERS)
+        , out uint outRenderingLayers : SV_Target1
+    #endif
+)
 {
     LIL_SETUP_INSTANCE_ID(input);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -74,12 +80,16 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
         normalDirection = fd.facing < (_FlipNormal-1.0) ? -normalDirection : normalDirection;
         normalDirection = normalize(normalDirection);
         #if !(LIL_SRP_VERSION_GREATER_EQUAL(12, 1)) || defined(_GBUFFER_NORMALS_OCT)
-            return float4(PackNormalOctRectEncode(normalDirection), 0.0, 0.0);
+            outNormalWS = float4(PackNormalOctRectEncode(normalDirection), 0.0, 0.0);
         #else
-            return float4(normalDirection, 0.0);
+            outNormalWS = float4(normalDirection, 0.0);
         #endif
     #else
-        return 0;
+        outNormalWS = 0;
+    #endif
+
+    #if defined(LIL_URP) && defined(_WRITE_RENDERING_LAYERS)
+        outRenderingLayers = EncodeMeshRenderingLayer();
     #endif
 }
 

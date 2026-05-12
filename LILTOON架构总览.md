@@ -459,7 +459,191 @@ foreach($f in $files){ git update-index --no-skip-worktree -- $f }
 
 - `.git/info/exclude` 里刚才加的那几行
 
-## 10. 最实用的修改落点对照表
+## 10. URP17 编译与功能迁移排查笔记
+
+这次从 URP14 往 URP17 搬功能时，不能只看 `lilToon` 仓库本身。同级目录里还有几个关键参考：
+
+- `../HoUrp17.3.0`：URP 17.3.0 源码，当前最重要的对齐对象。
+- `../HoUrpConfig17.0.3`：URP 配置包。
+- `../lilToon-URP-Extensions`：Weighted OIT Renderer Feature 和文档。
+- `../URP-config14.0.9`、`../URP14.0.10未建仓但已修抗锯齿`：URP14 行为参考。
+
+### 10.1 URP17 Forward 关键字基线
+
+URP17 的基线可以直接看：
+
+- `../HoUrp17.3.0/Shaders/Lit.shader`
+- `../HoUrp17.3.0/Shaders/ComplexLit.shader`
+- `../HoUrp17.3.0/ShaderLibrary/Core.hlsl`
+- `../HoUrp17.3.0/ShaderLibrary/RealtimeLights.hlsl`
+
+URP17 Forward 主要关键字包括：
+
+- `_MAIN_LIGHT_SHADOWS / _MAIN_LIGHT_SHADOWS_CASCADE / _MAIN_LIGHT_SHADOWS_SCREEN`
+- `_ADDITIONAL_LIGHTS_VERTEX / _ADDITIONAL_LIGHTS`
+- `_ADDITIONAL_LIGHT_SHADOWS`
+- `_SHADOWS_SOFT / _SHADOWS_SOFT_LOW / _SHADOWS_SOFT_MEDIUM / _SHADOWS_SOFT_HIGH`
+- `_SCREEN_SPACE_OCCLUSION`
+- `_SCREEN_SPACE_IRRADIANCE`
+- `_DBUFFER_MRT1 / _DBUFFER_MRT2 / _DBUFFER_MRT3`
+- `_LIGHT_COOKIES`
+- `_LIGHT_LAYERS`
+- `_CLUSTER_LIGHT_LOOP`
+- `EVALUATE_SH_MIXED / EVALUATE_SH_VERTEX`
+- lightmap、APV、reflection probe、foveated rendering 相关 include
+
+特别注意：
+
+- URP17/Unity 6.1 后 `_FORWARD_PLUS` 已废弃，新名是 `_CLUSTER_LIGHT_LOOP`。
+- `Core.hlsl` 仍兼容旧 `_FORWARD_PLUS`，但自定义 shader 应该主动跟新名。
+- `GetAdditionalLightsCount()` 在 cluster loop 下返回 `0`，真正的 punctual light 由 `LIGHT_LOOP_BEGIN/END` 遍历 cluster。
+- cluster directional additional lights 需要单独遍历 `URP_FP_DIRECTIONAL_LIGHTS_COUNT`。
+
+### 10.2 lilToon 的 URP17 pragma 生成点
+
+lilToon 不直接在 `.lilblock` 里手写所有 URP17 pragma，而是用占位符：
+
+```shaderlab
+#pragma lil_multi_compile_forward
+```
+
+最终由这里展开：
+
+- `Assets/lilToon/Editor/lilShaderContainerImporter.cs`
+- `GetMultiCompileForward(...)`
+- `MultiCompileOptions.FromShaderText(...)`
+
+当前 URP17 分支会参考 shader 文本和全局 shader setting，按 `lil_skip_variants_*` 决定是否生成对应 pragma。
+
+一个容易踩坑的点：
+
+- `#pragma lil_skip_variants_ao` 最终展开成条件式 `skip_variants _SCREEN_SPACE_OCCLUSION`。
+- 如果在展开 forward pragma 前只看到 marker，就误判为“跳过 AO”，会导致 SSAO 变体根本不生成。
+- 判断 AO 是否跳过时，要结合 `#define LIL_FEATURE_SSAO`。
+
+另一个新踩到的坑是 Unity/URP17 对关键字集合更敏感：
+
+- `HLSLINCLUDE` 里的 `#pragma skip_variants ...` 会和每个 pass 的 `HLSLPROGRAM` 一起参与编译关键字处理。
+- 如果 `HLSLINCLUDE` 已经展开出 `skip_variants _SCREEN_SPACE_OCCLUSION`，同一 SubShader 后面的 pass 里再生成 `#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION`，Unity 可能报 `redefinition of '_SCREEN_SPACE_OCCLUSION'`。
+- 同理，如果 `HLSLINCLUDE` 已经展开出包含 `_MAIN_LIGHT_SHADOWS` 的 `skip_variants`，后面的 pass 里再生成 `#pragma multi_compile _ _MAIN_LIGHT_SHADOWS ...`，会报 `redefinition of '_MAIN_LIGHT_SHADOWS'`。
+- 所以 `#pragma lil_multi_compile_forward` 不能只做简单全局替换；需要按“当前 `HLSLINCLUDE` + 当前 `HLSLPROGRAM`”取上下文，逐个 forward pragma 判断要不要生成对应关键字。
+- 当前修复点是 `ReplaceForwardMultiCompiles(...)` / `GetMultiCompileContext(...)`：先收集当前 block 的 skip 信息，再交给 `MultiCompileOptions.FromShaderText(...)`，最后由 `GetMultiCompileForward(...)` 有条件地输出 URP17 forward pragma。
+- 已导出的 `.shader` 文件如果已经存在重复组合，也要同步清掉，否则即使 importer 修了，Unity 当前项目仍会继续编译旧 shader 文本。
+
+### 10.3 SSAO 链路
+
+lilToon 的 SSAO shader 侧逻辑在：
+
+- `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl`
+- `lilSSAO(...)`
+
+它依赖：
+
+- 材质属性 `_UseSSAO`
+- shader setting 宏 `LIL_FEATURE_SSAO`
+- forward 变体 `_SCREEN_SPACE_OCCLUSION`
+- URP Renderer Feature 产生 `_ScreenSpaceOcclusionTexture`
+
+所以 SSAO “不报错但没效果”时，先按这个顺序查：
+
+1. `lilToonSetting` 是否启用了 `LIL_FEATURE_SSAO`
+2. 生成的 `ltspass_*.shader` Forward pass 是否有 `#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION`
+3. 是否还残留 `#pragma skip_variants _SCREEN_SPACE_OCCLUSION`
+4. URP Renderer Data 里是否启用了 Screen Space Ambient Occlusion
+5. Frame Debugger 里是否存在 SSAO pass，并且 forward shader 运行在 `_SCREEN_SPACE_OCCLUSION` 变体
+
+### 10.4 DepthNormals 与 URP17 Rendering Layers
+
+URP17 的 DepthNormals pass 不只可能写法线：
+
+- 普通路径输出 `_CameraNormalsTexture`
+- 当 URP 需要 rendering layers texture 时，会启用 `_WRITE_RENDERING_LAYERS`
+- 此时 DepthNormals fragment 需要额外输出 `SV_Target1`
+
+URP17 参考文件：
+
+- `../HoUrp17.3.0/Shaders/LitDepthNormalsPass.hlsl`
+- `../HoUrp17.3.0/ShaderLibrary/RenderingLayers.hlsl`
+- `../HoUrp17.3.0/Runtime/Passes/DepthNormalOnlyPass.cs`
+
+lilToon 对应文件：
+
+- `Assets/lilToon/Shader/Includes/lil_pass_depthnormals.hlsl`
+
+如果 decals、rendering layers、SSAO source=DepthNormals 的组合异常，要确认生成 shader 的 DepthNormals pass 是否能在 `_WRITE_RENDERING_LAYERS` 下同时写 `EncodeMeshRenderingLayer()`。
+
+### 10.5 ShadowCaster 与 “cast 坏了”
+
+投影 pass 链路是：
+
+1. 主 shader 的 `UsePass "*LIL_PASS_SHADER_NAME*/SHADOW_CASTER"`
+2. `BaseShaderResources/ltspass_*.lilinternal`
+3. `CustomShaderResources/URP/*.lilblock` 里的 `ShadowCaster`
+4. `Assets/lilToon/Shader/Includes/lil_pass_shadowcaster.hlsl`
+5. `lil_common_macro.hlsl` 里的 `URPShadowPos(...)`
+
+URP17 与 URP14 相比，核心仍是：
+
+- `LightMode = "ShadowCaster"`
+- `#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW`
+- `_LightDirection` / `_LightPosition`
+- `ApplyShadowBias(...)`
+
+当前更容易坏的是“附加光对 lilToon 明暗的 cast shadow 影响”，而不是 ShadowCaster pass 完全不跑。lilToon 的 `_MultiLightCastShadowStrength` 依赖 additional light 的 `shadowAttenuation`，URP17 下要注意：
+
+- cluster 模式应看 `USE_CLUSTER_LIGHT_LOOP`，不是只看旧 `USE_FORWARD_PLUS`
+- additional light 要用带 `shadowMask` 的 `GetAdditionalLight(...)` 重载，否则 `_ADDITIONAL_LIGHT_SHADOWS` 变体里也可能拿不到实时阴影衰减
+- mixed light shadowmask 仍需要场景实测，因为 lilToon 不是完整复刻 URP Lit 的 `InputData`
+
+### 10.6 Weighted OIT 契约
+
+OIT 分在两个仓库：
+
+- lilToon 负责 shader pass、材质属性、MRT 输出
+- `../lilToon-URP-Extensions` 负责 Renderer Feature、RTHandle、合成时机
+
+关键契约：
+
+- pass tag 是 `LightMode = "lilToonOIT"`
+- 全局开关是 `_lilOITActive`
+- 材质开关是 `_lilOITEnabled`
+- 扩展只绘制 `ShaderTagId("lilToonOIT")`
+- opaque/skybox 后复制背景到 `_lilOITOpaqueTexture`，并临时发布成 `_CameraOpaqueTexture`
+
+参考：
+
+- `../lilToon-URP-Extensions/Documentation~/OIT.md`
+- `../lilToon-URP-Extensions/Runtime/OIT/WeightedOITRendererFeature.cs`
+- `../lilToon-URP-Extensions/Runtime/OIT/WeightedOITShaderConstants.cs`
+
+迁到 URP17 时优先验证：
+
+1. `lilToon Weighted OIT Accumulation` 是否有 draw call
+2. accumulation/revealage MRT 和 camera depth 的尺寸、MSAA 是否匹配
+3. `_lilOITActive` 是否只在 accumulation 阶段为 `1`
+4. `lilToonOIT` pass 的 generated shader 是否仍存在
+5. RenderGraph/Compatibility Mode 下的 camera color/depth RTHandle 是否取对
+
+### 10.7 本轮修复状态
+
+本轮已经做了这些源码侧修复：
+
+- `lilShaderContainerImporter.cs`：URP17 forward pragma 的 AO skip 判定改为结合 `LIL_FEATURE_SSAO`，避免 SSAO 变体被 marker 误杀。
+- `lilShaderContainerImporter.cs`：URP17 forward pragma 改为逐个占位符按上下文展开，避免 `HLSLINCLUDE` 里的 `skip_variants _SCREEN_SPACE_OCCLUSION / _MAIN_LIGHT_SHADOWS` 和 pass 内同名 `multi_compile` 互相导致 redefinition。
+- `lil_common_macro.hlsl`：URP additional light 路径识别 `USE_CLUSTER_LIGHT_LOOP`，并让 additional light shadow 走带 shadow mask 的重载。
+- `lil_common_macro.hlsl`：统一换行为 CRLF，解决 Unity 提示 mixed line endings 导致行号可能不准的问题。
+- `lil_pass_depthnormals.hlsl`：DepthNormals 支持 `_WRITE_RENDERING_LAYERS` 时输出 rendering layer target。
+- `DefaultFakeShadow.lilblock`：fake shadow 仍保留极简 forward pragma，避免它拉起整套 URP17 forward 变体。
+- 已导出的 `Shader/*.shader`：同步清掉当前文件里已经被 `skip_variants` 跳过、却仍在 pass 内生成的 `_SCREEN_SPACE_OCCLUSION` / `_MAIN_LIGHT_SHADOWS` multi_compile，避免 Unity 编译缓存继续报旧文本。
+
+仍需 Unity/Frame Debugger 场景验证：
+
+- SSAO 材质开关 + URP SSAO Renderer Feature 是否实际生效
+- additional light realtime shadow 对 `_MultiLightCastShadowStrength` 的影响
+- mixed additional light + shadowmask 是否符合预期
+- OIT 在 URP17 RenderGraph/Compatibility Mode 下的 RT 绑定是否仍合法
+
+## 11. 最实用的修改落点对照表
 
 ### 想改 UsePass 组合
 
@@ -513,7 +697,7 @@ foreach($f in $files){ git update-index --no-skip-worktree -- $f }
 - `Editor/lilStartup.cs`
 - `Editor/lilToonEditorUtils.cs`
 
-## 11. 推荐你后续优先读的文件
+## 12. 推荐你后续优先读的文件
 
 如果后面要继续深入，这几个最值得先读：
 
@@ -527,11 +711,11 @@ foreach($f in $files){ git update-index --no-skip-worktree -- $f }
 - `Assets/lilToon/Shader/Includes/lil_pipeline_urp.hlsl`
 - `Assets/lilToon/Shader/Includes/lil_common.hlsl`
 
-## 12. ShaderGUI / Inspector 接入
+## 13. ShaderGUI / Inspector 接入
 
 如果你给 shader 新增了功能，希望在 lilToon 自己的 Inspector 里也有入口，需要把“属性存在”和“GUI 会画出来”两件事都接上。
 
-### 12.1 lilToon Inspector 的入口
+### 13.1 lilToon Inspector 的入口
 
 大部分 shader 的 `CustomEditor` 都是：
 
@@ -550,7 +734,7 @@ foreach($f in $files){ git update-index --no-skip-worktree -- $f }
 5. `LoadCustomProperties(props, material)`
 6. `DrawAdvancedGUI(material)`
 
-### 12.2 新增一个普通属性时通常要改哪里
+### 13.2 新增一个普通属性时通常要改哪里
 
 #### 第一步：先让 shader 里真的有这个属性
 
@@ -623,7 +807,7 @@ foreach($f in $files){ git update-index --no-skip-worktree -- $f }
 
 - `Assets/lilToon/Editor/lilInspector/lilGUIUtility.cs`
 
-### 12.3 想做“自定义 shader 专用 GUI”
+### 13.3 想做“自定义 shader 专用 GUI”
 
 lilToon 其实专门留了扩展点：
 
@@ -651,7 +835,7 @@ lilToon 其实专门留了扩展点：
 
 这样你不用大改官方主 GUI。
 
-### 12.4 什么时候要改 `lilToonPropertyDrawer.cs`
+### 13.4 什么时候要改 `lilToonPropertyDrawer.cs`
 
 文件：
 
@@ -665,7 +849,7 @@ lilToon 其实专门留了扩展点：
 
 如果只是普通 float / color / texture / toggle，通常不用碰这里。
 
-### 12.5 最小接入清单
+### 13.5 最小接入清单
 
 新增一个功能，并且希望它出现在现有 lilToon Inspector 里，最小通常是：
 
@@ -682,7 +866,7 @@ lilToon 其实专门留了扩展点：
 - `lilToonPropertyDrawer.cs`
 - 自定义继承的 Inspector 类
 
-## 12. 一句话版总结
+## 14. 一句话版总结
 
 一句话记忆：
 
@@ -691,7 +875,7 @@ lilToon 其实专门留了扩展点：
 - `Shader/Includes` 决定“拼出来以后具体怎么跑”
 - `Shader/*.shader` 只是“拼完后的产物”
 
-## 13. 实战案例入口
+## 15. 实战案例入口
 
 如果你想直接看一份已经真实走通、包含踩坑和收尾策略的案例，优先看：
 

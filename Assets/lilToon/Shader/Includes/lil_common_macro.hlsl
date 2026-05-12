@@ -42,7 +42,7 @@
 #elif defined(LIL_HDRP)
     #define LIL_ADDITIONAL_LIGHT_MODE 5
     #define LIL_ADDITIONAL_LIGHT_STRENGTH 1
-#elif defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS
+#elif defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP || defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS
     #define LIL_ADDITIONAL_LIGHT_MODE 5
     #define LIL_ADDITIONAL_LIGHT_STRENGTH 1
 #else
@@ -124,7 +124,7 @@
 #endif
 
 // Additional Light
-#if (!defined(LIL_PASS_FORWARDADD) && defined(UNITY_SHOULD_SAMPLE_SH)) || defined(_ADDITIONAL_LIGHTS) || defined(_ADDITIONAL_LIGHTS_VERTEX) || defined(LIL_HDRP)
+#if (!defined(LIL_PASS_FORWARDADD) && defined(UNITY_SHOULD_SAMPLE_SH)) || defined(_ADDITIONAL_LIGHTS) || defined(_ADDITIONAL_LIGHTS_VERTEX) || defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP || defined(LIL_HDRP)
     #define LIL_USE_ADDITIONALLIGHT
     #if LIL_ADDITIONAL_LIGHT_MODE == 1
         #define LIL_USE_ADDITIONALLIGHT_VS
@@ -1792,6 +1792,12 @@ float3 lilGetObjectPosition()
     #define LIL_TRANSFER_SHADOW_CASTER(v,o)     o.positionCS = URPShadowPos(v.positionOS, v.normalOS, _lilShadowCasterBias)
     #define LIL_SHADOW_CASTER_FRAGMENT(i)       return 0
 
+    #if defined(LIL_URP) && LIL_SRP_VERSION_GREATER_EQUAL(10, 0) && defined(_ADDITIONAL_LIGHT_SHADOWS)
+        #define LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, inputData) GetAdditionalLight(lightIndex, positionWS, CalculateShadowMask(inputData))
+    #else
+        #define LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, inputData) GetAdditionalLight(lightIndex, positionWS)
+    #endif
+
     // Additional Light
     void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength, inout float3 lightColor, inout float3 lightDirection)
     {
@@ -1810,7 +1816,7 @@ float3 lilGetObjectPosition()
                 {
             #endif
 
-                Light light = GetAdditionalLight(lightIndex, positionWS);
+                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, inputData);
                 #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
@@ -1826,14 +1832,14 @@ float3 lilGetObjectPosition()
             #endif
         #endif
 
-        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
+        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP || defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
             #if defined(URP_FP_DIRECTIONAL_LIGHTS_COUNT)
                 for(uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
             #else
                 for(uint lightIndex = 0; lightIndex < min(_AdditionalLightsDirectionalCount, MAX_VISIBLE_LIGHTS); lightIndex++)
             #endif
             {
-                Light light = GetAdditionalLight(lightIndex, positionWS);
+                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, (InputData)0);
                 #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
@@ -1933,7 +1939,7 @@ float3 lilGetObjectPosition()
                 {
             #endif
 
-                Light light = GetAdditionalLight(lightIndex, positionWS);
+                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, inputData);
                 #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
@@ -1949,14 +1955,14 @@ float3 lilGetObjectPosition()
             #endif
         #endif
 
-        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
+        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP || defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
             #if defined(URP_FP_DIRECTIONAL_LIGHTS_COUNT)
                 for(uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
             #else
                 for(uint lightIndex = 0; lightIndex < min(_AdditionalLightsDirectionalCount, MAX_VISIBLE_LIGHTS); lightIndex++)
             #endif
             {
-                Light light = GetAdditionalLight(lightIndex, positionWS);
+                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, (InputData)0);
                 #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                     if((light.layerMask & renderingLayers) != 0)
                 #endif

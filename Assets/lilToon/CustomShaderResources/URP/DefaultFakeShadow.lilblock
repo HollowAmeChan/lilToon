@@ -53,7 +53,9 @@
             // Build Option
             #pragma vertex vert
             #pragma fragment frag
-            #pragma lil_multi_compile_forward
+            #pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2
+            #pragma multi_compile_instancing
+            #define LIL_PASS_FORWARD
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
