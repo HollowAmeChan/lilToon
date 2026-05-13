@@ -1281,35 +1281,57 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// SSAO
+// Screen Space AO
 #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
+    float lilSampleScreenSpaceAO(float2 screenUV)
+    {
+        float directAO = 1.0;
+        float indirectAO = 1.0;
+
+        if(_ScreenSpaceAOSource == 1)
+        {
+            float htraceAO = LIL_SAMPLE_2D(_HTraceBufferAO, lil_sampler_linear_clamp, screenUV).r;
+            directAO = lerp(1.0, htraceAO, _SSAODirectStrength);
+            indirectAO = lerp(1.0, htraceAO, _SSAOIndirectStrength);
+        }
+        else
+        {
+            #if defined(_SCREEN_SPACE_OCCLUSION) && LIL_RENDER != 2
+                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(screenUV);
+                directAO = lerp(1.0, aoFactor.directAmbientOcclusion, _SSAODirectStrength);
+                indirectAO = lerp(1.0, aoFactor.indirectAmbientOcclusion, _SSAOIndirectStrength);
+            #endif
+        }
+
+        float ao = min(directAO, indirectAO);
+        float aoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);
+        float aoMax = max(_SSAORemap.y, aoMin + 0.001);
+        ao = saturate((ao - aoMin) / max(aoMax - aoMin, 0.001));
+        return saturate(1.0 - pow(saturate(1.0 - ao), max(_SSAOContrast, 0.001)));
+    }
+
+    void lilScreenSpaceAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        if(_UseScreenSpaceAO)
+        {
+            float ao = lilSampleScreenSpaceAO(GetNormalizedScreenSpaceUV(fd.positionCS));
+
+            float aoMask = 1.0;
+            #if defined(LIL_FEATURE_SSAOMask)
+                aoMask = LIL_SAMPLE_2D(_SSAOMask, samp, fd.uvMain).r;
+            #endif
+            fd.col.rgb *= lerp(1.0, ao, _SSAOStrength * aoMask);
+        }
+    }
+
     void lilSSAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
-        if(_UseSSAO)
-        {
-            float ssao = 1.0;
-            #if defined(_SCREEN_SPACE_OCCLUSION) && LIL_RENDER != 2
-                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(fd.positionCS));
-                float directAO = lerp(1.0, aoFactor.directAmbientOcclusion, _SSAODirectStrength);
-                float indirectAO = lerp(1.0, aoFactor.indirectAmbientOcclusion, _SSAOIndirectStrength);
-                ssao = min(directAO, indirectAO);
-            #endif
-            float ssaoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);
-            float ssaoMax = max(_SSAORemap.y, ssaoMin + 0.001);
-            ssao = saturate((ssao - ssaoMin) / max(ssaoMax - ssaoMin, 0.001));
-            ssao = saturate(1.0 - pow(saturate(1.0 - ssao), max(_SSAOContrast, 0.001)));
-
-            float ssaoMask = 1.0;
-            #if defined(LIL_FEATURE_SSAOMask)
-                ssaoMask = LIL_SAMPLE_2D(_SSAOMask, samp, fd.uvMain).r;
-            #endif
-            fd.col.rgb *= lerp(1.0, ssao, _SSAOStrength * ssaoMask);
-        }
+        lilScreenSpaceAO(fd LIL_SAMP_IN(samp));
     }
 #endif
 
 #if !defined(OVERRIDE_SSAO)
-    #define OVERRIDE_SSAO lilSSAO(fd LIL_SAMP_IN(sampler_MainTex));
+    #define OVERRIDE_SSAO lilScreenSpaceAO(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

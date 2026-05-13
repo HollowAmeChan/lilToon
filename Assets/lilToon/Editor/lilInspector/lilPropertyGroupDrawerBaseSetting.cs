@@ -497,18 +497,20 @@ namespace lilToon
                 EditorGUILayout.LabelField("Global Illumination / Ambient Occlusion", customToggleFont);
                 DrawMenuButton("GI / AO", PropertyBlock.GIAO);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(useSSAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                if(useScreenSpaceAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
-                    LocalizedProperty(useSSAO, false);
-                    if(useSSAO.floatValue == 1)
+                    LocalizedProperty(useScreenSpaceAO.p, "Screen Space AO", false);
+                    if(useScreenSpaceAO.floatValue == 1)
                     {
                         EditorGUI.indentLevel++;
+                        EditorGUILayout.HelpBox("HTraceAO writes _ScreenSpaceOcclusionTexture. Insert HTraceAO before opaque/lit character materials so this shader can read the AO result.", MessageType.Info);
+                        if(screenSpaceAOSource.p != null) LocalizedProperty(screenSpaceAOSource.p, "AO RT");
                         LocalizedProperty(ssaoStrength);
                         LocalizedProperty(ssaoDirectStrength);
                         LocalizedProperty(ssaoIndirectStrength);
                         DrawSSAORemapGUI();
                         LocalizedProperty(ssaoContrast);
-                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("SSAO Mask", "R: SSAO receive area"), ssaoMask);
+                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("AO Mask", "R: screen-space AO receive area"), ssaoMask);
                         EditorGUI.indentLevel--;
                     }
                 }
@@ -525,8 +527,8 @@ namespace lilToon
             float max = remap.y;
             EditorGUI.BeginChangeCheck();
             EditorGUI.showMixedValue = ssaoRemap.hasMixedValue;
-            min = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "SSAO Min", min, 0.0f, 1.0f);
-            max = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "SSAO Max", max, 0.0f, 1.0f);
+            min = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "AO Min", min, 0.0f, 1.0f);
+            max = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "AO Max", max, 0.0f, 1.0f);
             EditorGUI.showMixedValue = false;
 
             if(EditorGUI.EndChangeCheck())

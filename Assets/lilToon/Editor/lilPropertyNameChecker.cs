@@ -75,7 +75,7 @@ namespace lilToon
         public static bool IsGIAOProperty(string name)
         {
             bool res = false;
-            res = res || name == "_UseSSAO";
+            res = res || name == "_UseScreenSpaceAO";
             res = res || name.Contains("_SSAO");
             return res;
         }

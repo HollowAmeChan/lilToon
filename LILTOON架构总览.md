@@ -15,8 +15,8 @@
 
 - HTrace AO 的 SSAO / GTAO / RTAO 都应在 lilToon 里表现为同一类 AO 输入，不要把算法选择做进材质面板。
 - lilToon 现有 `_SCREEN_SPACE_OCCLUSION` / `_ScreenSpaceOcclusionTexture` 兼容路径继续保留。
-- 新增 HTrace 来源时，优先读取 `_HTraceBufferAO`，并通过 `AO Source: Auto / URP / HTrace` 控制。
-- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAODirectStrength`、`_SSAOIndirectStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 不要立刻删除；Inspector 可以显示为 `Screen Space AO`，底层先做兼容。
+- 新增 HTrace 来源时，可在材质 UI 的 `AO RT` 中选择 `_ScreenSpaceOcclusionTexture (URP/HTrace compatible)` 或 `_HTraceBufferAO (HTrace direct)`。
+- 旧 `_UseSSAO` 已删除，统一使用 `_UseScreenSpaceAO`；强度、direct/indirect、remap、contrast、mask 仍沿用现有 `_SSAO*` 参数以减少改动面。
 - SSGI 当前不落在材质普通贴图层。它是 Renderer Feature 全屏间接光注入，lilToon 后续最多提供“接受 SSGI 强度/禁用 SSGI”这类轻量入口。
 
 SSGI 当前警告排查结论：
@@ -557,7 +557,7 @@ lilToon 的 SSAO shader 侧逻辑在：
 
 它依赖：
 
-- 材质属性 `_UseSSAO`
+- 材质属性 `_UseScreenSpaceAO`
 - shader setting 宏 `LIL_FEATURE_SSAO`
 - forward 变体 `_SCREEN_SPACE_OCCLUSION`
 - URP Renderer Feature 产生 `_ScreenSpaceOcclusionTexture`

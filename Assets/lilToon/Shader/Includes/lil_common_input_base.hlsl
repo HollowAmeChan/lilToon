@@ -290,6 +290,7 @@ float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
 #if defined(LIL_FEATURE_SSAO)
+    uint    _ScreenSpaceAOSource;
     float   _SSAOStrength;
     float   _SSAODirectStrength;
     float   _SSAOIndirectStrength;
@@ -720,7 +721,7 @@ lilBool _Invisible;
     lilBool _SSSThicknessInvert;
 #endif
 #if defined(LIL_FEATURE_SSAO)
-    lilBool _UseSSAO;
+    lilBool _UseScreenSpaceAO;
 #endif
 #if defined(LIL_FEATURE_NORMAL_1ST)
     lilBool _UseBumpMap;

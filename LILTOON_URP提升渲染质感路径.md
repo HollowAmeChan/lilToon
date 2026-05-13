@@ -203,13 +203,13 @@ lilToon 同步内容：
 实现建议：
 
 - 继续兼容 URP `_ScreenSpaceOcclusionTexture`。
-- 新增可选 HTrace `_HTraceBufferAO` 来源，材质 UI 使用 `AO Source: Auto / URP / HTrace`。
+- 新增可选 HTrace `_HTraceBufferAO` 来源，材质 UI 使用 `AO RT: _ScreenSpaceOcclusionTexture (URP/HTrace compatible) / _HTraceBufferAO (HTrace direct)`。
 - 在 `lilSSAO` 或重命名后的 `lilScreenSpaceAO` 内加入 toon remap。
 - 可以和 Shadow 的 AO map 逻辑做视觉风格统一。
 
 待办：
 
-- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAORemap` 等属性先保留，Inspector 显示升级到 `Screen Space AO`。
+- 旧 `_UseSSAO` 已删除并替换为统一 `_UseScreenSpaceAO`；`_SSAOStrength`、`_SSAORemap` 等调参属性继续复用。
 - 如果 HTrace AO 在角色脸部颗粒感仍明显，再评估角色专用 toon AO remap 或 face/skin attenuation。
 - 输出独立 AO 贴图后由 lilToon / lilPBR 接收端统一采样，并继续保留材质侧 remap、contrast、mask。
 

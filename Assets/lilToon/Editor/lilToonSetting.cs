@@ -1203,7 +1203,7 @@ public class lilToonSetting : ScriptableObject
             logs.Add("[lilToon] LIL_FEATURE_BACKLIGHT : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_BACKLIGHT = true;
         }
-        if(!shaderSetting.LIL_FEATURE_SSAO && material.HasProperty("_UseSSAO") && material.GetFloat("_UseSSAO") != 0.0f)
+        if(!shaderSetting.LIL_FEATURE_SSAO && material.HasProperty("_UseScreenSpaceAO") && material.GetFloat("_UseScreenSpaceAO") != 0.0f)
         {
             logs.Add("[lilToon] LIL_FEATURE_SSAO : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_SSAO = true;
@@ -1357,7 +1357,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_RIMLIGHT = shaderSetting.LIL_FEATURE_RIMLIGHT || propname.Contains("_UseRim");
             shaderSetting.LIL_FEATURE_GLITTER = shaderSetting.LIL_FEATURE_GLITTER || propname.Contains("_UseGlitter");
             shaderSetting.LIL_FEATURE_BACKLIGHT = shaderSetting.LIL_FEATURE_BACKLIGHT || propname.Contains("_UseBacklight");
-            shaderSetting.LIL_FEATURE_SSAO = shaderSetting.LIL_FEATURE_SSAO || propname.Contains("_UseSSAO");
+            shaderSetting.LIL_FEATURE_SSAO = shaderSetting.LIL_FEATURE_SSAO || propname.Contains("_UseScreenSpaceAO");
             shaderSetting.LIL_FEATURE_SSS = shaderSetting.LIL_FEATURE_SSS || propname.Contains("_UseSSS");
             shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION || propname.Contains("_RimDirStrength");
             shaderSetting.LIL_FEATURE_PARALLAX = shaderSetting.LIL_FEATURE_PARALLAX || propname.Contains("_UseParallax");

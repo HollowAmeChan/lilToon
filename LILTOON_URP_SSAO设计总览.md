@@ -10,8 +10,8 @@
 项目已经引入 HTrace AO 与 HTrace SSGI 后，本文的“SSAO”需要按更宽的 `Screen Space AO` 理解：
 
 - HTrace AO 的 SSAO / GTAO / RTAO 都是 AO 生产端选择，lilToon 不应把算法名暴露成材质工作流。
-- 近期 P0 是把现有 `_UseSSAO` 接收链路升级为 `Screen Space AO Receiver`，同时支持 HTrace `_HTraceBufferAO` 与 URP `_ScreenSpaceOcclusionTexture`。
-- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 等属性先保留，用 Inspector 文案迁移到 `Screen Space AO`，避免旧材质丢参数。
+- 近期 P0 是把旧 `_UseSSAO` 接收链路替换为统一的 `_UseScreenSpaceAO` / `Screen Space AO Receiver`，同时支持 HTrace `_HTraceBufferAO` 与 URP `_ScreenSpaceOcclusionTexture`。
+- 旧 `_UseSSAO` 已删除；`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 等调参属性继续保留。
 - 原本计划的“自定义 toon SSAO Renderer Feature”降级为备用路线。只有在 HTrace AO 无法满足角色 toon 稳定性或风格控制时，再评估自研。
 - HTrace SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路；其 MSAA / camera color 警告应在 renderer pass 层修。
 
@@ -24,7 +24,7 @@ lilToon 目前不自己生成 AO，而是作为 URP / HTrace 屏幕空间 AO 的
 - URP Renderer Feature 生成 `_ScreenSpaceOcclusionTexture`。
 - HTrace AO 可生成 `_HTraceBufferAO`，并可作为更高质量的 AO 主来源。
 - lilToon forward shader 保留 `_SCREEN_SPACE_OCCLUSION` 变体。
-- 材质启用 `_UseSSAO` 或未来 `_UseScreenSpaceAO` 后，`lilSSAO(...)` / `lilScreenSpaceAO(...)` 采样当前选定的 AO。
+- 材质启用 `_UseScreenSpaceAO` 后，`lilScreenSpaceAO(...)` 采样当前选定的 AO。
 - 当前 lilToon 接收端已经有强度、direct/indirect 分离、Min/Max remap、contrast、mask。
 
 这条路线适合第一阶段，因为它不需要先改 lilToon 光照主结构，也能同时复用项目已有 URP SSAO 与 HTrace AO 设置。
@@ -272,7 +272,7 @@ HTrace 接入目标：
 
 - 优先读取 `_HTraceBufferAO`。
 - 保留 `_ScreenSpaceOcclusionTexture` 作为 URP SSAO 或 HTrace 注入兼容路径。
-- 材质 UI 使用 `AO Source: Auto / URP / HTrace`。
+- 材质 UI 使用 `AO RT: _ScreenSpaceOcclusionTexture (URP/HTrace compatible) / _HTraceBufferAO (HTrace direct)`。
 - 用材质接收端统一 remap、contrast、mask、color blend。
 - 不在材质中暴露 HTrace 的具体算法名，算法选择留在 Renderer Feature / preset。
 
