@@ -1,22 +1,35 @@
 # lilToon URP SSAO 设计总览
 
 > 本文合并旧的 `LILTOON_URP_SSAO_WORKFLOW.md` 与 `LILTOON_URP_SSAO_RESEARCH_NOTES.md`。
-> 目标是把 URP 管线顺序、lilToon 当前接收逻辑、已知问题、以及后续自定义 toon SSAO 方向放在一份中文文档里。
+> 目标是把 URP 管线顺序、lilToon 当前接收逻辑、已知问题、以及 HTrace 引入前后的 AO 路线变化放在一份中文文档里。
+
+---
+
+## 0. 2026-05-14 HTrace 引入后的定位更新
+
+项目已经引入 HTrace AO 与 HTrace SSGI 后，本文的“SSAO”需要按更宽的 `Screen Space AO` 理解：
+
+- HTrace AO 的 SSAO / GTAO / RTAO 都是 AO 生产端选择，lilToon 不应把算法名暴露成材质工作流。
+- 近期 P0 是把现有 `_UseSSAO` 接收链路升级为 `Screen Space AO Receiver`，同时支持 HTrace `_HTraceBufferAO` 与 URP `_ScreenSpaceOcclusionTexture`。
+- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 等属性先保留，用 Inspector 文案迁移到 `Screen Space AO`，避免旧材质丢参数。
+- 原本计划的“自定义 toon SSAO Renderer Feature”降级为备用路线。只有在 HTrace AO 无法满足角色 toon 稳定性或风格控制时，再评估自研。
+- HTrace SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路；其 MSAA / camera color 警告应在 renderer pass 层修。
 
 ---
 
 ## 1. 当前结论
 
-lilToon 目前不自己生成 SSAO，而是作为 URP SSAO 的材质接收端：
+lilToon 目前不自己生成 AO，而是作为 URP / HTrace 屏幕空间 AO 的材质接收端：
 
 - URP Renderer Feature 生成 `_ScreenSpaceOcclusionTexture`。
+- HTrace AO 可生成 `_HTraceBufferAO`，并可作为更高质量的 AO 主来源。
 - lilToon forward shader 保留 `_SCREEN_SPACE_OCCLUSION` 变体。
-- 材质启用 `_UseSSAO` 后，`lilSSAO(...)` 通过 `GetScreenSpaceAmbientOcclusion(...)` 采样 URP 的 AO。
+- 材质启用 `_UseSSAO` 或未来 `_UseScreenSpaceAO` 后，`lilSSAO(...)` / `lilScreenSpaceAO(...)` 采样当前选定的 AO。
 - 当前 lilToon 接收端已经有强度、direct/indirect 分离、Min/Max remap、contrast、mask。
 
-这条路线适合第一阶段，因为它不需要改 URP Renderer Feature，也能复用项目已有的 URP SSAO 设置。
+这条路线适合第一阶段，因为它不需要先改 lilToon 光照主结构，也能同时复用项目已有 URP SSAO 与 HTrace AO 设置。
 
-但 Frame Debugger 中看到的“整张 AO 贴图偏糊 / 仍有颗粒感”，主要来自 URP 自带 SSAO 的采样、降采样、噪声与 blur 链路。lilToon 接收端只能 remap / mask / 风格化，不能从根上消除 URP AO 贴图本身的噪声。
+如果 Frame Debugger 中看到“整张 AO 贴图偏糊 / 仍有颗粒感”，优先在 AO 生产端切换 HTrace GTAO/RTAO、采样质量、temporal denoise、depth/normal 输入；lilToon 接收端只负责 remap / mask / 风格化，不能从根上修复 AO 贴图本身的噪声。
 
 ---
 
@@ -251,9 +264,19 @@ indirectCol = lilBlendColor(indirectCol, _SSAOColor.rgb, aoBlend * _SSAOColor.a,
 
 ---
 
-## 7. 后续自定义 toon SSAO Renderer Feature
+## 7. HTrace AO 优先，自定义 toon AO 备用
 
-如果 URP 内置 SSAO 的颗粒感 / 模糊无法接受，下一阶段应做独立 Renderer Feature，而不是继续加大 blur。
+如果 URP 内置 SSAO 的颗粒感 / 模糊无法接受，当前优先使用 HTrace AO 的 GTAO / RTAO / SSAO 模式调参，而不是马上写新的 Renderer Feature。
+
+HTrace 接入目标：
+
+- 优先读取 `_HTraceBufferAO`。
+- 保留 `_ScreenSpaceOcclusionTexture` 作为 URP SSAO 或 HTrace 注入兼容路径。
+- 材质 UI 使用 `AO Source: Auto / URP / HTrace`。
+- 用材质接收端统一 remap、contrast、mask、color blend。
+- 不在材质中暴露 HTrace 的具体算法名，算法选择留在 Renderer Feature / preset。
+
+自定义 toon AO 只作为备用路线：
 
 目标：
 
@@ -279,7 +302,7 @@ Opaque forward objects sample _lilScreenSpaceOcclusionTexture
 Transparent / Post Processing
 ```
 
-也就是说，自定义 pass 应该像默认非 `After Opaque` 的 URP SSAO 一样，在 opaque forward 前完成。这样材质内部才能做 Main Color Blend / Shadow Color Blend。
+也就是说，如果未来真的写自定义 pass，它应该像默认非 `After Opaque` 的 URP SSAO 一样，在 opaque forward 前完成。这样材质内部才能做 Main Color Blend / Shadow Color Blend。
 
 ---
 
@@ -328,8 +351,8 @@ SSAO 没效果：
 1. `lilToonSetting` 是否启用 `LIL_FEATURE_SSAO`。
 2. 生成 shader Forward pass 是否有 `#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION`。
 3. 是否错误残留 `skip_variants _SCREEN_SPACE_OCCLUSION`。
-4. URP Renderer Data 是否启用 `Screen Space Ambient Occlusion`。
-5. Frame Debugger 中是否有 SSAO pass。
+4. URP Renderer Data 是否启用 `Screen Space Ambient Occlusion`，或 HTrace AO Renderer Feature 是否启用。
+5. Frame Debugger 中是否有 URP SSAO / HTrace AO pass，并且是否生成 `_ScreenSpaceOcclusionTexture` 或 `_HTraceBufferAO`。
 6. 当前 forward shader 是否走 `_SCREEN_SPACE_OCCLUSION` 变体。
 7. URP SSAO 是否开启 `After Opaque`；材质侧采样方案建议关闭它。
 8. Source 为 `Depth Normals` 时，lilToon 的 `DepthNormals` pass 是否正常写入，URP17 下还要注意 `_WRITE_RENDERING_LAYERS`。
@@ -344,10 +367,11 @@ SSAO 太糊：
 
 SSAO 有颗粒：
 
-1. 提高 Samples。
-2. 降低 Radius / Intensity / Contrast。
-3. 避免把 `_SSAOContrast` 拉太高。
-4. 接受 URP 内置 SSAO 的上限，进入自定义 Renderer Feature 阶段。
+1. URP SSAO 路径下提高 Samples。
+2. HTrace 路径下优先切 GTAO/RTAO preset、temporal denoise 与历史帧 rejection。
+3. 降低 Radius / Intensity / Contrast。
+4. 避免把 `_SSAOContrast` 拉太高。
+5. 只有 HTrace AO 也无法满足角色需求时，再进入自定义 Renderer Feature 阶段。
 
 ---
 

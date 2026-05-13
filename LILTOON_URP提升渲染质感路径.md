@@ -1,6 +1,26 @@
 # lilToon / lilPBR 双仓质感提升路线图
 
-> 目标：记录后续 lilToon 与 lilPBR 的分工。lilToon 保持角色 toon 主线；lilPBR 承接 PBR、场景材质和管线实验。SSAO、OIT、SSS 等通用能力以后尽量两边一起设计，先在最适合的仓库落地，再同步另一边的接口和材质侧表现。
+> 目标：记录后续 lilToon 与 lilPBR 的分工。lilToon 保持角色 toon 主线；lilPBR 承接 PBR、场景材质和管线实验。Screen Space AO、OIT、SSS 等通用能力以后尽量两边一起设计，先在最适合的仓库落地，再同步另一边的接口和材质侧表现。
+
+## 0. 2026-05-14 HTrace 引入后的新优先级
+
+HTrace AO 与 HTrace SSGI 已经进入实际工程。路线从“评估是否自研 AO/GI”改为“把 HTrace 运行时输出稳定接进 lilToon/lilPBR”：
+
+- **P0 改为 HTrace AO 接收端**：RTAO / SSAO / GTAO 已基本可运行，lilToon 先把现有 SSAO UI 升级成通用 `Screen Space AO`，shader 继续兼容 URP `_ScreenSpaceOcclusionTexture`，并新增 HTrace `_HTraceBufferAO` 来源。
+- **lilPBR 同步 P0**：lilPBR 需要同名 AO 参数，默认更偏 PBR：主要影响 indirect/cavity，direct AO 需要可控，避免场景直射面变脏。
+- **SSGI 暂列 P1 实验**：HTrace SSGI 是全屏间接光注入，不是材质贴图。当前警告大概率来自 MSAA camera color 被普通 `Texture2D` 采样，先在 HoUrp/HTrace pass 层解决。
+- **自研 Toon SSAO 后移**：除非 HTrace AO 在 toon 角色上无法调出稳定风格，否则近期不再优先写新的 AO Renderer Feature。
+
+建议新的推进顺序：
+
+```text
+HTrace AO -> lilToon Screen Space AO UI/采样
+HTrace AO -> lilPBR Screen Space AO 接收端
+AO 参数命名与旧材质迁移
+HTrace AO preset / debug matrix
+HTrace SSGI MSAA/RenderGraph 稳定性修复
+Fake SSS / OIT / Reflection 继续按原路线推进
+```
 
 ---
 
@@ -20,7 +40,7 @@
 
 | 优先级 | 功能 | 主落点 | 同步目标 | 是否需要改管线 |
 | --- | --- | --- | --- | --- |
-| P0 | SSAO Toon Remap / Receiver | lilToon 已有基础，lilPBR 补齐 | 两边统一 AO remap 参数和 URP 采样方式 | 否 |
+| P0 | HTrace / URP Screen Space AO Receiver | lilToon 已有 SSAO 基础，lilPBR 补齐 | 两边统一 AO remap 参数、`_HTraceBufferAO` / `_ScreenSpaceOcclusionTexture` 采样方式 | 否 |
 | P0 | Fake SSS / Thickness SSS | lilToon 已有基础，lilPBR 补齐 | 两边统一 thickness、rim、shadow 影响规则 | 否 |
 | P0 | Weighted OIT / 半透明排序改进 | 共享 URP Renderer Feature，先接 lilPBR/lilToon 透明材质 | 头发、玻璃、透明衣料排序更稳定 | 是 |
 | P0 | lilPBR Scene NPR-PBR 主线 | lilPBR | lilToon 只保留角色侧兼容和必要桥接 | 可先不改 |
@@ -36,7 +56,7 @@
 推荐推进顺序：
 
 ```text
-SSAO Toon Remap
+HTrace / URP Screen Space AO Receiver
 Fake SSS / Thickness SSS
 Weighted OIT
 lilPBR Scene NPR-PBR polish
@@ -103,7 +123,7 @@ Lighting Volume
 
 下一步 lilPBR 优先补：
 
-- SSAO Toon Remap / Receiver。
+- HTrace / URP Screen Space AO Receiver。
 - Fake SSS / Thickness SSS 对齐 lilToon 经验。
 - Weighted OIT 透明路径。
 - NPR-friendly reflection / shadow / AO remap。
@@ -111,7 +131,7 @@ Lighting Volume
 lilToon 同步内容：
 
 - 共享宏名、Renderer Feature 参数、材质开关命名。
-- 角色材质需要的 SSAO、SSS、OIT 接收逻辑。
+- 角色材质需要的 Screen Space AO、SSS、OIT 接收逻辑。
 - 不迁移 lilPBR 的完整 PBR 参数面板。
 
 风险：
@@ -162,12 +182,13 @@ lilToon 同步内容：
 
 ## 4. P1 功能
 
-### 4.1 SSAO Toon Remap
+### 4.1 HTrace / URP Screen Space AO Receiver
 
 当前方向：
 
 - 已经可以接 URP 的 Screen Space Ambient Occlusion。
-- 后续重点不是再写 SSAO，而是把 SSAO 调成 toon/NPR 风格。
+- HTrace AO 已提供 SSAO / GTAO / RTAO，并输出 `_HTraceBufferAO`。
+- 后续重点不是再写 SSAO，而是把屏幕空间 AO 调成 toon/NPR 风格，并让旧 URP SSAO 与 HTrace AO 共用接收端。
 
 可加参数：
 
@@ -181,14 +202,15 @@ lilToon 同步内容：
 
 实现建议：
 
-- 继续使用 URP `_ScreenSpaceOcclusionTexture`。
-- 在 `lilSSAO` 内加入 toon remap。
+- 继续兼容 URP `_ScreenSpaceOcclusionTexture`。
+- 新增可选 HTrace `_HTraceBufferAO` 来源，材质 UI 使用 `AO Source: Auto / URP / HTrace`。
+- 在 `lilSSAO` 或重命名后的 `lilScreenSpaceAO` 内加入 toon remap。
 - 可以和 Shadow 的 AO map 逻辑做视觉风格统一。
 
 待办：
 
-- URP 自带 SSAO 即使半径、强度、质量拉高，仍会在 toon 材质上暴露颗粒感；后续需要评估自定义 toon SSAO Renderer Feature，而不是继续只靠更强 blur。
-- 自定义方案方向：小半径、DepthNormals、blue noise / interleaved sampling、depth+normal bilateral filter、可选 temporal accumulation / history rejection。
+- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAORemap` 等属性先保留，Inspector 显示升级到 `Screen Space AO`。
+- 如果 HTrace AO 在角色脸部颗粒感仍明显，再评估角色专用 toon AO remap 或 face/skin attenuation。
 - 输出独立 AO 贴图后由 lilToon / lilPBR 接收端统一采样，并继续保留材质侧 remap、contrast、mask。
 
 ---
@@ -381,12 +403,12 @@ lilToon 同步内容：
 
 - Multi Light：提升 URP 附加光表现。
 - Fake SSS：让皮肤和薄物体更柔和。
-- SSAO Receiver：接 URP 内置 SSAO。
+- Screen Space AO Receiver：接 HTrace AO 与 URP 内置 SSAO。
 - lilPBR：已有独立 PBR 主线，适合作为场景和管线功能首发仓库。
 
 下一步最自然的路线：
 
-1. 在 lilPBR 补 SSAO Receiver / Toon Remap，并和 lilToon 的参数设计对齐。
+1. 在 lilPBR 补 HTrace / URP Screen Space AO Receiver，并和 lilToon 的参数设计对齐。
 2. 在 lilPBR 补 Fake SSS / Thickness SSS，把 lilToon 已走通的经验迁过去。
 3. 做共享 Weighted OIT Renderer Feature，再分别接 lilPBR 透明和 lilToon 透明/头发。
 4. lilPBR 做 Glass / Mirror 专用材质，lilToon 只同步必要透明接口。

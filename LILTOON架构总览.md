@@ -9,6 +9,24 @@
 - 刷新/重生成机制是什么，什么时候会自动改文件
 - 发布或提交时应该怎么组织
 
+## 0. 2026-05-14 HTrace AO / SSGI 相关更新
+
+工程现在已经引入 HTrace AO 与 HTrace SSGI，后续修改 lilToon 时要把旧 “SSAO” 心智模型升级成 “Screen Space AO 接收端”：
+
+- HTrace AO 的 SSAO / GTAO / RTAO 都应在 lilToon 里表现为同一类 AO 输入，不要把算法选择做进材质面板。
+- lilToon 现有 `_SCREEN_SPACE_OCCLUSION` / `_ScreenSpaceOcclusionTexture` 兼容路径继续保留。
+- 新增 HTrace 来源时，优先读取 `_HTraceBufferAO`，并通过 `AO Source: Auto / URP / HTrace` 控制。
+- 旧 `_UseSSAO`、`_SSAOStrength`、`_SSAODirectStrength`、`_SSAOIndirectStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 不要立刻删除；Inspector 可以显示为 `Screen Space AO`，底层先做兼容。
+- SSGI 当前不落在材质普通贴图层。它是 Renderer Feature 全屏间接光注入，lilToon 后续最多提供“接受 SSGI 强度/禁用 SSGI”这类轻量入口。
+
+SSGI 当前警告排查结论：
+
+```text
+A multisampled texture being bound to a non-multisampled sampler.
+```
+
+高度疑似 HTrace SSGI 把 MSAA camera color 绑定给普通 `TEXTURE2D g_HTraceColor`。临时规避是关闭 MSAA；正式修复应在 HTrace 读取 camera color 前做非 MSAA resolve/copy，而不是直接把 lilToon shader 改成 `Texture2DMS`。
+
 ## 1. 先记住最重要的结论
 
 - `Assets/lilToon/Shader/*.shader` 大多是生成产物，不适合长期直接手改。
