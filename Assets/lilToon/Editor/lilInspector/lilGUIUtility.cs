@@ -86,10 +86,27 @@ namespace lilToon
 
         private static void DrawShaderTypeWarn(Material material)
         {
-            if(!isMultiVariants && lilShaderUtils.IsOverlayShaderName(material.shader.name) && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpSelectOverlay")))
+            if(material.parent == null && !isMultiVariants && lilShaderUtils.IsOverlayShaderName(material.shader.name) && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpSelectOverlay")))
             {
                 material.shader = lts;
             }
+        }
+
+        private static void DrawMaterialVariantInfo(Material material)
+        {
+            if(material.parent == null) return;
+
+            EditorGUILayout.BeginVertical(boxOuter);
+            EditorGUILayout.LabelField("Material Variant", EditorStyles.boldLabel);
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.ObjectField("Parent", material.parent, typeof(Material), false);
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.HelpBox("This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant.", MessageType.Info);
+            if(lilEditorGUI.Button("Select Parent Material"))
+            {
+                Selection.activeObject = material.parent;
+            }
+            EditorGUILayout.EndVertical();
         }
 
         private static void SelectEditorMode()

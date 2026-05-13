@@ -25,7 +25,15 @@ namespace lilToon
 
         private void DrawRenderingModeSettings(Material material, string sTransparentMode, string[] sRenderingModeList, string[] sRenderingModeListLite)
         {
-            if(isMultiVariants)
+            if(material.parent != null)
+            {
+                EditorGUI.BeginDisabledGroup(true);
+                if(isLite)  lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeListLite);
+                else        lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeList);
+                EditorGUI.EndDisabledGroup();
+                EditorGUILayout.HelpBox("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders.", MessageType.Info);
+            }
+            else if(isMultiVariants)
             {
                 GUI.enabled = false;
                 EditorGUI.showMixedValue = true;

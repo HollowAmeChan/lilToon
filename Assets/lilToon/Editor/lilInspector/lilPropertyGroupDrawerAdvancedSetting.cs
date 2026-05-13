@@ -26,7 +26,18 @@ namespace lilToon
                 EditorGUILayout.BeginVertical(boxOuter);
                 if(isShowRenderMode)
                 {
-                    if(isOutl != EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl, customToggleFont))
+                    if(material.parent != null)
+                    {
+                        EditorGUI.BeginDisabledGroup(true);
+                        EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl, customToggleFont);
+                        EditorGUI.EndDisabledGroup();
+                        EditorGUILayout.HelpBox("Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline.", MessageType.Info);
+                        if(lilEditorGUI.Button("Select Parent Material"))
+                        {
+                            Selection.activeObject = material.parent;
+                        }
+                    }
+                    else if(isOutl != EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl, customToggleFont))
                     {
                         isOutl = !isOutl;
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);

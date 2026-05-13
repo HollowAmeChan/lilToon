@@ -17,6 +17,7 @@ namespace lilToon
     {
         internal static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess, bool ismulti)
         {
+            if(material == null || material.parent != null) return;
             Undo.RecordObject(material, null);
             int renderQueue = GetTrueRenderQueue(material);
             RenderingMode rend = renderingMode;

@@ -94,6 +94,7 @@ namespace lilToon
             // Editor Mode
             SelectEditorMode();
             DrawShaderTypeWarn(material);
+            DrawMaterialVariantInfo(material);
             EditorGUILayout.Space();
 
             //------------------------------------------------------------------------------------------------------------------------------
