@@ -1014,7 +1014,7 @@ namespace lilToon
 
             public static MultiCompileOptions FromShaderText(string shaderText)
             {
-                string mergedText = shaderText + "\n" + shaderSettingText;
+                string mergedText = ExpandShaderSettingPlaceholders(shaderText);
                 return new MultiCompileOptions
                 {
                     skipLightmaps =
@@ -1030,8 +1030,7 @@ namespace lilToon
                     skipProbeVolumes =
                         mergedText.Contains(SKIP_VARIANTS_PROBEVOLUMES),
                     skipAmbientOcclusion =
-                        (!mergedText.Contains("#define LIL_FEATURE_SSAO") && mergedText.Contains(SKIP_VARIANTS_AO)) ||
-                        mergedText.Contains("skip_variants _SCREEN_SPACE_OCCLUSION"),
+                        HasAmbientOcclusionSkip(mergedText),
                     skipReflections =
                         mergedText.Contains(SKIP_VARIANTS_REFLECTIONS) ||
                         mergedText.Contains("skip_variants _REFLECTION_PROBE_BLENDING"),
@@ -1041,6 +1040,33 @@ namespace lilToon
                         (!useOutlineShadow && mergedText.Contains(SKIP_VARIANTS_OUTLINE_SHADOWS)) ||
                         Regex.IsMatch(mergedText, @"#pragma\s+skip_variants[^\r\n]*\b_MAIN_LIGHT_SHADOWS\b")
                 };
+            }
+
+            private static string ExpandShaderSettingPlaceholders(string shaderText)
+            {
+                return shaderText
+                    .Replace(LIL_SHADER_SETTING, shaderSettingText)
+                    .Replace(LIL_SHADER_SETTING_MULTI, shaderSettingMultiText);
+            }
+
+            private static bool HasAmbientOcclusionSkip(string shaderText)
+            {
+                int markerIndex = shaderText.IndexOf(SKIP_VARIANTS_AO, StringComparison.Ordinal);
+                if(markerIndex >= 0 && !IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_SSAO", markerIndex)) return true;
+
+                foreach(Match match in Regex.Matches(shaderText, @"#pragma\s+skip_variants[^\r\n]*\b_SCREEN_SPACE_OCCLUSION\b"))
+                {
+                    if(!IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_SSAO", match.Index)) return true;
+                }
+
+                return false;
+            }
+
+            private static bool IsFeatureDefinedBefore(string shaderText, string featureName, int index)
+            {
+                if(index <= 0) return false;
+                string before = shaderText.Substring(0, index);
+                return Regex.IsMatch(before, @"#define\s+" + Regex.Escape(featureName) + @"\b");
             }
         }
 

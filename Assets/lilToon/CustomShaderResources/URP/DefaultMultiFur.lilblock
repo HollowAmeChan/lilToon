@@ -32,6 +32,8 @@
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD
 
+            #define LIL_FEATURE_SSAO
+
             #pragma lil_skip_variants_shadows
             #pragma lil_skip_variants_decals
             #pragma lil_skip_variants_addlightshadows
