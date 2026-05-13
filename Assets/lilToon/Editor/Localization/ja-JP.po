@@ -392,6 +392,9 @@ msgstr "Back (前面のみ描画)"
 msgid "sFlipBackfaceNormal"
 msgstr "裏面の法線を反転"
 
+msgid "sHTraceSSGIBackfaceNormalFix"
+msgstr "HTrace SSGI Backface Normal Fix"
+
 msgid "sShiftBackfaceUV"
 msgstr "裏面のUVをずらす"
 

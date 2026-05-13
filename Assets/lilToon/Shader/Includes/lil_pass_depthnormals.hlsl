@@ -77,7 +77,8 @@ void frag(
 
     #if LIL_SRP_VERSION_GREATER_EQUAL(10, 1)
         float3 normalDirection = normalize(input.normalWS);
-        normalDirection = fd.facing < (_FlipNormal-1.0) ? -normalDirection : normalDirection;
+        float flipNormalForDepthNormals = _HTraceSSGIBackfaceNormalFix > 0.5 ? 0.0 : _FlipNormal;
+        normalDirection = fd.facing < (flipNormalForDepthNormals-1.0) ? -normalDirection : normalDirection;
         normalDirection = normalize(normalDirection);
         #if !(LIL_SRP_VERSION_GREATER_EQUAL(12, 1)) || defined(_GBUFFER_NORMALS_OCT)
             outNormalWS = float4(PackNormalOctRectEncode(normalDirection), 0.0, 0.0);

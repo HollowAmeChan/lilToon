@@ -392,6 +392,9 @@ msgstr "Back"
 msgid "sFlipBackfaceNormal"
 msgstr "뒷면의 법선을 반전"
 
+msgid "sHTraceSSGIBackfaceNormalFix"
+msgstr "HTrace SSGI Backface Normal Fix"
+
 msgid "sShiftBackfaceUV"
 msgstr "뒷면의 UV를 드티다"
 

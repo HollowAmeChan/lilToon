@@ -25,6 +25,7 @@ namespace lilToon
         private readonly lilMaterialProperty preOutType             = new lilMaterialProperty("_PreOutType", PropertyBlock.Base);
         private readonly lilMaterialProperty preCutoff              = new lilMaterialProperty("_PreCutoff", PropertyBlock.Base);
         private readonly lilMaterialProperty flipNormal             = new lilMaterialProperty("_FlipNormal", PropertyBlock.Base);
+        private readonly lilMaterialProperty htraceSSGIBackfaceNormalFix = new lilMaterialProperty("_HTraceSSGIBackfaceNormalFix", PropertyBlock.Base);
         private readonly lilMaterialProperty backfaceForceShadow    = new lilMaterialProperty("_BackfaceForceShadow", PropertyBlock.Base);
         private readonly lilMaterialProperty backfaceColor          = new lilMaterialProperty("_BackfaceColor", PropertyBlock.Base);
         private readonly lilMaterialProperty aaStrength             = new lilMaterialProperty("_AAStrength", PropertyBlock.Base);
@@ -659,6 +660,7 @@ namespace lilToon
                 preOutType,
                 preCutoff,
                 flipNormal,
+                htraceSSGIBackfaceNormalFix,
                 backfaceForceShadow,
                 backfaceColor,
                 aaStrength,

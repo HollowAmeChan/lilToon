@@ -282,6 +282,7 @@ float   _Cutoff;
 #endif
 float   _SubpassCutoff;
 float   _FlipNormal;
+float   _HTraceSSGIBackfaceNormalFix;
 float   _ShiftBackfaceUV;
 float   _VertexLightStrength;
 float   _LightMinLimit;

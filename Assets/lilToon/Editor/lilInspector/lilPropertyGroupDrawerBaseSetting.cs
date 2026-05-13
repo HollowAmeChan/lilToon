@@ -139,6 +139,7 @@ namespace lilToon
                         if(cull.floatValue <= 1.0f || transparentModeBuf == TransparentMode.TwoPass && preCull.floatValue <= 1.0f)
                         {
                             LocalizedProperty(flipNormal);
+                            if(htraceSSGIBackfaceNormalFix.p != null) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                             LocalizedProperty(backfaceForceShadow);
                             if(!isLite)
                             {

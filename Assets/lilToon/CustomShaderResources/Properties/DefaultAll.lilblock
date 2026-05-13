@@ -17,6 +17,7 @@
                         _Cutoff                     ("sCutoff", Range(-0.001,1.001)) = 0.5
                         _SubpassCutoff              ("sSubpassCutoff", Range(0,1)) = 0.5
         [lilToggle]     _FlipNormal                 ("sFlipBackfaceNormal", Int) = 0
+        [lilToggle]     _HTraceSSGIBackfaceNormalFix ("sHTraceSSGIBackfaceNormalFix", Int) = 1
         [lilToggle]     _ShiftBackfaceUV            ("sShiftBackfaceUV", Int) = 0
                         _BackfaceForceShadow        ("sBackfaceForceShadow", Range(0,1)) = 0
         [lilHDR]        _BackfaceColor              ("sColor", Color) = (0,0,0,0)

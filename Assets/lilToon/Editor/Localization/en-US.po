@@ -392,6 +392,9 @@ msgstr "Back"
 msgid "sFlipBackfaceNormal"
 msgstr "Flip Backface Normal"
 
+msgid "sHTraceSSGIBackfaceNormalFix"
+msgstr "HTrace SSGI Backface Normal Fix"
+
 msgid "sShiftBackfaceUV"
 msgstr "Shift Backface UV"
 

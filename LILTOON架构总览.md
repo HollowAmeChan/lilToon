@@ -18,6 +18,8 @@
 - 新增 HTrace 来源时，可在材质 UI 的 `AO RT` 中选择 `_ScreenSpaceOcclusionTexture (URP/HTrace compatible)` 或 `_HTraceBufferAO (HTrace direct)`。
 - 旧 `_UseSSAO` 已删除，统一使用 `_UseScreenSpaceAO`；强度、direct/indirect、remap、contrast、mask 仍沿用现有 `_SSAO*` 参数以减少改动面。
 - SSGI 当前不落在材质普通贴图层。它是 Renderer Feature 全屏间接光注入，lilToon 后续最多提供“接受 SSGI 强度/禁用 SSGI”这类轻量入口。
+- HTrace SSGI 依赖 diffuse / normal / depth / motion 等屏幕空间输入。URP Forward 下需要 lilToon/lilPBR 提供 `LightMode = "UniversalGBuffer"` 的 pass，至少写入 base color、normal、occlusion/metallic fallback。
+- lilToon 的 `_FlipNormal` 是 Forward 美术显示逻辑；HTrace SSGI 采样时不应默认把它当真实几何法线。新增 `_HTraceSSGIBackfaceNormalFix`，默认开启时会让 `UniversalGBuffer` 与 `DepthNormals` 忽略背面法线翻转，避免单面裙摆/头发片内侧异常发亮；Forward pass 仍保持原本显示效果。
 
 SSGI 当前警告排查结论：
 

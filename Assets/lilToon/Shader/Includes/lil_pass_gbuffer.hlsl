@@ -98,10 +98,12 @@ GBufferFragOutput frag(v2f input LIL_VFACE(facing))
             #endif
 
             fd.N = normalize(mul(normalmap, fd.TBN));
-            fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
+            float flipNormalForGBuffer = _HTraceSSGIBackfaceNormalFix > 0.5 ? 0.0 : _FlipNormal;
+            fd.N = fd.facing < (flipNormalForGBuffer-1.0) ? -fd.N : fd.N;
         #else
             fd.N = normalize(input.normalWS);
-            fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
+            float flipNormalForGBuffer = _HTraceSSGIBackfaceNormalFix > 0.5 ? 0.0 : _FlipNormal;
+            fd.N = fd.facing < (flipNormalForGBuffer-1.0) ? -fd.N : fd.N;
         #endif
     #endif
 

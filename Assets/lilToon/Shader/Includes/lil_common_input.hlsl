@@ -123,6 +123,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _Cutoff;
     float   _SubpassCutoff;
     float   _FlipNormal;
+    float   _HTraceSSGIBackfaceNormalFix;
     float   _ShiftBackfaceUV;
     float   _VertexLightStrength;
     float   _LightMinLimit;
@@ -389,6 +390,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _Cutoff;
     float   _SubpassCutoff;
     float   _FlipNormal;
+    float   _HTraceSSGIBackfaceNormalFix;
     float   _ShiftBackfaceUV;
     float   _VertexLightStrength;
     float   _LightMinLimit;

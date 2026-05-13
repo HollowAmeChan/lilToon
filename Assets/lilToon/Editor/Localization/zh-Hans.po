@@ -392,6 +392,9 @@ msgstr "Back (剔除背面)"
 msgid "sFlipBackfaceNormal"
 msgstr "翻转背面法线"
 
+msgid "sHTraceSSGIBackfaceNormalFix"
+msgstr "HTrace SSGI 背面法线修正"
+
 msgid "sShiftBackfaceUV"
 msgstr "移动背面 UV"
 
