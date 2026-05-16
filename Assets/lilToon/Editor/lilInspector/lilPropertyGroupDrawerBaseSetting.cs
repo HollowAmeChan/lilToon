@@ -139,7 +139,6 @@ namespace lilToon
                         if(cull.floatValue <= 1.0f || transparentModeBuf == TransparentMode.TwoPass && preCull.floatValue <= 1.0f)
                         {
                             LocalizedProperty(flipNormal);
-                            if(htraceSSGIBackfaceNormalFix.p != null) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                             LocalizedProperty(backfaceForceShadow);
                             if(!isLite)
                             {
@@ -506,6 +505,10 @@ namespace lilToon
                 EditorGUILayout.LabelField("Global Illumination / Ambient Occlusion", customToggleFont);
                 DrawMenuButton("GI / AO", PropertyBlock.GIAO);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
+                if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                {
+                    LocalizedProperty(htraceSSGIBackfaceNormalFix);
+                }
                 if(useScreenSpaceAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
                     LocalizedProperty(useScreenSpaceAO.p, "Screen Space AO", false);
