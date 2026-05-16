@@ -531,6 +531,26 @@ namespace lilToon
             }
         }
 
+        private void DrawHoAovSettings()
+        {
+            if(!ShouldDrawBlock(PropertyBlock.HoAov)) return;
+            edSet.isShowHoAovSettings = lilEditorGUI.Foldout("HoAOV", edSet.isShowHoAovSettings);
+            lilEditorGUI.DrawHelpButton("HoAOV");
+            if(edSet.isShowHoAovSettings)
+            {
+                EditorGUILayout.BeginVertical(boxOuter);
+                EditorGUILayout.LabelField("HoAOV", customToggleFont);
+                DrawMenuButton("HoAOV", PropertyBlock.HoAov);
+                EditorGUILayout.BeginVertical(boxInnerHalf);
+                if(hoAovCustom0To3Tex.p != null && hoAovCustomValues0.p != null)
+                {
+                    LocalizedPropertyTexture(new GUIContent("Custom 0-3", "Color RGBA x texture RGBA"), hoAovCustom0To3Tex, hoAovCustomValues0);
+                }
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndVertical();
+            }
+        }
+
         private void DrawSSAORemapGUI()
         {
             if(ssaoRemap.p == null) return;

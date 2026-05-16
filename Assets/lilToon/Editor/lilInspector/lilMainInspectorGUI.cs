@@ -32,6 +32,7 @@ namespace lilToon
                 // Lighting / GI
                 DrawLightingSettings();
                 DrawGIAOSettings();
+                DrawHoAovSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV
@@ -553,6 +554,7 @@ namespace lilToon
                 // Lighting / GI
                 DrawLightingSettings();
                 DrawGIAOSettings();
+                DrawHoAovSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV

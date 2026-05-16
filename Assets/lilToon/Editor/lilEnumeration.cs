@@ -76,6 +76,7 @@ namespace lilToon
         Stencil,
         Rendering,
         Tessellation,
+        HoAov,
         Other
     }
 

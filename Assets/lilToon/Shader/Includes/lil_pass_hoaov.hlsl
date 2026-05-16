@@ -70,6 +70,8 @@ float4 _HoAovCustomValues0;
 float4 _HoAovCustomValues1;
 float4 _HoAovCustomValues2;
 
+TEXTURE2D(_HoAovCustom0To3Tex);
+
 float lilHoAovHasBit(float value, float bitValue)
 {
     return step(0.5, fmod(floor(value / bitValue), 2.0));
@@ -105,6 +107,11 @@ float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
 #include "lil_common_frag.hlsl"
 
 #define sampler_MainTex lil_sampler_trilinear_repeat
+
+float4 lilHoAovSampleCustom0To3(float2 uv)
+{
+    return LIL_SAMPLE_2D(_HoAovCustom0To3Tex, sampler_MainTex, uv);
+}
 
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
 {
@@ -212,7 +219,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
         fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
         if(fd.col.a == 0) discard;
     #else
-        clip(-1.0);
+        fd.col.a = 1.0;
     #endif
 
     float maskEnabled = lilHoAovHasSystemChannel(1.0);
@@ -240,7 +247,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
         saturate(abs(_HoAovCurvature)) * curvatureEnabled,
         lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled,
         saturate(_HoAovUtility) * utilityEnabled);
-    output.custom0 = half4(lilHoAovApplyCustomWriteMask(_HoAovCustomValues0, 0.0));
+    output.custom0 = half4(_HoAovCustomValues0 * lilHoAovSampleCustom0To3(fd.uvMain));
     output.custom1 = half4(lilHoAovApplyCustomWriteMask(_HoAovCustomValues1, 4.0));
     output.custom2 = half4(lilHoAovApplyCustomWriteMask(_HoAovCustomValues2, 8.0));
     return output;

@@ -171,6 +171,8 @@ namespace lilToon
         private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty hoAovCustomValues0         = new lilMaterialProperty("_HoAovCustomValues0", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom0To3Tex         = new lilMaterialProperty("_HoAovCustom0To3Tex", true, PropertyBlock.HoAov);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -806,6 +808,8 @@ namespace lilToon
                 ssaoRemap,
                 ssaoContrast,
                 ssaoMask,
+                hoAovCustomValues0,
+                hoAovCustom0To3Tex,
 
                 useRimShade,
                 rimShadeColor,

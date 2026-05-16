@@ -37,6 +37,8 @@
         [lilVec2]       _SSAORemap                  ("AO Remap Min Max", Vector) = (0,1,0,0)
                         _SSAOContrast               ("AO Contrast", Range(0, 4)) = 1
         [NoScaleOffset] _SSAOMask                   ("AO Mask", 2D) = "white" {}
+                        _HoAovCustomValues0         ("HoAOV Custom 0-3", Color) = (0,0,0,0)
+        [NoScaleOffset] _HoAovCustom0To3Tex         ("HoAOV Custom 0-3", 2D) = "white" {}
                         _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10
                         _lilDirectionalLightStrength ("sDirectionalLightStrength", Range(0,1)) = 1
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)
