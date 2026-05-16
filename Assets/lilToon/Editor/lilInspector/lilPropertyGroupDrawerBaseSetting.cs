@@ -542,10 +542,10 @@ namespace lilToon
                 EditorGUILayout.LabelField("HoAOV", customToggleFont);
                 DrawMenuButton("HoAOV", PropertyBlock.HoAov);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(hoAovCustom0To3Tex.p != null && hoAovCustomValues0.p != null)
-                {
-                    LocalizedPropertyTexture(new GUIContent("Custom 0-3", "Color RGBA x texture RGBA"), hoAovCustom0To3Tex, hoAovCustomValues0);
-                }
+                if(hoAovCustom0Tex.p != null && hoAovCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 0", "Texture R x grayscale color"), hoAovCustom0Tex, hoAovCustom0Color);
+                if(hoAovCustom1Tex.p != null && hoAovCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), hoAovCustom1Tex, hoAovCustom1Color);
+                if(hoAovCustom2Tex.p != null && hoAovCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), hoAovCustom2Tex, hoAovCustom2Color);
+                if(hoAovCustom3Tex.p != null && hoAovCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), hoAovCustom3Tex, hoAovCustom3Color);
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
             }

@@ -171,8 +171,14 @@ namespace lilToon
         private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty hoAovCustomValues0         = new lilMaterialProperty("_HoAovCustomValues0", PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom0To3Tex         = new lilMaterialProperty("_HoAovCustom0To3Tex", true, PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom0Color          = new lilMaterialProperty("_HoAovCustom0Color", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom0Tex            = new lilMaterialProperty("_HoAovCustom0Tex", true, PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom1Color          = new lilMaterialProperty("_HoAovCustom1Color", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom1Tex            = new lilMaterialProperty("_HoAovCustom1Tex", true, PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom2Color          = new lilMaterialProperty("_HoAovCustom2Color", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom2Tex            = new lilMaterialProperty("_HoAovCustom2Tex", true, PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom3Color          = new lilMaterialProperty("_HoAovCustom3Color", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom3Tex            = new lilMaterialProperty("_HoAovCustom3Tex", true, PropertyBlock.HoAov);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -808,8 +814,14 @@ namespace lilToon
                 ssaoRemap,
                 ssaoContrast,
                 ssaoMask,
-                hoAovCustomValues0,
-                hoAovCustom0To3Tex,
+                hoAovCustom0Color,
+                hoAovCustom0Tex,
+                hoAovCustom1Color,
+                hoAovCustom1Tex,
+                hoAovCustom2Color,
+                hoAovCustom2Tex,
+                hoAovCustom3Color,
+                hoAovCustom3Tex,
 
                 useRimShade,
                 rimShadeColor,

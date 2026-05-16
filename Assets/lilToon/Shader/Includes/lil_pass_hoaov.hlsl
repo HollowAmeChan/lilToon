@@ -66,11 +66,17 @@ float _HoAovFlags;
 float _HoAovThickness;
 float _HoAovCurvature;
 float _HoAovUtility;
-float4 _HoAovCustomValues0;
+float4 _HoAovCustom0Color;
+float4 _HoAovCustom1Color;
+float4 _HoAovCustom2Color;
+float4 _HoAovCustom3Color;
 float4 _HoAovCustomValues1;
 float4 _HoAovCustomValues2;
 
-TEXTURE2D(_HoAovCustom0To3Tex);
+TEXTURE2D(_HoAovCustom0Tex);
+TEXTURE2D(_HoAovCustom1Tex);
+TEXTURE2D(_HoAovCustom2Tex);
+TEXTURE2D(_HoAovCustom3Tex);
 
 float lilHoAovHasBit(float value, float bitValue)
 {
@@ -110,7 +116,11 @@ float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
 
 float4 lilHoAovSampleCustom0To3(float2 uv)
 {
-    return LIL_SAMPLE_2D(_HoAovCustom0To3Tex, sampler_MainTex, uv);
+    return float4(
+        LIL_SAMPLE_2D(_HoAovCustom0Tex, sampler_MainTex, uv).r * _HoAovCustom0Color.r,
+        LIL_SAMPLE_2D(_HoAovCustom1Tex, sampler_MainTex, uv).r * _HoAovCustom1Color.r,
+        LIL_SAMPLE_2D(_HoAovCustom2Tex, sampler_MainTex, uv).r * _HoAovCustom2Color.r,
+        LIL_SAMPLE_2D(_HoAovCustom3Tex, sampler_MainTex, uv).r * _HoAovCustom3Color.r);
 }
 
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
@@ -247,7 +257,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
         saturate(abs(_HoAovCurvature)) * curvatureEnabled,
         lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled,
         saturate(_HoAovUtility) * utilityEnabled);
-    output.custom0 = half4(_HoAovCustomValues0 * lilHoAovSampleCustom0To3(fd.uvMain));
+    output.custom0 = half4(lilHoAovSampleCustom0To3(fd.uvMain));
     output.custom1 = half4(lilHoAovApplyCustomWriteMask(_HoAovCustomValues1, 4.0));
     output.custom2 = half4(lilHoAovApplyCustomWriteMask(_HoAovCustomValues2, 8.0));
     return output;
