@@ -179,6 +179,8 @@ namespace lilToon
         private readonly lilMaterialProperty hoAovCustom2Tex            = new lilMaterialProperty("_HoAovCustom2Tex", true, PropertyBlock.HoAov);
         private readonly lilMaterialProperty hoAovCustom3Color          = new lilMaterialProperty("_HoAovCustom3Color", PropertyBlock.HoAov);
         private readonly lilMaterialProperty hoAovCustom3Tex            = new lilMaterialProperty("_HoAovCustom3Tex", true, PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom4Color          = new lilMaterialProperty("_HoAovCustom4Color", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty hoAovCustom4Tex            = new lilMaterialProperty("_HoAovCustom4Tex", true, PropertyBlock.HoAov);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -822,6 +824,8 @@ namespace lilToon
                 hoAovCustom2Tex,
                 hoAovCustom3Color,
                 hoAovCustom3Tex,
+                hoAovCustom4Color,
+                hoAovCustom4Tex,
 
                 useRimShade,
                 rimShadeColor,
