@@ -70,13 +70,11 @@ float4 _HoAovCustom0Color;
 float4 _HoAovCustom1Color;
 float4 _HoAovCustom2Color;
 float4 _HoAovCustom3Color;
-float4 _HoAovCustom4Color;
 
 TEXTURE2D(_HoAovCustom0Tex);
 TEXTURE2D(_HoAovCustom1Tex);
 TEXTURE2D(_HoAovCustom2Tex);
 TEXTURE2D(_HoAovCustom3Tex);
-TEXTURE2D(_HoAovCustom4Tex);
 
 float lilHoAovHasBit(float value, float bitValue)
 {
@@ -121,15 +119,6 @@ float4 lilHoAovSampleCustom0To3(float2 uv)
         LIL_SAMPLE_2D(_HoAovCustom1Tex, sampler_MainTex, uv).r * _HoAovCustom1Color.r,
         LIL_SAMPLE_2D(_HoAovCustom2Tex, sampler_MainTex, uv).r * _HoAovCustom2Color.r,
         LIL_SAMPLE_2D(_HoAovCustom3Tex, sampler_MainTex, uv).r * _HoAovCustom3Color.r);
-}
-
-float4 lilHoAovSampleCustom4(float2 uv)
-{
-    return float4(
-        LIL_SAMPLE_2D(_HoAovCustom4Tex, sampler_MainTex, uv).r * _HoAovCustom4Color.r,
-        0.0,
-        0.0,
-        0.0);
 }
 
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
@@ -267,7 +256,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
         lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled,
         saturate(_HoAovUtility) * utilityEnabled);
     output.custom0 = half4(lilHoAovSampleCustom0To3(fd.uvMain));
-    output.custom1 = half4(lilHoAovSampleCustom4(fd.uvMain));
+    output.custom1 = half4(0.0, 0.0, 0.0, 0.0);
     output.custom2 = half4(0.0, 0.0, 0.0, 0.0);
     return output;
 }

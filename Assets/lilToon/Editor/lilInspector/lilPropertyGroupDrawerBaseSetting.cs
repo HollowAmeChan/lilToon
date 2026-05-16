@@ -546,7 +546,6 @@ namespace lilToon
                 if(hoAovCustom1Tex.p != null && hoAovCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), hoAovCustom1Tex, hoAovCustom1Color);
                 if(hoAovCustom2Tex.p != null && hoAovCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), hoAovCustom2Tex, hoAovCustom2Color);
                 if(hoAovCustom3Tex.p != null && hoAovCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), hoAovCustom3Tex, hoAovCustom3Color);
-                if(hoAovCustom4Tex.p != null && hoAovCustom4Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 4", "Texture R x grayscale color"), hoAovCustom4Tex, hoAovCustom4Color);
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
             }

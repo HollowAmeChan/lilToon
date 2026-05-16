@@ -28,8 +28,6 @@
         [NoScaleOffset] _HoAovCustom2Tex            ("HoAOV Custom 2", 2D) = "white" {}
                         _HoAovCustom3Color          ("HoAOV Custom 3 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoAovCustom3Tex            ("HoAOV Custom 3", 2D) = "white" {}
-                        _HoAovCustom4Color          ("HoAOV Custom 4 Color", Color) = (0,0,0,0)
-        [NoScaleOffset] _HoAovCustom4Tex            ("HoAOV Custom 4", 2D) = "white" {}
 
         //----------------------------------------------------------------------------------------------------------------------
         // Main
