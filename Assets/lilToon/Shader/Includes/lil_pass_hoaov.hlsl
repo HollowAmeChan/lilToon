@@ -221,11 +221,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     #if LIL_RENDER == 0
         fd.col.a = 1.0;
     #elif LIL_RENDER == 1
-        #if defined(LIL_FEATURE_DITHER)
-            if(!_UseDither)
-        #endif
-        fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
-        if(fd.col.a == 0) discard;
+        clip(fd.col.a - _Cutoff);
     #else
         fd.col.a = 1.0;
     #endif

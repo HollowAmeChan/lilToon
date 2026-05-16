@@ -352,6 +352,8 @@
             #pragma fragment frag
             #pragma target 4.5
             #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
