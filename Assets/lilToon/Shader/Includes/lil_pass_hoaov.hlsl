@@ -51,8 +51,8 @@ struct lilHoAovOutput
     half4 tangentNormal : SV_Target2;
     half4 surfaceData : SV_Target3;
     half4 custom0 : SV_Target4;
-    half4 custom1 : SV_Target5;
-    half4 custom2 : SV_Target6;
+    half4 objectCustom0 : SV_Target5;
+    half4 objectCustom1 : SV_Target6;
 };
 
 float _HoAovMaskWeight;
@@ -67,6 +67,7 @@ float _HoAovFlags;
 float _HoAovThickness;
 float _HoAovCurvature;
 float _HoAovUtility;
+float _HoAovObjectCustomMask;
 float4 _HoAovCustom0Color;
 float4 _HoAovCustom1Color;
 float4 _HoAovCustom2Color;
@@ -94,9 +95,7 @@ float lilHoAovEncodeScalar(float value)
 
 float lilHoAovGetObjectId()
 {
-    float3 objectPositionWS = mul(LIL_MATRIX_M, float4(0.0, 0.0, 0.0, 1.0)).xyz;
-    float objectSeed = dot(objectPositionWS, float3(0.13, 0.31, 0.73)) * 1000.0;
-    return lerp(objectSeed, _HoAovObjectId, step(0.5, abs(_HoAovObjectId)));
+    return _HoAovObjectId;
 }
 
 float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
@@ -111,6 +110,34 @@ float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
         values.y * lilHoAovHasBit(_HoAovCustomWriteMask, exp2(startBit + 1.0)),
         values.z * lilHoAovHasBit(_HoAovCustomWriteMask, exp2(startBit + 2.0)),
         values.w * lilHoAovHasBit(_HoAovCustomWriteMask, exp2(startBit + 3.0)));
+}
+
+float lilHoAovByteToFloat(uint value, uint shift)
+{
+    return (float)((value >> shift) & 255u);
+}
+
+float lilHoAovHasObjectCustomBit(uint mask, uint bitIndex)
+{
+    return (float)((mask >> bitIndex) & 1u);
+}
+
+float4 lilHoAovDecodeObjectCustom0(uint mask)
+{
+    return float4(
+        lilHoAovHasObjectCustomBit(mask, 0u),
+        lilHoAovHasObjectCustomBit(mask, 1u),
+        lilHoAovHasObjectCustomBit(mask, 2u),
+        lilHoAovHasObjectCustomBit(mask, 3u));
+}
+
+float4 lilHoAovDecodeObjectCustom1(uint mask)
+{
+    return float4(
+        lilHoAovHasObjectCustomBit(mask, 4u),
+        lilHoAovHasObjectCustomBit(mask, 5u),
+        lilHoAovHasObjectCustomBit(mask, 6u),
+        lilHoAovHasObjectCustomBit(mask, 7u));
 }
 
 #include "lil_common_vert.hlsl"
@@ -265,13 +292,19 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     float subjectValid = step(0.0001, subjectCoverage);
 
     float linearDepth = LIL_TO_LINEARDEPTH(input.positionCS.z, input.positionCS.xy);
+    uint rendererUserValue = unity_RendererUserValue;
+    bool hasRendererUserValue = rendererUserValue != 0u;
+    uint objectCustomMask = hasRendererUserValue ? (rendererUserValue & 255u) : (uint)round(saturate(_HoAovObjectCustomMask / 255.0) * 255.0);
+    float effectiveGroupId = hasRendererUserValue ? lilHoAovByteToFloat(rendererUserValue, 8u) : _HoAovGroupId;
+    float effectiveObjectId = hasRendererUserValue ? lilHoAovByteToFloat(rendererUserValue, 16u) : lilHoAovGetObjectId();
+    float effectiveFlags = hasRendererUserValue ? lilHoAovByteToFloat(rendererUserValue, 24u) : _HoAovFlags;
 
     lilHoAovOutput output;
     output.maskId = half4(
         subjectCoverage * maskEnabled,
-        lilHoAovEncodeScalar(_HoAovGroupId) * idEnabled * subjectValid,
-        lilHoAovEncodeScalar(lilHoAovGetObjectId()) * idEnabled * subjectValid,
-        lilHoAovEncodeScalar(_HoAovFlags) * flagsEnabled * subjectValid);
+        lilHoAovEncodeScalar(effectiveGroupId) * idEnabled * subjectValid,
+        lilHoAovEncodeScalar(effectiveObjectId) * idEnabled * subjectValid,
+        lilHoAovEncodeScalar(effectiveFlags) * flagsEnabled * subjectValid);
     output.normalDepth = half4((normalize(fd.N) * 0.5 + 0.5) * worldNormalEnabled * subjectValid, linearDepth * linearDepthEnabled * subjectValid);
     output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled * subjectValid, tangentNormalEnabled * subjectValid);
     output.surfaceData = half4(
@@ -280,8 +313,8 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
         lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled * subjectValid,
         saturate(_HoAovUtility) * utilityEnabled * subjectValid);
     output.custom0 = half4(lilHoAovResolveCustom0To3(fd.uvMain) * subjectValid);
-    output.custom1 = half4(0.0, 0.0, 0.0, 0.0);
-    output.custom2 = half4(0.0, 0.0, 0.0, 0.0);
+    output.objectCustom0 = half4(lilHoAovDecodeObjectCustom0(objectCustomMask) * subjectValid);
+    output.objectCustom1 = half4(lilHoAovDecodeObjectCustom1(objectCustomMask) * subjectValid);
     return output;
 }
 
