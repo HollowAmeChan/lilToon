@@ -59,6 +59,7 @@ float _HoAovMaskWeight;
 float _lilHoAovSystemChannelMask;
 float _HoAovSystemWriteMask;
 float _HoAovCustomWriteMask;
+float4 _HoAovCustomValues0;
 float _HoAovGroupId;
 float _HoAovObjectId;
 float _HoAovMaterialClass;
@@ -100,6 +101,11 @@ float lilHoAovGetObjectId()
 
 float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
 {
+    if (_HoAovCustomWriteMask < 0.5)
+    {
+        return values;
+    }
+
     return float4(
         values.x * lilHoAovHasBit(_HoAovCustomWriteMask, exp2(startBit)),
         values.y * lilHoAovHasBit(_HoAovCustomWriteMask, exp2(startBit + 1.0)),
@@ -119,6 +125,16 @@ float4 lilHoAovSampleCustom0To3(float2 uv)
         LIL_SAMPLE_2D(_HoAovCustom1Tex, sampler_MainTex, uv).r * _HoAovCustom1Color.r,
         LIL_SAMPLE_2D(_HoAovCustom2Tex, sampler_MainTex, uv).r * _HoAovCustom2Color.r,
         LIL_SAMPLE_2D(_HoAovCustom3Tex, sampler_MainTex, uv).r * _HoAovCustom3Color.r);
+}
+
+float4 lilHoAovResolveCustom0To3(float2 uv)
+{
+    if (_HoAovCustomWriteMask >= 0.5)
+    {
+        return lilHoAovApplyCustomWriteMask(_HoAovCustomValues0, 0.0);
+    }
+
+    return lilHoAovSampleCustom0To3(uv);
 }
 
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
@@ -221,7 +237,16 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     #if LIL_RENDER == 0
         fd.col.a = 1.0;
     #elif LIL_RENDER == 1
-        clip(fd.col.a - _Cutoff);
+        #if defined(LIL_FEATURE_DITHER)
+            if(_UseDither)
+            {
+                clip(fd.col.a - 0.5);
+            }
+            else
+        #endif
+        {
+            clip(fd.col.a - _Cutoff);
+        }
     #else
         fd.col.a = 1.0;
     #endif
@@ -229,29 +254,32 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     float maskEnabled = lilHoAovHasSystemChannel(1.0);
     float idEnabled = lilHoAovHasSystemChannel(2.0);
     float flagsEnabled = lilHoAovHasSystemChannel(4.0);
+    float linearDepthEnabled = lilHoAovHasSystemChannel(8.0);
     float worldNormalEnabled = lilHoAovHasSystemChannel(16.0);
     float tangentNormalEnabled = lilHoAovHasSystemChannel(64.0);
     float thicknessEnabled = lilHoAovHasSystemChannel(256.0);
     float curvatureEnabled = lilHoAovHasSystemChannel(512.0);
     float materialEnabled = lilHoAovHasSystemChannel(1024.0);
     float utilityEnabled = lilHoAovHasSystemChannel(2048.0);
+    float subjectCoverage = saturate(_HoAovMaskWeight);
+    float subjectValid = step(0.0001, subjectCoverage);
 
     float linearDepth = LIL_TO_LINEARDEPTH(input.positionCS.z, input.positionCS.xy);
 
     lilHoAovOutput output;
     output.maskId = half4(
-        saturate(_HoAovMaskWeight) * maskEnabled,
-        lilHoAovEncodeScalar(_HoAovGroupId) * idEnabled,
-        lilHoAovEncodeScalar(lilHoAovGetObjectId()) * idEnabled,
-        lilHoAovEncodeScalar(_HoAovFlags) * flagsEnabled);
-    output.normalDepth = half4((normalize(fd.N) * 0.5 + 0.5) * worldNormalEnabled, linearDepth);
-    output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled, tangentNormalEnabled);
+        subjectCoverage * maskEnabled,
+        lilHoAovEncodeScalar(_HoAovGroupId) * idEnabled * subjectValid,
+        lilHoAovEncodeScalar(lilHoAovGetObjectId()) * idEnabled * subjectValid,
+        lilHoAovEncodeScalar(_HoAovFlags) * flagsEnabled * subjectValid);
+    output.normalDepth = half4((normalize(fd.N) * 0.5 + 0.5) * worldNormalEnabled * subjectValid, linearDepth * linearDepthEnabled * subjectValid);
+    output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled * subjectValid, tangentNormalEnabled * subjectValid);
     output.surfaceData = half4(
-        saturate(_HoAovThickness) * thicknessEnabled,
-        saturate(abs(_HoAovCurvature)) * curvatureEnabled,
-        lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled,
-        saturate(_HoAovUtility) * utilityEnabled);
-    output.custom0 = half4(lilHoAovSampleCustom0To3(fd.uvMain));
+        saturate(_HoAovThickness) * thicknessEnabled * subjectValid,
+        saturate(abs(_HoAovCurvature)) * curvatureEnabled * subjectValid,
+        lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled * subjectValid,
+        saturate(_HoAovUtility) * utilityEnabled * subjectValid);
+    output.custom0 = half4(lilHoAovResolveCustom0To3(fd.uvMain) * subjectValid);
     output.custom1 = half4(0.0, 0.0, 0.0, 0.0);
     output.custom2 = half4(0.0, 0.0, 0.0, 0.0);
     return output;
