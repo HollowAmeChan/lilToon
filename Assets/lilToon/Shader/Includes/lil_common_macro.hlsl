@@ -1738,15 +1738,15 @@ float3 lilGetObjectPosition()
         #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
             #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
             #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord)
+            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord) * HoShadowCastAttenuation(i.positionWS)
         #elif defined(_MAIN_LIGHT_SHADOWS_CASCADE) && !defined(_MAIN_LIGHT_SHADOWS)
             #define LIL_SHADOW_COORDS(idx)
             #define LIL_TRANSFER_SHADOW(vi,uv,o)
-            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS))
+            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS)) * HoShadowCastAttenuation(i.positionWS)
         #else
             #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
             #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord)
+            #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord) * HoShadowCastAttenuation(i.positionWS)
         #endif
     #else
         #define LIL_SHADOW_COORDS(idx)
@@ -1821,8 +1821,8 @@ float3 lilGetObjectPosition()
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
                 {
-                    lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation * strength;
-                    lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * light.shadowAttenuation * strength * light.direction;
+                    lightColor += light.color.rgb * light.distanceAttenuation * strength;
+                    lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * strength * light.direction;
                 }
 
             #if defined(LIGHT_LOOP_END)
@@ -1843,8 +1843,8 @@ float3 lilGetObjectPosition()
                 #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
-                lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation * strength;
-                lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * light.shadowAttenuation * strength * light.direction;
+                lightColor += light.color.rgb * light.distanceAttenuation * strength;
+                lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * strength * light.direction;
             }
         #endif
     }
@@ -1923,6 +1923,9 @@ float3 lilGetObjectPosition()
 #endif
 
 #if defined(LIL_URP)
+    #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ShadowCast/Shaders/HoShadowCastSampling.hlsl"
+    #define LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(positionWS) HoShadowCastAttenuation(positionWS)
+
     void lilGetAdditionalLightHDR(float3 positionWS, float4 positionCS, inout float3 lightColor, inout float minShadow)
     {
         uint renderingLayers = lilGetRenderingLayer();
@@ -1944,8 +1947,7 @@ float3 lilGetObjectPosition()
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
                 {
-                    lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation;
-                    minShadow = min(minShadow, light.shadowAttenuation);
+                    lightColor += light.color.rgb * light.distanceAttenuation;
                 }
 
             #if defined(LIGHT_LOOP_END)
@@ -1967,8 +1969,7 @@ float3 lilGetObjectPosition()
                     if((light.layerMask & renderingLayers) != 0)
                 #endif
                 {
-                    lightColor += light.color.rgb * light.distanceAttenuation * light.shadowAttenuation;
-                    minShadow = min(minShadow, light.shadowAttenuation);
+                    lightColor += light.color.rgb * light.distanceAttenuation;
                 }
             }
         #endif
@@ -1979,10 +1980,12 @@ float3 lilGetObjectPosition()
             float3 lilAdditionalLightHDR = 0.0; \
             float lilAdditionalLightMinShadow = 1.0; \
             lilGetAdditionalLightHDR(input.positionWS, input.positionCS, lilAdditionalLightHDR, lilAdditionalLightMinShadow); \
+            lilAdditionalLightHDR *= LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(input.positionWS); \
             fd.col.rgb += fd.albedo * lilAdditionalLightHDR * _MultiLightIntensity; \
             fd.col.rgb *= lerp(1.0, lilAdditionalLightMinShadow, _MultiLightCastShadowStrength); \
         }
 #else
+    #define LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(positionWS) 1.0
     #define LIL_APPLY_ADDITIONAL_LIGHT_HDR(input,fd)
 #endif
 
@@ -2354,11 +2357,12 @@ struct lilLightData
 #if defined(LIL_USE_ADDITIONALLIGHT_PS)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
         o = lilGetAdditionalLights(i.positionWS, i.positionCS, LIL_ADDITIONAL_LIGHT_STRENGTH); \
+        o *= LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(i.positionWS); \
         o = lerp(o, lilGray(o), _MonochromeLighting); \
         o = lerp(o, 0.0, _AsUnlit)
 #elif defined(LIL_USE_ADDITIONALLIGHT_VS)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
-        o = i.vlf.rgb
+        o = i.vlf.rgb * LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(i.positionWS)
 #elif defined(LIL_USE_ADDITIONALLIGHT_MAIN)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
         o = 0
