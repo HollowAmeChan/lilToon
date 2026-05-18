@@ -8,6 +8,9 @@
   "changelogUrl": "https://lilxyzw.github.io/lilToon/#/en-us/other/changelog",
   "licensesUrl": "https://github.com/lilxyzw/lilToon/blob/master/Assets/lilToon/LICENSE",
   "license": "MIT",
+  "author": {
+    "name": "Hollow"
+  },
   "keywords": ["Toon", "Shader", "Material"],
   "url" : "https://github.com/lilxyzw/lilToon/releases/download/2.3.2/jp.lilxyzw.liltoon-2.3.2.zip?",
   "repo" : "https://lilxyzw.github.io/vpm-repos/vpm.json",
