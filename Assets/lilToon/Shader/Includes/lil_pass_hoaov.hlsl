@@ -93,6 +93,11 @@ float lilHoAovEncodeScalar(float value)
     return frac(abs(value) * 0.61803398875);
 }
 
+float lilHoAovEncodeByte(float value)
+{
+    return saturate(round(clamp(value, 0.0, 255.0)) / 255.0);
+}
+
 float lilHoAovGetObjectId()
 {
     return _HoAovObjectId;
@@ -302,9 +307,9 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     lilHoAovOutput output;
     output.maskId = half4(
         subjectCoverage * maskEnabled,
-        lilHoAovEncodeScalar(effectiveGroupId) * idEnabled * subjectValid,
-        lilHoAovEncodeScalar(effectiveObjectId) * idEnabled * subjectValid,
-        lilHoAovEncodeScalar(effectiveFlags) * flagsEnabled * subjectValid);
+        lilHoAovEncodeByte(effectiveGroupId) * idEnabled * subjectValid,
+        lilHoAovEncodeByte(effectiveObjectId) * idEnabled * subjectValid,
+        lilHoAovEncodeByte(effectiveFlags) * flagsEnabled * subjectValid);
     output.normalDepth = half4((normalize(fd.N) * 0.5 + 0.5) * worldNormalEnabled * subjectValid, linearDepth * linearDepthEnabled * subjectValid);
     output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled * subjectValid, tangentNormalEnabled * subjectValid);
     output.surfaceData = half4(
