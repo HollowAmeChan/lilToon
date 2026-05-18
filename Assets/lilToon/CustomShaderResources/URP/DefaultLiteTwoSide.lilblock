@@ -367,6 +367,52 @@
             ENDHLSL
         }
 
+        // Ho Character Capture
+        Pass
+        {
+            Name "HO_CHARACTER_CAPTURE"
+            Tags {"LightMode" = "HoCharacterCapture"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite On
+            ZTest LEqual
+            Blend One OneMinusSrcAlpha
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_hocharacter_capture.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
         // MotionVectors
         Pass
         {
