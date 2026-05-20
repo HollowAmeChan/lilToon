@@ -198,7 +198,8 @@ public class lilToonPreset : ScriptableObject
                                     GetLoc("sPresetCategoryNature"),
                                     GetLoc("sPresetCategoryInorganic"),
                                     GetLoc("sPresetCategoryEffect"),
-                                    GetLoc("sPresetCategoryOther") };
+                                    GetLoc("sPresetCategoryOther"),
+                                    "Ho Presets" };
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             var material = (Material)Selection.activeObject;
@@ -556,7 +557,8 @@ namespace lilToon
         Nature,
         Inorganic,
         Effect,
-        Other
+        Other,
+        Ho
     }
 }
 #endif

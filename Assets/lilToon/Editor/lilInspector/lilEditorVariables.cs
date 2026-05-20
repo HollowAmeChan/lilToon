@@ -102,7 +102,7 @@ namespace lilToon
             public bool isShowDefaultValueSetting       = false;
             public bool isShowVRChat                    = false;
             public bool isAlphaMaskModeAdvanced         = false;
-            public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Other+1]{false,false,false,false,false,false,false};
+            public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Ho+1]{false,false,false,false,false,false,false,false};
             public string searchKeyWord = "";
         }
 

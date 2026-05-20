@@ -174,14 +174,20 @@ namespace lilToon
 
         private static void ShowPresets()
         {
+            if(edSet.isShowCategorys == null || edSet.isShowCategorys.Length <= (int)lilPresetCategory.Ho)
+            {
+                Array.Resize(ref edSet.isShowCategorys, (int)lilPresetCategory.Ho+1);
+            }
+
             string[] sCategorys = { GetLoc("sPresetCategorySkin"),
                                     GetLoc("sPresetCategoryHair"),
                                     GetLoc("sPresetCategoryCloth"),
                                     GetLoc("sPresetCategoryNature"),
                                     GetLoc("sPresetCategoryInorganic"),
                                     GetLoc("sPresetCategoryEffect"),
-                                    GetLoc("sPresetCategoryOther") };
-            for(int i=0; i<(int)lilPresetCategory.Other+1; i++)
+                                    GetLoc("sPresetCategoryOther"),
+                                    "Ho Presets" };
+            for(int i=0; i<(int)lilPresetCategory.Ho+1; i++)
             {
                 edSet.isShowCategorys[i] = lilEditorGUI.Foldout(sCategorys[i], edSet.isShowCategorys[i]);
                 if(edSet.isShowCategorys[i])

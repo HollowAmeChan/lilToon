@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330d117753a947947bf5a4f237b9a9f3, type: 3}
+  m_Name: Ho-Cast Crisp Toon
+  m_EditorClassIdentifier: 
+  bases:
+  - language: English
+    name: Cast Crisp Toon
+  - language: Japanese
+    name: Cast Crisp Toon
+  - language: zh-Hans
+    name: "\u6295\u5F71-\u786C\u8FB9\u5361\u901A"
+  category: 7
+  renderingMode: 
+  shader: {fileID: 0}
+  colors:
+  - name: _ShadowColor
+    value: {r: 0.6, g: 0.63, b: 0.72, a: 1}
+  - name: _Shadow2ndColor
+    value: {r: 0.38, g: 0.42, b: 0.54, a: 0.65}
+  - name: _Shadow3rdColor
+    value: {r: 0.22, g: 0.25, b: 0.34, a: 0.2}
+  - name: _ShadowBorderColor
+    value: {r: 0.95, g: 0.8, b: 0.64, a: 0.65}
+  vectors: []
+  floats:
+  - name: _UseScreenSpaceAO
+    value: 1
+  - name: _UseShadow
+    value: 1
+  - name: _MultiLightCastShadowStrength
+    value: 0.7
+  - name: _ShadowStrength
+    value: 0.92
+  - name: _ShadowStrengthMaskLOD
+    value: 0
+  - name: _ShadowBorderMaskLOD
+    value: 0
+  - name: _ShadowBlurMaskLOD
+    value: 0
+  - name: _ShadowPostAO
+    value: 0
+  - name: _ShadowNormalStrength
+    value: 1
+  - name: _ShadowBorder
+    value: 0.2
+  - name: _ShadowBlur
+    value: 0.025
+  - name: _ShadowReceive
+    value: 0.7
+  - name: _Shadow2ndNormalStrength
+    value: 1
+  - name: _Shadow2ndBorder
+    value: 0.43
+  - name: _Shadow2ndBlur
+    value: 0.04
+  - name: _Shadow2ndReceive
+    value: 0.48
+  - name: _Shadow3rdNormalStrength
+    value: 1
+  - name: _Shadow3rdBorder
+    value: 0.66
+  - name: _Shadow3rdBlur
+    value: 0.035
+  - name: _Shadow3rdReceive
+    value: 0.25
+  - name: _ShadowBorderRange
+    value: 0.015
+  - name: _ShadowMainStrength
+    value: 0.22
+  - name: _ShadowEnvStrength
+    value: 0.05
+  - name: _ShadowMaskType
+    value: 0
+  - name: _ShadowFlatBorder
+    value: 1
+  - name: _ShadowFlatBlur
+    value: 1
+  - name: _BacklightReceiveShadow
+    value: 1
+  - name: _SSSReceiveShadow
+    value: 1
+  - name: _RimShadowMask
+    value: 0.6
+  - name: _lilShadowCasterBias
+    value: 0.006
+  textures: []
+  renderQueue: -2
+  outline: -1
+  outlineMainTex: 0
+  tessellation: -1
