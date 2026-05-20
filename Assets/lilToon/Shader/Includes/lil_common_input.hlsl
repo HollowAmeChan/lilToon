@@ -116,6 +116,7 @@ CBUFFER_START(UnityPerMaterial)
     float4  _EmissionBlink;
     float4  _EmissionMap_ST;
     float4  _EmissionMap_ScrollRotate;
+    float4  _PlanarReflectionTint;
     float4  _OutlineColor;
     float4  _OutlineTex_ST;
     float4  _OutlineTex_ScrollRotate;
@@ -153,6 +154,11 @@ CBUFFER_START(UnityPerMaterial)
     float   _RimShadowMask;
     float   _lilShadowCasterBias;
     float   _lilOITEnabled;
+    float   _PlanarReflectionStrength;
+    float   _PlanarReflectionMinSmoothness;
+    float   _PlanarReflectionEdgeFade;
+    float   _PlanarReflectionFadeStart;
+    float   _PlanarReflectionFadeEnd;
     float   _OutlineWidth;
     float   _OutlineEnableLighting;
     float   _OutlineFixWidth;
@@ -160,6 +166,7 @@ CBUFFER_START(UnityPerMaterial)
     uint    _Cull;
     uint    _OutlineCull;
     uint    _EmissionMap_UVMode;
+    uint    _PlanarReflectionBlendMode;
     uint    _OutlineVertexR2Width;
     lilBool _Invisible;
     lilBool _UseShadow;
@@ -169,6 +176,8 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _MatCapZRotCancel;
     lilBool _UseRim;
     lilBool _UseEmission;
+    lilBool _UsePlanarReflection;
+    lilBool _PlanarReflectionFlipY;
     lilBool _OutlineDeleteMesh;
 #elif defined(LIL_FAKESHADOW)
     float4  _Color;
@@ -271,6 +280,7 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_FEATURE_SSS)
         float4  _SSSColor;
     #endif
+    float4  _PlanarReflectionTint;
     #if defined(LIL_MULTI_INPUTS_EMISSION)
         float4  _EmissionColor;
         float4  _EmissionBlink;
@@ -482,6 +492,11 @@ CBUFFER_START(UnityPerMaterial)
         float   _SSSNormalStrength;
         float   _SSSViewStrength;
     #endif
+    float   _PlanarReflectionStrength;
+    float   _PlanarReflectionMinSmoothness;
+    float   _PlanarReflectionEdgeFade;
+    float   _PlanarReflectionFadeStart;
+    float   _PlanarReflectionFadeEnd;
     #if defined(LIL_MULTI_INPUTS_NORMAL)
         float   _BumpScale;
     #endif
@@ -708,6 +723,7 @@ CBUFFER_START(UnityPerMaterial)
         uint    _ShadowColorType;
         uint    _ShadowMaskType;
     #endif
+    uint    _PlanarReflectionBlendMode;
     #if defined(LIL_MULTI_INPUTS_NORMAL_2ND)
         uint    _Bump2ndMap_UVMode;
     #endif
@@ -786,6 +802,8 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_FEATURE_SSAO)
         lilBool _UseScreenSpaceAO;
     #endif
+    lilBool _UsePlanarReflection;
+    lilBool _PlanarReflectionFlipY;
     #if defined(LIL_MULTI_INPUTS_ANISOTROPY)
         lilBool _Anisotropy2Reflection;
         lilBool _Anisotropy2MatCap;
@@ -892,6 +910,7 @@ TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_SSAOMask);
 TEXTURE2D(_HTraceBufferAO);
+TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);
 TEXTURE2D(_SSSThicknessMap);
@@ -935,6 +954,9 @@ SAMPLER(sampler_EmissionMap);
 SAMPLER(sampler_Emission2ndMap);
 SAMPLER(sampler_AudioLinkMask);
 SAMPLER(sampler_OutlineTex);
+
+float4x4 _LILPBRPlanarReflectionTextureMatrix;
+float4 _LILPBRPlanarReflectionParams;
 
 // AudioLink
 #if defined(LIL_FEATURE_AUDIOLINK_PACKAGE)

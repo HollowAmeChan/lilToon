@@ -623,6 +623,12 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
+    // Planar Reflection
+    #ifndef LIL_PASS_FORWARDADD
+        OVERRIDE_PLANAR_REFLECTION
+    #endif
+
+    //------------------------------------------------------------------------------------------------------------------------------
     // Fix Color
     LIL_HDRP_DEEXPOSURE(fd.col);
 

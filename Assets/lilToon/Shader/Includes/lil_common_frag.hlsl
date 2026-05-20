@@ -2165,6 +2165,46 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
+// Planar Reflection
+#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_PASS_FORWARD_LITE_INCLUDED))
+void lilPlanarReflection(inout lilFragData fd)
+{
+    if(_UsePlanarReflection != 0 && _PlanarReflectionStrength > 0.0 && _LILPBRPlanarReflectionParams.x > 0.5)
+    {
+        float smoothnessFade = saturate((fd.smoothness - _PlanarReflectionMinSmoothness) / max(1.0 - _PlanarReflectionMinSmoothness, 0.0001));
+        if(smoothnessFade > 0.0)
+        {
+            float2 planarUV = GetNormalizedScreenSpaceUV(fd.positionCS);
+            if(_PlanarReflectionFlipY != 0) planarUV.y = 1.0 - planarUV.y;
+            if(all(planarUV >= 0.0) && all(planarUV <= 1.0))
+            {
+                float planarEdge = min(min(planarUV.x, 1.0 - planarUV.x), min(planarUV.y, 1.0 - planarUV.y));
+                float edgeFade = saturate(planarEdge * _PlanarReflectionEdgeFade);
+                float distanceFade = 1.0;
+                if(_PlanarReflectionFadeEnd > _PlanarReflectionFadeStart)
+                {
+                    float viewDistance = distance(_WorldSpaceCameraPos.xyz, fd.positionWS);
+                    distanceFade = 1.0 - smoothstep(_PlanarReflectionFadeStart, _PlanarReflectionFadeEnd, viewDistance);
+                }
+                float planarWeight = saturate(_PlanarReflectionStrength * smoothnessFade * edgeFade * distanceFade * _PlanarReflectionTint.a);
+                float3 planarColor = LIL_SAMPLE_2D(_LILPBRPlanarReflectionTexture, lil_sampler_linear_clamp, planarUV).rgb * _PlanarReflectionTint.rgb;
+                fd.col.rgb = lilBlendColor(fd.col.rgb, planarColor, planarWeight, _PlanarReflectionBlendMode);
+            }
+        }
+    }
+}
+#endif
+
+#if !defined(OVERRIDE_PLANAR_REFLECTION)
+    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_PASS_FORWARD_LITE_INCLUDED))
+        #define OVERRIDE_PLANAR_REFLECTION \
+            lilPlanarReflection(fd);
+    #else
+        #define OVERRIDE_PLANAR_REFLECTION
+    #endif
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
 // Fog
 #if !defined(OVERRIDE_FOG)
     #if defined(LIL_GEM) && !defined(LIL_GEM_PRE)

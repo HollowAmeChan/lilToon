@@ -96,6 +96,9 @@ float4  _MainTex_ST;
     float4  _SSSColor;
 #endif
 
+// Planar Reflection
+float4  _PlanarReflectionTint;
+
 // Emission
 #if defined(LIL_FEATURE_EMISSION_1ST)
     float4  _EmissionColor;
@@ -382,6 +385,11 @@ float   _EnvRimBlur;
     float   _SSSNormalStrength;
     float   _SSSViewStrength;
 #endif
+float   _PlanarReflectionStrength;
+float   _PlanarReflectionMinSmoothness;
+float   _PlanarReflectionEdgeFade;
+float   _PlanarReflectionFadeStart;
+float   _PlanarReflectionFadeEnd;
 #if defined(LIL_FEATURE_NORMAL_1ST)
     float   _BumpScale;
 #endif
@@ -631,6 +639,7 @@ uint    _Cull;
     uint    _ShadowColorType;
     uint    _ShadowMaskType;
 #endif
+uint    _PlanarReflectionBlendMode;
 #if defined(LIL_FEATURE_NORMAL_2ND)
     uint    _Bump2ndMap_UVMode;
 #endif
@@ -724,6 +733,8 @@ lilBool _Invisible;
 #if defined(LIL_FEATURE_SSAO)
     lilBool _UseScreenSpaceAO;
 #endif
+lilBool _UsePlanarReflection;
+lilBool _PlanarReflectionFlipY;
 #if defined(LIL_FEATURE_NORMAL_1ST)
     lilBool _UseBumpMap;
 #endif

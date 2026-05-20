@@ -29,6 +29,16 @@
                         _HoAovCustom3Color          ("HoAOV Custom 3 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoAovCustom3Tex            ("HoAOV Custom 3", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
+        [lilToggle]     _UsePlanarReflection        ("Planar Reflection", Int) = 0
+                        _PlanarReflectionStrength   ("Strength", Range(0, 1)) = 1
+                        _PlanarReflectionMinSmoothness ("Min Smoothness", Range(0, 1)) = 0
+                        _PlanarReflectionEdgeFade   ("Edge Fade", Range(0, 32)) = 4
+                        _PlanarReflectionFadeStart  ("Fade Start", Float) = 0
+                        _PlanarReflectionFadeEnd    ("Fade End", Float) = 0
+                        _PlanarReflectionTint       ("Tint", Color) = (1,1,1,1)
+        [lilEnum]       _PlanarReflectionBlendMode  ("sBlendModes", Int) = 0
+        [lilToggle]     _PlanarReflectionFlipY      ("Flip Y", Int) = 0
+        [HideInInspector][NoScaleOffset] _LILPBRPlanarReflectionTexture ("Planar Reflection Texture", 2D) = "black" {}
 
         //----------------------------------------------------------------------------------------------------------------------
         // Main

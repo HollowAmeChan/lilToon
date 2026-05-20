@@ -77,6 +77,7 @@ namespace lilToon
         Rendering,
         Tessellation,
         HoAov,
+        PlanarReflection,
         Other
     }
 

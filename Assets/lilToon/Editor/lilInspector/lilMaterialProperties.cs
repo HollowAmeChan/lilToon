@@ -180,6 +180,15 @@ namespace lilToon
         private readonly lilMaterialProperty hoAovCustom3Color          = new lilMaterialProperty("_HoAovCustom3Color", PropertyBlock.HoAov);
         private readonly lilMaterialProperty hoAovCustom3Tex            = new lilMaterialProperty("_HoAovCustom3Tex", true, PropertyBlock.HoAov);
         private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty usePlanarReflection        = new lilMaterialProperty("_UsePlanarReflection", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionStrength   = new lilMaterialProperty("_PlanarReflectionStrength", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionMinSmoothness = new lilMaterialProperty("_PlanarReflectionMinSmoothness", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionEdgeFade   = new lilMaterialProperty("_PlanarReflectionEdgeFade", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionFadeStart  = new lilMaterialProperty("_PlanarReflectionFadeStart", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionFadeEnd    = new lilMaterialProperty("_PlanarReflectionFadeEnd", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionTint       = new lilMaterialProperty("_PlanarReflectionTint", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionBlendMode  = new lilMaterialProperty("_PlanarReflectionBlendMode", PropertyBlock.PlanarReflection);
+        private readonly lilMaterialProperty planarReflectionFlipY      = new lilMaterialProperty("_PlanarReflectionFlipY", PropertyBlock.PlanarReflection);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeColor          = new lilMaterialProperty("_RimShadeColor", PropertyBlock.RimShade);
@@ -824,6 +833,15 @@ namespace lilToon
                 hoAovCustom3Color,
                 hoAovCustom3Tex,
                 hoCharacterCaptureOpacity,
+                usePlanarReflection,
+                planarReflectionStrength,
+                planarReflectionMinSmoothness,
+                planarReflectionEdgeFade,
+                planarReflectionFadeStart,
+                planarReflectionFadeEnd,
+                planarReflectionTint,
+                planarReflectionBlendMode,
+                planarReflectionFlipY,
 
                 useRimShade,
                 rimShadeColor,

@@ -33,6 +33,7 @@ namespace lilToon
                 DrawLightingSettings();
                 DrawGIAOSettings();
                 DrawHoAovSettings();
+                DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV
@@ -555,6 +556,7 @@ namespace lilToon
                 DrawLightingSettings();
                 DrawGIAOSettings();
                 DrawHoAovSettings();
+                DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // UV
