@@ -2179,7 +2179,7 @@ void lilPlanarReflection(inout lilFragData fd)
             if(all(planarUV >= 0.0) && all(planarUV <= 1.0))
             {
                 float planarEdge = min(min(planarUV.x, 1.0 - planarUV.x), min(planarUV.y, 1.0 - planarUV.y));
-                float edgeFade = saturate(planarEdge * _PlanarReflectionEdgeFade);
+                float edgeFade = _PlanarReflectionEdgeFade > 0.0 ? saturate(planarEdge * _PlanarReflectionEdgeFade) : 1.0;
                 float distanceFade = 1.0;
                 if(_PlanarReflectionFadeEnd > _PlanarReflectionFadeStart)
                 {

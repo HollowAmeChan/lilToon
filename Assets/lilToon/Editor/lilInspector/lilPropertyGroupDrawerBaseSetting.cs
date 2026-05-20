@@ -555,25 +555,25 @@ namespace lilToon
         private void DrawPlanarReflectionSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.PlanarReflection)) return;
-            edSet.isShowPlanarReflectionSettings = lilEditorGUI.Foldout("Planar Reflection", edSet.isShowPlanarReflectionSettings);
+            edSet.isShowPlanarReflectionSettings = lilEditorGUI.Foldout("平面反射", edSet.isShowPlanarReflectionSettings);
             lilEditorGUI.DrawHelpButton("Planar Reflection");
             if(edSet.isShowPlanarReflectionSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("Planar Reflection", customToggleFont);
+                EditorGUILayout.LabelField("平面反射", customToggleFont);
                 DrawMenuButton("Planar Reflection", PropertyBlock.PlanarReflection);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, "Planar Reflection", false);
+                if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, "平面反射", false);
                 if(usePlanarReflection.p == null || usePlanarReflection.floatValue != 0.0f)
                 {
-                    if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, "Strength");
-                    if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, "Tint");
+                    if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, "强度");
+                    if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, "颜色");
                     if(planarReflectionBlendMode.p != null) LocalizedProperty(planarReflectionBlendMode);
-                    if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, "Min Smoothness");
-                    if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, "Edge Fade");
-                    if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, "Fade Start");
-                    if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, "Fade End");
-                    if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, "Flip Y");
+                    if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, "最小光滑度");
+                    if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, "边缘淡出");
+                    if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, "距离淡出开始");
+                    if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, "距离淡出结束");
+                    if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, "垂直翻转");
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
