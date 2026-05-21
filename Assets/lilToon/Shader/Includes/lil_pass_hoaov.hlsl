@@ -169,6 +169,25 @@ float4 lilHoAovResolveCustom0To3(float2 uv)
     return lilHoAovSampleCustom0To3(uv);
 }
 
+float lilHoAovResolveThickness(float2 uv)
+{
+    float thickness = saturate(_HoAovThickness);
+
+    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+        if(_UseSSS)
+        {
+            float sssThickness = 1.0;
+            #if defined(LIL_FEATURE_SSSThicknessMap)
+                sssThickness = LIL_SAMPLE_2D(_SSSThicknessMap, sampler_MainTex, uv).r;
+            #endif
+            if(_SSSThicknessInvert) sssThickness = 1.0 - sssThickness;
+            thickness = max(thickness, saturate(sssThickness * _SSSStrength));
+        }
+    #endif
+
+    return saturate(thickness);
+}
+
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
 {
     LIL_SETUP_INSTANCE_ID(input);
@@ -313,7 +332,7 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     output.normalDepth = half4((normalize(fd.N) * 0.5 + 0.5) * worldNormalEnabled * subjectValid, linearDepth * linearDepthEnabled * subjectValid);
     output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled * subjectValid, tangentNormalEnabled * subjectValid);
     output.surfaceData = half4(
-        saturate(_HoAovThickness) * thicknessEnabled * subjectValid,
+        lilHoAovResolveThickness(fd.uvMain) * thicknessEnabled * subjectValid,
         saturate(abs(_HoAovCurvature)) * curvatureEnabled * subjectValid,
         lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled * subjectValid,
         saturate(_HoAovUtility) * utilityEnabled * subjectValid);
