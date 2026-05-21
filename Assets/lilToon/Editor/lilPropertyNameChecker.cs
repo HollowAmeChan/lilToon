@@ -194,6 +194,10 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_UseSSS";
+            res = res || name == "_HoSSSProfileId";
+            res = res || name == "_HoSSSThicknessScale";
+            res = res || name == "_HoSSSTransmissionStrength";
+            res = res || name == "_HoSSSTransmissionRadius";
             res = res || name.Contains("_SSS");
             return res;
         }

@@ -200,6 +200,10 @@
         [lilHDR]        _SSSColor                   ("sColor", Color) = (1.0,0.42,0.32,1.0)
         [NoScaleOffset] _SSSThicknessMap            ("Thickness", 2D) = "white" {}
                         _SSSStrength                ("sStrength", Range(0, 2)) = 0.35
+                        _HoSSSProfileId             ("HoSSS Profile ID", Range(0, 255)) = 1
+                        _HoSSSThicknessScale        ("HoSSS Thickness Scale", Range(0, 4)) = 1
+                        _HoSSSTransmissionStrength  ("HoSSS Transmission Strength", Range(0, 2)) = 1
+                        _HoSSSTransmissionRadius    ("HoSSS Transmission Radius", Range(0, 2)) = 1
                         _SSSPower                   ("Power", Range(0.1, 8)) = 2.0
                         _SSSBorder                  ("sBorder", Range(0, 1)) = 0.35
                         _SSSBlur                    ("sBlur", Range(0, 1)) = 0.35

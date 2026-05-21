@@ -277,6 +277,10 @@ namespace lilToon
         private readonly lilMaterialProperty sssColor                   = new lilMaterialProperty("_SSSColor", PropertyBlock.SSS);
         private readonly lilMaterialProperty sssThicknessMap            = new lilMaterialProperty("_SSSThicknessMap", true, PropertyBlock.SSS);
         private readonly lilMaterialProperty sssStrength                = new lilMaterialProperty("_SSSStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty hoSSSProfileId             = new lilMaterialProperty("_HoSSSProfileId", PropertyBlock.SSS);
+        private readonly lilMaterialProperty hoSSSThicknessScale        = new lilMaterialProperty("_HoSSSThicknessScale", PropertyBlock.SSS);
+        private readonly lilMaterialProperty hoSSSTransmissionStrength  = new lilMaterialProperty("_HoSSSTransmissionStrength", PropertyBlock.SSS);
+        private readonly lilMaterialProperty hoSSSTransmissionRadius    = new lilMaterialProperty("_HoSSSTransmissionRadius", PropertyBlock.SSS);
         private readonly lilMaterialProperty sssPower                   = new lilMaterialProperty("_SSSPower", PropertyBlock.SSS);
         private readonly lilMaterialProperty sssBorder                  = new lilMaterialProperty("_SSSBorder", PropertyBlock.SSS);
         private readonly lilMaterialProperty sssBlur                    = new lilMaterialProperty("_SSSBlur", PropertyBlock.SSS);
@@ -930,6 +934,10 @@ namespace lilToon
                 sssColor,
                 sssThicknessMap,
                 sssStrength,
+                hoSSSProfileId,
+                hoSSSThicknessScale,
+                hoSSSTransmissionStrength,
+                hoSSSTransmissionRadius,
                 sssPower,
                 sssBorder,
                 sssBlur,

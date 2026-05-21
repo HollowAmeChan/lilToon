@@ -1003,6 +1003,10 @@ namespace lilToon
                             EditorGUI.indentLevel++;
                             LocalizedPropertyAlpha(sssColor);
                             LocalizedProperty(sssStrength);
+                            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, "HoSSS 配置 ID");
+                            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, "HoSSS 厚度倍率");
+                            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, "HoSSS 透射强度");
+                            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, "HoSSS 透射半径");
                             LocalizedProperty(sssReceiveShadow);
                             LocalizedProperty(sssThicknessInvert);
                             EditorGUI.indentLevel--;

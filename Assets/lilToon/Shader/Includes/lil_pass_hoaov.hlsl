@@ -63,6 +63,10 @@ float4 _HoAovCustomValues0;
 float _HoAovGroupId;
 float _HoAovObjectId;
 float _HoAovMaterialClass;
+float _HoSSSProfileId;
+float _HoSSSThicknessScale;
+float _HoSSSTransmissionStrength;
+float _HoSSSTransmissionRadius;
 float _HoAovFlags;
 float _HoAovThickness;
 float _HoAovCurvature;
@@ -101,6 +105,18 @@ float lilHoAovEncodeByte(float value)
 float lilHoAovGetObjectId()
 {
     return _HoAovObjectId;
+}
+
+float lilHoAovResolveMaterialProfile()
+{
+    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+        if(_UseSSS)
+        {
+            return lilHoAovEncodeByte(_HoSSSProfileId);
+        }
+    #endif
+
+    return lilHoAovEncodeScalar(_HoAovMaterialClass);
 }
 
 float4 lilHoAovApplyCustomWriteMask(float4 values, float startBit)
@@ -169,6 +185,20 @@ float4 lilHoAovResolveCustom0To3(float2 uv)
     return lilHoAovSampleCustom0To3(uv);
 }
 
+float4 lilHoAovResolveSssSource(float2 uv, float3 albedo)
+{
+    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+        if(_UseSSS)
+        {
+            float sourceWeight = saturate(_SSSColor.a);
+            float3 sourceColor = lerp(_SSSColor.rgb, _SSSColor.rgb * albedo, _SSSMainStrength);
+            return float4(sourceColor, sourceWeight);
+        }
+    #endif
+
+    return 0.0;
+}
+
 float lilHoAovResolveThickness(float2 uv)
 {
     float thickness = saturate(_HoAovThickness);
@@ -181,11 +211,42 @@ float lilHoAovResolveThickness(float2 uv)
                 sssThickness = LIL_SAMPLE_2D(_SSSThicknessMap, sampler_MainTex, uv).r;
             #endif
             if(_SSSThicknessInvert) sssThickness = 1.0 - sssThickness;
-            thickness = max(thickness, saturate(sssThickness * _SSSStrength));
+            sssThickness = pow(saturate(sssThickness), max(_SSSPower, 0.001));
+            thickness = max(thickness, saturate(sssThickness * _SSSStrength * max(_HoSSSThicknessScale, 0.0)));
         }
     #endif
 
     return saturate(thickness);
+}
+
+float lilHoAovResolveCurvatureBoost()
+{
+    float curvatureBoost = saturate(abs(_HoAovCurvature));
+
+    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+        if(_UseSSS)
+        {
+            float transmissionBoost = _HoSSSTransmissionStrength * (0.5 + _SSSBorder * 0.5 + _SSSViewStrength * 0.25);
+            curvatureBoost = max(curvatureBoost, saturate(transmissionBoost));
+        }
+    #endif
+
+    return curvatureBoost;
+}
+
+float lilHoAovResolveUtility()
+{
+    float utility = saturate(_HoAovUtility);
+
+    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+        if(_UseSSS)
+        {
+            float transmissionRadius = saturate(_HoSSSTransmissionRadius * 0.5);
+            utility = max(utility, transmissionRadius);
+        }
+    #endif
+
+    return utility;
 }
 
 lilHoAovOutput frag(v2f input LIL_VFACE(facing))
@@ -333,13 +394,104 @@ lilHoAovOutput frag(v2f input LIL_VFACE(facing))
     output.tangentNormal = half4((normalize(tangentNormal) * 0.5 + 0.5) * tangentNormalEnabled * subjectValid, tangentNormalEnabled * subjectValid);
     output.surfaceData = half4(
         lilHoAovResolveThickness(fd.uvMain) * thicknessEnabled * subjectValid,
-        saturate(abs(_HoAovCurvature)) * curvatureEnabled * subjectValid,
-        lilHoAovEncodeScalar(_HoAovMaterialClass) * materialEnabled * subjectValid,
-        saturate(_HoAovUtility) * utilityEnabled * subjectValid);
+        lilHoAovResolveCurvatureBoost() * curvatureEnabled * subjectValid,
+        lilHoAovResolveMaterialProfile() * materialEnabled * subjectValid,
+        lilHoAovResolveUtility() * utilityEnabled * subjectValid);
     output.custom0 = half4(lilHoAovResolveCustom0To3(fd.uvMain) * subjectValid);
     output.objectCustom0 = half4(lilHoAovDecodeObjectCustom0(objectCustomMask) * subjectValid);
     output.objectCustom1 = half4(lilHoAovDecodeObjectCustom1(objectCustomMask) * subjectValid);
     return output;
+}
+
+half4 fragSss(v2f input LIL_VFACE(facing)) : SV_Target
+{
+    LIL_SETUP_INSTANCE_ID(input);
+    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    lilFragData fd = lilInitFragData();
+
+    BEFORE_UNPACK_V2F
+    OVERRIDE_UNPACK_V2F
+    LIL_COPY_VFACE(fd.facing);
+
+    LIL_GET_POSITION_WS_DATA(input,fd);
+    #if defined(LIL_V2F_NORMAL_WS) && defined(LIL_V2F_TANGENT_WS)
+        LIL_GET_TBN_DATA(input,fd);
+        LIL_GET_PARALLAX_DATA(input,fd);
+    #endif
+
+    BEFORE_ANIMATE_MAIN_UV
+    OVERRIDE_ANIMATE_MAIN_UV
+    BEFORE_CALC_DDX_DDY
+    OVERRIDE_CALC_DDX_DDY
+
+    BEFORE_PARALLAX
+    #if defined(LIL_FEATURE_PARALLAX)
+        OVERRIDE_PARALLAX
+    #endif
+
+    BEFORE_MAIN
+    OVERRIDE_MAIN
+
+    BEFORE_MAIN2ND
+    #if defined(LIL_FEATURE_MAIN2ND)
+        float main2ndDissolveAlpha = 0.0;
+        float4 color2nd = 1.0;
+        OVERRIDE_MAIN2ND
+    #endif
+
+    BEFORE_MAIN3RD
+    #if defined(LIL_FEATURE_MAIN3RD)
+        float main3rdDissolveAlpha = 0.0;
+        float4 color3rd = 1.0;
+        OVERRIDE_MAIN3RD
+    #endif
+
+    BEFORE_ALPHAMASK
+    #if !defined(LIL_LITE) && defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
+        OVERRIDE_ALPHAMASK
+    #endif
+
+    BEFORE_DISSOLVE
+    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
+        float dissolveAlpha = 0.0;
+        if (fd.dissolveActive)
+        {
+            float priorAlpha = fd.col.a;
+            fd.col.a = 1.0f;
+            OVERRIDE_DISSOLVE
+            if (fd.dissolveInvert)
+            {
+                fd.col.a = 1.0f - fd.col.a;
+            }
+            fd.col.a *= priorAlpha;
+        }
+    #endif
+
+    BEFORE_DITHER
+    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
+        OVERRIDE_DITHER
+    #endif
+
+    #if LIL_RENDER == 0
+        fd.col.a = 1.0;
+    #elif LIL_RENDER == 1
+        #if defined(LIL_FEATURE_DITHER)
+            if(_UseDither)
+            {
+                clip(fd.col.a - 0.5);
+            }
+            else
+        #endif
+        {
+            clip(fd.col.a - _Cutoff);
+        }
+    #else
+        fd.col.a = 1.0;
+    #endif
+
+    float subjectCoverage = saturate(_HoAovMaskWeight);
+    float subjectValid = step(0.0001, subjectCoverage);
+    return half4(lilHoAovResolveSssSource(fd.uvMain, fd.albedo) * subjectValid);
 }
 
 #if defined(LIL_TESSELLATION)
