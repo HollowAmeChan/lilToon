@@ -10,77 +10,18 @@ namespace lilToon
     {
         public static lilRenderPipeline GetRP()
         {
-            // Render Pipeline
-            // BRP : null
-            // LWRP : LightweightPipeline.LightweightRenderPipelineAsset
-            // URP : Universal.UniversalRenderPipelineAsset
-            // HDRP : HighDefinition.HDRenderPipelineAsset
-            string renderPipelineName = "";
-            #if UNITY_2019_3_OR_NEWER
-                if(GraphicsSettings.currentRenderPipeline != null)
-                {
-                    renderPipelineName = GraphicsSettings.currentRenderPipeline.ToString();
-                }
-            #else
-                if(GraphicsSettings.renderPipelineAsset != null)
-                {
-                    renderPipelineName = GraphicsSettings.renderPipelineAsset.ToString();
-                }
-            #endif
-            if(renderPipelineName.Contains("Universal"))
-            {
-                return lilRenderPipeline.URP;
-            }
-            else if(renderPipelineName.Contains("Lightweight"))
-            {
-                return lilRenderPipeline.LWRP;
-            }
-            else if(renderPipelineName.Contains("HDRenderPipeline"))
-            {
-                return lilRenderPipeline.HDRP;
-            }
-            return lilRenderPipeline.BRP;
+            return lilRenderPipeline.URP;
         }
 
         public static PackageVersionInfos GetRPInfos()
         {
-            string renderPipelineName = "";
-            #if UNITY_2019_3_OR_NEWER
-                if(GraphicsSettings.currentRenderPipeline != null)
-                {
-                    renderPipelineName = GraphicsSettings.currentRenderPipeline.ToString();
-                }
-            #else
-                if(GraphicsSettings.renderPipelineAsset != null)
-                {
-                    renderPipelineName = GraphicsSettings.renderPipelineAsset.ToString();
-                }
-            #endif
-            if(renderPipelineName.Contains("Universal"))
-            {
-                return GetURPVersion();
-            }
-            else if(renderPipelineName.Contains("Lightweight"))
-            {
-                return GetLWRPVersion();
-            }
-            else if(renderPipelineName.Contains("HDRenderPipeline"))
-            {
-                return GetHDRPVersion();
-            }
-            return new PackageVersionInfos()
-            {
-                RP = lilRenderPipeline.BRP,
-                Major = 0,
-                Minor = 0,
-                Patch = 0
-            };
+            return GetURPVersion();
         }
 
         private static PackageVersionInfos GetURPVersion()
         {
             string path = AssetDatabase.GUIDToAssetPath("30648b8d550465f4bb77f1e1afd0b37d");
-            var package = JsonUtility.FromJson<PackageInfos>(File.ReadAllText(path));
+            var package = File.Exists(path) ? JsonUtility.FromJson<PackageInfos>(File.ReadAllText(path)) : new PackageInfos();
             string guid =
                 package.displayName.Contains("SLZ") ?
                 "753d1ac2429a21a44ac5f937cbbb409f" : // Core

@@ -219,31 +219,7 @@ namespace lilToon
             StringBuilder sb;
 
             version = lilRenderPipelineReader.GetRPInfos();
-
-            switch(version.RP)
-            {
-                case lilRenderPipeline.BRP:
-                    sb = ReadContainerFile(assetPath, "BRP", ctx, doOptimize);
-                    ReplaceMultiCompiles(ref sb, version, indent, false);
-                    RewriteForwardAdd(ref sb);
-                    RewriteForwardAddShadow(ref sb);
-                    break;
-                case lilRenderPipeline.LWRP:
-                    sb = ReadContainerFile(assetPath, "LWRP", ctx, doOptimize);
-                    ReplaceMultiCompiles(ref sb, version, indent, false);
-                    break;
-                case lilRenderPipeline.URP:
-                    sb = ReadContainerFile(assetPath, "URP", ctx, doOptimize);
-                    break;
-                case lilRenderPipeline.HDRP:
-                    sb = ReadContainerFile(assetPath, "HDRP", ctx, doOptimize);
-                    ReplaceMultiCompiles(ref sb, version, indent, false);
-                    break;
-                default:
-                    sb = ReadContainerFile(assetPath, "BRP", ctx, doOptimize);
-                    ReplaceMultiCompiles(ref sb, version, indent, false);
-                    break;
-            }
+            sb = ReadContainerFile(assetPath, "URP", ctx, doOptimize);
 
             ReadDataFile(ctx);
             ReplaceMultiCompiles(ref insertPassPre, version, indent, false);
