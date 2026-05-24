@@ -216,6 +216,16 @@ URP `Default.lilblock` 默认包含：
 4. 新增 `Lite` 和 `Standard` 两个明确 shader 族。
 5. Fur / Gem / Refraction / Tessellation 暂时独立保留，后续逐个评估。
 
+## 2026-05-24 后续执行顺序
+
+P5：先清 `BaseShaderResources/*.lilinternal` 中的 BRP / LWRP / HDRP 声明，确认生成入口只剩 URP。
+
+P6：做 URP pass profile。默认裁剪候选为 `UniversalGBuffer`、`MotionVectors`、`Universal2D`、`Meta`、`HoAOV`、`HoAOVSSS`、`HoCharacterCapture`。`DepthNormals` 是否保留取决于 SSAO / depth normal 依赖。
+
+P7：清 `lilShaderContainerImporter` 中老 URP / LWRP LightMode 兼容、ForwardAdd rewrite 和不再可达的多管线逻辑。
+
+P8：清 shared HLSL include 中的 `LIL_BRP` / `LIL_HDRP` / `LIL_LWRP` 条件分支。
+
 ## 度量指标
 
 每轮改动都记录：
@@ -228,4 +238,3 @@ URP `Default.lilblock` 默认包含：
 - 清 Library 后的 shader compile 耗时。
 - 构建耗时。
 - Player 包体 shader 数据大小。
-

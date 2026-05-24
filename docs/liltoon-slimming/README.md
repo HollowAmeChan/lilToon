@@ -37,3 +37,4 @@
 - 已删除 VRChat / ChilloutVR 构建集成、VRChat fallback inspector UI、fallback `_Ramp` / `_UdonForceSceneLighting` 残留，以及 AudioLink 的 editor / property / setting / HLSL / localization / notice 路径。
 - 已同步生成后的 `.shader` 文件内容，但这些文件当前有 `skip-worktree` 标记，默认不会显示在 `git status` 中。
 - 本轮已继续执行 P3 / P4：删除 VRC Light Volumes 和 LTCGI。
+- 下一步进入 P5 / P6：先清 `BaseShaderResources/*.lilinternal` 中的非 URP 声明，再做 URP pass profile 裁剪。

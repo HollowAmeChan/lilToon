@@ -10,8 +10,5 @@ Shader "Hidden/ltspass_lite_opaque"
         #define LIL_RENDER 0
     ENDHLSL
 
-    lilSubShaderBRP "DefaultLite"
-    lilSubShaderLWRP "DefaultLite"
     lilSubShaderURP "DefaultLite"
-    lilSubShaderHDRP "DefaultLite"
 }

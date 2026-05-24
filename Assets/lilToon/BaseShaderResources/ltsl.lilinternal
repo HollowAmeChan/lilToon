@@ -8,10 +8,7 @@ Shader "Hidden/lilToonLite"
 
     lilPassShaderName "Hidden/ltspass_lite_opaque"
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
-    lilSubShaderBRP "DefaultUsePass"
-    lilSubShaderLWRP "DefaultUsePass"
     lilSubShaderURP "DefaultUsePass"
-    lilSubShaderHDRP "DefaultUsePass"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

@@ -8,10 +8,7 @@ Shader "_lil/[Optional] lilToonFurOnlyCutout"
 
     lilPassShaderName "Hidden/lilToonFurCutout"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
-    lilSubShaderBRP "DefaultUsePassFurOnly"
-    lilSubShaderLWRP "DefaultUsePassFurOnly"
     lilSubShaderURP "DefaultUsePassFurOnly"
-    lilSubShaderHDRP "DefaultUsePassFurOnly"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

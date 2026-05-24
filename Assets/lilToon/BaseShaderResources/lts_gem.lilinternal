@@ -11,10 +11,7 @@ Shader "Hidden/lilToonGem"
     ENDHLSL
 
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Transparent-100"}
-    lilSubShaderBRP "DefaultGem"
-    lilSubShaderLWRP "DefaultGem"
     lilSubShaderURP "DefaultGem"
-    lilSubShaderHDRP "DefaultGem"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

@@ -10,8 +10,5 @@ Shader "Hidden/ltspass_transparent"
         #define LIL_RENDER 2
     ENDHLSL
 
-    lilSubShaderBRP "DefaultTwoSide"
-    lilSubShaderLWRP "Default"
     lilSubShaderURP "DefaultTwoSide"
-    lilSubShaderHDRP "DefaultTwoSide"
 }

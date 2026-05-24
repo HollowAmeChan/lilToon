@@ -11,10 +11,7 @@ Shader "Hidden/lilToonFurTwoPass"
     ENDHLSL
 
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "Transparent"}
-    lilSubShaderBRP "DefaultFurTwoPass"
-    lilSubShaderLWRP "DefaultFur"
     lilSubShaderURP "DefaultFurTwoPass"
-    lilSubShaderHDRP "DefaultFurTwoPass"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

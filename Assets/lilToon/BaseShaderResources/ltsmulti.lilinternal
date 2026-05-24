@@ -7,10 +7,7 @@ Shader "_lil/lilToonMulti"
     }
 
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
-    lilSubShaderBRP "DefaultMulti"
-    lilSubShaderLWRP "DefaultMulti"
     lilSubShaderURP "DefaultMulti"
-    lilSubShaderHDRP "DefaultMulti"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

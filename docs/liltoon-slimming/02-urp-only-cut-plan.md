@@ -17,6 +17,18 @@
 - `lilShaderContainerImporter.UnpackContainer()` 中移除 BRP / LWRP / HDRP switch 分支，只调用 `ReadContainerFile(assetPath, "URP", ...)`。
 - 若目标 URP 版本已固定，进一步删除 URP 7 / URP 8 / URP 9 的旧 LightMode 兼容判断，只保留目标版本需要的 LightMode。
 
+### 2026-05-24 P5 执行记录
+
+目标：先把 `BaseShaderResources/*.lilinternal` 的生成入口收口到 URP-only。
+
+执行项：
+
+- 删除 `lilSubShaderBRP` / `lilSubShaderLWRP` / `lilSubShaderHDRP` 声明行。
+- 保留 `lilSubShaderURP` 声明行和现有 shader 文件命名。
+- 暂不修改 `lilShaderContainerImporter` 的多管线分支；下一轮再清 importer 和 shared include 中的历史兼容。
+
+后续紧接 P6：对 URP `.lilblock` 做 pass profile 裁剪，优先评估 `UniversalGBuffer`、`MotionVectors`、`Universal2D`、`Meta`、`HoAOV`、`HoAOVSSS`、`HoCharacterCapture`。
+
 风险：
 
 - 当前生成器还承担 `ReplaceMultiCompiles`、LightMode 替换、SubShader tags、DOTS 变体拼接。不能简单绕过整个 importer。

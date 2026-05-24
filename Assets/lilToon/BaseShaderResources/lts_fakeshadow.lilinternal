@@ -6,10 +6,7 @@ Shader "_lil/[Optional] lilToonFakeShadow"
     }
 
     lilSubShaderTags {"RenderType" = "Transparent" "Queue" = "AlphaTest+55"}
-    lilSubShaderBRP "DefaultFakeShadow"
-    lilSubShaderLWRP "DefaultFakeShadow"
     lilSubShaderURP "DefaultFakeShadow"
-    lilSubShaderHDRP "DefaultFakeShadow"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

@@ -7,10 +7,7 @@ Shader "Hidden/lilToonMultiFur"
     }
 
     lilSubShaderTags {"RenderType" = "Transparent" "Queue" = "Transparent"}
-    lilSubShaderBRP "DefaultMultiFur"
-    lilSubShaderLWRP "DefaultMultiFur"
     lilSubShaderURP "DefaultMultiFur"
-    lilSubShaderHDRP "DefaultMultiFur"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

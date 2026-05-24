@@ -10,8 +10,5 @@ Shader "Hidden/ltspass_cutout"
         #define LIL_RENDER 1
     ENDHLSL
 
-    lilSubShaderBRP "Default"
-    lilSubShaderLWRP "Default"
     lilSubShaderURP "Default"
-    lilSubShaderHDRP "Default"
 }

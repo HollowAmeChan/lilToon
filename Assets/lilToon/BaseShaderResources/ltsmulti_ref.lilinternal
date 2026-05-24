@@ -7,10 +7,7 @@ Shader "Hidden/lilToonMultiRefraction"
     }
 
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Transparent-100"}
-    lilSubShaderBRP "DefaultMultiRefraction"
-    lilSubShaderLWRP "DefaultMultiRefraction"
     lilSubShaderURP "DefaultMultiRefraction"
-    lilSubShaderHDRP "DefaultMultiRefraction"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

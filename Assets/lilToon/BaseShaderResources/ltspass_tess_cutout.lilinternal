@@ -10,8 +10,5 @@ Shader "Hidden/ltspass_tess_cutout"
         #define LIL_RENDER 1
     ENDHLSL
 
-    lilSubShaderBRP "DefaultTessellation"
-    lilSubShaderLWRP "DefaultTessellation"
     lilSubShaderURP "DefaultTessellation"
-    lilSubShaderHDRP "DefaultTessellation"
 }
