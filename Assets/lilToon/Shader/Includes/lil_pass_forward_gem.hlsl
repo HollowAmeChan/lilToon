@@ -109,12 +109,6 @@
         LIL_GET_LIGHTING_DATA(input,fd);
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // UDIM Discard
-        #if defined(LIL_FEATURE_UDIMDISCARD)
-            OVERRIDE_UDIMDISCARD
-        #endif
-        
-        //------------------------------------------------------------------------------------------------------------------------------
         // View Direction
         #if defined(LIL_V2F_POSITION_WS)
             LIL_GET_POSITION_WS_DATA(input,fd);

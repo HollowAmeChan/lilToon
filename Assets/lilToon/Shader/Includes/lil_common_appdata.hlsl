@@ -34,19 +34,19 @@
 #endif
 */
 
-#if !defined(LIL_APP_PREVPOS) && (defined(LIL_REQUIRE_APP_TEXCOORD4) || defined(LIL_FEATURE_IDMASK) && !defined(LIL_LITE))
+#if !defined(LIL_APP_PREVPOS) && defined(LIL_REQUIRE_APP_TEXCOORD4)
     #define LIL_APP_TEXCOORD4
 #endif
 
-#if !defined(LIL_APP_PREVEL) && (defined(LIL_REQUIRE_APP_TEXCOORD5) || defined(LIL_FEATURE_IDMASK) && !defined(LIL_LITE))
+#if !defined(LIL_APP_PREVEL) && defined(LIL_REQUIRE_APP_TEXCOORD5)
     #define LIL_APP_TEXCOORD5
 #endif
 
-#if defined(LIL_REQUIRE_APP_TEXCOORD6) || (defined(LIL_FEATURE_IDMASK)) && !defined(LIL_LITE)
+#if defined(LIL_REQUIRE_APP_TEXCOORD6)
     #define LIL_APP_TEXCOORD6
 #endif
 
-#if defined(LIL_REQUIRE_APP_TEXCOORD7) || (defined(LIL_FEATURE_IDMASK)) && !defined(LIL_LITE)
+#if defined(LIL_REQUIRE_APP_TEXCOORD7)
     #define LIL_APP_TEXCOORD7
 #endif
 
@@ -62,7 +62,7 @@
     #define LIL_APP_TANGENT
 #endif
 
-#if !defined(LIL_NOT_SUPPORT_VERTEXID) && (defined(LIL_REQUIRE_APP_VERTEXID) || defined(LIL_FEATURE_IDMASK) || defined(LIL_FUR))
+#if !defined(LIL_NOT_SUPPORT_VERTEXID) && (defined(LIL_REQUIRE_APP_VERTEXID) || defined(LIL_FUR))
     #define LIL_APP_VERTEXID
 #endif
 

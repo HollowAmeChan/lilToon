@@ -905,18 +905,6 @@ msgstr "점"
 msgid "sDissolveShapeLine"
 msgstr "선"
 
-msgid "sIDMask"
-msgstr "ID Mask"
-
-msgid "sUDIMDiscard"
-msgstr "UV Tile Discard"
-
-msgid "sUDIMDiscardUV"
-msgstr "Discard UV"
-
-msgid "sUDIMDiscardMode"
-msgstr "무시 모드"
-
 msgid "sEncryption"
 msgstr "암호화"
 
@@ -1555,12 +1543,6 @@ msgstr "advanced/distancefade"
 
 msgid "sAnchorDissolve"
 msgstr "advanced/dissolve"
-
-msgid "sAnchorIDMask"
-msgstr "advanced/idmask"
-
-msgid "sAnchorUDIMDiscard"
-msgstr "advanced/uvtilediscard"
 
 msgid "sAnchorEncryption"
 msgstr "advanced/encryption"

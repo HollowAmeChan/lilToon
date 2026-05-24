@@ -447,55 +447,6 @@ namespace lilToon
         private readonly lilMaterialProperty dissolveParams                 = new lilMaterialProperty("_DissolveParams", PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolvePos                    = new lilMaterialProperty("_DissolvePos", PropertyBlock.Dissolve);
 
-        private readonly lilMaterialProperty idMaskCompile  = new lilMaterialProperty("_IDMaskCompile", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskFrom     = new lilMaterialProperty("_IDMaskFrom", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask1        = new lilMaterialProperty("_IDMask1", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask2        = new lilMaterialProperty("_IDMask2", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask3        = new lilMaterialProperty("_IDMask3", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask4        = new lilMaterialProperty("_IDMask4", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask5        = new lilMaterialProperty("_IDMask5", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask6        = new lilMaterialProperty("_IDMask6", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask7        = new lilMaterialProperty("_IDMask7", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMask8        = new lilMaterialProperty("_IDMask8", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIsBitmap = new lilMaterialProperty("_IDMaskIsBitmap", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex1   = new lilMaterialProperty("_IDMaskIndex1", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex2   = new lilMaterialProperty("_IDMaskIndex2", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex3   = new lilMaterialProperty("_IDMaskIndex3", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex4   = new lilMaterialProperty("_IDMaskIndex4", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex5   = new lilMaterialProperty("_IDMaskIndex5", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex6   = new lilMaterialProperty("_IDMaskIndex6", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex7   = new lilMaterialProperty("_IDMaskIndex7", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskIndex8   = new lilMaterialProperty("_IDMaskIndex8", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskControlsDissolve = new lilMaterialProperty("_IDMaskControlsDissolve", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior1   = new lilMaterialProperty("_IDMaskPrior1", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior2   = new lilMaterialProperty("_IDMaskPrior2", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior3   = new lilMaterialProperty("_IDMaskPrior3", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior4   = new lilMaterialProperty("_IDMaskPrior4", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior5   = new lilMaterialProperty("_IDMaskPrior5", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior6   = new lilMaterialProperty("_IDMaskPrior6", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior7   = new lilMaterialProperty("_IDMaskPrior7", PropertyBlock.IDMask);
-        private readonly lilMaterialProperty idMaskPrior8   = new lilMaterialProperty("_IDMaskPrior8", PropertyBlock.IDMask);
-        
-        private readonly lilMaterialProperty udimDiscardCompile    = new lilMaterialProperty("_UDIMDiscardCompile", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardUV         = new lilMaterialProperty("_UDIMDiscardUV", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardMethod     = new lilMaterialProperty("_UDIMDiscardMode", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow3_0     = new lilMaterialProperty("_UDIMDiscardRow3_0", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow3_1     = new lilMaterialProperty("_UDIMDiscardRow3_1", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow3_2     = new lilMaterialProperty("_UDIMDiscardRow3_2", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow3_3     = new lilMaterialProperty("_UDIMDiscardRow3_3", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow2_0     = new lilMaterialProperty("_UDIMDiscardRow2_0", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow2_1     = new lilMaterialProperty("_UDIMDiscardRow2_1", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow2_2     = new lilMaterialProperty("_UDIMDiscardRow2_2", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow2_3     = new lilMaterialProperty("_UDIMDiscardRow2_3", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow1_0     = new lilMaterialProperty("_UDIMDiscardRow1_0", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow1_1     = new lilMaterialProperty("_UDIMDiscardRow1_1", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow1_2     = new lilMaterialProperty("_UDIMDiscardRow1_2", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow1_3     = new lilMaterialProperty("_UDIMDiscardRow1_3", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow0_0     = new lilMaterialProperty("_UDIMDiscardRow0_0", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow0_1     = new lilMaterialProperty("_UDIMDiscardRow0_1", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow0_2     = new lilMaterialProperty("_UDIMDiscardRow0_2", PropertyBlock.UDIMDiscard);
-        private readonly lilMaterialProperty udimDiscardRow0_3     = new lilMaterialProperty("_UDIMDiscardRow0_3", PropertyBlock.UDIMDiscard);
-
         private readonly lilMaterialProperty refractionStrength         = new lilMaterialProperty("_RefractionStrength", PropertyBlock.Refraction, PropertyBlock.Gem);
         private readonly lilMaterialProperty refractionFresnelPower     = new lilMaterialProperty("_RefractionFresnelPower", PropertyBlock.Refraction, PropertyBlock.Gem);
         private readonly lilMaterialProperty refractionColorFromMain    = new lilMaterialProperty("_RefractionColorFromMain", PropertyBlock.Refraction);
@@ -1078,55 +1029,6 @@ namespace lilToon
                 dissolveColor,
                 dissolveParams,
                 dissolvePos,
-
-                idMaskCompile,
-                idMaskFrom,
-                idMaskIsBitmap,
-                idMask1,
-                idMask2,
-                idMask3,
-                idMask4,
-                idMask5,
-                idMask6,
-                idMask7,
-                idMask8,
-                idMaskIndex1,
-                idMaskIndex2,
-                idMaskIndex3,
-                idMaskIndex4,
-                idMaskIndex5,
-                idMaskIndex6,
-                idMaskIndex7,
-                idMaskIndex8,
-                idMaskControlsDissolve,
-                idMaskPrior1,
-                idMaskPrior2,
-                idMaskPrior3,
-                idMaskPrior4,
-                idMaskPrior5,
-                idMaskPrior6,
-                idMaskPrior7,
-                idMaskPrior8,
-
-                udimDiscardCompile,
-                udimDiscardUV,
-                udimDiscardMethod,
-                udimDiscardRow3_0,
-                udimDiscardRow3_1,
-                udimDiscardRow3_2,
-                udimDiscardRow3_3,
-                udimDiscardRow2_0,
-                udimDiscardRow2_1,
-                udimDiscardRow2_2,
-                udimDiscardRow2_3,
-                udimDiscardRow1_0,
-                udimDiscardRow1_1,
-                udimDiscardRow1_2,
-                udimDiscardRow1_3,
-                udimDiscardRow0_0,
-                udimDiscardRow0_1,
-                udimDiscardRow0_2,
-                udimDiscardRow0_3,
 
                 refractionStrength,
                 refractionFresnelPower,

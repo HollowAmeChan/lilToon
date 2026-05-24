@@ -50,8 +50,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_CLIPPING_CANCELLER = false;
     public bool LIL_FEATURE_DISTANCE_FADE = true;
     public bool LIL_FEATURE_DISSOLVE = true;
-    public bool LIL_FEATURE_IDMASK = true;
-    public bool LIL_FEATURE_UDIMDISCARD = true;
     public bool LIL_FEATURE_DITHER = true;
     public bool LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
     public bool LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
@@ -275,8 +273,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = false;
         shaderSetting.LIL_FEATURE_DISSOLVE = false;
         shaderSetting.LIL_FEATURE_DITHER = false;
-        shaderSetting.LIL_FEATURE_IDMASK = false;
-        shaderSetting.LIL_FEATURE_UDIMDISCARD = false;
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = false;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = false;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = false;
@@ -385,8 +381,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = true;
         shaderSetting.LIL_FEATURE_DISSOLVE = true;
         shaderSetting.LIL_FEATURE_DITHER = true;
-        shaderSetting.LIL_FEATURE_IDMASK = true;
-        shaderSetting.LIL_FEATURE_UDIMDISCARD = true;
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
@@ -593,8 +587,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_DISTANCE_FADE) sb.AppendLine("#define LIL_FEATURE_DISTANCE_FADE");
         if (shaderSetting.LIL_FEATURE_DISSOLVE) sb.AppendLine("#define LIL_FEATURE_DISSOLVE");
         if (shaderSetting.LIL_FEATURE_DITHER) sb.AppendLine("#define LIL_FEATURE_DITHER");
-        if (shaderSetting.LIL_FEATURE_IDMASK) sb.AppendLine("#define LIL_FEATURE_IDMASK");
-        if (shaderSetting.LIL_FEATURE_UDIMDISCARD) sb.AppendLine("#define LIL_FEATURE_UDIMDISCARD");
         if (shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION) sb.AppendLine("#define LIL_FEATURE_OUTLINE_TONE_CORRECTION");
         if (shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW) sb.AppendLine("#define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW");
         if (shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV) sb.AppendLine("#define LIL_FEATURE_ANIMATE_OUTLINE_UV");
@@ -1193,36 +1185,6 @@ public class lilToonSetting : ScriptableObject
             logs.Add("[lilToon] LIL_FEATURE_DITHER : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_DITHER = true;
         }
-        if(!shaderSetting.LIL_FEATURE_IDMASK && (
-            material.HasProperty("_IDMask1") && material.GetFloat("_IDMask1") != 0.0f ||
-            material.HasProperty("_IDMask2") && material.GetFloat("_IDMask2") != 0.0f ||
-            material.HasProperty("_IDMask3") && material.GetFloat("_IDMask3") != 0.0f ||
-            material.HasProperty("_IDMask4") && material.GetFloat("_IDMask4") != 0.0f ||
-            material.HasProperty("_IDMask5") && material.GetFloat("_IDMask5") != 0.0f ||
-            material.HasProperty("_IDMask6") && material.GetFloat("_IDMask6") != 0.0f ||
-            material.HasProperty("_IDMask7") && material.GetFloat("_IDMask7") != 0.0f ||
-            material.HasProperty("_IDMask8") && material.GetFloat("_IDMask8") != 0.0f ||
-            material.HasProperty("_IDMaskPrior1") && material.GetFloat("_IDMaskPrior1") != 0.0f ||
-            material.HasProperty("_IDMaskPrior2") && material.GetFloat("_IDMaskPrior2") != 0.0f ||
-            material.HasProperty("_IDMaskPrior3") && material.GetFloat("_IDMaskPrior3") != 0.0f ||
-            material.HasProperty("_IDMaskPrior4") && material.GetFloat("_IDMaskPrior4") != 0.0f ||
-            material.HasProperty("_IDMaskPrior5") && material.GetFloat("_IDMaskPrior5") != 0.0f ||
-            material.HasProperty("_IDMaskPrior6") && material.GetFloat("_IDMaskPrior6") != 0.0f ||
-            material.HasProperty("_IDMaskPrior7") && material.GetFloat("_IDMaskPrior7") != 0.0f ||
-            material.HasProperty("_IDMaskPrior8") && material.GetFloat("_IDMaskPrior8") != 0.0f ||
-            material.HasProperty("_IDMaskIsBitmap") && material.GetFloat("_IDMaskIsBitmap") != 0.0f ||
-            material.HasProperty("_IDMaskCompile") && material.GetFloat("_IDMaskCompile") != 0.0f
-        ))
-        {
-            logs.Add("[lilToon] LIL_FEATURE_IDMASK : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_IDMASK = true;
-        }
-
-        if(!shaderSetting.LIL_FEATURE_UDIMDISCARD && material.HasProperty("_UDIMDiscardCompile") && material.GetFloat("_UDIMDiscardCompile") != 0.0f) {
-            logs.Add("[lilToon] LIL_FEATURE_UDIMDISCARD : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_UDIMDISCARD = true;
-        }
-           
         // Outline
         if(lilShaderUtils.IsOutlineShaderName(shaderName))
         {
@@ -1309,22 +1271,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_POM = shaderSetting.LIL_FEATURE_POM || propname.Contains("_UsePOM");
             shaderSetting.LIL_FEATURE_DISSOLVE = shaderSetting.LIL_FEATURE_DISSOLVE || propname.Contains("_DissolveParams");
             shaderSetting.LIL_FEATURE_DITHER = shaderSetting.LIL_FEATURE_DITHER || propname.Contains("_UseDither");
-
-            if(!shaderSetting.LIL_FEATURE_IDMASK && (
-                propname.Contains("_IDMask1") || propname.Contains("_IDMaskIndex1") || propname.Contains("_IDMaskPrior1") ||
-                propname.Contains("_IDMask2") || propname.Contains("_IDMaskIndex2") || propname.Contains("_IDMaskPrior2") ||
-                propname.Contains("_IDMask3") || propname.Contains("_IDMaskIndex3") || propname.Contains("_IDMaskPrior3") ||
-                propname.Contains("_IDMask4") || propname.Contains("_IDMaskIndex4") || propname.Contains("_IDMaskPrior4") ||
-                propname.Contains("_IDMask5") || propname.Contains("_IDMaskIndex5") || propname.Contains("_IDMaskPrior5") ||
-                propname.Contains("_IDMask6") || propname.Contains("_IDMaskIndex6") || propname.Contains("_IDMaskPrior6") ||
-                propname.Contains("_IDMask7") || propname.Contains("_IDMaskIndex7") || propname.Contains("_IDMaskPrior7") ||
-                propname.Contains("_IDMask8") || propname.Contains("_IDMaskIndex8") || propname.Contains("_IDMaskPrior8")
-            ))
-            {
-                shaderSetting.LIL_FEATURE_IDMASK = true;
-            }
-
-            shaderSetting.LIL_FEATURE_UDIMDISCARD = shaderSetting.LIL_FEATURE_UDIMDISCARD || propname.Contains("_UDIMDiscardCompile");
 
             shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV || propname.Contains("_OutlineTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");

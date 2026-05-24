@@ -596,45 +596,6 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_DISSOLVE)
         float   _DissolveNoiseStrength;
     #endif
-    #if defined(LIL_MULTI_INPUTS_IDMASK)
-        float   _IDMask1;
-        float   _IDMask2;
-        float   _IDMask3;
-        float   _IDMask4;
-        float   _IDMask5;
-        float   _IDMask6;
-        float   _IDMask7;
-        float   _IDMask8;
-        float   _IDMaskPrior1;
-        float   _IDMaskPrior2;
-        float   _IDMaskPrior3;
-        float   _IDMaskPrior4;
-        float   _IDMaskPrior5;
-        float   _IDMaskPrior6;
-        float   _IDMaskPrior7;
-        float   _IDMaskPrior8;
-    #endif
-    #if defined(LIL_MULTI_INPUTS_UDIMDISCARD)
-        float _UDIMDiscardCompile;
-        float _UDIMDiscardMode;
-        float _UDIMDiscardUV;
-        float _UDIMDiscardRow3_0;
-        float _UDIMDiscardRow3_1;
-        float _UDIMDiscardRow3_2;
-        float _UDIMDiscardRow3_3;
-        float _UDIMDiscardRow2_0;
-        float _UDIMDiscardRow2_1;
-        float _UDIMDiscardRow2_2;
-        float _UDIMDiscardRow2_3;
-        float _UDIMDiscardRow1_0;
-        float _UDIMDiscardRow1_1;
-        float _UDIMDiscardRow1_2;
-        float _UDIMDiscardRow1_3;
-        float _UDIMDiscardRow0_0;
-        float _UDIMDiscardRow0_1;
-        float _UDIMDiscardRow0_2;
-        float _UDIMDiscardRow0_3;
-    #endif
     float   _lilShadowCasterBias;
     float   _lilOITEnabled;
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
@@ -671,19 +632,6 @@ CBUFFER_START(UnityPerMaterial)
         float   _GemParticleLoop;
         float   _GemEnvContrast;
         float   _GemVRParallaxStrength;
-    #endif
-    #if defined(LIL_FEATURE_IDMASK)
-        int     _IDMaskIndex1;
-        int     _IDMaskIndex2;
-        int     _IDMaskIndex3;
-        int     _IDMaskIndex4;
-        int     _IDMaskIndex5;
-        int     _IDMaskIndex6;
-        int     _IDMaskIndex7;
-        int     _IDMaskIndex8;
-        uint    _IDMaskFrom;
-        uint    _IDMaskIsBitmap;
-        uint    _IDMaskControlsDissolve;
     #endif
     uint    _Cull;
     #if defined(LIL_MULTI_INPUTS_OUTLINE)

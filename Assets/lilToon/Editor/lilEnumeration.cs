@@ -68,8 +68,6 @@ namespace lilToon
         Parallax,
         DistanceFade,
         Dissolve,
-        IDMask,
-        UDIMDiscard,
         Refraction,
         Fur,
         Stencil,

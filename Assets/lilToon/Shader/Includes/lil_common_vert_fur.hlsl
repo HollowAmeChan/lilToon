@@ -124,18 +124,6 @@ v2g vert(appdata input)
     LIL_CUSTOM_VERT_COPY
 
     //------------------------------------------------------------------------------------------------------------------------------
-    // UDIM Discard
-    #if defined(LIL_FEATURE_UDIMDISCARD) && !defined(LIL_LITE)
-        if(_UDIMDiscardMode == 0 && _UDIMDiscardCompile == 1 && LIL_CHECK_UDIMDISCARD(input)) // Discard Vertices instead of just pixels
-        {
-            #if defined(LIL_V2F_POSITION_CS)
-            output.positionWS = 0.0/0.0;
-            #endif
-            return output;
-        }
-    #endif
-    
-    //------------------------------------------------------------------------------------------------------------------------------
     // Fog & Lighting
     lilFragData fd = lilInitFragData();
     LIL_GET_HDRPDATA(vertexInput,fd);
@@ -194,46 +182,6 @@ v2g vert(appdata input)
             output.furVector = rangeToggle[1] < 0.001 - unity_LightColor[1].r - unity_LightColor[1].g - unity_LightColor[1].b ? output.furVector - float3(toLightX[1], toLightY[1], toLightZ[1]) * rsqrt(lengthSq[1]) * atten[1] : output.furVector;
             output.furVector = rangeToggle[2] < 0.001 - unity_LightColor[2].r - unity_LightColor[2].g - unity_LightColor[2].b ? output.furVector - float3(toLightX[2], toLightY[2], toLightZ[2]) * rsqrt(lengthSq[2]) * atten[2] : output.furVector;
             output.furVector = rangeToggle[3] < 0.001 - unity_LightColor[3].r - unity_LightColor[3].g - unity_LightColor[3].b ? output.furVector - float3(toLightX[3], toLightY[3], toLightZ[3]) * rsqrt(lengthSq[3]) * atten[3] : output.furVector;
-        #endif
-    #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
-    // IDMask
-    #if defined(LIL_FEATURE_IDMASK) && !defined(LIL_NOT_SUPPORT_VERTEXID)
-        int idMaskIndices[8] = {_IDMaskIndex1,_IDMaskIndex2,_IDMaskIndex3,_IDMaskIndex4,_IDMaskIndex5,_IDMaskIndex6,_IDMaskIndex7,_IDMaskIndex8};
-        float idMaskFlags[8] = {_IDMask1,_IDMask2,_IDMask3,_IDMask4,_IDMask5,_IDMask6,_IDMask7,_IDMask8};
-        uint idMaskArg = 0;
-        switch(_IDMaskFrom)
-        {
-            #if defined(LIL_APP_TEXCOORD0)
-                case 0: idMaskArg = input.uv0.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD1)
-                case 1: idMaskArg = input.uv1.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD2)
-                case 2: idMaskArg = input.uv2.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD3)
-                case 3: idMaskArg = input.uv3.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD4)
-                case 4: idMaskArg = input.uv4.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD5)
-                case 5: idMaskArg = input.uv5.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD6)
-                case 6: idMaskArg = input.uv6.x; break;
-            #endif
-            #if defined(LIL_APP_TEXCOORD7)
-                case 7: idMaskArg = input.uv7.x; break;
-            #endif
-            default: idMaskArg = input.vertexID; break;
-        }
-        bool idMasked = IDMask(idMaskArg,_IDMaskIsBitmap,idMaskIndices,idMaskFlags);
-        #if defined(LIL_V2G_POSITION_WS)
-            output.positionWS = idMasked ? 0.0/0.0 : output.positionWS;
         #endif
     #endif
 

@@ -70,8 +70,6 @@ namespace lilToon
             public bool isShowGem                       = false;
             public bool isShowDissolveMask              = false;
             public bool isShowDissolveNoiseMask         = false;
-            public bool isShowIDMask                    = false;
-            public bool isShowUDIMDiscard               = false;
             public bool isShowStencil                   = false;
             public bool isShowOutline                   = false;
             public bool isShowOutlineMap                = false;

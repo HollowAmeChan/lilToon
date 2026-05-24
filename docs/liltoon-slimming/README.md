@@ -38,3 +38,5 @@
 - 已同步生成后的 `.shader` 文件内容，但这些文件当前有 `skip-worktree` 标记，默认不会显示在 `git status` 中。
 - 本轮已继续执行 P3 / P4：删除 VRC Light Volumes 和 LTCGI。
 - 下一步进入 P5 / P6：先清 `BaseShaderResources/*.lilinternal` 中的非 URP 声明，再做 URP pass profile 裁剪。
+- P6a 已执行：删除 `ID Mask` 和 `UV Tile Discard / UDIM Discard` 高级遮罩功能，已清理 property 模板、Inspector、`lilToonSetting` 自动扫描、HLSL appdata / input / function / call site、URP multi 模板和本地化文案。
+- 已同步生成后的 `Assets/lilToon/Shader/*.shader` 中对应 property / define 残留；这些文件当前仍有 `skip-worktree` 标记，默认不会显示在 `git status` 中。

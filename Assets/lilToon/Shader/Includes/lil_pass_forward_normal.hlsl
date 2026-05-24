@@ -14,7 +14,7 @@
     #define LIL_V2F_POSITION_CS
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
-    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_FEATURE_IDMASK)
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS)
         #define LIL_V2F_POSITION_OS
     #endif
     #define LIL_V2F_POSITION_WS
@@ -54,7 +54,7 @@
     #define LIL_V2F_POSITION_CS
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
-    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_FEATURE_IDMASK)
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS)
         #define LIL_V2F_POSITION_OS
     #endif
     #define LIL_V2F_POSITION_WS
@@ -142,12 +142,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
 
     LIL_GET_LIGHTING_DATA(input,fd);
 
-    //------------------------------------------------------------------------------------------------------------------------------
-    // UDIM Discard
-    #if defined(LIL_FEATURE_UDIMDISCARD)
-        OVERRIDE_UDIMDISCARD
-    #endif
-    
     //------------------------------------------------------------------------------------------------------------------------------
     // View Direction
     #if defined(LIL_V2F_POSITION_WS)
