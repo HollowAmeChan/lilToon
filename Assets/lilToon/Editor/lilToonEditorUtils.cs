@@ -646,8 +646,6 @@ namespace lilToon
             }
             string versionURP = ReadVersion("30648b8d550465f4bb77f1e1afd0b37d");
             if(versionURP != null) sb.AppendLine("URP: " + versionURP);
-            string versionHDRP = ReadVersion("6f54db4299717fc4ca37866c6afa0905");
-            if(versionHDRP != null) sb.AppendLine("HDRP: " + versionHDRP);
             sb.AppendLine();
 
             sb.AppendLine("# VRCSDK Information");

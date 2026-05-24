@@ -68,6 +68,31 @@
 - `Shader/Includes` 中没有被 URP shader 引用的非 URP include。
 - Unity console 没有 importer、ShaderUtil、missing include 错误。
 
+### URP 扩展依赖记录
+
+当前分支里存在若干 `jp.lilxyzw.liltoon.urp.extensions` 扩展包能力。它们不是 BRP / LWRP / HDRP 管线残留，但会在缺包时造成 URP shader 编译失败。
+
+- `Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ShadowCast/Shaders/HoShadowCastSampling.hlsl`
+  - 调用点：`Assets/lilToon/Shader/Includes/lil_common_macro.hlsl`
+  - 作用：提供 `HoShadowCastAttenuation(positionWS)`，用于 URP 主光阴影和额外光增亮衰减。
+  - 来源：该文件在 sibling 仓库 `D:\Unity_Fork\lilToon-URP-Extensions`，包名是 `jp.lilxyzw.liltoon.urp.extensions`。
+  - 当前处理：这是瘦身版 URP 功能依赖，不应当当作普通缺失 include 删除。Unity 项目的 `Packages/manifest.json` 必须安装本地包：
+
+    ```json
+    {
+      "dependencies": {
+        "jp.lilxyzw.liltoon.urp.extensions": "file:D:/Unity_Fork/lilToon-URP-Extensions"
+      }
+    }
+    ```
+
+  - 后续决策：如果瘦身版不再依赖 Ho URP 扩展，应把 Ho shadow cast 参数、pass 以及 `_MultiLightCastShadowStrength` 相关 UI/属性一并裁掉；如果仍保留该能力，就保持 package include，并把 sibling repo 作为构建/导入前置条件。
+- `Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/CharacterSpecialization/Shaders/HoCharacterCaptureCommon.hlsl`
+  - 调用点：`Assets/lilToon/Shader/Includes/lil_pass_hocharacter_capture.hlsl`
+  - 作用：HoCharacterCapture 专用输出结构和片元输出函数。
+  - 来源：同样来自 `D:\Unity_Fork\lilToon-URP-Extensions`。
+  - 当前状态：保持外部扩展 include。若 Unity 报缺失 include，优先检查 manifest 是否安装了 `jp.lilxyzw.liltoon.urp.extensions`，而不是先删 pass。
+
 ## 阶段 5：删历史兼容层
 
 最后再处理：
@@ -77,4 +102,3 @@
 - 旧 preset 中指向被删 shader 的引用。
 
 注意：preset 和材质迁移工具可能引用旧 shader 名称，删除前要决定是否做一次迁移映射，还是直接作为破坏性版本发布。
-

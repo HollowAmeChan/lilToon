@@ -483,10 +483,10 @@ msgid "sObjectFollowing"
 msgstr "跟隨對象方向"
 
 msgid "sDirectionalLightStrength"
-msgstr "[HDRP] Directional Light Strength"
+msgstr "Directional Light Strength"
 
 msgid "sBeforeExposureLimit"
-msgstr "[HDRP] Before exposure limit"
+msgstr "Before exposure limit"
 
 msgid "sLightingPreset"
 msgstr "應用預設"

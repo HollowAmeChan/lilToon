@@ -83,10 +83,7 @@ namespace lilToon
 
     public enum lilRenderPipeline
     {
-        BRP,
-        LWRP,
-        URP,
-        HDRP
+        URP
     }
 }
 #endif

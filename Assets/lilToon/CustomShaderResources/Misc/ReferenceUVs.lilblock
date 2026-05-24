@@ -12,7 +12,7 @@
             #pragma fragment frag
 
             // For some reason, using struct appdata from lil_common_appdata doesn't work as a workaround...
-            //#include "Includes/lil_pipeline_brp.hlsl"
+            //#include "Includes/lil_pipeline_urp.hlsl"
             //#include "Includes/lil_common.hlsl"
             //#include "Includes/lil_common_appdata.hlsl"
 

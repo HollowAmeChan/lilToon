@@ -483,10 +483,10 @@ msgid "sObjectFollowing"
 msgstr "오브젝트의 방향 추종"
 
 msgid "sDirectionalLightStrength"
-msgstr "[HDRP] Directional Light Strength"
+msgstr "Directional Light Strength"
 
 msgid "sBeforeExposureLimit"
-msgstr "[HDRP] Before exposure limit"
+msgstr "Before exposure limit"
 
 msgid "sLightingPreset"
 msgstr "프리셋 적용"

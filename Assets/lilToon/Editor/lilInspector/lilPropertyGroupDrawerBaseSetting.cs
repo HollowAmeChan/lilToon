@@ -79,10 +79,6 @@ namespace lilToon
                     {
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentMode);
                     }
-                    if(transparentModeBuf == TransparentMode.OnePass && vertexLightStrength.floatValue != 1.0f && lilRenderPipelineReader.GetRP() == lilRenderPipeline.BRP && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpOnePassVertexLight")))
-                    {
-                        vertexLightStrength.floatValue = 1.0f;
-                    }
                 }
                 if(renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurCutout || renderingModeBuf == RenderingMode.FurTwoPass)
                 {

@@ -483,10 +483,10 @@ msgid "sObjectFollowing"
 msgstr "跟随对象方向"
 
 msgid "sDirectionalLightStrength"
-msgstr "[HDRP] 定向光强度"
+msgstr "定向光强度"
 
 msgid "sBeforeExposureLimit"
-msgstr "[HDRP] 曝光前最大亮度"
+msgstr "曝光前最大亮度"
 
 msgid "sLightingPreset"
 msgstr "应用预设"

@@ -2,7 +2,6 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace lilToon
 {
@@ -31,20 +30,6 @@ namespace lilToon
             return version;
         }
 
-        private static PackageVersionInfos GetLWRPVersion()
-        {
-            var version = ReadVersion("30648b8d550465f4bb77f1e1afd0b37d");
-            version.RP = lilRenderPipeline.LWRP;
-            return version;
-        }
-
-        private static PackageVersionInfos GetHDRPVersion()
-        {
-            var version = ReadVersion("6f54db4299717fc4ca37866c6afa0905");
-            version.RP = lilRenderPipeline.HDRP;
-            return version;
-        }
-
         private static PackageVersionInfos ReadVersion(string guid)
         {
             string version = "";
@@ -56,7 +41,7 @@ namespace lilToon
             }
 
             PackageVersionInfos infos;
-            infos.RP = lilRenderPipeline.BRP;
+            infos.RP = lilRenderPipeline.URP;
             if(string.IsNullOrEmpty(version))
             {
                 infos.Major = 0;

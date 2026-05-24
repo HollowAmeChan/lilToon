@@ -483,10 +483,10 @@ msgid "sObjectFollowing"
 msgstr "Object direction following"
 
 msgid "sDirectionalLightStrength"
-msgstr "[HDRP] Directional Light Strength"
+msgstr "Directional Light Strength"
 
 msgid "sBeforeExposureLimit"
-msgstr "[HDRP] Before exposure limit"
+msgstr "Before exposure limit"
 
 msgid "sLightingPreset"
 msgstr "Apply Preset"

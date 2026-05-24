@@ -21,7 +21,6 @@ namespace lilToon
             Undo.RecordObject(material, null);
             int renderQueue = GetTrueRenderQueue(material);
             RenderingMode rend = renderingMode;
-            lilRenderPipeline RP = lilRenderPipelineReader.GetRP();
             if(ismulti)
             {
                 float tpmode = material.GetFloat("_TransparentMode");
@@ -110,7 +109,7 @@ namespace lilToon
                         if(isoutl)  material.shader = lilShaderManager.ltsmo;
                         else        material.shader = lilShaderManager.ltsm;
                         material.SetOverrideTag("RenderType", "TransparentCutout");
-                        material.renderQueue = RP == lilRenderPipeline.HDRP ? 3000 : 2460;
+                        material.renderQueue = 2460;
                     }
                     else
                     {
