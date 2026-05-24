@@ -93,9 +93,6 @@ namespace lilToon
         {
             GUI.enabled = !File.Exists(lilDirectoryManager.GetSettingLockPath());
             ToggleGUI(GetLoc("sSettingUseLightmap"), ref shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP);
-            #if LILTOON_VRCLIGHTVOLUMES
-            ToggleGUI("VRC Light Volumes", ref shaderSetting.LIL_OPTIMIZE_USE_VRCLIGHTVOLUMES);
-            #endif
             GUI.enabled = true;
         }
 

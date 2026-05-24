@@ -12,17 +12,6 @@
 #define OPENLIT_MATRIX_M        unity_ObjectToWorld
 #define OPENLIT_FALLBACK_DIRECTION  float4(0.001,0.002,0.001,0)
 
-//------------------------------------------------------------------------------------------------------------------------------
-// VRC Light Volumes
-// https://github.com/REDSIM/VRCLightVolumes
-#if defined(SHADER_STAGE_FRAGMENT) && (defined(LIL_INPUT_OPTIMIZED) || defined(LIL_MULTI)) || !defined(SHADER_STAGE_FRAGMENT) && !(defined(LIL_INPUT_OPTIMIZED) || defined(LIL_MULTI))
-#if defined(OPENLIT_VRCLIGHTVOLUMES)
-#include "Packages/red.sim.lightvolumes/Shaders/LightVolumes.cginc"
-#elif defined(OPENLIT_VRCLIGHTVOLUMES_WITHOUTPACKAGE)
-#include "VRC Light Volumes/LightVolumes.cginc"
-#endif
-#endif
-
 static float4 olSHAr = 0;
 static float4 olSHAg = 0;
 static float4 olSHAb = 0;
@@ -41,30 +30,11 @@ void InitializeSH(float3 positionWS)
     olSHBb = unity_SHBb;
     olSHC  = unity_SHC ;
 
-    #if defined(VRC_LIGHT_VOLUMES_INCLUDED)
-    if(_UdonLightVolumeEnabled)
-    {
-        float3 L0, L1r, L1g, L1b = 0;
-        LightVolumeSH(positionWS, L0, L1r, L1g, L1b);
-        
-        olSHAr = float4(L1r, L0.r);
-        olSHAg = float4(L1g, L0.g);
-        olSHAb = float4(L1b, L0.b);
-        olSHBr = 0;
-        olSHBg = 0;
-        olSHBb = 0;
-        olSHC = 0;
-    }
-    #endif
 }
 
 float3 GetV(float3 L, float3 positionWS)
 {
-    return
-    #if defined(VRC_LIGHT_VOLUMES_INCLUDED)
-    _UdonLightVolumeEnabled ? normalize(_WorldSpaceCameraPos.xyz - positionWS) :
-    #endif
-    L;
+    return L;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------

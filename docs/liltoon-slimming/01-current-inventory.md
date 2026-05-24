@@ -8,8 +8,8 @@
 - 基础 shader 容器：`Assets/lilToon/BaseShaderResources/*.lilinternal` 共 63 个。
 - URP 模板：`Assets/lilToon/CustomShaderResources/URP/*.lilblock` 共 30 个。
 - 非 URP 模板：`BRP`、`HDRP`、`LWRP` 下 `.lilblock` 共 71 个。
-- 通用 property 模板：`Assets/lilToon/CustomShaderResources/Properties`，其中包含 AudioLink 和 VRChat fallback 相关属性。
-- VRC Light Volumes 随包 include：`Assets/lilToon/Shader/Includes/VRC Light Volumes/LightVolumes.cginc`。
+- 通用 property 模板：`Assets/lilToon/CustomShaderResources/Properties`。AudioLink 和 VRChat fallback 属性已在 P0-P2 中删除。
+- VRC Light Volumes 随包 include 已在 P3 中删除。
 
 ## 生成链
 
@@ -31,7 +31,7 @@
 - `Assets/lilToon/Editor/lilRenderPipelineReader.cs`
   - 当前通过 `GraphicsSettings.currentRenderPipeline` 识别 BRP / LWRP / URP / HDRP。
 - `Assets/lilToon/Editor/lilToonSetting.cs`
-  - 负责功能 define 生成，例如 `LIL_FEATURE_AUDIOLINK`、`LIL_FEATURE_VRCLIGHTVOLUMES`。
+  - 负责功能 define 生成；AudioLink 和 VRC Light Volumes define 入口已删除。
   - 负责全量生成 `.shader`。
 - `Assets/lilToon/CustomShaderResources/URP/*.lilblock`
   - URP pass 模板。默认 shader 已包含 Forward、Outline、ShadowCaster、DepthOnly、DepthNormals、GBuffer、HoAOV、HoAOV_SSS、HoCharacterCapture、MotionVectors、Universal2D、Meta。
@@ -45,7 +45,7 @@
 应保留：
 
 - `CustomShaderResources/URP`
-- `CustomShaderResources/Properties` 中非 VRChat / 非 AudioLink 的通用材质属性
+- `CustomShaderResources/Properties` 中的通用材质属性
 - `CustomShaderResources/Misc/ReferenceUVs.lilblock`
 - `Shader/Includes/lil_pipeline_urp.hlsl`
 - 通用 toon 光照、阴影、法线、MatCap、rim、emission、SSAO、SSS、HoAOV 等当前项目需要的 URP 功能
@@ -58,10 +58,9 @@
 - `Shader/Includes/lil_pipeline_brp.hlsl`
 - `Shader/Includes/lil_pipeline_lwrp.hlsl`
 - `Shader/Includes/lil_pipeline_hdrp.hlsl`
-- `External/Editor/VRChatModule.cs`
-- `External/Editor/ChilloutVRModule.cs`
-- `Shader/Includes/VRC Light Volumes`
-- AudioLink 相关 shader include、property、inspector 和 setting
+- 非 URP 管线和旧管线兼容分支
+- 非项目需要的 URP pass
+- 后续 Lite / Standard / Full shader 族拆分候选
 
 ## 需要先确认的项目决策
 
@@ -72,4 +71,3 @@
 - 是否保留 Meta pass 和光照烘焙。
 - 是否保留 HoAOV、HoAOV_SSS、HoCharacterCapture 这些当前 fork 的自定义 URP pass。
 - 是否需要 DOTS instancing、GPU instancing、light layers、cluster light loop、reflection probe blending、light cookies、screen space occlusion。
-

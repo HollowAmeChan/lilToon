@@ -191,7 +191,7 @@
 #endif
 
 // normalOS (vertex input)
-#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_FEATURE_LTCGI) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)) || defined(LIL_HDRP)
+#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)) || defined(LIL_HDRP)
     #define LIL_SHOULD_NORMAL
 #endif
 
@@ -2154,12 +2154,6 @@ struct lilLightData
     #define LIL_CORRECT_LIGHTCOLOR_PS(lightColor)
 #endif
 
-#if defined(LIL_FEATURE_LTCGI)
-    #define LIL_APPLY_LTCGI(o) lilLTCGI(o, vertexInput.positionWS, normalize(vertexNormalInput.normalWS), normalize(lilHeadDirection(lilToAbsolutePositionWS(vertexInput.positionWS))), input.uv1);
-#else
-    #define LIL_APPLY_LTCGI(o)
-#endif
-
 #if defined(LIL_PASS_FORWARDADD)
     #define LIL_CALC_MAINLIGHT(i,o)
 #elif defined(LIL_HDRP)
@@ -2186,7 +2180,6 @@ struct lilLightData
         o.lightDirection    = lightDatas.lightDirection; \
         o.lightColor        = lightDatas.directLight; \
         o.indLightColor     = lightDatas.indirectLight; \
-        LIL_APPLY_LTCGI(o) \
         LIL_APPLY_ADDITIONALLIGHT_TO_MAIN(i,o); \
         LIL_CORRECT_LIGHTCOLOR_VS(o.lightColor)
 #elif defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2)

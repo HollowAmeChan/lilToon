@@ -127,28 +127,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
-    // For VRCLV
-    #if defined(LIL_BRP) && defined(LIL_PASS_FORWARD) && defined(VRC_LIGHT_VOLUMES_INCLUDED) && (defined(LIL_INPUT_OPTIMIZED) || defined(LIL_MULTI))
-        if(_UdonLightVolumeEnabled)
-        {
-            lilVertexPositionInputs vertexInput = lilGetVertexPositionInputsFromWS(input.positionWS);
-            lilVertexNormalInputs vertexNormalInput = lilGetVertexNormalInputsFromWS(input.normalWS);
-            LIL_UNPACK_TEXCOORD1(input,fd);
-            #define input fd
-            LIL_CALC_MAINLIGHT(vertexInput, lightdataInput);
-            #undef input
-            #if defined(LIL_V2F_LIGHTCOLOR)
-                input.lightColor     = lightdataInput.lightColor;
-            #endif
-            #if defined(LIL_V2F_LIGHTDIRECTION)
-                input.lightDirection = lightdataInput.lightDirection;
-            #endif
-            #if defined(LIL_V2F_INDLIGHTCOLOR)
-                input.indLightColor  = lightdataInput.indLightColor;
-            #endif
-        }
-    #endif
-
     BEFORE_UNPACK_V2F
     OVERRIDE_UNPACK_V2F
     LIL_COPY_VFACE(fd.facing);
@@ -328,19 +306,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         fd.reflectionN = fd.N;
         fd.matcapN = fd.N;
         fd.matcap2ndN = fd.N;
-
-        #if defined(LIL_BRP) && defined(LIL_PASS_FORWARD) && defined(VRC_LIGHT_VOLUMES_INCLUDED)
-        if(_UdonLightVolumeEnabled)
-        {
-            LIL_CORRECT_LIGHTCOLOR_PS(fd.indLightColor);
-            LIL_CORRECT_LIGHTCOLOR_VS(fd.indLightColor);
-            float borderMin = _EnvRimBorder - _EnvRimBlur * 0.5;
-            float borderMax = _EnvRimBorder + _EnvRimBlur * 0.5;
-            float fakerim = saturate((fd.ln - fd.vl - borderMin) / saturate(borderMax - borderMin + fwidth(fd.ln - fd.vl) * _AAStrength));
-            fd.lightColor += saturate(fd.indLightColor - fd.lightColor) * fakerim;
-            fd.indLightColor = 0;
-        }
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Layer Color

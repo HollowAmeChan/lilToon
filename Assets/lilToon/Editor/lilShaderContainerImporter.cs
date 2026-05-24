@@ -749,9 +749,6 @@ namespace lilToon
             }
 
             subShaderTags = line.Substring(first, second - first);
-            #if LILTOON_LTCGI
-            subShaderTags += " \"LTCGI\"=\"ALWAYS\"";
-            #endif
         }
 
         private static string ReadTextFile(string path)
