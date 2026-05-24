@@ -494,8 +494,4 @@ half4 fragSss(v2f input LIL_VFACE(facing)) : SV_Target
     return half4(lilHoAovResolveSssSource(fd.uvMain, fd.albedo) * subjectValid);
 }
 
-#if defined(LIL_TESSELLATION)
-    #include "lil_tessellation.hlsl"
-#endif
-
 #endif

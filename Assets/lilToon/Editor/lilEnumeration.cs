@@ -72,7 +72,6 @@ namespace lilToon
         Fur,
         Stencil,
         Rendering,
-        Tessellation,
         HoAov,
         PlanarReflection,
         Other

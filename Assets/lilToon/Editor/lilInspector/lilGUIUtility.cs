@@ -144,7 +144,6 @@ namespace lilToon
             isRefr          = !isMultiVariants && lilShaderUtils.IsRefractionShaderName(shaderName);
             isBlur          = !isMultiVariants && lilShaderUtils.IsBlurShaderName(shaderName);
             isFur           = !isMultiVariants && lilShaderUtils.IsFurShaderName(shaderName);
-            isTess          = !isMultiVariants && lilShaderUtils.IsTessellationShaderName(shaderName);
             isGem           = !isMultiVariants && lilShaderUtils.IsGemShaderName(shaderName);
             isFakeShadow    = !isMultiVariants && lilShaderUtils.IsFakeShadowShaderName(shaderName);
             isOnePass       = lilShaderUtils.IsOnePassShaderName(shaderName);

@@ -596,8 +596,4 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     #endif
 }
 
-#if defined(LIL_TESSELLATION)
-    #include "lil_tessellation.hlsl"
-#endif
-
 #endif

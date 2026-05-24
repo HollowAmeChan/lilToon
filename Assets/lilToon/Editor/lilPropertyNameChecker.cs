@@ -291,13 +291,6 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsTessellationProperty(string name)
-        {
-            bool res = false;
-            res = res || name.Contains("_Tess");
-            return res;
-        }
-
         public static bool IsOutlineProperty(string name)
         {
             bool res = false;

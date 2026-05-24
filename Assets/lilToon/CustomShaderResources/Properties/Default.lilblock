@@ -513,13 +513,6 @@
         [lilToggle]     _OutlineDisableInVR         ("sDisableInVR", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
-        // Tessellation
-                        _TessEdge                   ("sTessellationEdge", Range(1, 100)) = 10
-                        _TessStrength               ("sStrength", Range(0, 1)) = 0.5
-                        _TessShrink                 ("sTessellationShrink", Range(0, 1)) = 0.0
-        [IntRange]      _TessFactorMax              ("sTessellationFactor", Range(1, 8)) = 3
-
-        //----------------------------------------------------------------------------------------------------------------------
         // For Multi
         [lilToggleLeft] _UseOutline                 ("Use Outline", Int) = 0
         [lilEnum]       _TransparentMode            ("Rendering Mode|Opaque|Cutout|Transparent|Refraction|Fur|FurCutout|Gem", Int) = 0

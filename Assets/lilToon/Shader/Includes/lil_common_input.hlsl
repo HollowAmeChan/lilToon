@@ -621,12 +621,6 @@ CBUFFER_START(UnityPerMaterial)
         float   _RefractionStrength;
         float   _RefractionFresnelPower;
     #endif
-    #if defined(LIL_TESSELLATION)
-        float   _TessEdge;
-        float   _TessStrength;
-        float   _TessShrink;
-        float   _TessFactorMax;
-    #endif
     #if defined(LIL_GEM)
         float   _GemChromaticAberration;
         float   _GemParticleLoop;

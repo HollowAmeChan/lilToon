@@ -40,3 +40,4 @@
 - 下一步进入 P5 / P6：先清 `BaseShaderResources/*.lilinternal` 中的非 URP 声明，再做 URP pass profile 裁剪。
 - P6a 已执行：删除 `ID Mask` 和 `UV Tile Discard / UDIM Discard` 高级遮罩功能，已清理 property 模板、Inspector、`lilToonSetting` 自动扫描、HLSL appdata / input / function / call site、URP multi 模板和本地化文案。
 - 已同步生成后的 `Assets/lilToon/Shader/*.shader` 中对应 property / define 残留；这些文件当前仍有 `skip-worktree` 标记，默认不会显示在 `git status` 中。
+- P6b 已执行：删除 Tessellation / 表面细分功能。已清理独立 `lts_tess*` / `ltspass_tess*` shader 家族、URP tessellation subshader 模板、`lil_tessellation.hlsl`、`_Tess*` property、Inspector 切换、preset 保存项和 editor shader 引用。

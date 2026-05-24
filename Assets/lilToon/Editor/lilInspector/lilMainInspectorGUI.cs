@@ -1415,33 +1415,6 @@ namespace lilToon
                     }
                 }
 
-                //------------------------------------------------------------------------------------------------------------------------------
-                // Tessellation
-                if(ShouldDrawBlock(PropertyBlock.Tessellation))
-                {
-                    edSet.isShowTess = lilEditorGUI.Foldout(GetLoc("sTessellationSetting"), edSet.isShowTess);
-                    DrawMenuButton(GetLoc("sAnchorTessellation"), PropertyBlock.Tessellation);
-                    if(edSet.isShowTess)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        if(isTess != EditorGUILayout.ToggleLeft(GetLoc("sTessellation"), isTess, customToggleFont))
-                        {
-                            isTess = !isTess;
-                            SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                        }
-                        if(isTess)
-                        {
-                            EditorGUILayout.BeginVertical(boxInner);
-                            LocalizedProperty(tessEdge);
-                            LocalizedProperty(tessStrength);
-                            LocalizedProperty(tessShrink);
-                            LocalizedProperty(tessFactorMax);
-                            EditorGUILayout.EndVertical();
-                        }
-                        EditorGUILayout.EndVertical();
-                    }
-                }
-
                 EditorGUILayout.Space();
 
                 //------------------------------------------------------------------------------------------------------------------------------

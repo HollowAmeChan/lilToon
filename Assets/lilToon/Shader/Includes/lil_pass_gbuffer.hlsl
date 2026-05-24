@@ -184,8 +184,4 @@ GBufferFragOutput frag(v2f input LIL_VFACE(facing))
     return PackGBuffersSurfaceData(surfaceData, inputData, 0.0);
 }
 
-#if defined(LIL_TESSELLATION)
-    #include "lil_tessellation.hlsl"
-#endif
-
 #endif

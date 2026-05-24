@@ -18,30 +18,30 @@ namespace lilToon
         //------------------------------------------------------------------------------------------------------------------------------
         // Material Setup
         #region
-        public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess, bool ismulti)
+        public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
         {
             if(isMultiVariants || material == null || material.parent != null) return;
-            lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, istess, ismulti);
+            lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
         }
 
-        public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess)
+        public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite)
         {
-            SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, istess, isMulti);
+            SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, isMulti);
         }
 
         public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode)
         {
-            SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isOutl, isLite, isTess);
+            SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isOutl, isLite);
         }
 
-        private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess, bool ismulti)
+        private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
         {
-            foreach(var material in materials) SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, istess, ismulti);
+            foreach(var material in materials) SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
         }
 
-        private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess)
+        private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite)
         {
-            foreach(var material in materials) SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, istess);
+            foreach(var material in materials) SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite);
         }
 
         private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode)
@@ -234,7 +234,7 @@ namespace lilToon
             if(isonepass) transparentMode = TransparentMode.OnePass;
             if(istwopass) transparentMode = TransparentMode.TwoPass;
 
-            SetupMaterialWithRenderingMode(liteMaterial, renderingMode, transparentMode, isOutl, true, isStWr, false);
+            SetupMaterialWithRenderingMode(liteMaterial, renderingMode, transparentMode, isOutl, true, false);
 
             string matPath = AssetDatabase.GetAssetPath(material);
             if(!string.IsNullOrEmpty(matPath))  matPath = EditorUtility.SaveFilePanel("Save Material", Path.GetDirectoryName(matPath), Path.GetFileNameWithoutExtension(matPath)+"_lite", "mat");
@@ -381,7 +381,7 @@ namespace lilToon
 
             if(shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER) material.SetFloat("_UseClippingCanceller", 1.0f);
 
-            SetupMaterialWithRenderingMode(material, renderingModeBuf, TransparentMode.Normal, isOutl, false, isStWr, true);
+            SetupMaterialWithRenderingMode(material, renderingModeBuf, TransparentMode.Normal, isOutl, false, true);
             lilMaterialUtils.SetupMultiMaterial(material);
         }
 
@@ -406,16 +406,6 @@ namespace lilToon
             else if(shader == ltsoo)         { ReplaceToCustomShaders(); shader = ltsoo     ;}
             else if(shader == ltscoo)        { ReplaceToCustomShaders(); shader = ltscoo    ;}
             else if(shader == ltstoo)        { ReplaceToCustomShaders(); shader = ltstoo    ;}
-            else if(shader == ltstess)       { ReplaceToCustomShaders(); shader = ltstess   ;}
-            else if(shader == ltstessc)      { ReplaceToCustomShaders(); shader = ltstessc  ;}
-            else if(shader == ltstesst)      { ReplaceToCustomShaders(); shader = ltstesst  ;}
-            else if(shader == ltstessot)     { ReplaceToCustomShaders(); shader = ltstessot ;}
-            else if(shader == ltstesstt)     { ReplaceToCustomShaders(); shader = ltstesstt ;}
-            else if(shader == ltstesso)      { ReplaceToCustomShaders(); shader = ltstesso  ;}
-            else if(shader == ltstessco)     { ReplaceToCustomShaders(); shader = ltstessco ;}
-            else if(shader == ltstessto)     { ReplaceToCustomShaders(); shader = ltstessto ;}
-            else if(shader == ltstessoto)    { ReplaceToCustomShaders(); shader = ltstessoto;}
-            else if(shader == ltstesstto)    { ReplaceToCustomShaders(); shader = ltstesstto;}
             else if(shader == ltsl)          { ReplaceToCustomShaders(); shader = ltsl      ;}
             else if(shader == ltslc)         { ReplaceToCustomShaders(); shader = ltslc     ;}
             else if(shader == ltslt)         { ReplaceToCustomShaders(); shader = ltslt     ;}

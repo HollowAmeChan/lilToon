@@ -782,24 +782,6 @@ msgstr "근본 굵기"
 msgid "sTouchStrength"
 msgstr "접촉 강도"
 
-msgid "sTessellationSetting"
-msgstr "테셀레이션 (매우 높음)"
-
-msgid "sTessellation"
-msgstr "테셀레이션"
-
-msgid "sTessellationTips"
-msgstr "텟세레이션을 설정할 수 있습니다."
-
-msgid "sTessellationEdge"
-msgstr "길이의 한계"
-
-msgid "sTessellationShrink"
-msgstr "축소"
-
-msgid "sTessellationFactor"
-msgstr "최대 분할수"
-
 msgid "sRimShadeSetting"
 msgstr "림쉐이드"
 
@@ -1552,9 +1534,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorTessellation"
-msgstr "advanced/tessellation"
 
 msgid "sAnchorRefraction"
 msgstr "advanced/refraction"

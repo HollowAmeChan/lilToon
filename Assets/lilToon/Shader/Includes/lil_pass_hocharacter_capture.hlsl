@@ -169,8 +169,4 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
         _HoCharacterCaptureOpacity);
 }
 
-#if defined(LIL_TESSELLATION)
-    #include "lil_tessellation.hlsl"
-#endif
-
 #endif

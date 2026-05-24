@@ -20,7 +20,6 @@ public class lilToonPreset : ScriptableObject
     public int renderQueue;
     public int outline;
     public bool outlineMainTex;
-    public int tessellation;
 
     [Serializable]
     public struct lilPresetBase
@@ -70,8 +69,6 @@ public class lilToonPreset : ScriptableObject
         if(preset.shader != null) material.shader = preset.shader;
         var shaderName = material.shader.name;
         bool isoutl         = preset.outline == -1 ? lilShaderUtils.IsOutlineShaderName(shaderName) : (preset.outline == 1);
-        bool istess         = preset.tessellation == -1 ? lilShaderUtils.IsTessellationShaderName(shaderName) : (preset.tessellation == 1);
-
         bool islite         = lilShaderUtils.IsLiteShaderName(shaderName);
         bool iscutout       = lilShaderUtils.IsCutoutShaderName(shaderName);
         bool istransparent  = lilShaderUtils.IsTransparentShaderName(shaderName);
@@ -103,7 +100,7 @@ public class lilToonPreset : ScriptableObject
         if(isonepass)           transparentMode = TransparentMode.OnePass;
         if(!isfur && istwopass) transparentMode = TransparentMode.TwoPass;
 
-        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, istess, ismulti);
+        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
         if(preset.renderQueue != -2) material.renderQueue = preset.renderQueue;
 
         foreach(var c in preset.colors ) material.SetColor(c.name, c.value);
@@ -163,7 +160,6 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveDissolve = true;
         private bool shouldSaveRefraction = true;
         private bool shouldSaveGem = true;
-        private bool shouldSaveTessellation = true;
         private bool shouldSaveOutline = true;
         private bool shouldSaveFur = true;
         private bool shouldSaveStencil = true;
@@ -179,7 +175,6 @@ public class lilToonPreset : ScriptableObject
         private string filename = "";
         private RenderingMode renderingMode;
         private bool isOutl        = false;
-        private bool isTess        = false;
         private bool isShowFeatures = false;
         private bool isShowTextures = false;
 
@@ -218,7 +213,6 @@ public class lilToonPreset : ScriptableObject
             if(material.shader != null && !string.IsNullOrEmpty(shaderName = material.shader.name))
             {
                 isOutl        = lilShaderUtils.IsOutlineShaderName(shaderName);
-                isTess        = lilShaderUtils.IsTessellationShaderName(shaderName);
                 renderingMode = RenderingMode.Opaque;
                 if(lilShaderUtils.IsCutoutShaderName(shaderName))         renderingMode = RenderingMode.Cutout;
                 if(lilShaderUtils.IsTransparentShaderName(shaderName))    renderingMode = RenderingMode.Transparent;
@@ -232,7 +226,6 @@ public class lilToonPreset : ScriptableObject
             else
             {
                 isOutl        = false;
-                isTess        = false;
                 renderingMode = RenderingMode.Opaque;
             }
 
@@ -302,7 +295,6 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveDistanceFade              = EditorGUILayout.ToggleLeft(GetLoc("sDistanceFade"), shouldSaveDistanceFade);
                 shouldSaveDissolve                  = EditorGUILayout.ToggleLeft(GetLoc("sDissolve"), shouldSaveDissolve);
                 shouldSaveRefraction                = EditorGUILayout.ToggleLeft(GetLoc("sRefraction"), shouldSaveRefraction);
-                shouldSaveTessellation              = EditorGUILayout.ToggleLeft(GetLoc("sTessellation"), shouldSaveTessellation);
                 shouldSaveOutline                   = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), shouldSaveOutline);
                 if(
                     renderingMode == RenderingMode.Fur ||
@@ -377,7 +369,6 @@ public class lilToonPreset : ScriptableObject
                 preset.shader = null;
                 preset.renderQueue = shouldSaveQueue ? material.renderQueue : -2;
                 preset.outline = shouldSaveOutline ? (isOutl?1:0) : -1;
-                preset.tessellation = shouldSaveTessellation ? (isTess?1:0) : -1;
                 preset.outlineMainTex = shouldSaveMainTex2Outline;
 
                 EditorUtility.SetDirty(preset);
@@ -434,7 +425,6 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||
                     shouldSaveRefraction && lilPropertyNameChecker.IsRefractionProperty(propName) ||
                     shouldSaveGem && lilPropertyNameChecker.IsGemProperty(propName) ||
-                    shouldSaveTessellation && lilPropertyNameChecker.IsTessellationProperty(propName) ||
                     shouldSaveOutline && lilPropertyNameChecker.IsOutlineProperty(propName) ||
                     shouldSaveFur && lilPropertyNameChecker.IsFurProperty(propName) ||
                     shouldSaveStencil && lilPropertyNameChecker.IsStencilProperty(propName) ||
@@ -515,7 +505,6 @@ public class lilToonPreset : ScriptableObject
             shouldSaveDissolve = val;
             shouldSaveRefraction = val;
             shouldSaveGem = val;
-            shouldSaveTessellation = val;
             shouldSaveOutline = val;
             shouldSaveFur = val;
             shouldSaveStencil = val;

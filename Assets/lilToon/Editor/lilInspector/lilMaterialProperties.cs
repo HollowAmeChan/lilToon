@@ -584,11 +584,6 @@ namespace lilToon
         private readonly lilMaterialProperty furColorMask           = new lilMaterialProperty("_FurColorMask", PropertyBlock.Rendering);
         private readonly lilMaterialProperty furAlphaToMask         = new lilMaterialProperty("_FurAlphaToMask", PropertyBlock.Rendering);
 
-        private readonly lilMaterialProperty tessEdge               = new lilMaterialProperty("_TessEdge", PropertyBlock.Tessellation);
-        private readonly lilMaterialProperty tessStrength           = new lilMaterialProperty("_TessStrength", PropertyBlock.Tessellation);
-        private readonly lilMaterialProperty tessShrink             = new lilMaterialProperty("_TessShrink", PropertyBlock.Tessellation);
-        private readonly lilMaterialProperty tessFactorMax          = new lilMaterialProperty("_TessFactorMax", PropertyBlock.Tessellation);
-
         private readonly lilMaterialProperty transparentModeMat     = new lilMaterialProperty("_TransparentMode", PropertyBlock.Base);
         private readonly lilMaterialProperty useClippingCanceller   = new lilMaterialProperty("_UseClippingCanceller", PropertyBlock.Base);
         private readonly lilMaterialProperty asOverlay              = new lilMaterialProperty("_AsOverlay", PropertyBlock.Base);
@@ -1166,11 +1161,6 @@ namespace lilToon
                 furOffsetUnits,
                 furColorMask,
                 furAlphaToMask,
-
-                tessEdge,
-                tessStrength,
-                tessShrink,
-                tessFactorMax,
 
                 transparentModeMat,
                 useClippingCanceller,

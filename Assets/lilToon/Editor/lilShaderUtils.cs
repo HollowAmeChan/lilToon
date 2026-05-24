@@ -128,39 +128,6 @@ namespace lilToon
             return shaderName.EndsWith("FurTwoPass");
         }
 
-        public static bool IsTessellationShaderName(string shaderName)
-        {
-            var separatorIndex = shaderName.LastIndexOf('/');
-            if (separatorIndex == -1 || separatorIndex + 1 == shaderName.Length)
-            {
-                return false;
-            }
-
-            if (shaderName.IndexOf("Tessellation", separatorIndex + 1) > 0)
-            {
-                return true;
-            }
-
-            // For following custom shader names.
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/Opaque
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/Cutout
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/Transparent
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/OnePassTransparent
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/TwoPassTransparent
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/OpaqueOutline
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/CutoutOutline
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/TransparentOutline
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/OnePassTransparentOutline
-            // - Hidden/*LIL_SHADER_NAME*/Tessellation/TwoPassTransparentOutline
-            var partIndex = shaderName.LastIndexOf("/Tessellation/");
-            if (partIndex != -1 && partIndex + 13 == separatorIndex)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public static bool IsGemShaderName(string shaderName)
         {
             return ContainsAfterLastSeparator(shaderName, "Gem");

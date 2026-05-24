@@ -286,14 +286,6 @@ namespace lilToon
                 sb.Replace(LIL_LIGHTMODE_FORWARD_2, LIL_LIGHTMODE_URP_9_FORWARD_2);
             }
 
-            if(assetName.Contains("ltspass_tess_"))
-            {
-                sb.Replace(
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_domain _ FOG_LINEAR FOG_EXP FOG_EXP2"
-                );
-            }
-
             if((assetName.Contains("lts_fur") && !assetName.Contains("cutout")) || assetName.Contains("trans") || assetName.Contains("overlay"))
             {
                 sb.Replace(

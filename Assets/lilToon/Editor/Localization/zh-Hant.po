@@ -782,24 +782,6 @@ msgstr "根厚度"
 msgid "sTouchStrength"
 msgstr "接觸強度"
 
-msgid "sTessellationSetting"
-msgstr "Tessellation (極高負荷)"
-
-msgid "sTessellation"
-msgstr "Tessellation"
-
-msgid "sTessellationTips"
-msgstr "你可以設定 Tessellation。"
-
-msgid "sTessellationEdge"
-msgstr "閾值長度"
-
-msgid "sTessellationShrink"
-msgstr "縮減"
-
-msgid "sTessellationFactor"
-msgstr "最大係數"
-
 msgid "sRimShadeSetting"
 msgstr "邊緣陰影設定 (RimShade)"
 
@@ -1552,9 +1534,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorTessellation"
-msgstr "advanced/tessellation"
 
 msgid "sAnchorRefraction"
 msgstr "advanced/refraction"

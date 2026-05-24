@@ -75,7 +75,6 @@ namespace lilToon
             public bool isShowOutlineMap                = false;
             public bool isShowRefraction                = false;
             public bool isShowFur                       = false;
-            public bool isShowTess                      = false;
             public bool isShowRendering                 = false;
             public bool isShowLightBake                 = false;
             public bool isShowOptimization              = false;
@@ -128,7 +127,6 @@ namespace lilToon
         protected static bool isBlur            = false;
         protected static bool isFur             = false;
         protected static bool isStWr            = false;
-        protected static bool isTess            = false;
         protected static bool isGem             = false;
         protected static bool isFakeShadow      = false;
         protected static bool isOnePass         = false;

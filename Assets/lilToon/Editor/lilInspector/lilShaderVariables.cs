@@ -30,16 +30,6 @@ namespace lilToon
         protected static Shader ltsoo       { get { return lilShaderManager.ltsoo     ; } set { lilShaderManager.ltsoo      = value; } }
         protected static Shader ltscoo      { get { return lilShaderManager.ltscoo    ; } set { lilShaderManager.ltscoo     = value; } }
         protected static Shader ltstoo      { get { return lilShaderManager.ltstoo    ; } set { lilShaderManager.ltstoo     = value; } }
-        protected static Shader ltstess     { get { return lilShaderManager.ltstess   ; } set { lilShaderManager.ltstess    = value; } }
-        protected static Shader ltstessc    { get { return lilShaderManager.ltstessc  ; } set { lilShaderManager.ltstessc   = value; } }
-        protected static Shader ltstesst    { get { return lilShaderManager.ltstesst  ; } set { lilShaderManager.ltstesst   = value; } }
-        protected static Shader ltstessot   { get { return lilShaderManager.ltstessot ; } set { lilShaderManager.ltstessot  = value; } }
-        protected static Shader ltstesstt   { get { return lilShaderManager.ltstesstt ; } set { lilShaderManager.ltstesstt  = value; } }
-        protected static Shader ltstesso    { get { return lilShaderManager.ltstesso  ; } set { lilShaderManager.ltstesso   = value; } }
-        protected static Shader ltstessco   { get { return lilShaderManager.ltstessco ; } set { lilShaderManager.ltstessco  = value; } }
-        protected static Shader ltstessto   { get { return lilShaderManager.ltstessto ; } set { lilShaderManager.ltstessto  = value; } }
-        protected static Shader ltstessoto  { get { return lilShaderManager.ltstessoto; } set { lilShaderManager.ltstessoto = value; } }
-        protected static Shader ltstesstto  { get { return lilShaderManager.ltstesstto; } set { lilShaderManager.ltstesstto = value; } }
         protected static Shader ltsl        { get { return lilShaderManager.ltsl      ; } set { lilShaderManager.ltsl       = value; } }
         protected static Shader ltslc       { get { return lilShaderManager.ltslc     ; } set { lilShaderManager.ltslc      = value; } }
         protected static Shader ltslt       { get { return lilShaderManager.ltslt     ; } set { lilShaderManager.ltslt      = value; } }
@@ -68,9 +58,6 @@ namespace lilToon
         protected static Shader ltspo       { get { return lilShaderManager.ltspo     ; } set { lilShaderManager.ltspo      = value; } }
         protected static Shader ltspc       { get { return lilShaderManager.ltspc     ; } set { lilShaderManager.ltspc      = value; } }
         protected static Shader ltspt       { get { return lilShaderManager.ltspt     ; } set { lilShaderManager.ltspt      = value; } }
-        protected static Shader ltsptesso   { get { return lilShaderManager.ltsptesso ; } set { lilShaderManager.ltsptesso  = value; } }
-        protected static Shader ltsptessc   { get { return lilShaderManager.ltsptessc ; } set { lilShaderManager.ltsptessc  = value; } }
-        protected static Shader ltsptesst   { get { return lilShaderManager.ltsptesst ; } set { lilShaderManager.ltsptesst  = value; } }
         protected static Shader ltsm        { get { return lilShaderManager.ltsm      ; } set { lilShaderManager.ltsm       = value; } }
         protected static Shader ltsmo       { get { return lilShaderManager.ltsmo     ; } set { lilShaderManager.ltsmo      = value; } }
         protected static Shader ltsmref     { get { return lilShaderManager.ltsmref   ; } set { lilShaderManager.ltsmref    = value; } }

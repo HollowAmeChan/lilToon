@@ -6,7 +6,7 @@
 
 ### 1. Shader 文件数量
 
-当前 `Assets/lilToon/Shader` 下有 65 个 `.shader`。大量文件只是透明模式、outline、tessellation、fur、gem、refraction、lite/full 的组合。
+当前 `Assets/lilToon/Shader` 下原先有 65 个 `.shader`。大量文件只是透明模式、outline、tessellation、fur、gem、refraction、lite/full 的组合；其中 tessellation 家族已在 P6b 删除。
 
 问题：
 
@@ -103,7 +103,7 @@ URP `Default.lilblock` 默认包含：
 - main 3rd layer 默认不进 Standard
 - glitter 默认不进 Standard
 - POM 默认不进 Standard
-- tessellation 默认不进 Standard
+- tessellation 已在 P6b 删除
 - refraction / blur / gem / fur 进入 Specialized
 
 ### Full
@@ -122,7 +122,7 @@ URP `Default.lilblock` 默认包含：
 控制：
 
 - Full 数量应少，且只在明确需要的材质上使用。
-- Full 不应默认包含 fur、gem、refraction、tessellation。
+- Full 不应默认包含 fur、gem、refraction；tessellation 已删除。
 
 ### Specialized
 
@@ -134,7 +134,7 @@ URP `Default.lilblock` 默认包含：
 - Gem
 - Refraction
 - RefractionBlur
-- Tessellation
+- Tessellation（已删除）
 - OIT Transparent
 - HoAOV authoring / capture
 
@@ -195,7 +195,7 @@ URP `Default.lilblock` 默认包含：
 
 不建议合并：
 
-- Fur / Gem / Refraction / Tessellation。这些代码路径差异大，合并会让普通材质付出编译和运行成本。
+- Fur / Gem / Refraction。这些代码路径差异大，合并会让普通材质付出编译和运行成本。Tessellation 已在 P6b 直接删除。
 - Deferred / Forward。如果项目多数走 Forward，Deferred 应做独立可选包。
 
 ### 变体 strip
@@ -214,7 +214,7 @@ URP `Default.lilblock` 默认包含：
 2. 删除 VRChat、ChilloutVR、AudioLink、VRCLV、LTCGI。
 3. 删除非项目需要的 pass：优先检查 GBuffer、MotionVectors、Universal2D、Meta、HoAOV。
 4. 新增 `Lite` 和 `Standard` 两个明确 shader 族。
-5. Fur / Gem / Refraction / Tessellation 暂时独立保留，后续逐个评估。
+5. Fur / Gem / Refraction 暂时独立保留，后续逐个评估；Tessellation 已在 P6b 删除。
 
 ## 2026-05-24 后续执行顺序
 
@@ -225,6 +225,10 @@ P6：做 URP pass profile。默认裁剪候选为 `UniversalGBuffer`、`MotionVe
 P6a（已执行）：在 pass profile 前删除高级遮罩功能 `ID Mask` 和 `UV Tile Discard / UDIM Discard`。它们会增加 property、inspector、appdata、constant buffer、vertex/fragment 公共路径复杂度，且不是普通 URP toon 材质刚需。
 
 P6a 执行结果：源模板、Editor、`lilToonSetting`、HLSL include、URP multi 模板、本地化文案和已生成 `.shader` 产物均已同步清理；当前残留搜索只保留 CHANGELOG 历史记录。
+
+P6b（已执行）：删除 Tessellation / 表面细分功能。它会引入独立 shader 家族、额外 hull/domain shader、`#pragma require tesshw tessellation`、额外 appdata normal 要求和 `_Tess*` property；当前项目不需要该路径，已完整移除。
+
+P6b 执行结果：独立 `lts_tess*` / `ltspass_tess*` shader 家族、URP tessellation subshader 模板、`lil_tessellation.hlsl`、`_Tess*` property、Inspector 切换、preset 保存项、本地化文案和 editor shader 引用均已清理。
 
 P7：清 `lilShaderContainerImporter` 中老 URP / LWRP LightMode 兼容、ForwardAdd rewrite 和不再可达的多管线逻辑。
 

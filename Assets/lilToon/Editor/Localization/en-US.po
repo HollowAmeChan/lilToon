@@ -782,24 +782,6 @@ msgstr "Root Width"
 msgid "sTouchStrength"
 msgstr "Touch strength"
 
-msgid "sTessellationSetting"
-msgstr "Tessellation (Extremely high load)"
-
-msgid "sTessellation"
-msgstr "Tessellation"
-
-msgid "sTessellationTips"
-msgstr "You can set the tessellation."
-
-msgid "sTessellationEdge"
-msgstr "Threshold length"
-
-msgid "sTessellationShrink"
-msgstr "Shrink"
-
-msgid "sTessellationFactor"
-msgstr "Max Factor"
-
 msgid "sRimShadeSetting"
 msgstr "RimShade"
 
@@ -1552,9 +1534,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorTessellation"
-msgstr "advanced/tessellation"
 
 msgid "sAnchorRefraction"
 msgstr "advanced/refraction"

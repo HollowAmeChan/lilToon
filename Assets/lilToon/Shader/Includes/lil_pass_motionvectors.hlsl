@@ -170,8 +170,4 @@ void frag(v2f input
     #endif
 }
 
-#if defined(LIL_TESSELLATION)
-    #include "lil_tessellation.hlsl"
-#endif
-
 #endif

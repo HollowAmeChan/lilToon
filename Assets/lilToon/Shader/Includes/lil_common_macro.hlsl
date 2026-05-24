@@ -2004,9 +2004,6 @@ float3 lilGetObjectPosition()
 #define LIL_TIME            _Time.y
 #define LIL_INTER_TIME      lilIntervalTime(_TimeInterval)
 
-// Interpolation for Tessellation
-#define LIL_TRI_INTERPOLATION(i,o,bary,type) o.type = bary.x * i[0].type + bary.y * i[1].type + bary.z * i[2].type
-
 // Specular dielectric
 #ifdef LIL_COLORSPACE_GAMMA
     #define LIL_DIELECTRIC_SPECULAR float4(0.220916301, 0.220916301, 0.220916301, 1.0 - 0.220916301)

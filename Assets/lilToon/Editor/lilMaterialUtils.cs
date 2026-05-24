@@ -8,7 +8,7 @@ namespace lilToon
 {
     public class lilMaterialUtils
     {
-        internal static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool istess, bool ismulti)
+        internal static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
         {
             if(material == null || material.parent != null) return;
             Undo.RecordObject(material, null);
@@ -43,11 +43,6 @@ namespace lilToon
                         material.SetOverrideTag("RenderType", "");
                         material.renderQueue = -1;
                     }
-                    else if(istess)
-                    {
-                        if(isoutl)  material.shader = lilShaderManager.ltstesso;
-                        else        material.shader = lilShaderManager.ltstess;
-                    }
                     else
                     {
                         if(isoutl)  material.shader = lilShaderManager.ltso;
@@ -75,11 +70,6 @@ namespace lilToon
                         else        material.shader = lilShaderManager.ltsm;
                         material.SetOverrideTag("RenderType", "TransparentCutout");
                         material.renderQueue = 2450;
-                    }
-                    else if(istess)
-                    {
-                        if(isoutl)  material.shader = lilShaderManager.ltstessco;
-                        else        material.shader = lilShaderManager.ltstessc;
                     }
                     else
                     {
@@ -114,11 +104,6 @@ namespace lilToon
                                     if(isoutl)  material.shader = lilShaderManager.ltslto;
                                     else        material.shader = lilShaderManager.ltslt;
                                 }
-                                else if(istess)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltstessto;
-                                    else        material.shader = lilShaderManager.ltstesst;
-                                }
                                 else
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltsto;
@@ -131,11 +116,6 @@ namespace lilToon
                                     if(isoutl)  material.shader = lilShaderManager.ltsloto;
                                     else        material.shader = lilShaderManager.ltslot;
                                 }
-                                else if(istess)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltstessoto;
-                                    else        material.shader = lilShaderManager.ltstessot;
-                                }
                                 else
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltsoto;
@@ -147,11 +127,6 @@ namespace lilToon
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltsltto;
                                     else        material.shader = lilShaderManager.ltsltt;
-                                }
-                                else if(istess)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltstesstto;
-                                    else        material.shader = lilShaderManager.ltstesstt;
                                 }
                                 else
                                 {

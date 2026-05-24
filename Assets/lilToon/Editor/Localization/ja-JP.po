@@ -782,24 +782,6 @@ msgstr "根本の太さ"
 msgid "sTouchStrength"
 msgstr "接触強度"
 
-msgid "sTessellationSetting"
-msgstr "テッセレーション (非常に高負荷)"
-
-msgid "sTessellation"
-msgstr "テッセレーション"
-
-msgid "sTessellationTips"
-msgstr "テッセレーションのかかり方を設定できます"
-
-msgid "sTessellationEdge"
-msgstr "閾値"
-
-msgid "sTessellationShrink"
-msgstr "縮小補正"
-
-msgid "sTessellationFactor"
-msgstr "最大分割数"
-
 msgid "sRimShadeSetting"
 msgstr "リムシェード"
 
@@ -1552,9 +1534,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorTessellation"
-msgstr "advanced/tessellation"
 
 msgid "sAnchorRefraction"
 msgstr "advanced/refraction"

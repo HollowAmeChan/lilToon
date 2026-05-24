@@ -1279,12 +1279,4 @@ float3 lilCalcGlitter(float2 uv, float3 normalDirection, float3 viewDirection, f
     #endif
 }
 
-//------------------------------------------------------------------------------------------------------------------------------
-// Tessellation
-float lilCalcEdgeTessFactor(float3 wpos0, float3 wpos1, float edgeLen)
-{
-    float dist = distance(0.5 * (wpos0+wpos1), _WorldSpaceCameraPos.xyz);
-    return max(distance(wpos0, wpos1) * LIL_SCREENPARAMS.y / (edgeLen * dist), 1.0);
-}
-
 #endif
