@@ -27,7 +27,6 @@
             #define LIL_MULTI_INPUTS_GLITTER
             #define LIL_MULTI_INPUTS_PARALLAX
             #define LIL_MULTI_INPUTS_DISTANCE_FADE
-            #define LIL_MULTI_INPUTS_AUDIOLINK
             #define LIL_MULTI_INPUTS_DISSOLVE
             #define LIL_MULTI_INPUTS_IDMASK
             #define LIL_MULTI_INPUTS_UDIMDISCARD

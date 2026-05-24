@@ -43,8 +43,6 @@
     #define _UseEmission true
     #define _UseEmission2nd true
     #define _UseParallax true
-    #define _UseAudioLink true
-    #define _AudioLinkAsLocal true
     #define LIL_MULTI_SHOULD_CLIPPING && _UseClippingCanceller
 #else
     #define LIL_MULTI_SHOULD_CLIPPING
@@ -126,7 +124,6 @@ struct lilFragData
     float roughness;
     float perceptualRoughness;
     float shadowmix;
-    float audioLinkValue;
 
     // HDRP Data
     uint renderingLayers;
@@ -205,7 +202,6 @@ lilFragData lilInitFragData()
     fd.roughness = 1.0;
     fd.perceptualRoughness = 1.0;
     fd.shadowmix = 1.0;
-    fd.audioLinkValue = 1.0;
 
     fd.renderingLayers = 0;
     fd.featureFlags = 0;

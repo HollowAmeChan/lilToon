@@ -872,78 +872,6 @@ msgstr "開始距離"
 msgid "sEndDistance"
 msgstr "終了距離"
 
-msgid "sAudioLink"
-msgstr "AudioLink"
-
-msgid "sAudioLinkTips"
-msgstr "AudioLinkシステムに合わせてマテリアルを変化させられます"
-
-msgid "sAudioLinkUVMode"
-msgstr "UV Mode"
-
-msgid "sAudioLinkUVModeNone"
-msgstr "None"
-
-msgid "sAudioLinkUVModeRim"
-msgstr "Rim"
-
-msgid "sAudioLinkUVModeUV"
-msgstr "UV"
-
-msgid "sAudioLinkUVModeMask"
-msgstr "マスク"
-
-msgid "sAudioLinkUVModePosition"
-msgstr "座標"
-
-msgid "sAudioLinkMaskRGB"
-msgstr "RGB = 遅延 / 帯域 / 強度"
-
-msgid "sAudioLinkMaskRGBSpectrum"
-msgstr "RGB = 音量 / 帯域 / 強度"
-
-msgid "Offset"
-msgstr "Offset"
-
-msgid "sAudioLinkBand"
-msgstr "帯域"
-
-msgid "sAudioLinkBandBass"
-msgstr "Bass"
-
-msgid "sAudioLinkBandLowMid"
-msgstr "Low Mid"
-
-msgid "sAudioLinkBandHighMid"
-msgstr "High Mid"
-
-msgid "sAudioLinkBandTreble"
-msgstr "Treble"
-
-msgid "sAudioLinkStartPosition"
-msgstr "開始点"
-
-msgid "sAudioLinkMovingVector"
-msgstr "移動方向"
-
-msgid "sAudioLinkNormalStrength"
-msgstr "法線方向の強度"
-
-msgid "sAudioLinkAsLocal"
-msgstr "ローカル化"
-
-msgid "sAudioLinkLocalMap"
-msgstr "ローカルマップ"
-
-msgid "sAudioLinkLocalMapBPM"
-msgstr "BPM"
-
-msgid "sAudioLinkLocalMapNotes"
-msgstr "拍数"
-
-msgid "sAudioLinkDefaultValue"
-msgstr "AudioLink無効時の初期値"
-
 msgid "sDissolve"
 msgstr "Dissolve"
 
@@ -1624,9 +1552,6 @@ msgstr "advanced/parallax"
 
 msgid "sAnchorDistanceFade"
 msgstr "advanced/distancefade"
-
-msgid "sAnchorAudioLink"
-msgstr "advanced/audiolink"
 
 msgid "sAnchorDissolve"
 msgstr "advanced/dissolve"

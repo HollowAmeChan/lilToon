@@ -214,23 +214,6 @@ float4  _PlanarReflectionTint;
     float4  _DitherTex_TexelSize;
 #endif
 
-// AudioLink
-#if defined(LIL_FEATURE_AUDIOLINK)
-    float4  _AudioLinkMask_ST;
-    float4  _AudioLinkMask_ScrollRotate;
-    float4  _AudioLinkDefaultValue;
-    float4  _AudioLinkUVParams;
-    float4  _AudioLinkStart;
-    #if defined(LIL_FEATURE_AUDIOLINK_VERTEX)
-        float4  _AudioLinkVertexUVParams;
-        float4  _AudioLinkVertexStart;
-        float4  _AudioLinkVertexStrength;
-    #endif
-    #if defined(LIL_FEATURE_AUDIOLINK_LOCAL)
-        float4  _AudioLinkLocalMapParams;
-    #endif
-#endif
-
 // Dissolve
 #if defined(LIL_FEATURE_DISSOLVE)
     float4  _DissolveMask_ST;
@@ -507,10 +490,6 @@ float   _PlanarReflectionFadeEnd;
 #if defined(LIL_FEATURE_DITHER)
     float   _DitherMaxValue;
 #endif
-#if defined(LIL_FEATURE_AUDIOLINK)
-    float   _AudioLink2EmissionGrad;
-    float   _AudioLink2Emission2ndGrad;
-#endif
 #if defined(LIL_FEATURE_DISSOLVE) &&  defined(LIL_FEATURE_DissolveNoiseMask)
     float   _DissolveNoiseStrength;
 #endif
@@ -666,13 +645,6 @@ uint    _PlanarReflectionBlendMode;
     uint    _Emission2ndMap_UVMode;
     uint    _Emission2ndBlendMode;
 #endif
-#if defined(LIL_FEATURE_AUDIOLINK)
-    uint    _AudioLinkUVMode;
-    uint    _AudioLinkMask_UVMode;
-    #if defined(LIL_FEATURE_AUDIOLINK_VERTEX)
-        uint    _AudioLinkVertexUVMode;
-    #endif
-#endif
 #if defined(LIL_FEATURE_DISTANCE_FADE)
     uint    _DistanceFadeMode;
 #endif
@@ -807,28 +779,6 @@ lilBool _PlanarReflectionFlipY;
         lilBool _UsePOM;
     #endif
 #endif
-#if defined(LIL_FEATURE_AUDIOLINK)
-    lilBool _UseAudioLink;
-    #if defined(LIL_FEATURE_MAIN2ND)
-        lilBool _AudioLink2Main2nd;
-    #endif
-    #if defined(LIL_FEATURE_MAIN3RD)
-        lilBool _AudioLink2Main3rd;
-    #endif
-    #if defined(LIL_FEATURE_EMISSION_1ST)
-        lilBool _AudioLink2Emission;
-    #endif
-    #if defined(LIL_FEATURE_EMISSION_2ND)
-        lilBool _AudioLink2Emission2nd;
-    #endif
-    #if defined(LIL_FEATURE_AUDIOLINK_VERTEX)
-        lilBool _AudioLink2Vertex;
-    #endif
-    #if defined(LIL_FEATURE_AUDIOLINK_LOCAL)
-        lilBool _AudioLinkAsLocal;
-    #endif
-#endif
-
 #if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
     lilBool _OutlineLitApplyTex;
     lilBool _OutlineLitShadowReceive;

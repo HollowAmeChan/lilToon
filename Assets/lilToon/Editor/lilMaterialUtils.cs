@@ -1,10 +1,3 @@
-#if !LILTOON_VRCSDK3_AVATARS && !LILTOON_VRCSDK3_WORLDS && VRC_SDK_VRCSDK3
-    #if UDON
-        #define LILTOON_VRCSDK3_WORLDS
-    #else
-        #define LILTOON_VRCSDK3_AVATARS
-    #endif
-#endif
 #if UNITY_EDITOR
 using System.Linq;
 using UnityEditor;
@@ -264,7 +257,6 @@ namespace lilToon
                     break;
             }
             if(!ismulti) material.renderQueue = renderQueue;
-            FixTransparentRenderQueue(material, renderingMode);
             if(rend == RenderingMode.Gem)
             {
                 material.SetInt("_Cull", 0);
@@ -334,22 +326,6 @@ namespace lilToon
             return lilConstants.mainTexCheckWords.Any(word => !name.Contains(word));
         }
 
-        private static void FixTransparentRenderQueue(Material material, RenderingMode renderingMode)
-        {
-            #if LILTOON_VRCSDK3_WORLDS
-                if( renderingMode == RenderingMode.Transparent ||
-                    renderingMode == RenderingMode.Refraction ||
-                    renderingMode == RenderingMode.RefractionBlur ||
-                    renderingMode == RenderingMode.Fur ||
-                    renderingMode == RenderingMode.FurTwoPass ||
-                    renderingMode == RenderingMode.Gem
-                )
-                {
-                    material.renderQueue = 3000;
-                }
-            #endif
-        }
-
         public static void SetupMultiMaterial(Material material)
         {
             int tpmode = 0;
@@ -369,8 +345,6 @@ namespace lilToon
             bool useRim = IsFeatureOnFloat(material, "_UseRim");
             bool useRimDir = IsFeatureOnFloat(material, "_RimDirStrength");
             bool useGlitter = IsFeatureOnFloat(material, "_UseGlitter");
-            bool useAudioLink = IsFeatureOnFloat(material, "_UseAudioLink");
-            bool audioLinkAsLocal = IsFeatureOnFloat(material, "_AudioLinkAsLocal");
             bool useDissolve = IsFeatureOnVectorX(material, "_DissolveParams");
             bool useMain2ndDissolve = IsFeatureOnVectorX(material, "_Main2ndDissolveParams");
             bool useMain3rdDissolve = IsFeatureOnVectorX(material, "_Main3rdDissolveParams");
@@ -428,8 +402,6 @@ namespace lilToon
             SetShaderKeywords(material, "_METALLICGLOSSMAP",                    useRim);
             SetShaderKeywords(material, "GEOM_TYPE_LEAF",                       useRim && useRimDir);
             SetShaderKeywords(material, "_SPECGLOSSMAP",                        useGlitter);
-            SetShaderKeywords(material, "_MAPPING_6_FRAMES_LAYOUT",             useAudioLink);
-            SetShaderKeywords(material, "_SUNDISK_HIGH_QUALITY",                useAudioLink && audioLinkAsLocal);
             SetShaderKeywords(material, "GEOM_TYPE_BRANCH_DETAIL",              useDissolve);
 
             if(isGem)
@@ -660,8 +632,6 @@ namespace lilToon
                 if(IsPropZero(material, "_UseRim", animatedProps)) material.SetTexture("_RimColorTex", null);
                 if(IsPropZero(material, "_UseGlitter", animatedProps)) material.SetTexture("_GlitterColorTex", null);
                 if(IsPropZero(material, "_UseParallax", animatedProps)) material.SetTexture("_ParallaxMap", null);
-                if(IsPropZero(material, "_UseAudioLink", animatedProps) || material.GetFloat("_AudioLinkUVMode") != 3.0f || animatedProps.Contains("_AudioLinkUVMode")) material.SetTexture("_AudioLinkMask", null);
-                if(IsPropZero(material, "_UseAudioLink", animatedProps) || IsPropZero(material, "_AudioLinkAsLocal", animatedProps)) material.SetTexture("_AudioLinkLocalMap", null);
             }
         }
 

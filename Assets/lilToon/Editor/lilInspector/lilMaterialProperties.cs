@@ -439,29 +439,6 @@ namespace lilToon
         private readonly lilMaterialProperty distanceFadeRimColor        = new lilMaterialProperty("_DistanceFadeRimColor", PropertyBlock.DistanceFade);
         private readonly lilMaterialProperty distanceFadeRimFresnelPower = new lilMaterialProperty("_DistanceFadeRimFresnelPower", PropertyBlock.DistanceFade);
 
-        private readonly lilMaterialProperty useAudioLink               = new lilMaterialProperty("_UseAudioLink", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkDefaultValue      = new lilMaterialProperty("_AudioLinkDefaultValue", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkUVMode            = new lilMaterialProperty("_AudioLinkUVMode", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkUVParams          = new lilMaterialProperty("_AudioLinkUVParams", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkStart             = new lilMaterialProperty("_AudioLinkStart", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkMask              = new lilMaterialProperty("_AudioLinkMask", true, PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkMask_ScrollRotate = new lilMaterialProperty("_AudioLinkMask_ScrollRotate", true, PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkMask_UVMode 　　　　= new lilMaterialProperty("_AudioLinkMask_UVMode", true, PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Main2nd          = new lilMaterialProperty("_AudioLink2Main2nd", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Main3rd          = new lilMaterialProperty("_AudioLink2Main3rd", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Emission         = new lilMaterialProperty("_AudioLink2Emission", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2EmissionGrad     = new lilMaterialProperty("_AudioLink2EmissionGrad", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Emission2nd      = new lilMaterialProperty("_AudioLink2Emission2nd", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Emission2ndGrad  = new lilMaterialProperty("_AudioLink2Emission2ndGrad", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLink2Vertex           = new lilMaterialProperty("_AudioLink2Vertex", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkVertexUVMode      = new lilMaterialProperty("_AudioLinkVertexUVMode", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkVertexUVParams    = new lilMaterialProperty("_AudioLinkVertexUVParams", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkVertexStart       = new lilMaterialProperty("_AudioLinkVertexStart", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkVertexStrength    = new lilMaterialProperty("_AudioLinkVertexStrength", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkAsLocal           = new lilMaterialProperty("_AudioLinkAsLocal", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkLocalMap          = new lilMaterialProperty("_AudioLinkLocalMap", PropertyBlock.AudioLink);
-        private readonly lilMaterialProperty audioLinkLocalMapParams    = new lilMaterialProperty("_AudioLinkLocalMapParams", PropertyBlock.AudioLink);
-
         private readonly lilMaterialProperty dissolveMask                   = new lilMaterialProperty("_DissolveMask", true, PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolveNoiseMask              = new lilMaterialProperty("_DissolveNoiseMask", true, PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolveNoiseMask_ScrollRotate = new lilMaterialProperty("_DissolveNoiseMask_ScrollRotate", PropertyBlock.Dissolve);
@@ -667,8 +644,6 @@ namespace lilToon
         private readonly lilMaterialProperty triMask                = new lilMaterialProperty("_TriMask", true, PropertyBlock.Base);
         private readonly lilMaterialProperty matcapMul              = new lilMaterialProperty("_MatCapMul", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty fakeShadowVector       = new lilMaterialProperty("_FakeShadowVector", PropertyBlock.Base);
-
-        private readonly lilMaterialProperty ramp = new lilMaterialProperty("_Ramp", true);
 
         private lilMaterialProperty[] allProperty;
         private lilMaterialProperty[] AllProperties()
@@ -1096,29 +1071,6 @@ namespace lilToon
                 distanceFadeRimColor,
                 distanceFadeRimFresnelPower,
 
-                useAudioLink,
-                audioLinkDefaultValue,
-                audioLinkUVMode,
-                audioLinkUVParams,
-                audioLinkStart,
-                audioLinkMask,
-                audioLinkMask_ScrollRotate,
-                audioLinkMask_UVMode,
-                audioLink2Main2nd,
-                audioLink2Main3rd,
-                audioLink2Emission,
-                audioLink2EmissionGrad,
-                audioLink2Emission2nd,
-                audioLink2Emission2ndGrad,
-                audioLink2Vertex,
-                audioLinkVertexUVMode,
-                audioLinkVertexUVParams,
-                audioLinkVertexStart,
-                audioLinkVertexStrength,
-                audioLinkAsLocal,
-                audioLinkLocalMap,
-                audioLinkLocalMapParams,
-
                 dissolveMask,
                 dissolveNoiseMask,
                 dissolveNoiseMask_ScrollRotate,
@@ -1324,8 +1276,6 @@ namespace lilToon
                 triMask,
                 matcapMul,
                 fakeShadowVector,
-
-                ramp,
             };
         }
 

@@ -89,24 +89,6 @@ void lilHashRGB4(float2 pos, out float3 noise0, out float3 noise1, out float3 no
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-// Udon AudioLink
-// https://github.com/llealloo/vrc-udon-audio-link
-bool lilCheckAudioLink()
-{
-    #if defined(LIL_FEATURE_AUDIOLINK)
-        #if defined(LIL_LWTEX)
-            return _AudioTexture_TexelSize.z > 16;
-        #else
-            int width, height;
-            _AudioTexture.GetDimensions(width, height);
-            return width > 16;
-        #endif
-    #else
-        return false;
-    #endif
-}
-
-//------------------------------------------------------------------------------------------------------------------------------
 // LTCGI
 // https://github.com/PiMaker/ltcgi
 #if defined(LIL_FEATURE_LTCGI)

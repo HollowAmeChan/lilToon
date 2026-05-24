@@ -95,7 +95,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
 {
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
-    LIL_FORCE_SCENE_LIGHT;
     LIL_SETUP_INSTANCE_ID(input);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();

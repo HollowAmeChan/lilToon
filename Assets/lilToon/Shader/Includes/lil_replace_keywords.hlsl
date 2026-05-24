@@ -41,8 +41,6 @@
 // _PARALLAXMAP                         LIL_FEATURE_PARALLAX
 // PIXELSNAP_ON                         LIL_FEATURE_POM
 // _FADING_ON                           LIL_FEATURE_DISTANCE_FADE
-// _MAPPING_6_FRAMES_LAYOUT             LIL_FEATURE_AUDIOLINK
-// _SUNDISK_HIGH_QUALITY                LIL_FEATURE_AUDIOLINK_LOCAL
 // GEOM_TYPE_BRANCH_DETAIL              LIL_FEATURE_DISSOLVE
 // ETC1_EXTERNAL_ALPHA                  LIL_FEATURE_DITHER
 // ------------------------------------ --------------------------------------------------------------------------------
@@ -201,16 +199,6 @@
     #undef _FADING_ON
 #endif
 
-#if defined(_MAPPING_6_FRAMES_LAYOUT)
-    #define LIL_FEATURE_AUDIOLINK
-    #undef _MAPPING_6_FRAMES_LAYOUT
-#endif
-
-#if defined(_SUNDISK_HIGH_QUALITY)
-    #define LIL_FEATURE_AUDIOLINK_LOCAL
-    #undef _SUNDISK_HIGH_QUALITY
-#endif
-
 #if defined(GEOM_TYPE_BRANCH_DETAIL)
     #define LIL_FEATURE_DISSOLVE
     #undef GEOM_TYPE_BRANCH_DETAIL
@@ -240,7 +228,6 @@
 #define LIL_FEATURE_EMISSION_MASK_UV
 #define LIL_FEATURE_ANIMATE_EMISSION_MASK_UV
 #define LIL_FEATURE_EMISSION_GRADATION
-#define LIL_FEATURE_AUDIOLINK_VERTEX
 #define LIL_FEATURE_CLIPPING_CANCELLER
 #define LIL_FEATURE_IDMASK
 #define LIL_FEATURE_UDIMDISCARD
@@ -296,8 +283,6 @@
 #define LIL_FEATURE_Emission2ndBlendMask
 #define LIL_FEATURE_Emission2ndGradTex
 #define LIL_FEATURE_ParallaxMap
-#define LIL_FEATURE_AudioLinkMask
-#define LIL_FEATURE_AudioLinkLocalMap
 #define LIL_FEATURE_DissolveMask
 #define LIL_FEATURE_DissolveNoiseMask
 #define LIL_FEATURE_OutlineTex

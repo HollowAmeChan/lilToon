@@ -872,78 +872,6 @@ msgstr "시작 거리"
 msgid "sEndDistance"
 msgstr "종료 거리"
 
-msgid "sAudioLink"
-msgstr "AudioLink"
-
-msgid "sAudioLinkTips"
-msgstr "AudioLink 시스템에 의해 재료의 외형을 변화시키는 설정입니다."
-
-msgid "sAudioLinkUVMode"
-msgstr "UV Mode"
-
-msgid "sAudioLinkUVModeNone"
-msgstr "None"
-
-msgid "sAudioLinkUVModeRim"
-msgstr "Rim"
-
-msgid "sAudioLinkUVModeUV"
-msgstr "UV"
-
-msgid "sAudioLinkUVModeMask"
-msgstr "마스크"
-
-msgid "sAudioLinkUVModePosition"
-msgstr "좌표"
-
-msgid "sAudioLinkMaskRGB"
-msgstr "RGB = Delay / Band / Strength"
-
-msgid "sAudioLinkMaskRGBSpectrum"
-msgstr "RGB = Volume / Band / Strength"
-
-msgid "Offset"
-msgstr "Offset"
-
-msgid "sAudioLinkBand"
-msgstr "Band"
-
-msgid "sAudioLinkBandBass"
-msgstr "Bass"
-
-msgid "sAudioLinkBandLowMid"
-msgstr "Low Mid"
-
-msgid "sAudioLinkBandHighMid"
-msgstr "High Mid"
-
-msgid "sAudioLinkBandTreble"
-msgstr "Treble"
-
-msgid "sAudioLinkStartPosition"
-msgstr "원점"
-
-msgid "sAudioLinkMovingVector"
-msgstr "이동 방향"
-
-msgid "sAudioLinkNormalStrength"
-msgstr "법선 방향의 강도"
-
-msgid "sAudioLinkAsLocal"
-msgstr "로컬"
-
-msgid "sAudioLinkLocalMap"
-msgstr "Local Map"
-
-msgid "sAudioLinkLocalMapBPM"
-msgstr "BPM"
-
-msgid "sAudioLinkLocalMapNotes"
-msgstr "Notes"
-
-msgid "sAudioLinkDefaultValue"
-msgstr "AudioLink 비활성화 시 기본값"
-
 msgid "sDissolve"
 msgstr "Dissolve"
 
@@ -1624,9 +1552,6 @@ msgstr "advanced/parallax"
 
 msgid "sAnchorDistanceFade"
 msgstr "advanced/distancefade"
-
-msgid "sAnchorAudioLink"
-msgstr "advanced/audiolink"
 
 msgid "sAnchorDissolve"
 msgstr "advanced/dissolve"

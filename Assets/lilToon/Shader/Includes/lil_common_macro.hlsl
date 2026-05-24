@@ -191,12 +191,12 @@
 #endif
 
 // normalOS (vertex input)
-#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_FEATURE_AUDIOLINK) || defined(LIL_FEATURE_LTCGI) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)) || defined(LIL_HDRP)
+#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_FEATURE_LTCGI) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)) || defined(LIL_HDRP)
     #define LIL_SHOULD_NORMAL
 #endif
 
 // positionOS
-#if (defined(LIL_FEATURE_MAIN2ND) || defined(LIL_FEATURE_MAIN3RD)) && defined(LIL_FEATURE_LAYER_DISSOLVE) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_DISSOLVE) || defined(LIL_FEATURE_AUDIOLINK)
+#if (defined(LIL_FEATURE_MAIN2ND) || defined(LIL_FEATURE_MAIN3RD)) && defined(LIL_FEATURE_LAYER_DISSOLVE) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_DISSOLVE)
     #define LIL_SHOULD_POSITION_OS
 #endif
 
@@ -2118,14 +2118,6 @@ struct lilLightData
     float3 lightColor;
     float3 indLightColor;
 };
-
-#define LIL_FORCE_SCENE_LIGHT \
-    if(_UdonForceSceneLighting) { \
-        _LightMinLimit = 0; \
-        _LightMaxLimit = 100000; \
-        _MonochromeLighting = 0; \
-        _AsUnlit = 0; \
-    }
 
 // Main Light in VS
 #if defined(LIL_USE_ADDITIONALLIGHT_MAIN)

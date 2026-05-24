@@ -480,31 +480,6 @@
         [PowerSlider(3.0)]_DistanceFadeRimFresnelPower ("sFresnelPower", Range(0.01, 50)) = 5.0
 
         //----------------------------------------------------------------------------------------------------------------------
-        // AudioLink
-        [lilToggleLeft] _UseAudioLink               ("sAudioLink", Int) = 0
-        [lilFRFR]       _AudioLinkDefaultValue      ("Strength|Blink Strength|Blink Speed|Blink Threshold", Vector) = (0.0,0.0,2.0,0.75)
-        [lilEnum]       _AudioLinkUVMode            ("sAudioLinkUVModes", Int) = 1
-        [lilALUVParams] _AudioLinkUVParams          ("Scale|Offset|sAngle|Band|Bass|Low Mid|High Mid|Treble", Vector) = (0.25,0,0,0.125)
-        [lilVec3]       _AudioLinkStart             ("sAudioLinkStartPosition", Vector) = (0.0,0.0,0.0,0.0)
-                        _AudioLinkMask              ("Mask", 2D) = "blue" {}
-        [lilUVAnim]     _AudioLinkMask_ScrollRotate ("sScrollRotates", Vector) = (0,0,0,0)
-        [lilEnum]       _AudioLinkMask_UVMode       ("UV Mode|UV0|UV1|UV2|UV3", Int) = 0
-        [lilToggle]     _AudioLink2Main2nd          ("sMainColor2nd", Int) = 0
-        [lilToggle]     _AudioLink2Main3rd          ("sMainColor3rd", Int) = 0
-        [lilToggle]     _AudioLink2Emission         ("sEmission", Int) = 0
-        [lilToggle]     _AudioLink2EmissionGrad     ("sEmission+sGradation", Int) = 0
-        [lilToggle]     _AudioLink2Emission2nd      ("sEmission2nd", Int) = 0
-        [lilToggle]     _AudioLink2Emission2ndGrad  ("sEmission2nd+sGradation", Int) = 0
-        [lilToggle]     _AudioLink2Vertex           ("sVertex", Int) = 0
-        [lilEnum]       _AudioLinkVertexUVMode      ("sAudioLinkVertexUVModes", Int) = 1
-        [lilALUVParams] _AudioLinkVertexUVParams    ("Scale|Offset|sAngle|Band|Bass|Low Mid|High Mid|Treble", Vector) = (0.25,0,0,0.125)
-        [lilVec3]       _AudioLinkVertexStart       ("sAudioLinkStartPosition", Vector) = (0.0,0.0,0.0,0.0)
-        [lilVec3Float]  _AudioLinkVertexStrength    ("sAudioLinkVertexStrengths", Vector) = (0.0,0.0,0.0,1.0)
-        [lilToggle]     _AudioLinkAsLocal           ("sAudioLinkAsLocal", Int) = 0
-        [NoScaleOffset] _AudioLinkLocalMap          ("Local Map", 2D) = "black" {}
-        [lilALLocal]    _AudioLinkLocalMapParams    ("sAudioLinkLocalMapParams", Vector) = (120,1,0,0)
-
-        //----------------------------------------------------------------------------------------------------------------------
         // Dissolve
                         _DissolveMask               ("Dissolve Mask", 2D) = "white" {}
                         _DissolveNoiseMask          ("Dissolve Noise Mask", 2D) = "gray" {}
@@ -616,7 +591,3 @@
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
         [HideInInspector]                               _lilToonVersion     ("Version", Int) = 0
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // VRChat
-        _Ramp ("Shadow Ramp", 2D) = "white" {}

@@ -31,3 +31,9 @@
 4. 按功能体量拆分 `Lite`、`Standard`、`Full`、`Specialized` shader 族。
 5. 加 shader variant 统计和构建前 strip 规则，用数据确认编译时间下降。
 
+## 2026-05-24 执行记录
+
+- 已执行 `03-vrchat-feature-removal-map.md` 中的 P0 / P1 / P2。
+- 已删除 VRChat / ChilloutVR 构建集成、VRChat fallback inspector UI、fallback `_Ramp` / `_UdonForceSceneLighting` 残留，以及 AudioLink 的 editor / property / setting / HLSL / localization / notice 路径。
+- 已同步生成后的 `.shader` 文件内容，但这些文件当前有 `skip-worktree` 标记，默认不会显示在 `git status` 中。
+- 下一步建议继续处理 VRC Light Volumes，再处理 LTCGI。

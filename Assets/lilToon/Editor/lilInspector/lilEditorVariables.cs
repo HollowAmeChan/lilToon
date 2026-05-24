@@ -40,7 +40,6 @@ namespace lilToon
             public bool isShowMatCap2ndUV               = false;
             public bool isShowParallax                  = false;
             public bool isShowDistanceFade              = false;
-            public bool isShowAudioLink                 = false;
             public bool isShowDissolve                  = false;
             public bool isShowMain2ndDissolveMask       = false;
             public bool isShowMain2ndDissolveNoiseMask  = false;
@@ -69,7 +68,6 @@ namespace lilToon
             public bool isShowGlitterColorTex           = false;
             public bool isShowGlitterShapeTex           = false;
             public bool isShowGem                       = false;
-            public bool isShowAudioLinkMask             = false;
             public bool isShowDissolveMask              = false;
             public bool isShowDissolveNoiseMask         = false;
             public bool isShowIDMask                    = false;
@@ -101,7 +99,6 @@ namespace lilToon
             public bool isShowShaderSetting             = false;
             public bool isShowOptimizationSetting       = false;
             public bool isShowDefaultValueSetting       = false;
-            public bool isShowVRChat                    = false;
             public bool isAlphaMaskModeAdvanced         = false;
             public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Ho+1]{false,false,false,false,false,false,false,false};
             public string searchKeyWord = "";
@@ -201,8 +198,6 @@ namespace lilToon
         protected static GUIContent smoothnessContent               { get { return lilLanguageManager.smoothnessContent             ; } private set { lilLanguageManager.smoothnessContent              = value; } }
         protected static GUIContent metallicContent                 { get { return lilLanguageManager.metallicContent               ; } private set { lilLanguageManager.metallicContent                = value; } }
         protected static GUIContent parallaxContent                 { get { return lilLanguageManager.parallaxContent               ; } private set { lilLanguageManager.parallaxContent                = value; } }
-        protected static GUIContent audioLinkMaskContent            { get { return lilLanguageManager.audioLinkMaskContent          ; } private set { lilLanguageManager.audioLinkMaskContent           = value; } }
-        protected static GUIContent audioLinkMaskSpectrumContent    { get { return lilLanguageManager.audioLinkMaskSpectrumContent  ; } private set { lilLanguageManager.audioLinkMaskSpectrumContent   = value; } }
         protected static GUIContent customMaskContent               { get { return lilLanguageManager.customMaskContent             ; } private set { lilLanguageManager.customMaskContent              = value; } }
         protected static GUIContent shadow1stColorRGBAContent       { get { return lilLanguageManager.shadow1stColorRGBAContent     ; } private set { lilLanguageManager.shadow1stColorRGBAContent      = value; } }
         protected static GUIContent shadow2ndColorRGBAContent       { get { return lilLanguageManager.shadow2ndColorRGBAContent     ; } private set { lilLanguageManager.shadow2ndColorRGBAContent      = value; } }
@@ -213,7 +208,6 @@ namespace lilToon
         protected static GUIContent lengthMaskContent               { get { return lilLanguageManager.lengthMaskContent             ; } private set { lilLanguageManager.lengthMaskContent              = value; } }
         protected static GUIContent triMaskContent                  { get { return lilLanguageManager.triMaskContent                ; } private set { lilLanguageManager.triMaskContent                 = value; } }
         protected static GUIContent cubemapContent                  { get { return lilLanguageManager.cubemapContent                ; } private set { lilLanguageManager.cubemapContent                 = value; } }
-        protected static GUIContent audioLinkLocalMapContent        { get { return lilLanguageManager.audioLinkLocalMapContent      ; } private set { lilLanguageManager.audioLinkLocalMapContent       = value; } }
         protected static GUIContent gradationMapContent             { get { return lilLanguageManager.gradationMapContent           ; } private set { lilLanguageManager.gradationMapContent            = value; } }
     }
 }

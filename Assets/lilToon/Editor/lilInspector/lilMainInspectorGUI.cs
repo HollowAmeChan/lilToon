@@ -55,10 +55,6 @@ namespace lilToon
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // VRChat
-                DrawVRCFallbackGUI(material);
-
-                //------------------------------------------------------------------------------------------------------------------------------
                 // Custom Properties
                 if(isCustomShader)
                 {
@@ -290,7 +286,6 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxOuter);
                         EditorGUILayout.LabelField(GetLoc("sOptimization"), customToggleFont);
                         EditorGUILayout.BeginVertical(boxInnerHalf);
-                        DrawOptimizationButton(material, !(isLite && isMulti));
                         lilEditorGUI.RemoveUnusedPropertiesGUI(material);
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
@@ -337,10 +332,6 @@ namespace lilToon
                         EditorGUILayout.EndVertical();
                     }
                 }
-
-                //------------------------------------------------------------------------------------------------------------------------------
-                // VRChat
-                DrawVRCFallbackGUI(material);
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Custom Properties
@@ -538,7 +529,6 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxOuter);
                         EditorGUILayout.LabelField(GetLoc("sOptimization"), customToggleFont);
                         EditorGUILayout.BeginVertical(boxInnerHalf);
-                        DrawOptimizationButton(material, !(isLite && isMulti));
                         lilEditorGUI.RemoveUnusedPropertiesGUI(material);
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
@@ -576,10 +566,6 @@ namespace lilToon
                         EditorGUILayout.EndVertical();
                     }
                 }
-
-                //------------------------------------------------------------------------------------------------------------------------------
-                // VRChat
-                DrawVRCFallbackGUI(material);
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Custom Properties
@@ -1183,81 +1169,6 @@ namespace lilToon
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // AudioLink
-                if(ShouldDrawBlock(PropertyBlock.AudioLink))
-                {
-                    edSet.isShowAudioLink = lilEditorGUI.Foldout(GetLoc("sAudioLink"), edSet.isShowAudioLink);
-                    DrawMenuButton(GetLoc("sAnchorAudioLink"), PropertyBlock.AudioLink);
-                    if(edSet.isShowAudioLink)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        LocalizedProperty(useAudioLink, false);
-                        DrawMenuButton(GetLoc("sAnchorAudioLink"), PropertyBlock.AudioLink);
-                        if(useAudioLink.floatValue == 1)
-                        {
-                            string sALParamsNone = BuildParams(GetLoc("sOffset"), GetLoc("sAudioLinkBand"), GetLoc("sAudioLinkBandBass"), GetLoc("sAudioLinkBandLowMid"), GetLoc("sAudioLinkBandHighMid"), GetLoc("sAudioLinkBandTreble"));
-                            string sALParamsPos = BuildParams(GetLoc("sScale"), GetLoc("sOffset"), GetLoc("sAudioLinkBand"), GetLoc("sAudioLinkBandBass"), GetLoc("sAudioLinkBandLowMid"), GetLoc("sAudioLinkBandHighMid"), GetLoc("sAudioLinkBandTreble"));
-                            string sALParamsUV = BuildParams(GetLoc("sScale"), GetLoc("sOffset"), GetLoc("sAngle"), GetLoc("sAudioLinkBand"), GetLoc("sAudioLinkBandBass"), GetLoc("sAudioLinkBandLowMid"), GetLoc("sAudioLinkBandHighMid"), GetLoc("sAudioLinkBandTreble"));
-                            EditorGUILayout.BeginVertical(boxInnerHalf);
-                            LocalizedProperty(audioLinkUVMode);
-                            if(audioLinkUVMode.floatValue == 0) LocalizedProperty(audioLinkUVParams, sALParamsNone);
-                            if(audioLinkUVMode.floatValue == 1) LocalizedProperty(audioLinkUVParams, sALParamsPos);
-                            if(audioLinkUVMode.floatValue == 2) LocalizedProperty(audioLinkUVParams, sALParamsUV);
-                            if(audioLinkUVMode.floatValue == 3) TextureGUI(ref edSet.isShowAudioLinkMask, audioLinkMaskContent, audioLinkMask, null, audioLinkMask_ScrollRotate, audioLinkMask_UVMode, true, true);
-                            if(audioLinkUVMode.floatValue == 4)
-                            {
-                                TextureGUI(ref edSet.isShowAudioLinkMask, audioLinkMaskSpectrumContent, audioLinkMask, null, audioLinkMask_ScrollRotate, audioLinkMask_UVMode, true, true);
-                                lilEditorGUI.DrawVectorAs4Float(audioLinkUVParams, "Volume", "Base Boost", "Treble Boost", "Line Width");
-                            }
-                            if(audioLinkUVMode.floatValue == 5)
-                            {
-                                LocalizedProperty(audioLinkUVParams, sALParamsPos);
-                                LocalizedProperty(audioLinkStart);
-                            }
-                            lilEditorGUI.DrawLine();
-                            GUILayout.Label(GetLoc("sAudioLinkDefaultValue"), boldLabel);
-                            EditorGUI.indentLevel++;
-                            if(audioLinkUVMode.floatValue == 4) lilEditorGUI.DrawVectorAs4Float(audioLinkDefaultValue, GetLoc("sStrength"), "Detail", "Speed", GetLoc("sThreshold"));
-                            else LocalizedProperty(audioLinkDefaultValue, BuildParams(GetLoc("sStrength"), GetLoc("sBlinkStrength"), GetLoc("sBlinkSpeed"), GetLoc("sThreshold")));
-                            EditorGUI.indentLevel--;
-                            lilEditorGUI.DrawLine();
-                            GUILayout.Label(GetLoc("sApplyTo"), boldLabel);
-                            EditorGUI.indentLevel++;
-                            LocalizedProperty(audioLink2Main2nd);
-                            LocalizedProperty(audioLink2Main3rd);
-                            LocalizedProperty(audioLink2Emission);
-                            LocalizedProperty(audioLink2EmissionGrad);
-                            LocalizedProperty(audioLink2Emission2nd);
-                            LocalizedProperty(audioLink2Emission2ndGrad);
-                            LocalizedProperty(audioLink2Vertex);
-                            if(audioLink2Vertex.floatValue == 1)
-                            {
-                                EditorGUI.indentLevel++;
-                                LocalizedProperty(audioLinkVertexUVMode);
-                                if(audioLinkVertexUVMode.floatValue == 0) LocalizedProperty(audioLinkVertexUVParams, sALParamsNone);
-                                if(audioLinkVertexUVMode.floatValue == 1) LocalizedProperty(audioLinkVertexUVParams, sALParamsPos);
-                                if(audioLinkVertexUVMode.floatValue == 2) LocalizedProperty(audioLinkVertexUVParams, sALParamsUV);
-                                if(audioLinkVertexUVMode.floatValue == 3) TextureGUI(ref edSet.isShowAudioLinkMask, audioLinkMaskContent, audioLinkMask, null, audioLinkMask_ScrollRotate, audioLinkMask_UVMode, true, true);
-                                if(audioLinkVertexUVMode.floatValue == 1) LocalizedProperty(audioLinkVertexStart);
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(audioLinkVertexStrength);
-                                EditorGUI.indentLevel--;
-                            }
-                            EditorGUI.indentLevel--;
-                            lilEditorGUI.DrawLine();
-                            LocalizedProperty(audioLinkAsLocal);
-                            if(audioLinkAsLocal.floatValue == 1)
-                            {
-                                LocalizedPropertyTexture(audioLinkLocalMapContent, audioLinkLocalMap);
-                                LocalizedProperty(audioLinkLocalMapParams);
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-                        EditorGUILayout.EndVertical();
-                    }
-                }
-
-                //------------------------------------------------------------------------------------------------------------------------------
                 // Dissolve
                 if(ShouldDrawBlock(PropertyBlock.Dissolve))
                 {
@@ -1662,7 +1573,6 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxOuter);
                         EditorGUILayout.LabelField(GetLoc("sOptimization"), customToggleFont);
                         EditorGUILayout.BeginVertical(boxInnerHalf);
-                        DrawOptimizationButton(material, !(isLite && isMulti));
                         lilEditorGUI.RemoveUnusedPropertiesGUI(material);
                         TextureBakeGUI(material, 0);
                         TextureBakeGUI(material, 1);

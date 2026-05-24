@@ -4,6 +4,14 @@
 
 ## 删除优先级
 
+### 2026-05-24 本轮执行范围
+
+- 已执行 P0：删除 `External/Editor` 下 VRChat / ChilloutVR 构建钩子和独立 editor asmdef。
+- 已执行 P1：移除 VRChat fallback tag 的 inspector UI 入口，停止 editor asmdef 生成 `LILTOON_VRCSDK3*` define，并删除 `_Ramp` / `_UdonForceSceneLighting` fallback 残留。
+- 已执行 P2：删除 AudioLink editor 入口、shader setting 自动扫描、property 模板、HLSL input / fragment / vertex 路径、legacy keyword 映射、本地化文案和第三方 notice。
+- 已同步 `Assets/lilToon/Shader/*.shader` 生成产物中的 AudioLink / VRChat fallback 残留；这些 `.shader` 文件当前带 `skip-worktree` 标记，所以不会出现在 `git status` 中。
+- 下一步转入 P3 / P4：VRC Light Volumes 和 LTCGI。
+
 ### P0：平台构建集成
 
 这些是明确的平台专用代码，可第一批删除或从 asmdef 中移除：
@@ -145,4 +153,3 @@ LTCGI 属于 VRChat world 常见第三方光照生态，建议删除，除非项
 - 文档和 changelog 中是否保留历史说明另行决定。
 - 材质 inspector 不再展示 VRChat 或 AudioLink 区块。
 - 生成后的 `.shader` 不包含第三方包 include。
-

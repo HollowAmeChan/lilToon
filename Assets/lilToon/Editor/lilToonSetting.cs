@@ -1,10 +1,3 @@
-#if !LILTOON_VRCSDK3_AVATARS && !LILTOON_VRCSDK3_WORLDS && VRC_SDK_VRCSDK3
-    #if UDON
-        #define LILTOON_VRCSDK3_WORLDS
-    #else
-        #define LILTOON_VRCSDK3_AVATARS
-    #endif
-#endif
 #if UNITY_EDITOR
 using lilToon;
 using System;
@@ -56,9 +49,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_POM = false;
     public bool LIL_FEATURE_CLIPPING_CANCELLER = false;
     public bool LIL_FEATURE_DISTANCE_FADE = true;
-    public bool LIL_FEATURE_AUDIOLINK = true;
-    public bool LIL_FEATURE_AUDIOLINK_VERTEX = true;
-    public bool LIL_FEATURE_AUDIOLINK_LOCAL = true;
     public bool LIL_FEATURE_DISSOLVE = true;
     public bool LIL_FEATURE_IDMASK = true;
     public bool LIL_FEATURE_UDIMDISCARD = true;
@@ -116,8 +106,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_Emission2ndBlendMask = true;
     public bool LIL_FEATURE_Emission2ndGradTex = true;
     public bool LIL_FEATURE_ParallaxMap = true;
-    public bool LIL_FEATURE_AudioLinkMask = true;
-    public bool LIL_FEATURE_AudioLinkLocalMap = true;
     public bool LIL_FEATURE_DissolveMask = true;
     public bool LIL_FEATURE_DissolveNoiseMask = true;
     public bool LIL_FEATURE_OutlineTex = true;
@@ -287,9 +275,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_POM = false;
         //shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER = false;
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = false;
-        shaderSetting.LIL_FEATURE_AUDIOLINK = false;
-        shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX = false;
-        shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL = false;
         shaderSetting.LIL_FEATURE_DISSOLVE = false;
         shaderSetting.LIL_FEATURE_DITHER = false;
         shaderSetting.LIL_FEATURE_IDMASK = false;
@@ -347,8 +332,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_Emission2ndBlendMask = false;
         shaderSetting.LIL_FEATURE_Emission2ndGradTex = false;
         shaderSetting.LIL_FEATURE_ParallaxMap = false;
-        shaderSetting.LIL_FEATURE_AudioLinkMask = false;
-        shaderSetting.LIL_FEATURE_AudioLinkLocalMap = false;
         shaderSetting.LIL_FEATURE_DissolveMask = false;
         shaderSetting.LIL_FEATURE_DissolveNoiseMask = false;
         shaderSetting.LIL_FEATURE_OutlineTex = false;
@@ -402,9 +385,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_POM = true;
         //shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER = true;
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = true;
-        shaderSetting.LIL_FEATURE_AUDIOLINK = true;
-        shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX = true;
-        shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL = true;
         shaderSetting.LIL_FEATURE_DISSOLVE = true;
         shaderSetting.LIL_FEATURE_DITHER = true;
         shaderSetting.LIL_FEATURE_IDMASK = true;
@@ -465,8 +445,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_Emission2ndBlendMask = true;
             shaderSetting.LIL_FEATURE_Emission2ndGradTex = true;
             shaderSetting.LIL_FEATURE_ParallaxMap = true;
-            shaderSetting.LIL_FEATURE_AudioLinkMask = true;
-            shaderSetting.LIL_FEATURE_AudioLinkLocalMap = true;
             shaderSetting.LIL_FEATURE_DissolveMask = true;
             shaderSetting.LIL_FEATURE_DissolveNoiseMask = true;
             shaderSetting.LIL_FEATURE_OutlineTex = true;
@@ -551,11 +529,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP) sb.AppendLine("#define LIL_OPTIMIZE_USE_LIGHTMAP");
         #if LILTOON_VRCLIGHTVOLUMES
         if (shaderSetting.LIL_OPTIMIZE_USE_VRCLIGHTVOLUMES) sb.AppendLine("#define LIL_FEATURE_VRCLIGHTVOLUMES");
-        #elif LILTOON_VRCSDK3
-        if (shaderSetting.LIL_OPTIMIZE_USE_VRCLIGHTVOLUMES) sb.AppendLine("#define LIL_FEATURE_VRCLIGHTVOLUMES_WITHOUTPACKAGE");
-        #endif
-        #if LILTOON_AUDIOLINK
-        sb.AppendLine("#define LIL_FEATURE_AUDIOLINK_PACKAGE");
         #endif
         return sb.ToString();
     }
@@ -623,12 +596,6 @@ public class lilToonSetting : ScriptableObject
         }
         if (shaderSetting.LIL_FEATURE_CLIPPING_CANCELLER) sb.AppendLine("#define LIL_FEATURE_CLIPPING_CANCELLER");
         if (shaderSetting.LIL_FEATURE_DISTANCE_FADE) sb.AppendLine("#define LIL_FEATURE_DISTANCE_FADE");
-        if (shaderSetting.LIL_FEATURE_AUDIOLINK)
-        {
-            sb.AppendLine("#define LIL_FEATURE_AUDIOLINK");
-            if (shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX) sb.AppendLine("#define LIL_FEATURE_AUDIOLINK_VERTEX");
-            if (shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL) sb.AppendLine("#define LIL_FEATURE_AUDIOLINK_LOCAL");
-        }
         if (shaderSetting.LIL_FEATURE_DISSOLVE) sb.AppendLine("#define LIL_FEATURE_DISSOLVE");
         if (shaderSetting.LIL_FEATURE_DITHER) sb.AppendLine("#define LIL_FEATURE_DITHER");
         if (shaderSetting.LIL_FEATURE_IDMASK) sb.AppendLine("#define LIL_FEATURE_IDMASK");
@@ -688,8 +655,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_Emission2ndBlendMask) sb.AppendLine("#define LIL_FEATURE_Emission2ndBlendMask");
         if (shaderSetting.LIL_FEATURE_Emission2ndGradTex) sb.AppendLine("#define LIL_FEATURE_Emission2ndGradTex");
         if (shaderSetting.LIL_FEATURE_ParallaxMap) sb.AppendLine("#define LIL_FEATURE_ParallaxMap");
-        if (shaderSetting.LIL_FEATURE_AudioLinkMask) sb.AppendLine("#define LIL_FEATURE_AudioLinkMask");
-        if (shaderSetting.LIL_FEATURE_AudioLinkLocalMap) sb.AppendLine("#define LIL_FEATURE_AudioLinkLocalMap");
         if (shaderSetting.LIL_FEATURE_DissolveMask) sb.AppendLine("#define LIL_FEATURE_DissolveMask");
         /*if (shaderSetting.LIL_FEATURE_DissolveNoiseMask)*/
         sb.AppendLine("#define LIL_FEATURE_DissolveNoiseMask");
@@ -1223,21 +1188,6 @@ public class lilToonSetting : ScriptableObject
                 shaderSetting.LIL_FEATURE_POM = true;
             }
         }
-        if(!shaderSetting.LIL_FEATURE_AUDIOLINK && material.HasProperty("_UseAudioLink") && material.GetFloat("_UseAudioLink") != 0.0f)
-        {
-            logs.Add("[lilToon] LIL_FEATURE_AUDIOLINK : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_AUDIOLINK = true;
-        }
-        if(!shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX && material.HasProperty("_AudioLink2Vertex") && material.GetFloat("_AudioLink2Vertex") != 0.0f)
-        {
-            logs.Add("[lilToon] LIL_FEATURE_AUDIOLINK_VERTEX : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX = true;
-        }
-        if(!shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL && material.HasProperty("_AudioLinkAsLocal") && material.GetFloat("_AudioLinkAsLocal") != 0.0f)
-        {
-            logs.Add("[lilToon] LIL_FEATURE_AUDIOLINK_LOCAL : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL = true;
-        }
         if(!shaderSetting.LIL_FEATURE_DISSOLVE && material.HasProperty("_DissolveParams") && material.GetVector("_DissolveParams").x != lilConstants.defaultDissolveParams.x)
         {
             logs.Add("[lilToon] LIL_FEATURE_DISSOLVE : " + AssetDatabase.GetAssetPath(material));
@@ -1362,9 +1312,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION || propname.Contains("_RimDirStrength");
             shaderSetting.LIL_FEATURE_PARALLAX = shaderSetting.LIL_FEATURE_PARALLAX || propname.Contains("_UseParallax");
             shaderSetting.LIL_FEATURE_POM = shaderSetting.LIL_FEATURE_POM || propname.Contains("_UsePOM");
-            shaderSetting.LIL_FEATURE_AUDIOLINK = shaderSetting.LIL_FEATURE_AUDIOLINK || propname.Contains("_UseAudioLink");
-            shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX = shaderSetting.LIL_FEATURE_AUDIOLINK_VERTEX || propname.Contains("_AudioLink2Vertex");
-            shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL = shaderSetting.LIL_FEATURE_AUDIOLINK_LOCAL || propname.Contains("_AudioLinkAsLocal");
             shaderSetting.LIL_FEATURE_DISSOLVE = shaderSetting.LIL_FEATURE_DISSOLVE || propname.Contains("_DissolveParams");
             shaderSetting.LIL_FEATURE_DITHER = shaderSetting.LIL_FEATURE_DITHER || propname.Contains("_UseDither");
 
@@ -1460,8 +1407,6 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_Emission2ndBlendMask      , "_Emission2ndBlendMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_Emission2ndGradTex        , "_Emission2ndGradTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_ParallaxMap               , "_ParallaxMap", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_AudioLinkMask             , "_AudioLinkMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_AudioLinkLocalMap         , "_AudioLinkLocalMap", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_DissolveMask              , "_DissolveMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_DissolveNoiseMask         , "_DissolveNoiseMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_OutlineTex                , "_OutlineTex", material);
@@ -1523,8 +1468,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_Emission2ndBlendMask       = shaderSetting.LIL_FEATURE_Emission2ndBlendMask     || propname.Contains("_Emission2ndBlendMask");
         shaderSetting.LIL_FEATURE_Emission2ndGradTex         = shaderSetting.LIL_FEATURE_Emission2ndGradTex       || propname.Contains("_Emission2ndGradTex");
         shaderSetting.LIL_FEATURE_ParallaxMap                = shaderSetting.LIL_FEATURE_ParallaxMap              || propname.Contains("_ParallaxMap");
-        shaderSetting.LIL_FEATURE_AudioLinkMask              = shaderSetting.LIL_FEATURE_AudioLinkMask            || propname.Contains("_AudioLinkMask");
-        shaderSetting.LIL_FEATURE_AudioLinkLocalMap          = shaderSetting.LIL_FEATURE_AudioLinkLocalMap        || propname.Contains("_AudioLinkLocalMap");
         shaderSetting.LIL_FEATURE_DissolveMask               = shaderSetting.LIL_FEATURE_DissolveMask             || propname.Contains("_DissolveMask");
         shaderSetting.LIL_FEATURE_DissolveNoiseMask          = shaderSetting.LIL_FEATURE_DissolveNoiseMask        || propname.Contains("_DissolveNoiseMask");
         shaderSetting.LIL_FEATURE_OutlineTex                 = shaderSetting.LIL_FEATURE_OutlineTex               || propname.Contains("_OutlineTex");
@@ -1550,11 +1493,7 @@ public class lilToonSetting : ScriptableObject
 
         lilToonSetting shaderSetting = null;
         InitializeShaderSetting(ref shaderSetting);
-        #if LILTOON_VRCSDK3_AVATARS
-            return shaderSetting.isOptimizeInTestBuild && !shaderSetting.isDebugOptimize;
-        #else
-            return !shaderSetting.isDebugOptimize;
-        #endif
+        return !shaderSetting.isDebugOptimize;
     }
 
     private static List<Shader> GetShaderListFromProject()

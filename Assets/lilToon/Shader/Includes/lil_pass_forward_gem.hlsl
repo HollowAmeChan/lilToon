@@ -95,7 +95,6 @@
     {
         //------------------------------------------------------------------------------------------------------------------------------
         // Initialize
-        LIL_FORCE_SCENE_LIGHT;
         LIL_SETUP_INSTANCE_ID(input);
         LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         lilFragData fd = lilInitFragData();
@@ -188,13 +187,6 @@
         BEFORE_ANISOTROPY
         #if defined(LIL_FEATURE_ANISOTROPY)
             OVERRIDE_ANISOTROPY
-        #endif
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // AudioLink
-        BEFORE_AUDIOLINK
-        #if defined(LIL_FEATURE_AUDIOLINK)
-            OVERRIDE_AUDIOLINK
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------

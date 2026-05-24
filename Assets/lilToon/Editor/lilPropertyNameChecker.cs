@@ -268,14 +268,6 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsAudioLinkProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_UseAudioLink";
-            res = res || name.Contains("_AudioLink");
-            return res;
-        }
-
         public static bool IsDissolveProperty(string name)
         {
             bool res = false;

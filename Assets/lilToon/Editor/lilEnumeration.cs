@@ -67,7 +67,6 @@ namespace lilToon
         Outline,
         Parallax,
         DistanceFade,
-        AudioLink,
         Dissolve,
         IDMask,
         UDIMDiscard,

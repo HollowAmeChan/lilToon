@@ -180,7 +180,6 @@ SOFTWARE.
 ## Article
 - [Physically Based Rendering in Filament](https://google.github.io/filament/Filament.html)
 - [視差オクルージョンマッピング(parallax occlution mapping) (コポコポ)](https://coposuke.hateblo.jp/entry/2019/01/20/043042)
-- [Udon AudioLink](https://github.com/llealloo/vrc-udon-audio-link)
 - [『崩壊3rd』開発者が語るアニメ風レンダリングの極意](https://learning.unity3d.jp/570/)
 - [Optimized inverse trigonometric function (seblagarde)](https://seblagarde.wordpress.com/2014/12/01/inverse-trigonometric-functions-gpu-optimization-for-amd-gcn-architecture/)
 - [Simplest Fastest 2D Hash](https://www.shadertoy.com/view/MdcfDj)

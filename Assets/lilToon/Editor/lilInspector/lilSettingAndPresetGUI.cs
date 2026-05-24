@@ -1,10 +1,3 @@
-#if !LILTOON_VRCSDK3_AVATARS && !LILTOON_VRCSDK3_WORLDS && VRC_SDK_VRCSDK3
-    #if UDON
-        #define LILTOON_VRCSDK3_WORLDS
-    #else
-        #define LILTOON_VRCSDK3_AVATARS
-    #endif
-#endif
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
@@ -43,15 +36,6 @@ namespace lilToon
                 if(isLocked) lilToonSetting.SaveLockedSetting(shaderSetting);
                 else         lilToonSetting.DeleteLockedSetting();
             }
-
-
-            #if LILTOON_VRCSDK3_AVATARS
-                EditorGUI.BeginChangeCheck();
-                GUI.enabled = !isLocked;
-                ToggleGUI(GetLoc("sShaderSettingOptimizeInTestBuild"), ref shaderSetting.isOptimizeInTestBuild);
-                GUI.enabled = true;
-                if(EditorGUI.EndChangeCheck()) lilToonSetting.SaveShaderSetting(shaderSetting);
-            #endif
 
             EditorGUI.BeginChangeCheck();
             ToggleGUI("Optimize in NDMF (Apply on Play)", ref shaderSetting.isOptimizeInNDMF);
@@ -109,7 +93,7 @@ namespace lilToon
         {
             GUI.enabled = !File.Exists(lilDirectoryManager.GetSettingLockPath());
             ToggleGUI(GetLoc("sSettingUseLightmap"), ref shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP);
-            #if LILTOON_VRCSDK3 || LILTOON_VRCLIGHTVOLUMES
+            #if LILTOON_VRCLIGHTVOLUMES
             ToggleGUI("VRC Light Volumes", ref shaderSetting.LIL_OPTIMIZE_USE_VRCLIGHTVOLUMES);
             #endif
             GUI.enabled = true;

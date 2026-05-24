@@ -53,8 +53,6 @@ namespace lilToon
         public static GUIContent smoothnessContent;
         public static GUIContent metallicContent;
         public static GUIContent parallaxContent;
-        public static GUIContent audioLinkMaskContent;
-        public static GUIContent audioLinkMaskSpectrumContent;
         public static GUIContent customMaskContent;
         public static GUIContent shadow1stColorRGBAContent;
         public static GUIContent shadow2ndColorRGBAContent;
@@ -65,7 +63,6 @@ namespace lilToon
         public static GUIContent lengthMaskContent;
         public static GUIContent triMaskContent;
         public static GUIContent cubemapContent;
-        public static GUIContent audioLinkLocalMapContent;
         public static GUIContent gradationMapContent;
         public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
@@ -159,10 +156,6 @@ namespace lilToon
             loc["sScrollRotates"]            = BuildParams(GetLoc("sAngle"), GetLoc("sUVAnimation"), GetLoc("sScroll"), GetLoc("sRotate"));
             loc["sDecalAnimations"]          = BuildParams(GetLoc("sAnimation"), GetLoc("sXFrames"), GetLoc("sYFrames"), GetLoc("sFrames"), GetLoc("sFPS"));
             loc["sDecalSubParams"]           = BuildParams(GetLoc("sXRatio"), GetLoc("sYRatio"), GetLoc("sFixBorder"));
-            loc["sAudioLinkUVModes"]           = BuildParams(GetLoc("sAudioLinkUVMode"), GetLoc("sAudioLinkUVModeNone"), GetLoc("sAudioLinkUVModeRim"), GetLoc("sAudioLinkUVModeUV"), GetLoc("sAudioLinkUVModeMask"), GetLoc("sAudioLinkUVModeMask") + " (Spectrum)", GetLoc("sAudioLinkUVModePosition"));
-            loc["sAudioLinkVertexUVModes"]           = BuildParams(GetLoc("sAudioLinkUVMode"), GetLoc("sAudioLinkUVModeNone"), GetLoc("sAudioLinkUVModePosition"), GetLoc("sAudioLinkUVModeUV"), GetLoc("sAudioLinkUVModeMask"));
-            loc["sAudioLinkVertexStrengths"]           = BuildParams(GetLoc("sAudioLinkMovingVector"), GetLoc("sAudioLinkNormalStrength"));
-            loc["sAudioLinkLocalMapParams"]         = BuildParams(GetLoc("sAudioLinkLocalMapBPM"), GetLoc("sAudioLinkLocalMapNotes"), GetLoc("sOffset"));
             loc["sFakeShadowVectors"] = BuildParams(GetLoc("sVector"), GetLoc("sOffset"));
             loc["sFurVectors"] = BuildParams(GetLoc("sVector"), GetLoc("sLength"));
             loc["sPreOutTypes"] = BuildParams(GetLoc("sOutType"), GetLoc("sOutTypeNormal"), GetLoc("sOutTypeFlat"), GetLoc("sOutTypeMono"));
@@ -205,8 +198,6 @@ namespace lilToon
             smoothnessContent               = new GUIContent(GetLoc("sSmoothness"),                         GetLoc("sSmoothnessR"));
             metallicContent                 = new GUIContent(GetLoc("sMetallic"),                           GetLoc("sMetallicR"));
             parallaxContent                 = new GUIContent(GetLoc("sParallax"),                           GetLoc("sParallaxR"));
-            audioLinkMaskContent            = new GUIContent(GetLoc("sMask"),                               GetLoc("sAudioLinkMaskRGB"));
-            audioLinkMaskSpectrumContent    = new GUIContent(GetLoc("sMask"),                               GetLoc("sAudioLinkMaskRGBSpectrum"));
             customMaskContent               = new GUIContent(GetLoc("sMask"),                               "");
             shadow1stColorRGBAContent       = new GUIContent(GetLoc("sShadow1stColor"),                     GetLoc("sTextureRGBA"));
             shadow2ndColorRGBAContent       = new GUIContent(GetLoc("sShadow2ndColor"),                     GetLoc("sTextureRGBA"));
@@ -217,7 +208,6 @@ namespace lilToon
             lengthMaskContent               = new GUIContent(GetLoc("sLengthMask"),                         GetLoc("sStrengthR"));
             triMaskContent                  = new GUIContent(GetLoc("sTriMask"),                            GetLoc("sTriMaskRGB"));
             cubemapContent                  = new GUIContent(GetLoc("Cubemap Fallback"));
-            audioLinkLocalMapContent        = new GUIContent(GetLoc("sAudioLinkLocalMap"));
             gradationMapContent             = new GUIContent(GetLoc("sGradationMap"));
 
         }

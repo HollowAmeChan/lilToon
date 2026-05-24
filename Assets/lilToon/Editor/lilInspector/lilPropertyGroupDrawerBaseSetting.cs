@@ -1,10 +1,3 @@
-#if !LILTOON_VRCSDK3_AVATARS && !LILTOON_VRCSDK3_WORLDS && VRC_SDK_VRCSDK3
-    #if UDON
-        #define LILTOON_VRCSDK3_WORLDS
-    #else
-        #define LILTOON_VRCSDK3_AVATARS
-    #endif
-#endif
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
@@ -182,14 +175,7 @@ namespace lilToon
                     RenderQueueField();
                     if((renderingModeBuf >= RenderingMode.Transparent && renderingModeBuf != RenderingMode.FurCutout) || (isMulti && transparentModeMat.floatValue == 2.0f))
                     {
-                        #if LILTOON_VRCSDK3_WORLDS
-                            if(material.renderQueue <= 2999 && zwrite.floatValue == 1.0f)
-                            {
-                                EditorGUILayout.HelpBox(GetLoc("sHelpTransparentForWorld"),MessageType.Warning);
-                            }
-                        #else
-                            EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"),MessageType.Warning);
-                        #endif
+                        EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"),MessageType.Warning);
                     }
                     if(isLite)
                     {

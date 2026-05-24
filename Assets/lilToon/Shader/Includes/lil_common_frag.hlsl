@@ -58,10 +58,6 @@
     #define BEFORE_ANISOTROPY
 #endif
 
-#if !defined(BEFORE_AUDIOLINK)
-    #define BEFORE_AUDIOLINK
-#endif
-
 #if !defined(BEFORE_MAIN2ND)
     #define BEFORE_MAIN2ND
 #endif
@@ -641,86 +637,6 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// AudioLink
-#if defined(LIL_FEATURE_AUDIOLINK)
-    void lilAudioLinkFrag(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseAudioLink)
-        {
-            // UV
-            float2 audioLinkUV;
-            if(_AudioLinkUVMode == 0) audioLinkUV.x = _AudioLinkUVParams.g;
-            if(_AudioLinkUVMode == 1) audioLinkUV.x = _AudioLinkUVParams.r - fd.nv * _AudioLinkUVParams.r + _AudioLinkUVParams.g;
-            if(_AudioLinkUVMode == 2) audioLinkUV.x = lilRotateUV(fd.uv0, _AudioLinkUVParams.b).x * _AudioLinkUVParams.r + _AudioLinkUVParams.g;
-            if(_AudioLinkUVMode == 5) audioLinkUV.x = distance(fd.positionOS, _AudioLinkStart.xyz) * _AudioLinkUVParams.r + _AudioLinkUVParams.g;
-            audioLinkUV.y = _AudioLinkUVParams.a;
-
-            // Mask (R:Delay G:Band B:Strength)
-            // Spectrum Mask (R:Volume G:Band B:Strength)
-            float4 audioLinkMask = 1.0;
-            #if defined(LIL_FEATURE_AudioLinkMask)
-                if(_AudioLinkUVMode == 3 || _AudioLinkUVMode == 4)
-                {
-                    float2 uvMask = fd.uvMain;
-                    if(_AudioLinkMask_UVMode == 1) uvMask = fd.uv1;
-                    if(_AudioLinkMask_UVMode == 2) uvMask = fd.uv2;
-                    if(_AudioLinkMask_UVMode == 3) uvMask = fd.uv3;
-                    uvMask = lilCalcUV(uvMask, _AudioLinkMask_ST, _AudioLinkMask_ScrollRotate);
-                    audioLinkMask = LIL_SAMPLE_2D(_AudioLinkMask, sampler_AudioLinkMask, uvMask);
-                    audioLinkUV = _AudioLinkUVMode == 3 ? audioLinkMask.rg : float2(frac(audioLinkMask.g * 2.0), 4.5/4.0 + floor(audioLinkMask.g * 2.0)/4.0);
-                }
-            #endif
-
-            // Init value
-            if(_AudioLinkUVMode == 4)
-            {
-                float defaultY = audioLinkMask.r * 4.0 + _AudioLinkDefaultValue.w;
-                float defaultVal = sin(LIL_TIME * _AudioLinkDefaultValue.z - audioLinkMask.g * _AudioLinkDefaultValue.y) * _AudioLinkDefaultValue.x * _AudioLinkUVParams.x + _AudioLinkDefaultValue.x * _AudioLinkUVParams.x;
-                fd.audioLinkValue = _AudioLinkUVParams.w < 1.0 ? abs(defaultVal - defaultY) < _AudioLinkUVParams.w : defaultVal > defaultY;
-            }
-            else
-            {
-                fd.audioLinkValue = saturate(_AudioLinkDefaultValue.x - saturate(frac(LIL_TIME * _AudioLinkDefaultValue.z - audioLinkUV.x)+_AudioLinkDefaultValue.w) * _AudioLinkDefaultValue.y * _AudioLinkDefaultValue.x);
-            }
-
-            // Local
-            #if defined(LIL_FEATURE_AUDIOLINK_LOCAL) && defined(LIL_FEATURE_AudioLinkMask)
-                if(_AudioLinkAsLocal)
-                {
-                    audioLinkUV.x += frac(-LIL_TIME * _AudioLinkLocalMapParams.r / 60 * _AudioLinkLocalMapParams.g) + _AudioLinkLocalMapParams.b;
-                    fd.audioLinkValue = LIL_SAMPLE_2D(_AudioLinkLocalMap, lil_sampler_linear_repeat, audioLinkUV).r;
-                }
-                else
-            #endif
-
-            // Global
-            if(lilCheckAudioLink())
-            {
-                // Scaling for _AudioTexture (4/64)
-                audioLinkUV.y *= 0.0625;
-                float4 audioTexture = LIL_SAMPLE_2D(_AudioTexture, lil_sampler_linear_clamp, audioLinkUV);
-                if(_AudioLinkUVMode == 4)
-                {
-                    float audioVal = audioTexture.b * _AudioLinkUVParams.x * lerp(_AudioLinkUVParams.y, _AudioLinkUVParams.z, audioLinkMask.g);
-                    fd.audioLinkValue = _AudioLinkUVParams.w < 1.0 ? abs(audioVal - audioLinkMask.r) < _AudioLinkUVParams.w : audioVal > audioLinkMask.r;
-                }
-                else
-                {
-                    fd.audioLinkValue = audioTexture.r;
-                }
-                fd.audioLinkValue = saturate(fd.audioLinkValue);
-            }
-            fd.audioLinkValue *= audioLinkMask.b;
-        }
-    }
-#endif
-
-#if !defined(OVERRIDE_AUDIOLINK)
-    #define OVERRIDE_AUDIOLINK \
-        lilAudioLinkFrag(fd LIL_SAMP_IN(sampler_MainTex));
-#endif
-
-//------------------------------------------------------------------------------------------------------------------------------
 // UDIM Discard
 #if !defined(OVERRIDE_UDIMDISCARD)
     #define OVERRIDE_UDIMDISCARD \
@@ -797,9 +713,6 @@
                         samp
                     );
                 #endif
-            #endif
-            #if defined(LIL_FEATURE_AUDIOLINK)
-                if(_AudioLink2Main2nd) color2nd.a *= fd.audioLinkValue;
             #endif
             color2nd.a = lerp(color2nd.a, color2nd.a * saturate((fd.depth - _Main2ndDistanceFade.x) / (_Main2ndDistanceFade.y - _Main2ndDistanceFade.x)), _Main2ndDistanceFade.z);
             if(_Main2ndTex_Cull == 1 && fd.facing > 0 || _Main2ndTex_Cull == 2 && fd.facing < 0) color2nd.a = 0;
@@ -893,9 +806,6 @@
                         samp
                     );
                 #endif
-            #endif
-            #if defined(LIL_FEATURE_AUDIOLINK)
-                if(_AudioLink2Main3rd) color3rd.a *= fd.audioLinkValue;
             #endif
             color3rd.a = lerp(color3rd.a, color3rd.a * saturate((fd.depth - _Main3rdDistanceFade.x) / (_Main3rdDistanceFade.y - _Main3rdDistanceFade.x)), _Main3rdDistanceFade.z);
             if(_Main3rdTex_Cull == 1 && fd.facing > 0 || _Main3rdTex_Cull == 2 && fd.facing < 0) color3rd.a = 0;
@@ -1949,18 +1859,9 @@
             #endif
             // Gradation
             #if defined(LIL_FEATURE_EmissionGradTex)
-                #if defined(LIL_FEATURE_EMISSION_GRADATION) && defined(LIL_FEATURE_AUDIOLINK)
-                    if(_EmissionUseGrad)
-                    {
-                        float gradUV = _EmissionGradSpeed * LIL_TIME + fd.audioLinkValue * _AudioLink2EmissionGrad;
-                        emissionColor *= LIL_SAMPLE_1D_LOD(_EmissionGradTex, lil_sampler_linear_repeat, gradUV, 0);
-                    }
-                #elif defined(LIL_FEATURE_EMISSION_GRADATION)
+                #if defined(LIL_FEATURE_EMISSION_GRADATION)
                     if(_EmissionUseGrad) emissionColor *= LIL_SAMPLE_1D(_EmissionGradTex, lil_sampler_linear_repeat, _EmissionGradSpeed * LIL_TIME);
                 #endif
-            #endif
-            #if defined(LIL_FEATURE_AUDIOLINK)
-                if(_AudioLink2Emission) emissionColor.a *= fd.audioLinkValue;
             #endif
             emissionColor.rgb = lerp(emissionColor.rgb, emissionColor.rgb * fd.invLighting, _EmissionFluorescence);
             emissionColor.rgb = lerp(emissionColor.rgb, emissionColor.rgb * fd.albedo, _EmissionMainStrength);
@@ -2033,18 +1934,9 @@
             #endif
             // Gradation
             #if defined(LIL_FEATURE_Emission2ndGradTex)
-                #if defined(LIL_FEATURE_EMISSION_GRADATION) && defined(LIL_FEATURE_AUDIOLINK)
-                    if(_Emission2ndUseGrad)
-                    {
-                        float gradUV = _Emission2ndGradSpeed * LIL_TIME + fd.audioLinkValue * _AudioLink2Emission2ndGrad;
-                        emission2ndColor *= LIL_SAMPLE_1D_LOD(_Emission2ndGradTex, lil_sampler_linear_repeat, gradUV, 0);
-                    }
-                #elif defined(LIL_FEATURE_EMISSION_GRADATION)
+                #if defined(LIL_FEATURE_EMISSION_GRADATION)
                     if(_Emission2ndUseGrad) emission2ndColor *= LIL_SAMPLE_1D(_Emission2ndGradTex, lil_sampler_linear_repeat, _Emission2ndGradSpeed * LIL_TIME);
                 #endif
-            #endif
-            #if defined(LIL_FEATURE_AUDIOLINK)
-                if(_AudioLink2Emission2nd) emission2ndColor.a *= fd.audioLinkValue;
             #endif
             emission2ndColor.rgb = lerp(emission2ndColor.rgb, emission2ndColor.rgb * fd.invLighting, _Emission2ndFluorescence);
             emission2ndColor.rgb = lerp(emission2ndColor.rgb, emission2ndColor.rgb * fd.albedo, _Emission2ndMainStrength);

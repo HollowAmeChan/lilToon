@@ -91,8 +91,6 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Set up light color
-    LIL_FORCE_SCENE_LIGHT;
-
     //------------------------------------------------------------------------------------------------------------------------------
     // UV
     float2 uvMain = lilCalcUV(input.uv0, _MainTex_ST);
@@ -114,7 +112,6 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Vertex Modification
-    #include "lil_vert_audiolink.hlsl"
     #if !defined(LIL_ONEPASS_OUTLINE)
         #include "lil_vert_outline.hlsl"
     #endif
@@ -131,7 +128,6 @@ LIL_V2F_TYPE vert(appdata input)
         // Vertex Modification
         #define LIL_MODIFY_PREVPOS
         lilCustomVertexOS(input, uvMain, input.previousPositionOS);
-        #include "lil_vert_audiolink.hlsl"
         #undef LIL_MODIFY_PREVPOS
 
         //------------------------------------------------------------------------------------------------------------------------------

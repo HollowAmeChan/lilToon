@@ -160,7 +160,6 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveGlitter = true;
         private bool shouldSaveParallax = true;
         private bool shouldSaveDistanceFade = true;
-        private bool shouldSaveAudioLink = true;
         private bool shouldSaveDissolve = true;
         private bool shouldSaveRefraction = true;
         private bool shouldSaveGem = true;
@@ -301,7 +300,6 @@ public class lilToonPreset : ScriptableObject
                 EditorGUI.indentLevel++;
                 shouldSaveParallax                  = EditorGUILayout.ToggleLeft(GetLoc("sParallax"), shouldSaveParallax);
                 shouldSaveDistanceFade              = EditorGUILayout.ToggleLeft(GetLoc("sDistanceFade"), shouldSaveDistanceFade);
-                shouldSaveAudioLink                 = EditorGUILayout.ToggleLeft(GetLoc("sAudioLink"), shouldSaveAudioLink);
                 shouldSaveDissolve                  = EditorGUILayout.ToggleLeft(GetLoc("sDissolve"), shouldSaveDissolve);
                 shouldSaveRefraction                = EditorGUILayout.ToggleLeft(GetLoc("sRefraction"), shouldSaveRefraction);
                 shouldSaveTessellation              = EditorGUILayout.ToggleLeft(GetLoc("sTessellation"), shouldSaveTessellation);
@@ -433,7 +431,6 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveGlitter && lilPropertyNameChecker.IsGlitterProperty(propName) ||
                     shouldSaveParallax && lilPropertyNameChecker.IsParallaxProperty(propName) ||
                     shouldSaveDistanceFade && lilPropertyNameChecker.IsDistanceFadeProperty(propName) ||
-                    shouldSaveAudioLink && lilPropertyNameChecker.IsAudioLinkProperty(propName) ||
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||
                     shouldSaveRefraction && lilPropertyNameChecker.IsRefractionProperty(propName) ||
                     shouldSaveGem && lilPropertyNameChecker.IsGemProperty(propName) ||
@@ -515,7 +512,6 @@ public class lilToonPreset : ScriptableObject
             shouldSaveGlitter = val;
             shouldSaveParallax = val;
             shouldSaveDistanceFade = val;
-            shouldSaveAudioLink = val;
             shouldSaveDissolve = val;
             shouldSaveRefraction = val;
             shouldSaveGem = val;

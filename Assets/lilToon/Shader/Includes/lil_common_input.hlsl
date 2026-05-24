@@ -358,17 +358,6 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_DITHER)
         float4  _DitherTex_TexelSize;
     #endif
-    #if defined(LIL_MULTI_INPUTS_AUDIOLINK)
-        float4  _AudioLinkMask_ST;
-        float4  _AudioLinkMask_ScrollRotate;
-        float4  _AudioLinkDefaultValue;
-        float4  _AudioLinkUVParams;
-        float4  _AudioLinkStart;
-        float4  _AudioLinkVertexUVParams;
-        float4  _AudioLinkVertexStart;
-        float4  _AudioLinkVertexStrength;
-        float4  _AudioLinkLocalMapParams;
-    #endif
     #if defined(LIL_MULTI_INPUTS_DISSOLVE)
         float4  _DissolveMask_ST;
         float4  _DissolveColor;
@@ -604,10 +593,6 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_DITHER)
         float   _DitherMaxValue;
     #endif
-    #if defined(LIL_MULTI_INPUTS_AUDIOLINK)
-        float   _AudioLink2EmissionGrad;
-        float   _AudioLink2Emission2ndGrad;
-    #endif
     #if defined(LIL_MULTI_INPUTS_DISSOLVE)
         float   _DissolveNoiseStrength;
     #endif
@@ -750,11 +735,6 @@ CBUFFER_START(UnityPerMaterial)
         uint    _Emission2ndMap_UVMode;
         uint    _Emission2ndBlendMode;
     #endif
-    #if defined(LIL_MULTI_INPUTS_AUDIOLINK)
-        uint    _AudioLinkUVMode;
-        uint    _AudioLinkMask_UVMode;
-        uint    _AudioLinkVertexUVMode;
-    #endif
     #if defined(LIL_MULTI_INPUTS_DISTANCE_FADE)
         uint    _DistanceFadeMode;
     #endif
@@ -848,13 +828,6 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_EMISSION_2ND)
         lilBool _Emission2ndUseGrad;
     #endif
-    #if defined(LIL_MULTI_INPUTS_AUDIOLINK)
-        lilBool _AudioLink2Main2nd;
-        lilBool _AudioLink2Main3rd;
-        lilBool _AudioLink2Emission;
-        lilBool _AudioLink2Emission2nd;
-        lilBool _AudioLink2Vertex;
-    #endif
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         lilBool _OutlineLitApplyTex;
         lilBool _OutlineLitShadowReceive;
@@ -935,8 +908,6 @@ TEXTURE2D(_Emission2ndBlendMask);
 TEXTURE2D(_Emission2ndGradTex);
 TEXTURE2D(_ParallaxMap);
 TEXTURE2D(_DitherTex);
-TEXTURE2D(_AudioLinkMask);
-TEXTURE2D(_AudioLinkLocalMap);
 TEXTURE2D(_DissolveMask);
 TEXTURE2D(_DissolveNoiseMask);
 TEXTURE2D(_OutlineTex);
@@ -952,19 +923,10 @@ SAMPLER(sampler_Main2ndTex);
 SAMPLER(sampler_Main3rdTex);
 SAMPLER(sampler_EmissionMap);
 SAMPLER(sampler_Emission2ndMap);
-SAMPLER(sampler_AudioLinkMask);
 SAMPLER(sampler_OutlineTex);
 
 float4x4 _LILPBRPlanarReflectionTextureMatrix;
 float4 _LILPBRPlanarReflectionParams;
-
-// AudioLink
-#if defined(LIL_FEATURE_AUDIOLINK_PACKAGE)
-#include "Packages/com.llealloo.audiolink/Runtime/Shaders/AudioLink.cginc"
-#elif defined(LIL_FEATURE_AUDIOLINK) && !defined(AUDIOLINK_CGINC_INCLUDED)
-TEXTURE2D_FLOAT(_AudioTexture);
-float4 _AudioTexture_TexelSize;
-#endif
 
 #if defined(LIL_OUTLINE)
     #define sampler_MainTex sampler_OutlineTex
@@ -972,9 +934,6 @@ float4 _AudioTexture_TexelSize;
 #if !defined(LIL_FEATURE_OutlineTex)
     #define sampler_OutlineTex lil_sampler_linear_repeat
 #endif
-
-// For VRChat
-uint _UdonForceSceneLighting;
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Custom properties

@@ -648,23 +648,6 @@ namespace lilToon
             if(versionURP != null) sb.AppendLine("URP: " + versionURP);
             sb.AppendLine();
 
-            sb.AppendLine("# VRCSDK Information");
-            #if UDON
-                sb.AppendLine("UDON defined");
-            #endif
-            string versionVRCSDKBase = ReadVersion("1f872e4d36d785e409479da1c5fcde4c");
-            if(versionVRCSDKBase != null) sb.AppendLine("VRChat SDK - Base: " + versionVRCSDKBase);
-            string versionVRCSDKAvatars = ReadVersion("bd7510fb5fa478f43a81e9c74b72cb6f");
-            if(versionVRCSDKAvatars != null) sb.AppendLine("VRChat SDK - Avatars: " + versionVRCSDKAvatars);
-            string versionVRCSDKWorlds = ReadVersion("067f9b5cc16a52649985a5947e355556");
-            if(versionVRCSDKWorlds != null) sb.AppendLine("VRChat SDK - Worlds: " + versionVRCSDKWorlds);
-            string versionVRCSDKPath = AssetDatabase.GUIDToAssetPath("2cdbe2e71e2c46e48951c13df254e5b1");
-            if(!string.IsNullOrEmpty(versionVRCSDKPath)) sb.AppendLine("VRChat SDK - Unitypackage: " + File.ReadAllText(versionVRCSDKPath));
-            sb.AppendLine();
-
-            sb.AppendLine("# CVRCCK Information");
-            sb.AppendLine();
-
             sb.AppendLine("# GameObject Information");
             List<Material> materialList;
             List<AnimationClip> clipList;

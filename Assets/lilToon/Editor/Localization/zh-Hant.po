@@ -872,78 +872,6 @@ msgstr "開始距離"
 msgid "sEndDistance"
 msgstr "結束距離"
 
-msgid "sAudioLink"
-msgstr "AudioLink"
-
-msgid "sAudioLinkTips"
-msgstr "此設定會根據 AudioLink 系統更改材質的外觀。"
-
-msgid "sAudioLinkUVMode"
-msgstr "UV 模式"
-
-msgid "sAudioLinkUVModeNone"
-msgstr "None"
-
-msgid "sAudioLinkUVModeRim"
-msgstr "Rim"
-
-msgid "sAudioLinkUVModeUV"
-msgstr "UV"
-
-msgid "sAudioLinkUVModeMask"
-msgstr "遮罩"
-
-msgid "sAudioLinkUVModePosition"
-msgstr "座標"
-
-msgid "sAudioLinkMaskRGB"
-msgstr "RGB = Delay / Band / Strength"
-
-msgid "sAudioLinkMaskRGBSpectrum"
-msgstr "RGB = Volume / Band / Strength"
-
-msgid "Offset"
-msgstr "Offset"
-
-msgid "sAudioLinkBand"
-msgstr "Band"
-
-msgid "sAudioLinkBandBass"
-msgstr "Bass"
-
-msgid "sAudioLinkBandLowMid"
-msgstr "Low Mid"
-
-msgid "sAudioLinkBandHighMid"
-msgstr "High Mid"
-
-msgid "sAudioLinkBandTreble"
-msgstr "Treble"
-
-msgid "sAudioLinkStartPosition"
-msgstr "開始點"
-
-msgid "sAudioLinkMovingVector"
-msgstr "運動方向"
-
-msgid "sAudioLinkNormalStrength"
-msgstr "法線強度"
-
-msgid "sAudioLinkAsLocal"
-msgstr "作為本地"
-
-msgid "sAudioLinkLocalMap"
-msgstr "Local Map"
-
-msgid "sAudioLinkLocalMapBPM"
-msgstr "BPM"
-
-msgid "sAudioLinkLocalMapNotes"
-msgstr "Notes"
-
-msgid "sAudioLinkDefaultValue"
-msgstr "没有使用 AudioLink 時的默認值"
-
 msgid "sDissolve"
 msgstr "溶解效果設定"
 
@@ -1624,9 +1552,6 @@ msgstr "advanced/parallax"
 
 msgid "sAnchorDistanceFade"
 msgstr "advanced/distancefade"
-
-msgid "sAnchorAudioLink"
-msgstr "advanced/audiolink"
 
 msgid "sAnchorDissolve"
 msgstr "advanced/dissolve"
