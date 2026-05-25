@@ -171,15 +171,15 @@ namespace lilToon
         private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty hoAovCustom0Color          = new lilMaterialProperty("_HoAovCustom0Color", PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom0Tex            = new lilMaterialProperty("_HoAovCustom0Tex", true, PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom1Color          = new lilMaterialProperty("_HoAovCustom1Color", PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom1Tex            = new lilMaterialProperty("_HoAovCustom1Tex", true, PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom2Color          = new lilMaterialProperty("_HoAovCustom2Color", PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom2Tex            = new lilMaterialProperty("_HoAovCustom2Tex", true, PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom3Color          = new lilMaterialProperty("_HoAovCustom3Color", PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoAovCustom3Tex            = new lilMaterialProperty("_HoAovCustom3Tex", true, PropertyBlock.HoAov);
-        private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.HoAov);
+        private readonly lilMaterialProperty metadataBufferCustom0Color          = new lilMaterialProperty("_HoMetadataBufferCustom0Color", PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom0Tex            = new lilMaterialProperty("_HoMetadataBufferCustom0Tex", true, PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom1Color          = new lilMaterialProperty("_HoMetadataBufferCustom1Color", PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom1Tex            = new lilMaterialProperty("_HoMetadataBufferCustom1Tex", true, PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom2Color          = new lilMaterialProperty("_HoMetadataBufferCustom2Color", PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom2Tex            = new lilMaterialProperty("_HoMetadataBufferCustom2Tex", true, PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom3Color          = new lilMaterialProperty("_HoMetadataBufferCustom3Color", PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty metadataBufferCustom3Tex            = new lilMaterialProperty("_HoMetadataBufferCustom3Tex", true, PropertyBlock.MetadataBuffer);
+        private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty usePlanarReflection        = new lilMaterialProperty("_UsePlanarReflection", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionStrength   = new lilMaterialProperty("_PlanarReflectionStrength", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionMinSmoothness = new lilMaterialProperty("_PlanarReflectionMinSmoothness", PropertyBlock.PlanarReflection);
@@ -749,14 +749,14 @@ namespace lilToon
                 ssaoRemap,
                 ssaoContrast,
                 ssaoMask,
-                hoAovCustom0Color,
-                hoAovCustom0Tex,
-                hoAovCustom1Color,
-                hoAovCustom1Tex,
-                hoAovCustom2Color,
-                hoAovCustom2Tex,
-                hoAovCustom3Color,
-                hoAovCustom3Tex,
+                metadataBufferCustom0Color,
+                metadataBufferCustom0Tex,
+                metadataBufferCustom1Color,
+                metadataBufferCustom1Tex,
+                metadataBufferCustom2Color,
+                metadataBufferCustom2Tex,
+                metadataBufferCustom3Color,
+                metadataBufferCustom3Tex,
                 hoCharacterCaptureOpacity,
                 usePlanarReflection,
                 planarReflectionStrength,

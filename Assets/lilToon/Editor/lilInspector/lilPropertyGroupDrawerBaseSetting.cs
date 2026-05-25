@@ -513,21 +513,21 @@ namespace lilToon
             }
         }
 
-        private void DrawHoAovSettings()
+        private void DrawMetadataBufferSettings()
         {
-            if(!ShouldDrawBlock(PropertyBlock.HoAov)) return;
-            edSet.isShowHoAovSettings = lilEditorGUI.Foldout("HoAOV", edSet.isShowHoAovSettings);
-            lilEditorGUI.DrawHelpButton("HoAOV");
-            if(edSet.isShowHoAovSettings)
+            if(!ShouldDrawBlock(PropertyBlock.MetadataBuffer)) return;
+            edSet.isShowMetadataBufferSettings = lilEditorGUI.Foldout("MetadataBuffer", edSet.isShowMetadataBufferSettings);
+            lilEditorGUI.DrawHelpButton("MetadataBuffer");
+            if(edSet.isShowMetadataBufferSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("HoAOV", customToggleFont);
-                DrawMenuButton("HoAOV", PropertyBlock.HoAov);
+                EditorGUILayout.LabelField("MetadataBuffer", customToggleFont);
+                DrawMenuButton("MetadataBuffer", PropertyBlock.MetadataBuffer);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(hoAovCustom0Tex.p != null && hoAovCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 0", "Texture R x grayscale color"), hoAovCustom0Tex, hoAovCustom0Color);
-                if(hoAovCustom1Tex.p != null && hoAovCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), hoAovCustom1Tex, hoAovCustom1Color);
-                if(hoAovCustom2Tex.p != null && hoAovCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), hoAovCustom2Tex, hoAovCustom2Color);
-                if(hoAovCustom3Tex.p != null && hoAovCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), hoAovCustom3Tex, hoAovCustom3Color);
+                if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 0", "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
+                if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
+                if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
+                if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
                 if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, "Character Capture Opacity");
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();

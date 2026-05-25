@@ -72,7 +72,7 @@ namespace lilToon
         Fur,
         Stencil,
         Rendering,
-        HoAov,
+        MetadataBuffer,
         PlanarReflection,
         Other
     }
