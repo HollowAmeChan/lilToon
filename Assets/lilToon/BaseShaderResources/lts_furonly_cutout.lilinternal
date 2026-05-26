@@ -5,10 +5,14 @@ Shader "_lil/[Optional] lilToonFurOnlyCutout"
         lilProperties "Default"
         lilProperties "DefaultFurCutout"
     }
+    HLSLINCLUDE
+        #define LIL_RENDER 1
+    ENDHLSL
+
 
     lilPassShaderName "Hidden/lilToonFurCutout"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
-    lilSubShaderURP "DefaultUsePassFurOnly"
+    lilSubShaderURP "DefaultFur"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

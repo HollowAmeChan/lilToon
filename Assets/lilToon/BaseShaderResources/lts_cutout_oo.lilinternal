@@ -5,10 +5,14 @@ Shader "_lil/[Optional] lilToonOutlineOnlyCutout"
         lilProperties "Default"
         lilProperties "DefaultCutout"
     }
+    HLSLINCLUDE
+        #define LIL_RENDER 1
+    ENDHLSL
+
 
     lilPassShaderName "Hidden/ltspass_cutout"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
-    lilSubShaderURP "DefaultUsePassOutlineOnly"
+    lilSubShaderURP "Default"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

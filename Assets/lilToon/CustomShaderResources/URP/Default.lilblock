@@ -1,6 +1,6 @@
     SubShader
     {
-        Tags {*LIL_DOTS_SM_TAGS*}
+        Tags {*LIL_SUBSHADER_TAGS**LIL_DOTS_SM_TAGS* "RenderPipeline" = "UniversalPipeline"}
         HLSLINCLUDE
             *LIL_SHADER_SETTING*
             *LIL_SRP_VERSION*
