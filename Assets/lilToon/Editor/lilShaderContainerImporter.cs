@@ -609,7 +609,16 @@ namespace lilToon
             }
             AddDependency(ctx, subpath);
 
-            if(rpname == "URP" && !subpath.Contains("UsePass"))
+            if(rpname == "URP" && Path.GetFileNameWithoutExtension(subpath).Contains("Direct"))
+            {
+                var sb1 = new StringBuilder(ReadTextFile(subpath));
+                sb1.Replace(LIL_DOTS_SM_TAGS, "");
+                sb1.Replace(LIL_DOTS_SM_4_5, "");
+                sb1.Replace(LIL_DOTS_SM_4_5_OR_3_5, "#pragma target 3.5");
+                ReplaceMultiCompiles(ref sb1, version, indent, false);
+                sb.AppendLine(sb1.ToString());
+            }
+            else if(rpname == "URP" && !subpath.Contains("UsePass"))
             {
                 var sb1 = new StringBuilder(ReadTextFile(subpath));
                 var sb2 = new StringBuilder(sb1.ToString());

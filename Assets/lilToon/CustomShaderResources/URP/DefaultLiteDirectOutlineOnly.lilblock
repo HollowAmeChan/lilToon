@@ -1,0 +1,70 @@
+    SubShader
+    {
+        Tags {*LIL_SUBSHADER_TAGS**LIL_DOTS_SM_TAGS* "RenderPipeline" = "UniversalPipeline"}
+        HLSLINCLUDE
+            *LIL_SRP_VERSION*
+            *LIL_DOTS_SM_4_5*
+            #pragma exclude_renderers d3d11_9x
+            #pragma fragmentoption ARB_precision_hint_fastest
+            #define LIL_LITE
+
+            #pragma lil_skip_variants_shadows
+            #pragma lil_skip_variants_decals
+            #pragma lil_skip_variants_addlightshadows
+            #pragma lil_skip_variants_probevolumes
+            #pragma lil_skip_variants_ao
+            #pragma lil_skip_variants_reflections
+        ENDHLSL
+
+        *LIL_INSERT_PASS_PRE*
+        // Forward Outline
+        Pass
+        {
+            Name "FORWARD_OUTLINE"
+            Tags {"LightMode" = "*LIL_LIGHTMODE_FORWARD_1*"}
+
+            Stencil
+            {
+                Ref [_OutlineStencilRef]
+                ReadMask [_OutlineStencilReadMask]
+                WriteMask [_OutlineStencilWriteMask]
+                Comp [_OutlineStencilComp]
+                Pass [_OutlineStencilPass]
+                Fail [_OutlineStencilFail]
+                ZFail [_OutlineStencilZFail]
+            }
+            Cull [_OutlineCull]
+            ZClip [_OutlineZClip]
+            ZWrite [_OutlineZWrite]
+            ZTest [_OutlineZTest]
+            ColorMask [_OutlineColorMask]
+            Offset [_OutlineOffsetFactor], [_OutlineOffsetUnits]
+            BlendOp [_OutlineBlendOp], [_OutlineBlendOpAlpha]
+            Blend [_OutlineSrcBlend] [_OutlineDstBlend], [_OutlineSrcBlendAlpha] [_OutlineDstBlendAlpha]
+            AlphaToMask [_OutlineAlphaToMask]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_forward
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #define LIL_OUTLINE
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_forward.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        *LIL_INSERT_PASS_POST*
+    }
+    Fallback "Universal Render Pipeline/Unlit"

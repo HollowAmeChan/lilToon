@@ -12,7 +12,7 @@ Shader "Hidden/lilToonOutline"
 
     lilPassShaderName "Hidden/ltspass_opaque"
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
-    lilSubShaderURP "Default"
+    lilSubShaderURP "DefaultDirectOutline"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }

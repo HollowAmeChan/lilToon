@@ -12,7 +12,7 @@ Shader "_lil/[Optional] lilToonOutlineOnlyCutout"
 
     lilPassShaderName "Hidden/ltspass_cutout"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
-    lilSubShaderURP "Default"
+    lilSubShaderURP "DefaultDirectOutlineOnly"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }
