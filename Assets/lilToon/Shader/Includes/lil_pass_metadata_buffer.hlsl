@@ -183,18 +183,10 @@ float4 lilHoMetadataBufferResolveCustom0To3(float2 uv)
     return lilHoMetadataBufferSampleCustom0To3(uv);
 }
 
-float4 lilHoMetadataBufferResolveSssSource(float2 uv, float3 albedo)
+float4 lilHoMetadataBufferResolveSurfaceColor(float3 surfaceColor)
 {
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
-        if(_UseSSS)
-        {
-            float sourceWeight = saturate(_SSSColor.a);
-            float3 sourceColor = lerp(_SSSColor.rgb, _SSSColor.rgb * albedo, _SSSMainStrength);
-            return float4(sourceColor, sourceWeight);
-        }
-    #endif
-
-    return 0.0;
+    // Base diffuse/albedo is a core MetadataBuffer output and is not gated by SSS.
+    return float4(saturate(surfaceColor), 1.0);
 }
 
 float lilHoMetadataBufferResolveThickness(float2 uv)
@@ -599,7 +591,7 @@ half4 fragMetadataBufferSurfaceColor(v2f input LIL_VFACE(facing)) : SV_Target
 
     float subjectCoverage = saturate(_HoMetadataBufferMaskWeight);
     float subjectValid = step(0.0001, subjectCoverage);
-    return half4(lilHoMetadataBufferResolveSssSource(fd.uvMain, fd.albedo) * subjectValid);
+    return half4(lilHoMetadataBufferResolveSurfaceColor(fd.col.rgb) * subjectValid);
 }
 
 #endif
