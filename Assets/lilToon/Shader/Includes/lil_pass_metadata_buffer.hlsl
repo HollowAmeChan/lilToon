@@ -183,10 +183,10 @@ float4 lilHoMetadataBufferResolveCustom0To3(float2 uv)
     return lilHoMetadataBufferSampleCustom0To3(uv);
 }
 
-float4 lilHoMetadataBufferResolveSurfaceColor(float3 surfaceColor)
+float4 lilHoMetadataBufferResolveSurfaceColor(float4 surfaceColor)
 {
     // Base diffuse/albedo is a core MetadataBuffer output and is not gated by SSS.
-    return float4(saturate(surfaceColor), 1.0);
+    return float4(saturate(surfaceColor.rgb), saturate(surfaceColor.a));
 }
 
 float lilHoMetadataBufferResolveThickness(float2 uv)
@@ -349,8 +349,9 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
         {
             clip(fd.col.a - _Cutoff);
         }
-    #else
         fd.col.a = 1.0;
+    #else
+        fd.col.a = saturate(fd.col.a);
     #endif
 
     float maskEnabled = lilHoMetadataBufferHasSystemChannel(1.0);
@@ -360,7 +361,7 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
     float curvatureEnabled = lilHoMetadataBufferHasSystemChannel(512.0);
     float materialEnabled = lilHoMetadataBufferHasSystemChannel(1024.0);
     float transmittanceHintEnabled = lilHoMetadataBufferHasSystemChannel(2048.0);
-    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight);
+    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight) * saturate(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
 
     uint rendererUserValue = unity_RendererUserValue;
@@ -585,13 +586,16 @@ half4 fragMetadataBufferSurfaceColor(v2f input LIL_VFACE(facing)) : SV_Target
         {
             clip(fd.col.a - _Cutoff);
         }
-    #else
         fd.col.a = 1.0;
+    #else
+        fd.col.a = saturate(fd.col.a);
     #endif
 
-    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight);
+    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight) * saturate(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
-    return half4(lilHoMetadataBufferResolveSurfaceColor(fd.col.rgb) * subjectValid);
+    float4 surfaceColor = lilHoMetadataBufferResolveSurfaceColor(fd.col);
+    surfaceColor.a = subjectCoverage;
+    return half4(surfaceColor * subjectValid);
 }
 
 #endif

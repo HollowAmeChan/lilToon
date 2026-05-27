@@ -384,6 +384,7 @@
             Cull [_Cull]
             ZClip [_ZClip]
             ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
             ZTest LEqual
 
             HLSLPROGRAM
