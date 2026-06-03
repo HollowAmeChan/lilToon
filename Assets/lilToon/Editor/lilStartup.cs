@@ -205,7 +205,9 @@ namespace lilToon
         internal static void MigrateMaterial(Material material)
         {
             if(!lilMaterialUtils.CheckShaderIslilToon(material)) return;
-            var id = material.shader.GetPropertyNameId(material.shader.FindPropertyIndex("_lilToonVersion"));
+            int versionIndex = material.shader.FindPropertyIndex("_lilToonVersion");
+            if(versionIndex == -1) return;
+            var id = material.shader.GetPropertyNameId(versionIndex);
             int version = 0;
             if(material.HasProperty(id)) version = (int)material.GetFloat(id);
             if(version >= lilConstants.currentVersionValue) return;
