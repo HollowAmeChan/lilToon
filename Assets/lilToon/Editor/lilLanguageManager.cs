@@ -112,7 +112,6 @@ namespace lilToon
                 Settings.instance.Save();
                 UpdateLanguage();
             }
-            if (GetLoc("sLanguageWarning") != "sLanguageWarning") EditorGUILayout.HelpBox(GetLoc("sLanguageWarning"), MessageType.Warning);
         }
 
         private static void LoadLanguage(string langPath)
