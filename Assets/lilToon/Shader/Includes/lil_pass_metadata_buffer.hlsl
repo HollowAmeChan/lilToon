@@ -239,6 +239,22 @@ float lilHoMetadataBufferResolveTransmittanceHint()
     return transmittanceHint;
 }
 
+float lilHoMetadataBufferResolveSubjectCoverage(float alpha)
+{
+    // Semantic metadata represents object membership. Transparent materials still occupy their full mesh area.
+    #if LIL_RENDER == 2
+        return saturate(_HoMetadataBufferMaskWeight);
+    #else
+        return saturate(_HoMetadataBufferMaskWeight) * saturate(alpha);
+    #endif
+}
+
+float lilHoMetadataBufferResolveSurfaceColorCoverage(float alpha)
+{
+    // SurfaceColor is blended as premultiplied color in the RT, so it keeps material alpha as coverage.
+    return saturate(_HoMetadataBufferMaskWeight) * saturate(alpha);
+}
+
 lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
 {
     LIL_SETUP_INSTANCE_ID(input);
@@ -361,7 +377,7 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
     float curvatureEnabled = lilHoMetadataBufferHasSystemChannel(512.0);
     float materialEnabled = lilHoMetadataBufferHasSystemChannel(1024.0);
     float transmittanceHintEnabled = lilHoMetadataBufferHasSystemChannel(2048.0);
-    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight) * saturate(fd.col.a);
+    float subjectCoverage = lilHoMetadataBufferResolveSubjectCoverage(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
 
     uint rendererUserValue = unity_RendererUserValue;
@@ -591,10 +607,11 @@ half4 fragMetadataBufferSurfaceColor(v2f input LIL_VFACE(facing)) : SV_Target
         fd.col.a = saturate(fd.col.a);
     #endif
 
-    float subjectCoverage = saturate(_HoMetadataBufferMaskWeight) * saturate(fd.col.a);
+    float subjectCoverage = lilHoMetadataBufferResolveSubjectCoverage(fd.col.a);
+    float surfaceColorCoverage = lilHoMetadataBufferResolveSurfaceColorCoverage(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
     float4 surfaceColor = lilHoMetadataBufferResolveSurfaceColor(fd.col);
-    surfaceColor.a = subjectCoverage;
+    surfaceColor.a = surfaceColorCoverage;
     return half4(surfaceColor * subjectValid);
 }
 
