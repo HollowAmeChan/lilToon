@@ -70,6 +70,7 @@ float _HoMetadataBufferThickness;
 float _HoMetadataBufferCurvature;
 float _HoMetadataBufferTransmittanceHint;
 float _HoMetadataBufferObjectCustomMask;
+float _HoMetadataBufferRsuvAssigned;
 float4 _HoMetadataBufferCustom0Color;
 float4 _HoMetadataBufferCustom1Color;
 float4 _HoMetadataBufferCustom2Color;
@@ -255,6 +256,24 @@ float lilHoMetadataBufferResolveSurfaceColorCoverage(float alpha)
     return saturate(_HoMetadataBufferMaskWeight) * saturate(alpha);
 }
 
+float lilHoMetadataBufferHasExplicitPayload(float hasRendererUserValue, uint objectCustomMask, float groupId, float objectId, float flags)
+{
+    float hasObjectCustom = objectCustomMask != 0u ? 1.0 : 0.0;
+    float hasIds = step(0.5, max(max(abs(groupId), abs(objectId)), abs(flags)));
+    float hasSubject = step(0.5, _HoMetadataBufferRsuvAssigned);
+    float hasSurfaceMetadata = step(0.0001, max(max(abs(_HoMetadataBufferMaterialClass), abs(_HoMetadataBufferThickness)), max(abs(_HoMetadataBufferCurvature), abs(_HoMetadataBufferTransmittanceHint))));
+    float hasCustomOverride = step(0.5, _HoMetadataBufferCustomWriteMask);
+    float hasCustomMaterial = step(0.0001, max(max(abs(_HoMetadataBufferCustom0Color.r), abs(_HoMetadataBufferCustom1Color.r)), max(abs(_HoMetadataBufferCustom2Color.r), abs(_HoMetadataBufferCustom3Color.r))));
+    return saturate(max(max(max(hasRendererUserValue, hasObjectCustom), max(hasIds, hasSubject)), max(hasSurfaceMetadata, max(hasCustomOverride, hasCustomMaterial))));
+}
+
+void lilHoMetadataBufferClipTransparentUnassigned(float explicitPayload)
+{
+    #if LIL_RENDER == 2
+        clip(explicitPayload - 0.5);
+    #endif
+}
+
 lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
 {
     LIL_SETUP_INSTANCE_ID(input);
@@ -386,6 +405,7 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
     float effectiveGroupId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 8u) : _HoMetadataBufferGroupId;
     float effectiveObjectId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 16u) : lilHoMetadataBufferGetObjectId();
     float effectiveFlags = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 24u) : _HoMetadataBufferFlags;
+    lilHoMetadataBufferClipTransparentUnassigned(lilHoMetadataBufferHasExplicitPayload(hasRendererUserValue ? 1.0 : 0.0, objectCustomMask, effectiveGroupId, effectiveObjectId, effectiveFlags));
 
     lilHoMetadataBufferOutput output;
     output.maskId = half4(
@@ -610,6 +630,14 @@ half4 fragMetadataBufferSurfaceColor(v2f input LIL_VFACE(facing)) : SV_Target
     float subjectCoverage = lilHoMetadataBufferResolveSubjectCoverage(fd.col.a);
     float surfaceColorCoverage = lilHoMetadataBufferResolveSurfaceColorCoverage(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
+    uint rendererUserValue = unity_RendererUserValue;
+    bool hasRendererUserValue = rendererUserValue != 0u;
+    uint objectCustomMask = hasRendererUserValue ? (rendererUserValue & 255u) : (uint)round(saturate(_HoMetadataBufferObjectCustomMask / 255.0) * 255.0);
+    float effectiveGroupId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 8u) : _HoMetadataBufferGroupId;
+    float effectiveObjectId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 16u) : lilHoMetadataBufferGetObjectId();
+    float effectiveFlags = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 24u) : _HoMetadataBufferFlags;
+    lilHoMetadataBufferClipTransparentUnassigned(lilHoMetadataBufferHasExplicitPayload(hasRendererUserValue ? 1.0 : 0.0, objectCustomMask, effectiveGroupId, effectiveObjectId, effectiveFlags));
+
     float4 surfaceColor = lilHoMetadataBufferResolveSurfaceColor(fd.col);
     surfaceColor.a = surfaceColorCoverage;
     return half4(surfaceColor * subjectValid);
