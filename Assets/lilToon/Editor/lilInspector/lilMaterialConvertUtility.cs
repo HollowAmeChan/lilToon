@@ -292,6 +292,7 @@ namespace lilToon
                 liteMaterial.SetFloat("_OutlineDeleteMesh",         outlineDeleteMesh.floatValue);
                 liteMaterial.SetFloat("_OutlineEnableLighting",     outlineEnableLighting.floatValue);
                 liteMaterial.SetFloat("_OutlineZBias",              outlineZBias.floatValue);
+                liteMaterial.SetTexture("_OutlineZBiasMask",        outlineZBiasMask.textureValue);
                 liteMaterial.SetFloat("_OutlineSrcBlend",           outlineSrcBlend.floatValue);
                 liteMaterial.SetFloat("_OutlineDstBlend",           outlineDstBlend.floatValue);
                 liteMaterial.SetFloat("_OutlineBlendOp",            outlineBlendOp.floatValue);

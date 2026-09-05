@@ -719,6 +719,12 @@ msgstr "マスクと太さ"
 msgid "sWidthR"
 msgstr "太さ (R)"
 
+msgid "sZBiasMask"
+msgstr "マスクとZオフセット"
+
+msgid "sZBiasR"
+msgstr "Zオフセット (R)"
+
 msgid "sFixWidth"
 msgstr "距離に応じた太さ補正"
 

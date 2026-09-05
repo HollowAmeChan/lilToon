@@ -60,6 +60,7 @@ namespace lilToon
         public static GUIContent blurMaskRGBContent;
         public static GUIContent shadowAOMapContent;
         public static GUIContent widthMaskContent;
+        public static GUIContent zBiasMaskContent;
         public static GUIContent lengthMaskContent;
         public static GUIContent triMaskContent;
         public static GUIContent cubemapContent;
@@ -204,6 +205,7 @@ namespace lilToon
             blurMaskRGBContent              = new GUIContent(GetLoc("sBlurMask"),                           GetLoc("sBlurRGB"));
             shadowAOMapContent              = new GUIContent(GetLoc("AO Map"),                              GetLoc("sBorderRGB"));
             widthMaskContent                = new GUIContent(GetLoc("sWidth"),                              GetLoc("sWidthR"));
+            zBiasMaskContent                = new GUIContent(GetLoc("sZBiasMask"),                           GetLoc("sZBiasR"));
             lengthMaskContent               = new GUIContent(GetLoc("sLengthMask"),                         GetLoc("sStrengthR"));
             triMaskContent                  = new GUIContent(GetLoc("sTriMask"),                            GetLoc("sTriMaskRGB"));
             cubemapContent                  = new GUIContent(GetLoc("Cubemap Fallback"));

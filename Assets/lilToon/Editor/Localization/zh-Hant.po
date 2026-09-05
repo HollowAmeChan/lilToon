@@ -719,6 +719,12 @@ msgstr "遮罩 & 寬度"
 msgid "sWidthR"
 msgstr "寬度 (R)"
 
+msgid "sZBiasMask"
+msgstr "遮罩 & Z 偏移"
+
+msgid "sZBiasR"
+msgstr "Z 偏移 (R)"
+
 msgid "sFixWidth"
 msgstr "按距離修正寬度"
 

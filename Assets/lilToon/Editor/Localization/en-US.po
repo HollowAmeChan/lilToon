@@ -719,6 +719,12 @@ msgstr "Mask & Width"
 msgid "sWidthR"
 msgstr "Width (R)"
 
+msgid "sZBiasMask"
+msgstr "Mask & Z Bias"
+
+msgid "sZBiasR"
+msgstr "Z Bias (R)"
+
 msgid "sFixWidth"
 msgstr "Fix width by distance"
 

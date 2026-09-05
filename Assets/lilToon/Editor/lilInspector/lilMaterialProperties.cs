@@ -424,6 +424,7 @@ namespace lilToon
         private readonly lilMaterialProperty outlineVectorUVMode        = new lilMaterialProperty("_OutlineVectorUVMode", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineVectorScale         = new lilMaterialProperty("_OutlineVectorScale", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineEnableLighting      = new lilMaterialProperty("_OutlineEnableLighting", PropertyBlock.Outline);
+        private readonly lilMaterialProperty outlineZBiasMask           = new lilMaterialProperty("_OutlineZBiasMask", true, PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineZBias               = new lilMaterialProperty("_OutlineZBias", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineDisableInVR         = new lilMaterialProperty("_OutlineDisableInVR", PropertyBlock.Outline);
 
@@ -1002,6 +1003,7 @@ namespace lilToon
                 outlineVectorUVMode,
                 outlineVectorScale,
                 outlineEnableLighting,
+                outlineZBiasMask,
                 outlineZBias,
                 outlineDisableInVR,
 

@@ -719,6 +719,12 @@ msgstr "마스크와 굵기"
 msgid "sWidthR"
 msgstr "굵기 (R)"
 
+msgid "sZBiasMask"
+msgstr "마스크와 Z 오프셋"
+
+msgid "sZBiasR"
+msgstr "Z 오프셋 (R)"
+
 msgid "sFixWidth"
 msgstr "거리에 따른 굵기 보정"
 

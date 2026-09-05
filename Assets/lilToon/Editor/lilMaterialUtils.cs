@@ -595,6 +595,7 @@ namespace lilToon
                 {
                     material.SetTexture("_OutlineTex", null);
                     material.SetTexture("_OutlineWidthMask", null);
+                    material.SetTexture("_OutlineZBiasMask", null);
                     material.SetTexture("_OutlineVectorTex", null);
                 }
                 if(!lilShaderUtils.IsFurShaderName(shaderName))

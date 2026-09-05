@@ -82,6 +82,9 @@ SAMPLER(lil_sampler_linear_clamp);
     #if !defined(LIL_FEATURE_OutlineWidthMask)
         #define LIL_FEATURE_OutlineWidthMask
     #endif
+    #if !defined(LIL_FEATURE_OutlineZBiasMask)
+        #define LIL_FEATURE_OutlineZBiasMask
+    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -854,6 +857,7 @@ TEXTURE2D(_DissolveMask);
 TEXTURE2D(_DissolveNoiseMask);
 TEXTURE2D(_OutlineTex);
 TEXTURE2D(_OutlineWidthMask);
+TEXTURE2D(_OutlineZBiasMask);
 TEXTURE2D(_OutlineVectorTex);
 TEXTURE2D(_FurNoiseMask);
 TEXTURE2D(_FurMask);

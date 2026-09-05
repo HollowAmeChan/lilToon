@@ -719,6 +719,12 @@ msgstr "蒙版 & 宽度"
 msgid "sWidthR"
 msgstr "宽度 (R)"
 
+msgid "sZBiasMask"
+msgstr "蒙版 & Z 偏移"
+
+msgid "sZBiasR"
+msgstr "Z 偏移 (R)"
+
 msgid "sFixWidth"
 msgstr "按距离补偿宽度"
 

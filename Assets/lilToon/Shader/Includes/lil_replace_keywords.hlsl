@@ -285,6 +285,7 @@
 #define LIL_FEATURE_DissolveNoiseMask
 #define LIL_FEATURE_OutlineTex
 #define LIL_FEATURE_OutlineWidthMask
+#define LIL_FEATURE_OutlineZBiasMask
 #define LIL_FEATURE_OutlineVectorTex
 #define LIL_FEATURE_FurNoiseMask
 #define LIL_FEATURE_FurMask

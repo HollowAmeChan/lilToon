@@ -90,7 +90,8 @@ namespace lilToon
                     LocalizedProperty(outlineFixWidth);
                     LocalizedProperty(outlineVertexR2Width);
                     LocalizedProperty(outlineDeleteMesh);
-                    LocalizedProperty(outlineZBias);
+                    if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
+                    else LocalizedProperty(outlineZBias);
                     LocalizedProperty(outlineDisableInVR);
                     EditorGUI.indentLevel--;
                     LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
@@ -108,7 +109,8 @@ namespace lilToon
                     LocalizedProperty(outlineFixWidth);
                     LocalizedProperty(outlineVertexR2Width);
                     LocalizedProperty(outlineDeleteMesh);
-                    LocalizedProperty(outlineZBias);
+                    if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
+                    else LocalizedProperty(outlineZBias);
                     EditorGUI.indentLevel--;
                     EditorGUILayout.EndVertical();
                 }
