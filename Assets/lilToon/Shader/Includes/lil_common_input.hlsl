@@ -401,7 +401,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _MultiLightIntensity;
     float   _MultiLightCastShadowStrength;
     #if defined(LIL_FEATURE_SSAO)
-        uint    _ScreenSpaceAOSource;
         float   _SSAOStrength;
         float   _SSAODirectStrength;
         float   _SSAOIndirectStrength;
@@ -827,7 +826,7 @@ TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_SSAOMask);
-TEXTURE2D(_HTraceBufferAO);
+TEXTURE2D(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);

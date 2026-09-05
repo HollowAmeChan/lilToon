@@ -1188,23 +1188,9 @@
 #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
     float lilSampleScreenSpaceAO(float2 screenUV)
     {
-        float directAO = 1.0;
-        float indirectAO = 1.0;
-
-        if(_ScreenSpaceAOSource == 1)
-        {
-            float htraceAO = LIL_SAMPLE_2D(_HTraceBufferAO, lil_sampler_linear_clamp, screenUV).r;
-            directAO = lerp(1.0, htraceAO, _SSAODirectStrength);
-            indirectAO = lerp(1.0, htraceAO, _SSAOIndirectStrength);
-        }
-        else
-        {
-            #if defined(_SCREEN_SPACE_OCCLUSION) && LIL_RENDER != 2
-                AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(screenUV);
-                directAO = lerp(1.0, aoFactor.directAmbientOcclusion, _SSAODirectStrength);
-                indirectAO = lerp(1.0, aoFactor.indirectAmbientOcclusion, _SSAOIndirectStrength);
-            #endif
-        }
+        float hoAO = LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
+        float directAO = lerp(1.0, hoAO, _SSAODirectStrength);
+        float indirectAO = lerp(1.0, hoAO, _SSAOIndirectStrength);
 
         float ao = min(directAO, indirectAO);
         float aoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);

@@ -29,8 +29,6 @@
                         _MultiLightIntensity        ("sMultiLightIntensity", Range(0, 5)) = 0
                         _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
         [lilToggle]     _UseScreenSpaceAO           ("Screen Space AO", Int) = 1
-        [Enum(ScreenSpaceOcclusionTexture,0,HTraceBufferAO,1)]
-                        _ScreenSpaceAOSource        ("AO RT", Int) = 0
                         _SSAOStrength               ("sStrength", Range(0, 1)) = 1
                         _SSAODirectStrength         ("Direct Strength", Range(0, 1)) = 1
                         _SSAOIndirectStrength       ("Indirect Strength", Range(0, 1)) = 0.5

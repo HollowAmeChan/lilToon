@@ -277,7 +277,6 @@ float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
 #if defined(LIL_FEATURE_SSAO)
-    uint    _ScreenSpaceAOSource;
     float   _SSAOStrength;
     float   _SSAODirectStrength;
     float   _SSAOIndirectStrength;

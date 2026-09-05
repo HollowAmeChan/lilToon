@@ -497,8 +497,6 @@ namespace lilToon
                     if(useScreenSpaceAO.floatValue == 1)
                     {
                         EditorGUI.indentLevel++;
-                        EditorGUILayout.HelpBox("HTraceAO writes _ScreenSpaceOcclusionTexture. Insert HTraceAO before opaque/lit character materials so this shader can read the AO result.", MessageType.Info);
-                        if(screenSpaceAOSource.p != null) LocalizedProperty(screenSpaceAOSource.p, "AO RT");
                         LocalizedProperty(ssaoStrength);
                         LocalizedProperty(ssaoDirectStrength);
                         LocalizedProperty(ssaoIndirectStrength);

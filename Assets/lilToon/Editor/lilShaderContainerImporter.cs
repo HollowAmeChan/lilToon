@@ -1062,7 +1062,6 @@ namespace lilToon
                 }
                 pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS");
                 pragmas.Add("#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH");
-                if(!options.skipAmbientOcclusion) pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION");
                 pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_IRRADIANCE");
                 if(!options.skipDecals) pragmas.Add("#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3");
                 pragmas.Add("#pragma multi_compile_fragment _ _LIGHT_COOKIES");
@@ -1100,7 +1099,6 @@ namespace lilToon
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
                     "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
                     "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
                     "#pragma multi_compile _ _LIGHT_LAYERS",
                     "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
@@ -1123,7 +1121,6 @@ namespace lilToon
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
                     "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
                     "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
                     "#pragma multi_compile _ _LIGHT_LAYERS",
                     "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
@@ -1146,7 +1143,6 @@ namespace lilToon
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
                     "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
                     "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
                     "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
                     "#pragma multi_compile _ _LIGHT_LAYERS",
                     "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
@@ -1167,7 +1163,6 @@ namespace lilToon
                     "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
                     "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
                     "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
                     "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
                     "#pragma multi_compile _ SHADOWS_SHADOWMASK",
                     "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
@@ -1184,7 +1179,6 @@ namespace lilToon
                     "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
                     "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
                     "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION",
                     "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
                     "#pragma multi_compile _ SHADOWS_SHADOWMASK",
                     "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
@@ -1329,10 +1323,8 @@ namespace lilToon
 
         private static string GetSkipVariantsAO()
         {
-            return GenerateIndentText(0,
-                "#if !defined(LIL_FEATURE_SSAO)",
-                "    #pragma skip_variants _SCREEN_SPACE_OCCLUSION",
-                "#endif");
+            // lilToon 不再采样 _SCREEN_SPACE_OCCLUSION（自研 Ho-AO 公共纹理语义），不再生成 skip_variants。
+            return "";
         }
 
         private static string GetSkipVariantsLightLists()
