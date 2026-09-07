@@ -479,13 +479,13 @@ namespace lilToon
         private void DrawGIAOSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.GIAO)) return;
-            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI / AO", edSet.isShowGIAOSettings);
+            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI / HoAO", edSet.isShowGIAOSettings);
             lilEditorGUI.DrawHelpButton("GI / AO");
             if(edSet.isShowGIAOSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("Global Illumination / Ambient Occlusion", customToggleFont);
-                DrawMenuButton("GI / AO", PropertyBlock.GIAO);
+                EditorGUILayout.LabelField("Global Illumination / HoAO", customToggleFont);
+                DrawMenuButton("GI / HoAO", PropertyBlock.GIAO);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
                 if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
@@ -493,16 +493,16 @@ namespace lilToon
                 }
                 if(useScreenSpaceAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
-                    LocalizedProperty(useScreenSpaceAO.p, "Screen Space AO", false);
+                    LocalizedProperty(useScreenSpaceAO.p, "HoAO", false);
                     if(useScreenSpaceAO.floatValue == 1)
                     {
                         EditorGUI.indentLevel++;
                         LocalizedProperty(ssaoStrength);
                         LocalizedProperty(ssaoDirectStrength);
                         LocalizedProperty(ssaoIndirectStrength);
-                        DrawSSAORemapGUI();
+                        DrawHoAORemapGUI();
                         LocalizedProperty(ssaoContrast);
-                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("AO Mask", "R: screen-space AO receive area"), ssaoMask);
+                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("HoAO Mask", "R: HoAO receive area"), ssaoMask);
                         EditorGUI.indentLevel--;
                     }
                 }
@@ -560,7 +560,7 @@ namespace lilToon
             }
         }
 
-        private void DrawSSAORemapGUI()
+        private void DrawHoAORemapGUI()
         {
             if(ssaoRemap.p == null) return;
             Vector4 remap = ssaoRemap.vectorValue;

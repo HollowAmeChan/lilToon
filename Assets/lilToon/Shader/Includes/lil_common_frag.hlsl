@@ -1184,7 +1184,7 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// Screen Space AO
+// HoAO public ambient-occlusion channel
 #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
     float lilSampleScreenSpaceAO(float2 screenUV)
     {
