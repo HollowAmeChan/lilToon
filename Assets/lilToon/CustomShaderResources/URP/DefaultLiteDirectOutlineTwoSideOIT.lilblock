@@ -620,6 +620,35 @@
             ENDHLSL
         }
 
+        // Outline Coverage
+        Pass
+        {
+            Name "HO_OUTLINE_COVERAGE"
+            Tags {"LightMode" = "HoGeometryBufferOutlineCoverage"}
+            Cull [_OutlineCull]
+            ZClip [_OutlineZClip]
+            ZWrite Off
+            ZTest [_OutlineZTest]
+            ColorMask R
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment fragOutlineCoverage
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+            #define LIL_OUTLINE
+            #define LIL_PASS_DEPTHNORMALS
+
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            *LIL_SUBSHADER_INSERT*
+            #include "Includes/lil_pass_outline_coverage.hlsl"
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
         *LIL_INSERT_PASS_POST*
     }
     Fallback "Universal Render Pipeline/Unlit"
