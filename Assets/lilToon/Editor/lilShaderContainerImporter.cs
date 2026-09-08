@@ -212,6 +212,11 @@ namespace lilToon
             ReplaceMultiCompiles(ref insertUsePassPre, version, indent, false);
             ReplaceMultiCompiles(ref insertUsePassPost, version, indent, false);
             insertUsePassPost += insertUsePassReference;
+
+            if(IsOutlineShaderAsset(assetName) || sb.ToString().Contains("Name \"FORWARD_OUTLINE\""))
+            {
+                insertPassPost += GetOutlineCoveragePass();
+            }
                 
             sb.Replace(LIL_INSERT_PASS_PRE,         insertPassPre);
             sb.Replace(LIL_INSERT_PASS_POST,        insertPassPost);
@@ -351,6 +356,55 @@ namespace lilToon
             AddHLSLDependency(assetFolderPath, ctx);
 
             return sb.ToString();
+        }
+
+        private static bool IsOutlineShaderAsset(string assetName)
+        {
+            string normalizedName = Path.GetFileNameWithoutExtension(assetName).ToLowerInvariant();
+            return normalizedName.Contains("_o") || normalizedName.Contains("outline");
+        }
+
+        private static string GetOutlineCoveragePass()
+        {
+            return @"
+        // Outline Coverage
+        Pass
+        {
+            Name ""HO_OUTLINE_COVERAGE""
+            Tags {""LightMode"" = ""HoGeometryBufferOutlineCoverage""}
+            Stencil
+            {
+                Ref [_OutlineStencilRef]
+                ReadMask [_OutlineStencilReadMask]
+                WriteMask [_OutlineStencilWriteMask]
+                Comp [_OutlineStencilComp]
+                Pass [_OutlineStencilPass]
+                Fail [_OutlineStencilFail]
+                ZFail [_OutlineStencilZFail]
+            }
+            Cull [_OutlineCull]
+            ZClip [_OutlineZClip]
+            ZWrite Off
+            ZTest [_OutlineZTest]
+            ColorMask R
+
+            HLSLPROGRAM
+            #pragma target 4.5
+            #pragma vertex vert
+            #pragma fragment fragOutlineCoverage
+            #pragma multi_compile_instancing
+            #define LIL_OUTLINE
+            #define LIL_PASS_DEPTHNORMALS
+
+            #include ""Includes/lil_pipeline_urp.hlsl""
+            #include ""Includes/lil_common.hlsl""
+            *LIL_SUBSHADER_INSERT*
+            #include ""Includes/lil_pass_outline_coverage.hlsl""
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+";
         }
 
         public static string UnpackContainer(string assetPath, AssetImportContext ctx = null)
