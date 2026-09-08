@@ -3,7 +3,6 @@
         Tags {*LIL_SUBSHADER_TAGS* "RenderPipeline" = "UniversalPipeline"}
         *LIL_INSERT_USEPASS_PRE*
         UsePass "*LIL_PASS_SHADER_NAME*/FORWARD_OUTLINE"
-        UsePass "*LIL_PASS_SHADER_NAME*/HO_OUTLINE_COVERAGE"
         *LIL_INSERT_USEPASS_POST*
     }
     Fallback "Universal Render Pipeline/Unlit"

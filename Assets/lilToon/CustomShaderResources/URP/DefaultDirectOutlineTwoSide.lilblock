@@ -574,17 +574,17 @@
         // Outline Coverage
         Pass
         {
-            Name "HO_OUTLINE_COVERAGE"
-            Tags {"LightMode" = "HoGeometryBufferOutlineCoverage"}
+            Name "HO_OUTLINE_NORMAL_DEPTH"
+            Tags {"LightMode" = "HoGeometryBufferOutlineNormalDepth"}
             Cull [_OutlineCull]
             ZClip [_OutlineZClip]
             ZWrite Off
             ZTest [_OutlineZTest]
-            ColorMask R
+            ColorMask RGBA
 
             HLSLPROGRAM
             #pragma vertex vert
-            #pragma fragment fragOutlineCoverage
+            #pragma fragment fragOutlineNormalDepth
             #pragma target 4.5
             #pragma lil_multi_compile_depthnormals
             #pragma shader_feature_local UNITY_UI_ALPHACLIP
@@ -595,7 +595,7 @@
             #include "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             *LIL_SUBSHADER_INSERT*
-            #include "Includes/lil_pass_outline_coverage.hlsl"
+            #include "Includes/lil_pass_outline_normal_depth.hlsl"
             *LIL_SUBSHADER_INSERT_POST*
             ENDHLSL
         }
