@@ -1463,6 +1463,9 @@ msgstr "꼭지점 라이트 사용"
 msgid "sSettingUseLightmap"
 msgstr "라이트 맵 사용"
 
+msgid "sSettingUseProbeVolumes"
+msgstr "적응형 프로브 볼륨 (APV) 사용"
+
 msgid "sManualURL"
 msgstr "https://lilxyzw.github.io/lilToon/#/en-us/"
 

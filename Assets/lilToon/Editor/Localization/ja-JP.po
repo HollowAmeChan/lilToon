@@ -1463,6 +1463,9 @@ msgstr "頂点ライトを使用"
 msgid "sSettingUseLightmap"
 msgstr "ライトマップを使用"
 
+msgid "sSettingUseProbeVolumes"
+msgstr "Adaptive Probe Volumes (APV) を使用"
+
 msgid "sManualURL"
 msgstr "https://lilxyzw.github.io/lilToon/#/ja-jp/"
 

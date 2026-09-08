@@ -93,6 +93,7 @@ namespace lilToon
         {
             GUI.enabled = !File.Exists(lilDirectoryManager.GetSettingLockPath());
             ToggleGUI(GetLoc("sSettingUseLightmap"), ref shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP);
+            ToggleGUI(GetLoc("sSettingUseProbeVolumes"), ref shaderSetting.LIL_OPTIMIZE_USE_PROBEVOLUMES);
             GUI.enabled = true;
         }
 

@@ -942,7 +942,8 @@ namespace lilToon
                         mergedText.Contains(SKIP_VARIANTS_ADDLIGHTSHADOWS) ||
                         mergedText.Contains("skip_variants _ADDITIONAL_LIGHT_SHADOWS"),
                     skipProbeVolumes =
-                        mergedText.Contains(SKIP_VARIANTS_PROBEVOLUMES),
+                        mergedText.Contains(SKIP_VARIANTS_PROBEVOLUMES) &&
+                        !GetBoolField("LIL_OPTIMIZE_USE_PROBEVOLUMES", false),
                     skipAmbientOcclusion =
                         HasAmbientOcclusionSkip(mergedText),
                     skipReflections =

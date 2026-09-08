@@ -1463,6 +1463,9 @@ msgstr "Use vertex light"
 msgid "sSettingUseLightmap"
 msgstr "Use lightmap"
 
+msgid "sSettingUseProbeVolumes"
+msgstr "Use Adaptive Probe Volumes"
+
 msgid "sManualURL"
 msgstr "https://lilxyzw.github.io/lilToon/#/en-us/"
 

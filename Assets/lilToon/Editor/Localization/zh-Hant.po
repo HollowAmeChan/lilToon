@@ -1463,6 +1463,9 @@ msgstr "使用頂點燈"
 msgid "sSettingUseLightmap"
 msgstr "使用光照貼圖"
 
+msgid "sSettingUseProbeVolumes"
+msgstr "使用自適應探針體積 (APV)"
+
 msgid "sManualURL"
 msgstr "https://lilxyzw.github.io/lilToon/#/en-us/"
 
