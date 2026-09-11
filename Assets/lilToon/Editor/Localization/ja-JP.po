@@ -644,6 +644,9 @@ msgstr "減算"
 msgid "sShadowSetting"
 msgstr "影設定"
 
+msgid "sDirectShadow"
+msgstr "直接影"
+
 msgid "sShadowTips"
 msgstr "影の色や範囲の設定ができます"
 

@@ -644,6 +644,9 @@ msgstr "Subtract"
 msgid "sShadowSetting"
 msgstr "그림자 설정"
 
+msgid "sDirectShadow"
+msgstr "직접 그림자"
+
 msgid "sShadowTips"
 msgstr "그림자의 색상과 범위를 설정할 수 있습니다"
 

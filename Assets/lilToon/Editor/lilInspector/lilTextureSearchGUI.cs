@@ -29,6 +29,10 @@ namespace lilToon
             public lilMaterialProperty property;
             public string propertyName;
             public Texture pendingTexture;
+            public bool isReadOnly;
+            public string linkedPropertyName;
+            public bool isControlOnly;
+            public string displayLabel;
         }
 
         private readonly List<TextureSearchRow> textureSearchRows = new List<TextureSearchRow>();
@@ -36,6 +40,15 @@ namespace lilToon
         private GUIContent textureSearchRemoveCurrentContent;
         private GUIContent textureSearchButtonContent;
         private int textureSearchMaterialId;
+        private static GUIStyle textureSearchNextHeaderStyle;
+        private static GUIStyle textureSearchNextColumnStyle;
+        private static GUIStyle textureSearchNextPropertyStyle;
+        private static GUIStyle textureSearchNextCurrentStyle;
+        private static GUIStyle textureSearchNextPendingStyle;
+        private static GUIStyle textureSearchNextMutedStyle;
+        private static GUIStyle textureSearchNextRowStyle;
+        private static GUIStyle textureSearchNextReadOnlyRowStyle;
+        private static GUIStyle textureSearchNextActionStyle;
 
         private const float textureSearchIconWidth = 24f;
         private const float textureSearchPropertyWidth = 132f;
@@ -50,15 +63,17 @@ namespace lilToon
                 if(!edSet.isShowTextureSearch) return;
             }
 
+            InitializeTextureSearchStyles();
             ResetTextureSearchStateIfMaterialChanged(material);
             RefreshTextureSearchRows();
 
-            EditorGUILayout.BeginVertical(customBox);
+            if(showFoldout) EditorGUILayout.BeginVertical(customBox);
+
             var materialPath = AssetDatabase.GetAssetPath(material);
             if(string.IsNullOrEmpty(materialPath))
             {
                 EditorGUILayout.HelpBox(GetLoc("sTextureSearchNoPath"), MessageType.Info);
-                EditorGUILayout.EndVertical();
+                if(showFoldout) EditorGUILayout.EndVertical();
                 return;
             }
 
@@ -68,10 +83,10 @@ namespace lilToon
             }
             else
             {
-                DrawTextureSearchColumnHeaders();
+                DrawTextureSearchColumnHeaders(!showFoldout);
                 foreach(var row in textureSearchRows)
                 {
-                    DrawTextureSearchRow(material, materialPath, row);
+                    DrawTextureSearchRow(material, materialPath, row, !showFoldout);
                 }
             }
 
@@ -80,34 +95,103 @@ namespace lilToon
             {
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                if(GUILayout.Button(GetLoc("sTextureSearchApply") + " (" + pendingCount + ")", GUILayout.Width(150f)))
+                GUIStyle applyStyle = showFoldout ? GUI.skin.button : textureSearchNextActionStyle;
+                float applyWidth = showFoldout ? 150f : 110f;
+                if(GUILayout.Button(GetLoc("sTextureSearchApply") + " (" + pendingCount + ")", applyStyle, GUILayout.Width(applyWidth)))
                 {
                     ApplyTextureSearchResults(material);
                 }
                 EditorGUILayout.EndHorizontal();
             }
-            EditorGUILayout.EndVertical();
+            if(showFoldout) EditorGUILayout.EndVertical();
         }
 
-        private void DrawTextureSearchColumnHeaders()
+        private static void InitializeTextureSearchStyles()
+        {
+            if(textureSearchNextHeaderStyle == null)
+            {
+                textureSearchNextHeaderStyle = new GUIStyle(EditorStyles.boldLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip
+                };
+                textureSearchNextColumnStyle = new GUIStyle(EditorStyles.miniLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip,
+                    fontStyle = FontStyle.Bold
+                };
+                textureSearchNextPropertyStyle = new GUIStyle(EditorStyles.miniLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip
+                };
+                textureSearchNextCurrentStyle = new GUIStyle(EditorStyles.miniLabel)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip
+                };
+                textureSearchNextPendingStyle = new GUIStyle(textureSearchNextCurrentStyle);
+                textureSearchNextMutedStyle = new GUIStyle(textureSearchNextCurrentStyle);
+                textureSearchNextRowStyle = new GUIStyle(EditorStyles.helpBox)
+                {
+                    margin = new RectOffset(0, 0, 1, 1),
+                    padding = new RectOffset(4, 4, 2, 2)
+                };
+                textureSearchNextReadOnlyRowStyle = new GUIStyle(textureSearchNextRowStyle)
+                {
+                    padding = new RectOffset(4, 4, 1, 1)
+                };
+                textureSearchNextActionStyle = new GUIStyle(EditorStyles.label)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    clipping = TextClipping.Clip,
+                    padding = new RectOffset(2, 2, 1, 1)
+                };
+            }
+
+            bool proSkin = EditorGUIUtility.isProSkin;
+            textureSearchNextHeaderStyle.normal.textColor = proSkin ? Color.white : new Color(0.10f, 0.10f, 0.10f);
+            textureSearchNextColumnStyle.normal.textColor = proSkin ? new Color(0.78f, 0.80f, 0.83f) : new Color(0.28f, 0.28f, 0.28f);
+            textureSearchNextPropertyStyle.normal.textColor = proSkin ? new Color(0.90f, 0.91f, 0.93f) : new Color(0.20f, 0.20f, 0.20f);
+            textureSearchNextCurrentStyle.normal.textColor = proSkin ? new Color(0.78f, 0.80f, 0.83f) : new Color(0.28f, 0.28f, 0.28f);
+            textureSearchNextPendingStyle.normal.textColor = proSkin ? new Color(0.35f, 0.68f, 1.00f) : new Color(0.12f, 0.36f, 0.70f);
+            textureSearchNextMutedStyle.normal.textColor = proSkin ? new Color(0.48f, 0.50f, 0.53f) : new Color(0.52f, 0.52f, 0.52f);
+            textureSearchNextActionStyle.normal.textColor = proSkin ? new Color(0.60f, 0.76f, 0.96f) : new Color(0.12f, 0.36f, 0.70f);
+
+        }
+
+        private void DrawTextureSearchColumnHeaders(bool nextStyle)
         {
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("", GUILayout.Width(textureSearchClearWidth));
             GUILayout.Label("", GUILayout.Width(textureSearchIconWidth));
-            GUILayout.Label(GetLoc("sTextureSearchProperty"), EditorStyles.miniLabel, GUILayout.Width(textureSearchPropertyWidth));
-            GUILayout.Label(GetLoc("sTextureSearchCurrent"), EditorStyles.miniLabel, GUILayout.ExpandWidth(true));
-            GUILayout.Label(GetLoc("sTextureSearchPendingValue"), EditorStyles.miniLabel, GUILayout.ExpandWidth(true));
+            GUIStyle columnStyle = nextStyle ? textureSearchNextColumnStyle : EditorStyles.miniLabel;
+            GUILayout.Label(GetLoc("sTextureSearchProperty"), columnStyle, GUILayout.Width(textureSearchPropertyWidth));
+            GUILayout.Label(GetLoc("sTextureSearchCurrent"), columnStyle, GUILayout.ExpandWidth(true));
+            GUILayout.Label(GetLoc("sTextureSearchPendingValue"), columnStyle, GUILayout.ExpandWidth(true));
             GUILayout.Label("", GUILayout.Width(textureSearchButtonWidth));
             GUILayout.Label("", GUILayout.Width(textureSearchClearWidth));
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawTextureSearchRow(Material material, string materialPath, TextureSearchRow row)
+        private void DrawTextureSearchRow(Material material, string materialPath, TextureSearchRow row, bool nextStyle)
         {
-            EditorGUILayout.BeginHorizontal(boxInnerHalf, GUILayout.MinHeight(EditorGUIUtility.singleLineHeight + 2f));
+            if(row.isReadOnly)
+            {
+                DrawTextureSearchReadOnlyRow(row, nextStyle);
+                return;
+            }
+
+            GUIStyle rowStyle = nextStyle ? textureSearchNextRowStyle : boxInnerHalf;
+            GUIStyle propertyStyle = nextStyle ? textureSearchNextPropertyStyle : EditorStyles.miniLabel;
+            GUIStyle currentStyle = nextStyle ? textureSearchNextCurrentStyle : EditorStyles.miniLabel;
+            GUIStyle pendingStyle = nextStyle ? textureSearchNextPendingStyle : EditorStyles.miniLabel;
+            GUIStyle searchButtonStyle = nextStyle ? textureSearchNextActionStyle : GUI.skin.button;
+            EditorGUILayout.BeginHorizontal(rowStyle, GUILayout.MinHeight(EditorGUIUtility.singleLineHeight + 2f));
             if(GUILayout.Button(
                 GetTextureSearchRemoveCurrentContent(),
-                EditorStyles.miniButton,
+                nextStyle ? textureSearchNextActionStyle : EditorStyles.miniButton,
                 GUILayout.Width(textureSearchClearWidth),
                 GUILayout.Height(EditorGUIUtility.singleLineHeight)))
             {
@@ -115,26 +199,26 @@ namespace lilToon
             }
 
             DrawTextureSearchTextureField(row);
-            GUILayout.Label(new GUIContent(row.propertyName, row.propertyName), EditorStyles.miniLabel, GUILayout.Width(textureSearchPropertyWidth));
+            GUILayout.Label(new GUIContent(row.displayLabel ?? row.propertyName, row.propertyName), propertyStyle, GUILayout.Width(textureSearchPropertyWidth));
             GUILayout.Label(
                 GetTextureDisplayContent(row.property),
-                EditorStyles.miniLabel,
+                currentStyle,
                 GUILayout.MinWidth(48f),
                 GUILayout.ExpandWidth(true));
             GUILayout.Label(
                 GetTextureDisplayContent(row.pendingTexture),
-                EditorStyles.miniLabel,
+                pendingStyle,
                 GUILayout.MinWidth(48f),
                 GUILayout.ExpandWidth(true));
 
-            if(GUILayout.Button(GetTextureSearchButtonContent(), GUILayout.Width(textureSearchButtonWidth)))
+            if(GUILayout.Button(GetTextureSearchButtonContent(), searchButtonStyle, GUILayout.Width(textureSearchButtonWidth)))
             {
                 SearchTextureRow(material, materialPath, row);
             }
 
             if(row.pendingTexture != null && GUILayout.Button(
                 GetTextureSearchClearContent(),
-                EditorStyles.miniButton,
+                nextStyle ? textureSearchNextActionStyle : EditorStyles.miniButton,
                 GUILayout.Width(textureSearchClearWidth),
                 GUILayout.Height(EditorGUIUtility.singleLineHeight)))
             {
@@ -146,6 +230,41 @@ namespace lilToon
                 GUILayout.Space(textureSearchClearWidth);
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawTextureSearchReadOnlyRow(TextureSearchRow row, bool nextStyle)
+        {
+            GUIStyle rowStyle = nextStyle ? textureSearchNextReadOnlyRowStyle : boxInnerHalf;
+            GUIStyle mutedStyle = nextStyle ? textureSearchNextMutedStyle : EditorStyles.miniLabel;
+            EditorGUILayout.BeginHorizontal(rowStyle, GUILayout.MinHeight(EditorGUIUtility.singleLineHeight + 2f));
+            GUILayout.Space(textureSearchClearWidth);
+            using(new EditorGUI.DisabledScope(true))
+            {
+                DrawTextureSearchReadOnlyTextureField(row);
+            }
+            string propertyLabel = string.IsNullOrEmpty(row.linkedPropertyName)
+                ? (row.displayLabel ?? row.propertyName)
+                : "  " + (row.displayLabel ?? row.propertyName);
+            GUILayout.Label(new GUIContent(propertyLabel, row.linkedPropertyName), mutedStyle, GUILayout.Width(textureSearchPropertyWidth));
+            GUILayout.Label(
+                GetTextureDisplayContent(row.property),
+                mutedStyle,
+                GUILayout.MinWidth(48f),
+                GUILayout.ExpandWidth(true));
+            GUILayout.Label("-", mutedStyle, GUILayout.MinWidth(48f), GUILayout.ExpandWidth(true));
+            GUILayout.Space(textureSearchButtonWidth + textureSearchClearWidth);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static void DrawTextureSearchReadOnlyTextureField(TextureSearchRow row)
+        {
+            EditorGUILayout.ObjectField(
+                GUIContent.none,
+                row.property.textureValue,
+                typeof(Texture),
+                false,
+                GUILayout.Width(textureSearchIconWidth),
+                GUILayout.Height(EditorGUIUtility.singleLineHeight));
         }
 
         private void ClearTextureSearchCurrent(TextureSearchRow row)
@@ -200,25 +319,94 @@ namespace lilToon
                 .GroupBy(row => row.propertyName)
                 .ToDictionary(group => group.Key, group => group.First().pendingTexture);
 
-            textureSearchRows.Clear();
-            foreach(var property in AllProperties())
-            {
-                if(!property.isTexture ||
-                    property.p == null ||
-                    property.propertyType != UnityEngine.Rendering.ShaderPropertyType.Texture)
-                {
-                    continue;
-                }
+            var allProperties = AllProperties()
+                .Where(property => property.p != null)
+                .ToList();
+            var textureProperties = allProperties
+                .Where(property => property.isTexture && property.propertyType == UnityEngine.Rendering.ShaderPropertyType.Texture)
+                .ToList();
 
-                textureSearchRows.Add(new TextureSearchRow
+            textureSearchRows.Clear();
+            var addedPropertyNames = new HashSet<string>();
+            var mainTexture = textureProperties.FirstOrDefault(property => property.propertyName == "_MainTex");
+            if(mainTexture != null)
+            {
+                AddTextureSearchRow(mainTexture, pendingByPropertyName, addedPropertyNames, false, null);
+                foreach(var property in textureProperties.Where(property => IsTextureSearchSynchronizedAlias(property.propertyName)))
                 {
-                    property = property,
-                    propertyName = property.propertyName,
-                    pendingTexture = pendingByPropertyName.TryGetValue(property.propertyName, out var pendingTexture)
-                        ? pendingTexture
-                        : null
-                });
+                    AddTextureSearchRow(property, pendingByPropertyName, addedPropertyNames, true, "_MainTex");
+                }
             }
+
+            string[] priorityNames =
+            {
+                "_MainTex", "_BumpMap", "_SmoothnessTex", "_MetallicGlossMap", "_ShadowStrengthMask",
+                "_ShadowColorTex", "_Shadow2ndColorTex", "_Shadow3rdColorTex",
+                "_OutlineTex", "_OutlineWidthMask", "_OutlineZBiasMask"
+            };
+            foreach(string priorityName in priorityNames)
+            {
+                lilMaterialProperty property = allProperties.FirstOrDefault(candidate => candidate.propertyName == priorityName);
+                if(property == null || !property.isTexture || addedPropertyNames.Contains(property.propertyName)) continue;
+                AddTextureSearchRow(property, pendingByPropertyName, addedPropertyNames, false, null);
+            }
+
+            foreach(var property in textureProperties)
+            {
+                if(addedPropertyNames.Contains(property.propertyName)) continue;
+
+                bool isReadOnly = property.blocks == null || property.blocks.Count == 0;
+                AddTextureSearchRow(property, pendingByPropertyName, addedPropertyNames, isReadOnly, null);
+            }
+        }
+
+        private void AddTextureSearchRow(
+            lilMaterialProperty property,
+            Dictionary<string, Texture> pendingByPropertyName,
+            HashSet<string> addedPropertyNames,
+            bool isReadOnly,
+            string linkedPropertyName)
+        {
+            if(property == null || !addedPropertyNames.Add(property.propertyName)) return;
+
+            textureSearchRows.Add(new TextureSearchRow
+            {
+                property = property,
+                propertyName = property.propertyName,
+                pendingTexture = !isReadOnly &&
+                    pendingByPropertyName.TryGetValue(property.propertyName, out var pendingTexture)
+                        ? pendingTexture
+                        : null,
+                isReadOnly = isReadOnly,
+                linkedPropertyName = linkedPropertyName
+                ,displayLabel = GetTextureSearchDisplayLabel(property.propertyName)
+            });
+        }
+
+        private static string GetTextureSearchDisplayLabel(string propertyName)
+        {
+            bool chinese = lilLanguageManager.langSet.languageName.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
+            string label = propertyName;
+            if(chinese)
+            {
+                if(propertyName == "_MainTex") label = "主贴图";
+                else if(propertyName == "_BumpMap") label = "法线贴图";
+                else if(propertyName == "_SmoothnessTex") label = "光滑度贴图";
+                else if(propertyName == "_MetallicGlossMap") label = "金属度贴图";
+                else if(propertyName == "_ShadowStrengthMask") label = "ShadowCast 遮罩";
+                else if(propertyName == "_ShadowColorTex") label = "直接阴影颜色 1";
+                else if(propertyName == "_Shadow2ndColorTex") label = "直接阴影颜色 2";
+                else if(propertyName == "_Shadow3rdColorTex") label = "直接阴影颜色 3";
+                else if(propertyName == "_OutlineTex") label = "描边贴图";
+                else if(propertyName == "_OutlineWidthMask") label = "描边宽度遮罩";
+                else if(propertyName == "_OutlineZBiasMask") label = "描边 Z 偏移遮罩";
+            }
+            return label == propertyName ? propertyName : label + "（" + propertyName + "）";
+        }
+
+        private static bool IsTextureSearchSynchronizedAlias(string propertyName)
+        {
+            return propertyName == "_BaseMap" || propertyName == "_BaseColorMap";
         }
 
         private static GUIContent GetTextureDisplayContent(lilMaterialProperty property)
@@ -237,8 +425,10 @@ namespace lilToon
         {
             if(textureSearchButtonContent == null)
             {
-                textureSearchButtonContent = new GUIContent(GetLoc("sTextureSearchButton"), GetLoc("sTextureSearchButtonTooltip"));
+                textureSearchButtonContent = new GUIContent();
             }
+            textureSearchButtonContent.text = GetLoc("sTextureSearchButton");
+            textureSearchButtonContent.tooltip = GetLoc("sTextureSearchButtonTooltip");
             return textureSearchButtonContent;
         }
 
@@ -246,8 +436,9 @@ namespace lilToon
         {
             if(textureSearchClearContent == null)
             {
-                textureSearchClearContent = new GUIContent("X", GetLoc("sTextureSearchClear"));
+                textureSearchClearContent = new GUIContent("X");
             }
+            textureSearchClearContent.tooltip = GetLoc("sTextureSearchClear");
             return textureSearchClearContent;
         }
 
@@ -255,8 +446,9 @@ namespace lilToon
         {
             if(textureSearchRemoveCurrentContent == null)
             {
-                textureSearchRemoveCurrentContent = new GUIContent("X", GetLoc("sTextureSearchRemoveCurrent"));
+                textureSearchRemoveCurrentContent = new GUIContent("X");
             }
+            textureSearchRemoveCurrentContent.tooltip = GetLoc("sTextureSearchRemoveCurrent");
             return textureSearchRemoveCurrentContent;
         }
 
