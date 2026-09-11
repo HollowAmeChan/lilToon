@@ -285,14 +285,8 @@ namespace lilToon
 
         private static void DrawTextureSearchReadOnlyTextureField(Rect rect, TextureSearchRow row)
         {
-            using(new EditorGUI.DisabledScope(true))
-            {
-                Texture texture = row.property.textureValue;
-                GUIContent content = texture == null
-                    ? new GUIContent("-")
-                    : new GUIContent(texture.name, AssetPreview.GetMiniThumbnail(texture));
-                GUI.Label(rect, content, GUIStyle.none);
-            }
+            // Synchronized alias rows are read-only; keep their thumbnail column empty.
+            GUI.Label(rect, GUIContent.none, textureSearchNextMutedStyle);
         }
 
         private static void DrawTextureSearchIconButton(Rect rect, GUIContent content, Action action)
@@ -327,10 +321,20 @@ namespace lilToon
         private void DrawTextureSearchTextureField(Rect rect, TextureSearchRow row)
         {
             Texture texture = row.property.textureValue;
-            GUIContent content = texture == null
-                ? new GUIContent("-", "Select texture")
-                : new GUIContent(texture.name, AssetPreview.GetMiniThumbnail(texture), AssetDatabase.GetAssetPath(texture));
-            if(GUI.Button(rect, content, GUIStyle.none))
+            if(texture != null)
+            {
+                Texture thumbnail = AssetPreview.GetMiniThumbnail(texture);
+                if(thumbnail != null)
+                {
+                    GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, rect.height - 4f), thumbnail, ScaleMode.ScaleToFit, true);
+                }
+            }
+            else
+            {
+                GUI.Label(rect, "-", textureSearchNextMutedStyle);
+            }
+
+            if(GUI.Button(rect, GUIContent.none, GUIStyle.none))
             {
                 texturePickerRow = row;
                 texturePickerControlId = GUIUtility.GetControlID(FocusType.Passive);
