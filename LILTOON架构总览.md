@@ -16,7 +16,7 @@
 - HTrace AO 的 SSAO / GTAO / RTAO 都应在 lilToon 里表现为同一类 AO 输入，不要把算法选择做进材质面板。
 - lilToon 现有 `_SCREEN_SPACE_OCCLUSION` / `_ScreenSpaceOcclusionTexture` 兼容路径继续保留。
 - 新增 HTrace 来源时，可在材质 UI 的 `AO RT` 中选择 `_ScreenSpaceOcclusionTexture (URP/HTrace compatible)` 或 `_HTraceBufferAO (HTrace direct)`。
-- 旧 `_UseSSAO` 已删除，统一使用 `_UseScreenSpaceAO`；强度、direct/indirect、remap、contrast、mask 仍沿用现有 `_SSAO*` 参数以减少改动面。
+- 旧 `_UseSSAO` 已删除，统一使用 `_UseScreenSpaceAO`；当前材质侧只保留总强度、remap、contrast、mask 四类消费参数。
 - SSGI 当前不落在材质普通贴图层。它是 Renderer Feature 全屏间接光注入，lilToon 后续最多提供“接受 SSGI 强度/禁用 SSGI”这类轻量入口。
 - HTrace SSGI 依赖 diffuse / normal / depth / motion 等屏幕空间输入。URP Forward 下需要 lilToon/lilPBR 提供 `LightMode = "UniversalGBuffer"` 的 pass，至少写入 base color、normal、occlusion/metallic fallback。
 - lilToon 的 `_FlipNormal` 是 Forward 美术显示逻辑；HTrace SSGI 采样时不应默认把它当真实几何法线。新增 `_HTraceSSGIBackfaceNormalFix`，默认开启时会让 `UniversalGBuffer` 与 `DepthNormals` 忽略背面法线翻转，避免单面裙摆/头发片内侧异常发亮；Forward pass 仍保持原本显示效果。
@@ -552,25 +552,24 @@ lilToon 不直接在 `.lilblock` 里手写所有 URP17 pragma，而是用占位�
 
 ### 10.3 SSAO 链路
 
-lilToon 的 SSAO shader 侧逻辑在：
+lilToon 的屏幕空间 AO shader 侧逻辑在：
 
 - `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl`
-- `lilSSAO(...)`
+- `lilScreenSpaceAO(...)`
 
 它依赖：
 
 - 材质属性 `_UseScreenSpaceAO`
 - shader setting 宏 `LIL_FEATURE_SSAO`
-- forward 变体 `_SCREEN_SPACE_OCCLUSION`
-- URP Renderer Feature 产生 `_ScreenSpaceOcclusionTexture`
+- Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`
 
-所以 SSAO “不报错但没效果”时，先按这个顺序查：
+当前消费顺序是：
 
 1. `lilToonSetting` 是否启用了 `LIL_FEATURE_SSAO`
-2. 生成的 `ltspass_*.shader` Forward pass 是否有 `#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION`
-3. 是否还残留 `#pragma skip_variants _SCREEN_SPACE_OCCLUSION`
-4. URP Renderer Data 里是否启用了 Screen Space Ambient Occlusion
-5. Frame Debugger 里是否存在 SSAO pass，并且 forward shader 运行在 `_SCREEN_SPACE_OCCLUSION` 变体
+2. Ho-GTAO 是否在 GeometryBuffer 之后、opaque 绘制之前发布 `_HoAOTexture`
+3. `_UseScreenSpaceAO` 是否开启
+4. 采样后是否依次经过 `_SSAORemap`、`_SSAOContrast`、`_SSAOMask`
+5. 最终因子是否按 `_SSAOStrength` 乘到 `fd.col.rgb`
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 

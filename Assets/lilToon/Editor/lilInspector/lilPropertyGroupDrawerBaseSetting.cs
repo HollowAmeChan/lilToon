@@ -498,8 +498,6 @@ namespace lilToon
                     {
                         EditorGUI.indentLevel++;
                         LocalizedProperty(ssaoStrength);
-                        LocalizedProperty(ssaoDirectStrength);
-                        LocalizedProperty(ssaoIndirectStrength);
                         DrawHoAORemapGUI();
                         LocalizedProperty(ssaoContrast);
                         TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("HoAO Mask", "R: HoAO receive area"), ssaoMask);

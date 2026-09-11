@@ -1189,13 +1189,9 @@
     float lilSampleScreenSpaceAO(float2 screenUV)
     {
         float hoAO = LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
-        float directAO = lerp(1.0, hoAO, _SSAODirectStrength);
-        float indirectAO = lerp(1.0, hoAO, _SSAOIndirectStrength);
-
-        float ao = min(directAO, indirectAO);
         float aoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);
         float aoMax = max(_SSAORemap.y, aoMin + 0.001);
-        ao = saturate((ao - aoMin) / max(aoMax - aoMin, 0.001));
+        float ao = saturate((hoAO - aoMin) / max(aoMax - aoMin, 0.001));
         return saturate(1.0 - pow(saturate(1.0 - ao), max(_SSAOContrast, 0.001)));
     }
 

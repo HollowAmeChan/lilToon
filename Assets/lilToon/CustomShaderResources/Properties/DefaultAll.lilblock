@@ -30,8 +30,6 @@
                         _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
         [lilToggle]     _UseScreenSpaceAO           ("HoAO", Int) = 1
                         _SSAOStrength               ("HoAO Strength", Range(0, 1)) = 1
-                        _SSAODirectStrength         ("HoAO Direct", Range(0, 1)) = 1
-                        _SSAOIndirectStrength       ("HoAO Indirect", Range(0, 1)) = 0.5
         [lilVec2]       _SSAORemap                  ("HoAO Remap Min Max", Vector) = (0,1,0,0)
                         _SSAOContrast               ("HoAO Contrast", Range(0, 4)) = 1
         [NoScaleOffset] _SSAOMask                   ("HoAO Mask", 2D) = "white" {}

@@ -7,25 +7,24 @@
 
 ## 0. 2026-05-14 HTrace 引入后的定位更新
 
-项目已经引入 HTrace AO 与 HTrace SSGI 后，本文的“SSAO”需要按更宽的 `Screen Space AO` 理解：
+项目已经切换到 Ho-GTAO 与 Ho-SSGI 后，本文的“SSAO”需要按更宽的 `Screen Space AO` 理解：
 
-- HTrace AO 的 SSAO / GTAO / RTAO 都是 AO 生产端选择，lilToon 不应把算法名暴露成材质工作流。
-- 近期 P0 是把旧 `_UseSSAO` 接收链路替换为统一的 `_UseScreenSpaceAO` / `Screen Space AO Receiver`，同时支持 HTrace `_HTraceBufferAO` 与 URP `_ScreenSpaceOcclusionTexture`。
-- 旧 `_UseSSAO` 已删除；`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask` 等调参属性继续保留。
-- 原本计划的“自定义 toon SSAO Renderer Feature”降级为备用路线。只有在 HTrace AO 无法满足角色 toon 稳定性或风格控制时，再评估自研。
-- HTrace SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路；其 MSAA / camera color 警告应在 renderer pass 层修。
+- Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
+- 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
+- 当前材质侧保留 `_UseScreenSpaceAO`、`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask`。
+- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 forward 光照完成后、SSS 前做一次材质侧乘法。
+- Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。
 
 ---
 
 ## 1. 当前结论
 
-lilToon 目前不自己生成 AO，而是作为 URP / HTrace 屏幕空间 AO 的材质接收端：
+lilToon 目前不自己生成 AO，而是作为 Ho-GTAO 屏幕空间 AO 的材质接收端：
 
-- URP Renderer Feature 生成 `_ScreenSpaceOcclusionTexture`。
-- HTrace AO 可生成 `_HTraceBufferAO`，并可作为更高质量的 AO 主来源。
-- lilToon forward shader 保留 `_SCREEN_SPACE_OCCLUSION` 变体。
-- 材质启用 `_UseScreenSpaceAO` 后，`lilScreenSpaceAO(...)` 采样当前选定的 AO。
-- 当前 lilToon 接收端已经有强度、direct/indirect 分离、Min/Max remap、contrast、mask。
+- Ho-GTAO 生成并全局发布 `_HoAOTexture`，值为 0..1 visibility，1 表示无遮挡。
+- lilToon forward shader 不再依赖 `_SCREEN_SPACE_OCCLUSION` 变体。
+- 材质启用 `_UseScreenSpaceAO` 后，`lilScreenSpaceAO(...)` 采样 `_HoAOTexture`。
+- 当前接收端包含总强度、Min/Max remap、contrast 和 mask。
 
 这条路线适合第一阶段，因为它不需要先改 lilToon 光照主结构，也能同时复用项目已有 URP SSAO 与 HTrace AO 设置。
 
@@ -136,14 +135,13 @@ BEFORE_SSAO
 #endif
 ```
 
-当前 `lilSSAO(...)` 的作用：
+当前 `lilScreenSpaceAO(...)` 的作用：
 
-1. 通过 `GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(fd.positionCS))` 取 URP AO。
-2. 用 `_SSAODirectStrength`、`_SSAOIndirectStrength` 合成 direct / indirect AO。
-3. 做 `_SSAORemap` Min/Max。
-4. 做 `_SSAOContrast`。
-5. 采 `_SSAOMask.r` 控制材质区域。
-6. 最后乘到 `fd.col.rgb`。
+1. 通过 `GetNormalizedScreenSpaceUV(fd.positionCS)` 采样 `_HoAOTexture.r`。
+2. 做 `_SSAORemap` Min/Max。
+3. 做 `_SSAOContrast`。
+4. 采 `_SSAOMask.r` 控制材质区域。
+5. 最后按 `_SSAOStrength` 乘到 `fd.col.rgb`。
 
 这意味着当前模式本质上是 `Final Multiply`：在主 toon shadow 之后，后续 SSS / Rim / MatCap / Reflection / Emission 之前，对当前结果做接触暗化。
 
@@ -346,18 +344,15 @@ HLSL：
 
 ## 9. 排查清单
 
-SSAO 没效果：
+屏幕空间 AO 没效果：
 
 1. `lilToonSetting` 是否启用 `LIL_FEATURE_SSAO`。
-2. 生成 shader Forward pass 是否有 `#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION`。
-3. 是否错误残留 `skip_variants _SCREEN_SPACE_OCCLUSION`。
-4. URP Renderer Data 是否启用 `Screen Space Ambient Occlusion`，或 HTrace AO Renderer Feature 是否启用。
-5. Frame Debugger 中是否有 URP SSAO / HTrace AO pass，并且是否生成 `_ScreenSpaceOcclusionTexture` 或 `_HTraceBufferAO`。
-6. 当前 forward shader 是否走 `_SCREEN_SPACE_OCCLUSION` 变体。
-7. URP SSAO 是否开启 `After Opaque`；材质侧采样方案建议关闭它。
-8. Source 为 `Depth Normals` 时，lilToon 的 `DepthNormals` pass 是否正常写入，URP17 下还要注意 `_WRITE_RENDERING_LAYERS`。
+2. Ho-GeometryBuffer 与 Ho-GTAO 是否按顺序在 opaque 前执行。
+3. Frame Debugger 中是否能看到 `_HoAOTexture` 的 Ho-GTAO Output。
+4. `_UseScreenSpaceAO`、`_SSAOStrength` 和 `_SSAOMask` 是否有效。
+5. GeometryBuffer 是否提供有效的法线、深度和 coverage。
 
-SSAO 太糊：
+屏幕空间 AO 太糊：
 
 1. 关闭 `Downsample`。
 2. 使用 `Depth Normals`。
@@ -365,13 +360,11 @@ SSAO 太糊：
 4. 降低 Radius。
 5. 不要过度压窄 `_SSAORemap`。
 
-SSAO 有颗粒：
+屏幕空间 AO 有颗粒：
 
-1. URP SSAO 路径下提高 Samples。
-2. HTrace 路径下优先切 GTAO/RTAO preset、temporal denoise 与历史帧 rejection。
-3. 降低 Radius / Intensity / Contrast。
-4. 避免把 `_SSAOContrast` 拉太高。
-5. 只有 HTrace AO 也无法满足角色需求时，再进入自定义 Renderer Feature 阶段。
+1. Ho-GTAO 路径下优先调整质量档、temporal denoise 和历史帧 rejection。
+2. 降低 producer 的 Radius / Thickness。
+3. 避免把 `_SSAOContrast` 拉太高。
 
 ---
 

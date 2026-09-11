@@ -165,8 +165,6 @@ namespace lilToon
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty useScreenSpaceAO           = new lilMaterialProperty("_UseScreenSpaceAO", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoStrength               = new lilMaterialProperty("_SSAOStrength", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoDirectStrength         = new lilMaterialProperty("_SSAODirectStrength", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoIndirectStrength       = new lilMaterialProperty("_SSAOIndirectStrength", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
         private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
@@ -743,8 +741,6 @@ namespace lilToon
                 multiLightCastShadowStrength,
                 useScreenSpaceAO,
                 ssaoStrength,
-                ssaoDirectStrength,
-                ssaoIndirectStrength,
                 ssaoRemap,
                 ssaoContrast,
                 ssaoMask,

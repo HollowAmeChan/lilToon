@@ -278,8 +278,6 @@ float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
 #if defined(LIL_FEATURE_SSAO)
     float   _SSAOStrength;
-    float   _SSAODirectStrength;
-    float   _SSAOIndirectStrength;
     float4  _SSAORemap;
     float   _SSAOContrast;
 #endif
