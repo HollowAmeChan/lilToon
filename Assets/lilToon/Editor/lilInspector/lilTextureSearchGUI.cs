@@ -50,6 +50,8 @@ namespace lilToon
         private static GUIStyle textureSearchNextRowStyle;
         private static GUIStyle textureSearchNextReadOnlyRowStyle;
         private static GUIStyle textureSearchNextActionStyle;
+        private TextureSearchRow texturePickerRow;
+        private int texturePickerControlId;
 
         private const float textureSearchIconWidth = 24f;
         private const float textureSearchPropertyWidth = 132f;
@@ -65,6 +67,7 @@ namespace lilToon
             }
 
             InitializeTextureSearchStyles();
+            HandleTexturePickerCommand();
             ResetTextureSearchStateIfMaterialChanged(material);
             RefreshTextureSearchRows();
 
@@ -282,7 +285,14 @@ namespace lilToon
 
         private static void DrawTextureSearchReadOnlyTextureField(Rect rect, TextureSearchRow row)
         {
-            EditorGUI.ObjectField(rect, GUIContent.none, row.property.textureValue, typeof(Texture), false);
+            using(new EditorGUI.DisabledScope(true))
+            {
+                Texture texture = row.property.textureValue;
+                GUIContent content = texture == null
+                    ? new GUIContent("-")
+                    : new GUIContent(texture.name, AssetPreview.GetMiniThumbnail(texture));
+                GUI.Label(rect, content, GUIStyle.none);
+            }
         }
 
         private static void DrawTextureSearchIconButton(Rect rect, GUIContent content, Action action)
@@ -314,18 +324,32 @@ namespace lilToon
             GUI.changed = true;
         }
 
-        private static void DrawTextureSearchTextureField(Rect rect, TextureSearchRow row)
+        private void DrawTextureSearchTextureField(Rect rect, TextureSearchRow row)
         {
             Texture texture = row.property.textureValue;
-            if(texture == null)
+            GUIContent content = texture == null
+                ? new GUIContent("-", "Select texture")
+                : new GUIContent(texture.name, AssetPreview.GetMiniThumbnail(texture), AssetDatabase.GetAssetPath(texture));
+            if(GUI.Button(rect, content, GUIStyle.none))
             {
-                GUI.Label(rect, "-", textureSearchNextMutedStyle);
-                return;
+                texturePickerRow = row;
+                texturePickerControlId = GUIUtility.GetControlID(FocusType.Passive);
+                EditorGUIUtility.ShowObjectPicker<Texture>(texture, false, string.Empty, texturePickerControlId);
             }
+        }
 
-            Texture thumbnail = AssetPreview.GetMiniThumbnail(texture);
-            if(thumbnail != null) GUI.DrawTexture(rect, thumbnail, ScaleMode.ScaleToFit, true);
-            else GUI.Label(rect, new GUIContent(texture.name), textureSearchNextMutedStyle);
+        private void HandleTexturePickerCommand()
+        {
+            Event evt = Event.current;
+            if(texturePickerRow == null || evt.type != EventType.ExecuteCommand || evt.commandName != "ObjectSelectorUpdated") return;
+
+            Texture selectedTexture = EditorGUIUtility.GetObjectPickerObject() as Texture;
+            if(materials != null && materials.Length > 0) Undo.RecordObjects(materials, GetLoc("sTextureSearchUndo"));
+            texturePickerRow.property.textureValue = selectedTexture;
+            texturePickerRow = null;
+            texturePickerControlId = 0;
+            GUI.changed = true;
+            evt.Use();
         }
 
         private void ResetTextureSearchStateIfMaterialChanged(Material material)
