@@ -42,10 +42,13 @@ namespace lilToon
         private const float textureSearchButtonWidth = 48f;
         private const float textureSearchClearWidth = 24f;
 
-        private void DrawTextureSearchGUI(Material material)
+        private void DrawTextureSearchGUI(Material material, bool showFoldout = true)
         {
-            edSet.isShowTextureSearch = lilEditorGUI.Foldout(GetLoc("sTextureSearch"), edSet.isShowTextureSearch);
-            if(!edSet.isShowTextureSearch) return;
+            if(showFoldout)
+            {
+                edSet.isShowTextureSearch = lilEditorGUI.Foldout(GetLoc("sTextureSearch"), edSet.isShowTextureSearch);
+                if(!edSet.isShowTextureSearch) return;
+            }
 
             ResetTextureSearchStateIfMaterialChanged(material);
             RefreshTextureSearchRows();

@@ -17,6 +17,12 @@ namespace lilToon
     {
         private void DrawAdvancedGUI(Material material)
         {
+            if(edSet.useNextInspector)
+            {
+                DrawNextInspectorGUI(material);
+                return;
+            }
+
             #if UNITY_2019_1_OR_NEWER
             edSet.searchKeyWord = EditorGUILayout.TextField(edSet.searchKeyWord, EditorStyles.toolbarSearchField);
             #else

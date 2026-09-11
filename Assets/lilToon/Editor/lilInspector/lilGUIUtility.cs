@@ -104,8 +104,33 @@ namespace lilToon
 
         private static void SelectEditorMode()
         {
-            string[] sEditorModeList = {GetLoc("sEditorModeAdvanced"),GetLoc("sEditorModePreset"),GetLoc("sEditorModeShaderSetting")};
-            edSet.editorMode = (EditorMode)GUILayout.Toolbar((int)edSet.editorMode, sEditorModeList);
+            if(!edSet.useNextInspector)
+            {
+                string[] legacyLabels = {GetLoc("sEditorModeAdvanced"), GetLoc("sEditorModePreset"), GetLoc("sEditorModeShaderSetting")};
+                edSet.editorMode = (EditorMode)GUILayout.Toolbar((int)edSet.editorMode, legacyLabels);
+                return;
+            }
+
+            EditorMode[] modes =
+            {
+                EditorMode.Advanced,
+                EditorMode.TextureControl,
+                EditorMode.Preset,
+                EditorMode.Settings,
+                EditorMode.Optimization
+            };
+            string[] labels =
+            {
+                GetLoc("sEditorModeAdvanced"),
+                GetNextTextureControlLabel(),
+                GetLoc("sEditorModePreset"),
+                GetLoc("sEditorModeShaderSetting"),
+                GetLoc("sOptimization")
+            };
+            int current = Array.IndexOf(modes, edSet.editorMode);
+            if(current < 0) current = 0;
+            int next = GUILayout.Toolbar(current, labels);
+            edSet.editorMode = modes[Mathf.Clamp(next, 0, modes.Length - 1)];
         }
 
         private void DrawMenuButton(string helpAnchor, PropertyBlock propertyBlock)

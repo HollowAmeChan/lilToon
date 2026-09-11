@@ -92,12 +92,14 @@ namespace lilToon
             public bool isShowGIAOSettings              = false;
             public bool isShowMetadataBufferSettings             = false;
             public bool isShowPlanarReflectionSettings  = false;
-            public bool isShowSSAOMask                  = false;
+            public bool isShowRealtimeAOMask                  = false;
             public bool isShowShaderSetting             = false;
             public bool isShowOptimizationSetting       = false;
             public bool isShowDefaultValueSetting       = false;
             public bool isAlphaMaskModeAdvanced         = false;
             public bool isShowTextureSearch             = false;
+            public bool useNextInspector               = true;
+            public int nextInspectorPage                = 0;
             public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Ho+1]{false,false,false,false,false,false,false,false};
             public string searchKeyWord = "";
         }

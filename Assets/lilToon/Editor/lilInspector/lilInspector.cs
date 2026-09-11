@@ -79,8 +79,7 @@ namespace lilToon
             EditorGUI.BeginChangeCheck();
 
             //------------------------------------------------------------------------------------------------------------------------------
-            // Language
-            lilLanguageManager.SelectLang();
+            lilLanguageManager.InitializeLanguage();
             sMainColorBranch = isUseAlpha ? GetLoc("sMainColorAlpha") : GetLoc("sMainColor");
             mainColorRGBAContent = isUseAlpha ? colorAlphaRGBAContent : colorRGBAContent;
 
@@ -90,6 +89,10 @@ namespace lilToon
 
             //------------------------------------------------------------------------------------------------------------------------------
             // Editor Mode
+            if(edSet.useNextInspector)
+            {
+                DrawNextInspectorHeader(material);
+            }
             SelectEditorMode();
             DrawShaderTypeWarn(material);
             DrawMaterialVariantInfo(material);
@@ -100,8 +103,14 @@ namespace lilToon
             switch(edSet.editorMode)
             {
                 case EditorMode.Advanced:   DrawAdvancedGUI(material); break;
+                case EditorMode.TextureControl:
+                    if(edSet.useNextInspector) DrawNextTextureControlPage(material);
+                    break;
                 case EditorMode.Preset:     DrawPresetGUI(); break;
                 case EditorMode.Settings:   DrawSettingsGUI(); break;
+                case EditorMode.Optimization:
+                    if(edSet.useNextInspector) DrawNextOptimizationPage(material);
+                    break;
             }
 
             if(EditorGUI.EndChangeCheck())
