@@ -1586,3 +1586,54 @@ msgstr "マテリアルが既に存在している可能性があります。上
 msgid "sUtilInvalidFormat"
 msgstr "フォーマットが不正です。"
 
+msgid "sTextureSearch"
+msgstr "テクスチャ検索"
+
+msgid "sTextureSearchMaterial"
+msgstr "マテリアル"
+
+msgid "sTextureSearchDirectory"
+msgstr "検索フォルダー"
+
+msgid "sTextureSearchButton"
+msgstr "検索"
+
+msgid "sTextureSearchButtonTooltip"
+msgstr "このテクスチャスロットのあいまい一致を検索"
+
+msgid "sTextureSearchProperty"
+msgstr "シェーダーパラメータ"
+
+msgid "sTextureSearchCurrent"
+msgstr "現在"
+
+msgid "sTextureSearchPendingValue"
+msgstr "一時"
+
+msgid "sTextureSearchDiscard"
+msgstr "リストをクリア"
+
+msgid "sTextureSearchPending"
+msgstr "テクスチャ割り当ての一時リスト"
+
+msgid "sTextureSearchApply"
+msgstr "適用"
+
+msgid "sTextureSearchClear"
+msgstr "この行を削除"
+
+msgid "sTextureSearchRemoveCurrent"
+msgstr "現在のテクスチャを削除"
+
+msgid "sTextureSearchNoPath"
+msgstr "検索できるアセットパスがマテリアルにありません。"
+
+msgid "sTextureSearchNoMatches"
+msgstr "同じフォルダーに一致するテクスチャがありません。"
+
+msgid "sTextureSearchNoSlots"
+msgstr "表示できるテクスチャスロットがありません。"
+
+msgid "sTextureSearchUndo"
+msgstr "lilToon テクスチャ検索結果を適用"
+

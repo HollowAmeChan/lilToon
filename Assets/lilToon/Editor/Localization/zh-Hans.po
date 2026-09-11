@@ -1586,3 +1586,54 @@ msgstr "该材质可能已经存在，您确定要覆盖它吗？"
 msgid "sUtilInvalidFormat"
 msgstr "无效的格式。"
 
+msgid "sTextureSearch"
+msgstr "贴图搜索"
+
+msgid "sTextureSearchMaterial"
+msgstr "材质"
+
+msgid "sTextureSearchDirectory"
+msgstr "搜索目录"
+
+msgid "sTextureSearchButton"
+msgstr "搜索"
+
+msgid "sTextureSearchButtonTooltip"
+msgstr "为当前贴图槽查找模糊匹配"
+
+msgid "sTextureSearchProperty"
+msgstr "Shader 参数"
+
+msgid "sTextureSearchCurrent"
+msgstr "当前"
+
+msgid "sTextureSearchPendingValue"
+msgstr "暂存"
+
+msgid "sTextureSearchDiscard"
+msgstr "清空列表"
+
+msgid "sTextureSearchPending"
+msgstr "暂存贴图填充结果"
+
+msgid "sTextureSearchApply"
+msgstr "确认填入"
+
+msgid "sTextureSearchClear"
+msgstr "移除本行暂存结果"
+
+msgid "sTextureSearchRemoveCurrent"
+msgstr "移除当前贴图"
+
+msgid "sTextureSearchNoPath"
+msgstr "当前材质没有可搜索的资产路径。"
+
+msgid "sTextureSearchNoMatches"
+msgstr "同目录中没有找到匹配的贴图。"
+
+msgid "sTextureSearchNoSlots"
+msgstr "当前材质没有可显示的贴图槽。"
+
+msgid "sTextureSearchUndo"
+msgstr "应用 lilToon 贴图搜索结果"
+

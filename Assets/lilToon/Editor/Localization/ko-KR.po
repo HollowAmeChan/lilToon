@@ -1586,3 +1586,54 @@ msgstr "재료가 이미있을 수 있습니다. 덮어 하시겠습니까?"
 msgid "sUtilInvalidFormat"
 msgstr "Invalid format."
 
+msgid "sTextureSearch"
+msgstr "텍스처 검색"
+
+msgid "sTextureSearchMaterial"
+msgstr "머티리얼"
+
+msgid "sTextureSearchDirectory"
+msgstr "검색 폴더"
+
+msgid "sTextureSearchButton"
+msgstr "검색"
+
+msgid "sTextureSearchButtonTooltip"
+msgstr "현재 텍스처 슬롯의 퍼지 일치 항목 검색"
+
+msgid "sTextureSearchProperty"
+msgstr "셰이더 파라미터"
+
+msgid "sTextureSearchCurrent"
+msgstr "현재"
+
+msgid "sTextureSearchPendingValue"
+msgstr "임시"
+
+msgid "sTextureSearchDiscard"
+msgstr "목록 지우기"
+
+msgid "sTextureSearchPending"
+msgstr "텍스처 할당 임시 목록"
+
+msgid "sTextureSearchApply"
+msgstr "적용"
+
+msgid "sTextureSearchClear"
+msgstr "이 행 제거"
+
+msgid "sTextureSearchRemoveCurrent"
+msgstr "현재 텍스처 제거"
+
+msgid "sTextureSearchNoPath"
+msgstr "검색할 수 있는 에셋 경로가 머티리얼에 없습니다."
+
+msgid "sTextureSearchNoMatches"
+msgstr "같은 폴더에서 일치하는 텍스처를 찾지 못했습니다."
+
+msgid "sTextureSearchNoSlots"
+msgstr "표시할 수 있는 텍스처 슬롯이 없습니다."
+
+msgid "sTextureSearchUndo"
+msgstr "lilToon 텍스처 검색 결과 적용"
+

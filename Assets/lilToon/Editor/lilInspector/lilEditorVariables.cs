@@ -97,6 +97,7 @@ namespace lilToon
             public bool isShowOptimizationSetting       = false;
             public bool isShowDefaultValueSetting       = false;
             public bool isAlphaMaskModeAdvanced         = false;
+            public bool isShowTextureSearch             = false;
             public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Ho+1]{false,false,false,false,false,false,false,false};
             public string searchKeyWord = "";
         }

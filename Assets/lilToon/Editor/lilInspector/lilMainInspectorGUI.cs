@@ -22,6 +22,7 @@ namespace lilToon
             #else
             edSet.searchKeyWord = EditorGUILayout.TextField(edSet.searchKeyWord);
             #endif
+            DrawTextureSearchGUI(material);
             if(isLite)
             {
                 //------------------------------------------------------------------------------------------------------------------------------

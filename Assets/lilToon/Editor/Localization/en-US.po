@@ -1586,3 +1586,54 @@ msgstr "Materials may already exist. Are you sure you want to overwrite it?"
 msgid "sUtilInvalidFormat"
 msgstr "Invalid format."
 
+msgid "sTextureSearch"
+msgstr "Texture Search"
+
+msgid "sTextureSearchMaterial"
+msgstr "Material"
+
+msgid "sTextureSearchDirectory"
+msgstr "Search directory"
+
+msgid "sTextureSearchButton"
+msgstr "Search"
+
+msgid "sTextureSearchButtonTooltip"
+msgstr "Find a fuzzy match for this texture slot"
+
+msgid "sTextureSearchProperty"
+msgstr "Shader parameter"
+
+msgid "sTextureSearchCurrent"
+msgstr "Current"
+
+msgid "sTextureSearchPendingValue"
+msgstr "Pending"
+
+msgid "sTextureSearchDiscard"
+msgstr "Clear list"
+
+msgid "sTextureSearchPending"
+msgstr "Pending texture assignments"
+
+msgid "sTextureSearchApply"
+msgstr "Apply"
+
+msgid "sTextureSearchClear"
+msgstr "Remove this pending entry"
+
+msgid "sTextureSearchRemoveCurrent"
+msgstr "Remove the current texture"
+
+msgid "sTextureSearchNoPath"
+msgstr "The material has no asset path that can be searched."
+
+msgid "sTextureSearchNoMatches"
+msgstr "No matching textures were found in the same directory."
+
+msgid "sTextureSearchNoSlots"
+msgstr "This material has no texture slots available for display."
+
+msgid "sTextureSearchUndo"
+msgstr "Apply lilToon texture search results"
+
