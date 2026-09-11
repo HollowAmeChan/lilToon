@@ -436,9 +436,9 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 if(_UseMain3rdTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color3rd.rgb, color3rd.a - color3rd.a * _Main3rdEnableLighting, _Main3rdTexBlendMode);
             #endif
 
-            BEFORE_SSAO
-            #if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
-                OVERRIDE_SSAO
+            BEFORE_REALTIMEAO
+            #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
+                OVERRIDE_REALTIMEAO
             #endif
 
             BEFORE_SSS

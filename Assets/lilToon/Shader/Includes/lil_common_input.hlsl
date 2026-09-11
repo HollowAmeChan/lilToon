@@ -400,10 +400,11 @@ CBUFFER_START(UnityPerMaterial)
     float   _MonochromeLighting;
     float   _MultiLightIntensity;
     float   _MultiLightCastShadowStrength;
-    #if defined(LIL_FEATURE_SSAO)
-        float   _SSAOStrength;
-        float4  _SSAORemap;
-        float   _SSAOContrast;
+    #if defined(LIL_FEATURE_REALTIMEAO)
+        float   _RealtimeAOStrength;
+        float4  _RealtimeAORemap;
+        float   _RealtimeAOContrast;
+        float4  _RealtimeAOColor;
     #endif
     float   _AAStrength;
     float   _EnvRimBorder;
@@ -721,8 +722,9 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _SSSReceiveShadow;
         lilBool _SSSThicknessInvert;
     #endif
-    #if defined(LIL_FEATURE_SSAO)
-        lilBool _UseScreenSpaceAO;
+    #if defined(LIL_FEATURE_REALTIMEAO)
+        lilBool _UseRealtimeAO;
+        lilBool _RealtimeAOColorFromMain;
     #endif
     lilBool _UsePlanarReflection;
     lilBool _PlanarReflectionFlipY;
@@ -823,7 +825,8 @@ TEXTURE2D(_ShadowColorTex);
 TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
-TEXTURE2D(_SSAOMask);
+TEXTURE2D(_RealtimeAOMask);
+TEXTURE2D(_RealtimeAOColorTex);
 TEXTURE2D(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);

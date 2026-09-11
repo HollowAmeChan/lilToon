@@ -221,7 +221,7 @@
 #define LIL_FEATURE_SHADOW_3RD
 #define LIL_FEATURE_SHADOW_LUT
 #define LIL_FEATURE_RECEIVE_SHADOW
-#define LIL_FEATURE_SSAO
+#define LIL_FEATURE_REALTIMEAO
 #define LIL_FEATURE_SSS
 #define LIL_FEATURE_EMISSION_UV
 #define LIL_FEATURE_ANIMATE_EMISSION_UV
@@ -257,7 +257,7 @@
 #define LIL_FEATURE_Shadow2ndColorTex
 #define LIL_FEATURE_Shadow3rdColorTex
 #define LIL_FEATURE_ShadowReceiveMask
-#define LIL_FEATURE_SSAOMask
+#define LIL_FEATURE_REALTIMEAOMask
 #define LIL_FEATURE_RimShadeMask
 #define LIL_FEATURE_BacklightColorTex
 #define LIL_FEATURE_SSSThicknessMap

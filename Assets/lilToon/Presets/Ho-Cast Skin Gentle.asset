@@ -33,7 +33,7 @@ MonoBehaviour:
     value: {r: 1, g: 0.7, b: 0.56, a: 0.25}
   vectors: []
   floats:
-  - name: _UseScreenSpaceAO
+  - name: _UseRealtimeAO
     value: 1
   - name: _UseShadow
     value: 1

@@ -18,7 +18,7 @@ namespace lilToon
             InitializeNextInspectorStyles();
             DrawNextInspectorNavigation();
 
-            switch(Mathf.Clamp(edSet.nextInspectorPage, 0, 2))
+            switch(Mathf.Clamp(edSet.nextInspectorPage, 0, 3))
             {
                 case 0:
                     DrawNextMaterialPage(material);
@@ -26,8 +26,11 @@ namespace lilToon
                 case 1:
                     DrawNextLightingPage();
                     break;
+                case 2:
+                    DrawNextExtraPage();
+                    break;
                 default:
-                    DrawNextEffectsPage(material);
+                    DrawNextPipelinePage(material);
                     break;
             }
         }
@@ -139,14 +142,17 @@ namespace lilToon
         private static void DrawNextInspectorNavigation()
         {
             EditorGUILayout.Space(4f);
-            string[] labels =
-            {
-                GetLoc("sColors") + " / " + GetLoc("sTexture"),
-                GetLoc("sLightingSettings"),
-                GetLoc("sAdvanced")
-            };
+            string[] labels = GetNextInspectorCategoryLabels();
             edSet.nextInspectorPage = GUILayout.Toolbar(Mathf.Clamp(edSet.nextInspectorPage, 0, labels.Length - 1), labels);
             EditorGUILayout.Space(3f);
+        }
+
+        private static string[] GetNextInspectorCategoryLabels()
+        {
+            bool chinese = lilLanguageManager.langSet.languageName.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
+            return chinese
+                ? new[] { "表面属性", "光照属性", "额外属性", "管线与着色器" }
+                : new[] { "Surface", "Lighting", "Additional", "Pipeline & Shader" };
         }
 
         private void DrawNextTextureControlPage(Material material)
@@ -268,8 +274,11 @@ namespace lilToon
                 DrawNextSection("surface.shadow", GetLoc("sShadowSetting"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
                 DrawNextSection("surface.emission", GetLoc("sEmissionSetting"), PropertyBlock.Emission, DrawNextEmission, false, null, true, useEmission);
                 DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNextNormal, false);
-                if(!isGem) DrawNextSection("surface.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, false, null, true, useBacklight);
-                if(!isGem) DrawNextSection("surface.sss", "SSS", PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
+                DrawNextSection("surface.uv", GetLoc("sMainUV"), PropertyBlock.UV, delegate
+                {
+                    UVSettingGUI(mainTex, mainTex_ScrollRotate);
+                    LocalizedProperty(shiftBackfaceUV);
+                }, false);
                 DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, DrawNextAlphaMask, false);
             });
         }
@@ -535,21 +544,8 @@ namespace lilToon
                     }
                 }, false);
                 DrawNextSection("lighting.reflection", GetLoc("sReflectionsSetting"), PropertyBlock.Reflection, DrawNextReflection, false, null, true, useReflection);
-                DrawNextSection("lighting.uv", GetLoc("sMainUV"), PropertyBlock.UV, delegate
-                {
-                    UVSettingGUI(mainTex, mainTex_ScrollRotate);
-                    LocalizedProperty(shiftBackfaceUV);
-                }, false);
-                DrawNextSection("lighting.metadata", "MetadataBuffer", PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
-                DrawNextSection("lighting.planar", "平面反射", PropertyBlock.PlanarReflection, DrawNextPlanarReflection, false);
-                if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
-                {
-                    DrawNextSection("lighting.bake", GetLoc("sLightBakeSetting"), PropertyBlock.Other, delegate
-                    {
-                        if(!isCustomEditor) DoubleSidedGIField();
-                        if(!isCustomEditor) LightmapEmissionFlagsProperty();
-                    }, false, null, false);
-                }
+                if(!isGem) DrawNextSection("lighting.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, false, null, true, useBacklight);
+                if(!isGem) DrawNextSection("lighting.sss", "SSS", PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
             });
         }
 
@@ -598,7 +594,7 @@ namespace lilToon
             }
         }
 
-        private void DrawNextEffectsPage(Material material)
+        private void DrawNextExtraPage()
         {
             DrawNextPanel(delegate
             {
@@ -632,9 +628,26 @@ namespace lilToon
                 }, false);
                 if(isRefr) DrawNextSection("effects.refraction", GetLoc("sRefractionSetting"), PropertyBlock.Refraction, DrawNextRefraction, false);
                 if(isFur) DrawNextSection("effects.fur", GetLoc("sFurSetting"), PropertyBlock.Fur, DrawNextFur, false);
-                DrawNextSection("effects.stencil", GetLoc("sStencilSetting"), PropertyBlock.Stencil, DrawNextStencil, false);
-                DrawNextSection("effects.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, false);
-                DrawNextSection("effects.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
+            });
+        }
+
+        private void DrawNextPipelinePage(Material material)
+        {
+            DrawNextPanel(delegate
+            {
+                DrawNextSection("pipeline.metadata", "MetadataBuffer", PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
+                DrawNextSection("pipeline.planar", "平面反射", PropertyBlock.PlanarReflection, DrawNextPlanarReflection, false);
+                if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
+                {
+                    DrawNextSection("pipeline.bake", GetLoc("sLightBakeSetting"), PropertyBlock.Other, delegate
+                    {
+                        if(!isCustomEditor) DoubleSidedGIField();
+                        if(!isCustomEditor) LightmapEmissionFlagsProperty();
+                    }, false, null, false);
+                }
+                DrawNextSection("pipeline.stencil", GetLoc("sStencilSetting"), PropertyBlock.Stencil, DrawNextStencil, false);
+                DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, false);
+                DrawNextSection("pipeline.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
                 {
                     LocalizedProperty(cull);
                     LocalizedProperty(zclip);

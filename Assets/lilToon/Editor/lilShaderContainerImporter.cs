@@ -967,11 +967,11 @@ namespace lilToon
             private static bool HasAmbientOcclusionSkip(string shaderText)
             {
                 int markerIndex = shaderText.IndexOf(SKIP_VARIANTS_AO, StringComparison.Ordinal);
-                if(markerIndex >= 0 && !IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_SSAO", markerIndex)) return true;
+                if(markerIndex >= 0 && !IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_REALTIMEAO", markerIndex)) return true;
 
                 foreach(Match match in Regex.Matches(shaderText, @"#pragma\s+skip_variants[^\r\n]*\b_SCREEN_SPACE_OCCLUSION\b"))
                 {
-                    if(!IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_SSAO", match.Index)) return true;
+                    if(!IsFeatureDefinedBefore(shaderText, "LIL_FEATURE_REALTIMEAO", match.Index)) return true;
                 }
 
                 return false;

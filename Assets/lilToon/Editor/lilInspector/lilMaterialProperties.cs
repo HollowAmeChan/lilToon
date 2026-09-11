@@ -163,11 +163,14 @@ namespace lilToon
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
         private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty useScreenSpaceAO           = new lilMaterialProperty("_UseScreenSpaceAO", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoStrength               = new lilMaterialProperty("_SSAOStrength", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoRemap                  = new lilMaterialProperty("_SSAORemap", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoContrast               = new lilMaterialProperty("_SSAOContrast", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty ssaoMask                   = new lilMaterialProperty("_SSAOMask", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty useRealtimeAO           = new lilMaterialProperty("_UseRealtimeAO", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOStrength               = new lilMaterialProperty("_RealtimeAOStrength", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAORemap                  = new lilMaterialProperty("_RealtimeAORemap", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOContrast               = new lilMaterialProperty("_RealtimeAOContrast", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOColor                  = new lilMaterialProperty("_RealtimeAOColor", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOColorTex               = new lilMaterialProperty("_RealtimeAOColorTex", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOColorFromMain          = new lilMaterialProperty("_RealtimeAOColorFromMain", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty realtimeAOMask                   = new lilMaterialProperty("_RealtimeAOMask", true, PropertyBlock.GIAO);
         private readonly lilMaterialProperty metadataBufferCustom0Color          = new lilMaterialProperty("_HoMetadataBufferCustom0Color", PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom0Tex            = new lilMaterialProperty("_HoMetadataBufferCustom0Tex", true, PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom1Color          = new lilMaterialProperty("_HoMetadataBufferCustom1Color", PropertyBlock.MetadataBuffer);
@@ -739,11 +742,14 @@ namespace lilToon
                 lilShadowCasterBias,
                 multiLightIntensity,
                 multiLightCastShadowStrength,
-                useScreenSpaceAO,
-                ssaoStrength,
-                ssaoRemap,
-                ssaoContrast,
-                ssaoMask,
+                useRealtimeAO,
+                realtimeAOStrength,
+                realtimeAORemap,
+                realtimeAOContrast,
+                realtimeAOColor,
+                realtimeAOColorTex,
+                realtimeAOColorFromMain,
+                realtimeAOMask,
                 metadataBufferCustom0Color,
                 metadataBufferCustom0Tex,
                 metadataBufferCustom1Color,

@@ -1,4 +1,4 @@
-# lilToon URP SSAO 设计总览
+# lilToon URP RealtimeAO 设计总览
 
 > 本文合并旧的 `LILTOON_URP_SSAO_WORKFLOW.md` 与 `LILTOON_URP_SSAO_RESEARCH_NOTES.md`。
 > 目标是把 URP 管线顺序、lilToon 当前接收逻辑、已知问题、以及 HTrace 引入前后的 AO 路线变化放在一份中文文档里。
@@ -11,7 +11,7 @@
 
 - Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
 - 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
-- 当前材质侧保留 `_UseScreenSpaceAO`、`_SSAOStrength`、`_SSAORemap`、`_SSAOContrast`、`_SSAOMask`。
+- 当前材质侧保留 `_UseRealtimeAO`、`_RealtimeAOStrength`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`、`_RealtimeAOColorFromMain`、`_RealtimeAOMask`。
 - Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 forward 光照完成后、SSS 前做一次材质侧乘法。
 - Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。
 
@@ -23,8 +23,8 @@ lilToon 目前不自己生成 AO，而是作为 Ho-GTAO 屏幕空间 AO 的材�
 
 - Ho-GTAO 生成并全局发布 `_HoAOTexture`，值为 0..1 visibility，1 表示无遮挡。
 - lilToon forward shader 不再依赖 `_SCREEN_SPACE_OCCLUSION` 变体。
-- 材质启用 `_UseScreenSpaceAO` 后，`lilScreenSpaceAO(...)` 采样 `_HoAOTexture`。
-- 当前接收端包含总强度、Min/Max remap、contrast 和 mask。
+- 材质启用 `_UseRealtimeAO` 后，`lilRealtimeAO(...)` 采样 `_HoAOTexture`。
+- 当前接收端包含总强度、Min/Max remap、contrast、颜色/颜色贴图、从主色取色和 mask。
 
 这条路线适合第一阶段，因为它不需要先改 lilToon 光照主结构，也能同时复用项目已有 URP SSAO 与 HTrace AO 设置。
 
@@ -129,19 +129,20 @@ Output
 当前 SSAO 插入点：
 
 ```hlsl
-BEFORE_SSAO
-#if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
-    OVERRIDE_SSAO
+BEFORE_REALTIMEAO
+#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
+    OVERRIDE_REALTIMEAO
 #endif
 ```
 
-当前 `lilScreenSpaceAO(...)` 的作用：
+当前 `lilRealtimeAO(...)` 的作用：
 
 1. 通过 `GetNormalizedScreenSpaceUV(fd.positionCS)` 采样 `_HoAOTexture.r`。
-2. 做 `_SSAORemap` Min/Max。
-3. 做 `_SSAOContrast`。
-4. 采 `_SSAOMask.r` 控制材质区域。
-5. 最后按 `_SSAOStrength` 乘到 `fd.col.rgb`。
+2. 做 `_RealtimeAORemap` Min/Max。
+3. 做 `_RealtimeAOContrast`。
+4. 采 `_RealtimeAOMask.r` 控制材质区域。
+5. 用 `_RealtimeAOColor` 与 `_RealtimeAOColorTex` 相乘；可选使用 `fd.albedo` 作为颜色来源。
+6. 最后按 `_RealtimeAOStrength` 混合到 `fd.col.rgb`。
 
 这意味着当前模式本质上是 `Final Multiply`：在主 toon shadow 之后，后续 SSS / Rim / MatCap / Reflection / Emission 之前，对当前结果做接触暗化。
 
@@ -169,20 +170,20 @@ SSAO Apply Mode
 
 ---
 
-## 6. SSAO 染色设计
+## 6. RealtimeAO 染色设计
 
-SSAO 染色在 NPR 中合理，但要理解为“风格化接触暗部 / 环境暗部染色”，不是物理 SSAO 本身。
+RealtimeAO 染色在 NPR 中合理，但要理解为“风格化接触暗部 / 环境暗部染色”，不是物理 AO 本身。
 
 建议参数：
 
 ```text
-_SSAOColor
-_SSAOColorStrength
-_SSAOBlendMode
-_SSAOApplyMode
-_SSAOMask
-_SSAORemap
-_SSAOContrast
+_RealtimeAOColor
+_RealtimeAOColorTex
+_RealtimeAOColorFromMain
+_RealtimeAOStrength
+_RealtimeAOMask
+_RealtimeAORemap
+_RealtimeAOContrast
 ```
 
 ### 6.1 Final Multiply
@@ -212,7 +213,7 @@ fd.col.rgb *= lerp(1.0, ssao, strength);
 推荐逻辑：
 
 ```hlsl
-float aoBlend = (1.0 - ssao) * _SSAOStrength * _SSAOColorStrength * ssaoMask;
+float aoBlend = (1.0 - realtimeAO) * _RealtimeAOStrength * _RealtimeAOColor.a * aoMask;
 fd.albedo = lilBlendColor(fd.albedo, _SSAOColor.rgb, aoBlend * _SSAOColor.a, _SSAOBlendMode);
 fd.col.rgb = fd.albedo;
 ```
@@ -240,7 +241,7 @@ fd.col.rgb = fd.albedo;
 推荐逻辑：
 
 ```hlsl
-float aoBlend = (1.0 - ssao) * _SSAOStrength * _SSAOColorStrength * ssaoMask;
+float aoBlend = (1.0 - realtimeAO) * _RealtimeAOStrength * _RealtimeAOColor.a * aoMask;
 indirectCol = lilBlendColor(indirectCol, _SSAOColor.rgb, aoBlend * _SSAOColor.a, _SSAOBlendMode);
 ```
 
@@ -346,10 +347,10 @@ HLSL：
 
 屏幕空间 AO 没效果：
 
-1. `lilToonSetting` 是否启用 `LIL_FEATURE_SSAO`。
+1. `lilToonSetting` 是否启用 `LIL_FEATURE_REALTIMEAO`。
 2. Ho-GeometryBuffer 与 Ho-GTAO 是否按顺序在 opaque 前执行。
 3. Frame Debugger 中是否能看到 `_HoAOTexture` 的 Ho-GTAO Output。
-4. `_UseScreenSpaceAO`、`_SSAOStrength` 和 `_SSAOMask` 是否有效。
+4. `_UseRealtimeAO`、`_RealtimeAOStrength` 和 `_RealtimeAOMask` 是否有效。
 5. GeometryBuffer 是否提供有效的法线、深度和 coverage。
 
 屏幕空间 AO 太糊：
@@ -358,13 +359,13 @@ HLSL：
 2. 使用 `Depth Normals`。
 3. 使用 `High (Bilateral)` blur。
 4. 降低 Radius。
-5. 不要过度压窄 `_SSAORemap`。
+5. 不要过度压窄 `_RealtimeAORemap`。
 
 屏幕空间 AO 有颗粒：
 
 1. Ho-GTAO 路径下优先调整质量档、temporal denoise 和历史帧 rejection。
 2. 降低 producer 的 Radius / Thickness。
-3. 避免把 `_SSAOContrast` 拉太高。
+3. 避免把 `_RealtimeAOContrast` 拉太高。
 
 ---
 

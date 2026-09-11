@@ -29,7 +29,7 @@
             #define LIL_MULTI_INPUTS_DITHER
             #define LIL_MULTI_INPUTS_OUTLINE
 
-            #define LIL_FEATURE_SSAO
+            #define LIL_FEATURE_REALTIMEAO
 
             #pragma lil_skip_variants_decals
             #pragma lil_skip_variants_addlightshadows

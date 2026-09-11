@@ -78,8 +78,8 @@
     #define BEFORE_BACKLIGHT
 #endif
 
-#if !defined(BEFORE_SSAO)
-    #define BEFORE_SSAO
+#if !defined(BEFORE_REALTIMEAO)
+    #define BEFORE_REALTIMEAO
 #endif
 
 #if !defined(BEFORE_SSS)
@@ -1185,38 +1185,43 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // HoAO public ambient-occlusion channel
-#if defined(LIL_FEATURE_SSAO) && defined(LIL_URP) && !defined(LIL_LITE)
-    float lilSampleScreenSpaceAO(float2 screenUV)
+#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
+    float lilSampleRealtimeAO(float2 screenUV)
     {
         float hoAO = LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
-        float aoMin = min(_SSAORemap.x, _SSAORemap.y - 0.001);
-        float aoMax = max(_SSAORemap.y, aoMin + 0.001);
+        float aoMin = min(_RealtimeAORemap.x, _RealtimeAORemap.y - 0.001);
+        float aoMax = max(_RealtimeAORemap.y, aoMin + 0.001);
         float ao = saturate((hoAO - aoMin) / max(aoMax - aoMin, 0.001));
-        return saturate(1.0 - pow(saturate(1.0 - ao), max(_SSAOContrast, 0.001)));
+        return saturate(1.0 - pow(saturate(1.0 - ao), max(_RealtimeAOContrast, 0.001)));
     }
 
-    void lilScreenSpaceAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    void lilRealtimeAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
-        if(_UseScreenSpaceAO)
+        if(_UseRealtimeAO)
         {
-            float ao = lilSampleScreenSpaceAO(GetNormalizedScreenSpaceUV(fd.positionCS));
+            float ao = lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS));
 
             float aoMask = 1.0;
-            #if defined(LIL_FEATURE_SSAOMask)
-                aoMask = LIL_SAMPLE_2D(_SSAOMask, samp, fd.uvMain).r;
+            #if defined(LIL_FEATURE_REALTIMEAOMask)
+                aoMask = LIL_SAMPLE_2D(_RealtimeAOMask, samp, fd.uvMain).r;
             #endif
-            fd.col.rgb *= lerp(1.0, ao, _SSAOStrength * aoMask);
+
+            float4 aoColor = _RealtimeAOColor;
+            if(_RealtimeAOColorFromMain) aoColor.rgb = fd.albedo;
+            aoColor *= LIL_SAMPLE_2D(_RealtimeAOColorTex, samp, fd.uvMain);
+            float aoBlend = saturate((1.0 - ao) * _RealtimeAOStrength * aoMask * aoColor.a);
+            fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * aoColor.rgb, aoBlend);
         }
     }
 
-    void lilSSAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    void lilRealtimeAOApply(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
-        lilScreenSpaceAO(fd LIL_SAMP_IN(samp));
+        lilRealtimeAO(fd LIL_SAMP_IN(samp));
     }
 #endif
 
-#if !defined(OVERRIDE_SSAO)
-    #define OVERRIDE_SSAO lilScreenSpaceAO(fd LIL_SAMP_IN(sampler_MainTex));
+#if !defined(OVERRIDE_REALTIMEAO)
+    #define OVERRIDE_REALTIMEAO lilRealtimeAOApply(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -276,10 +276,11 @@ float   _LightMaxLimit;
 float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
-#if defined(LIL_FEATURE_SSAO)
-    float   _SSAOStrength;
-    float4  _SSAORemap;
-    float   _SSAOContrast;
+#if defined(LIL_FEATURE_REALTIMEAO)
+    float   _RealtimeAOStrength;
+    float4  _RealtimeAORemap;
+    float   _RealtimeAOContrast;
+    float4  _RealtimeAOColor;
 #endif
 float   _AAStrength;
 float   _EnvRimBorder;
@@ -641,8 +642,9 @@ lilBool _Invisible;
     lilBool _SSSReceiveShadow;
     lilBool _SSSThicknessInvert;
 #endif
-#if defined(LIL_FEATURE_SSAO)
-    lilBool _UseScreenSpaceAO;
+#if defined(LIL_FEATURE_REALTIMEAO)
+    lilBool _UseRealtimeAO;
+    lilBool _RealtimeAOColorFromMain;
 #endif
 lilBool _UsePlanarReflection;
 lilBool _PlanarReflectionFlipY;

@@ -16,7 +16,7 @@
 - HTrace AO 的 SSAO / GTAO / RTAO 都应在 lilToon 里表现为同一类 AO 输入，不要把算法选择做进材质面板。
 - lilToon 现有 `_SCREEN_SPACE_OCCLUSION` / `_ScreenSpaceOcclusionTexture` 兼容路径继续保留。
 - 新增 HTrace 来源时，可在材质 UI 的 `AO RT` 中选择 `_ScreenSpaceOcclusionTexture (URP/HTrace compatible)` 或 `_HTraceBufferAO (HTrace direct)`。
-- 旧 `_UseSSAO` 已删除，统一使用 `_UseScreenSpaceAO`；当前材质侧只保留总强度、remap、contrast、mask 四类消费参数。
+- 旧 `_UseSSAO` / `_UseScreenSpaceAO` 已删除，统一使用 `_UseRealtimeAO`；当前材质侧消费实时 AO、remap、contrast、颜色/颜色贴图、从主色取色和 mask。
 - SSGI 当前不落在材质普通贴图层。它是 Renderer Feature 全屏间接光注入，lilToon 后续最多提供“接受 SSGI 强度/禁用 SSGI”这类轻量入口。
 - HTrace SSGI 依赖 diffuse / normal / depth / motion 等屏幕空间输入。URP Forward 下需要 lilToon/lilPBR 提供 `LightMode = "UniversalGBuffer"` 的 pass，至少写入 base color、normal、occlusion/metallic fallback。
 - lilToon 的 `_FlipNormal` 是 Forward 美术显示逻辑；HTrace SSGI 采样时不应默认把它当真实几何法线。新增 `_HTraceSSGIBackfaceNormalFix`，默认开启时会让 `UniversalGBuffer` 与 `DepthNormals` 忽略背面法线翻转，避免单面裙摆/头发片内侧异常发亮；Forward pass 仍保持原本显示效果。
@@ -559,7 +559,7 @@ lilToon 的屏幕空间 AO shader 侧逻辑在：
 
 它依赖：
 
-- 材质属性 `_UseScreenSpaceAO`
+- 材质属性 `_UseRealtimeAO`
 - shader setting 宏 `LIL_FEATURE_SSAO`
 - Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`
 
@@ -567,9 +567,10 @@ lilToon 的屏幕空间 AO shader 侧逻辑在：
 
 1. `lilToonSetting` 是否启用了 `LIL_FEATURE_SSAO`
 2. Ho-GTAO 是否在 GeometryBuffer 之后、opaque 绘制之前发布 `_HoAOTexture`
-3. `_UseScreenSpaceAO` 是否开启
-4. 采样后是否依次经过 `_SSAORemap`、`_SSAOContrast`、`_SSAOMask`
-5. 最终因子是否按 `_SSAOStrength` 乘到 `fd.col.rgb`
+3. `_UseRealtimeAO` 是否开启
+4. 采样后是否依次经过 `_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOMask`
+5. `_RealtimeAOColor` 与 `_RealtimeAOColorTex` 相乘，可选从主色取色
+6. 最终因子是否按 `_RealtimeAOStrength` 混合到 `fd.col.rgb`
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 

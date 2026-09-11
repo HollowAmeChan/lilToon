@@ -43,7 +43,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_RIMLIGHT_DIRECTION = true;
     public bool LIL_FEATURE_GLITTER = true;
     public bool LIL_FEATURE_BACKLIGHT = true;
-    public bool LIL_FEATURE_SSAO = true;
+    public bool LIL_FEATURE_REALTIMEAO = true;
     public bool LIL_FEATURE_SSS = true;
     public bool LIL_FEATURE_PARALLAX = true;
     public bool LIL_FEATURE_POM = false;
@@ -80,7 +80,7 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_Shadow2ndColorTex = true;
     public bool LIL_FEATURE_Shadow3rdColorTex = true;
     public bool LIL_FEATURE_ShadowReceiveMask = true;
-    public bool LIL_FEATURE_SSAOMask = true;
+    public bool LIL_FEATURE_REALTIMEAOMask = true;
     public bool LIL_FEATURE_RimShadeMask = true;
     public bool LIL_FEATURE_BacklightColorTex = true;
     public bool LIL_FEATURE_SSSThicknessMap = true;
@@ -270,7 +270,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = false;
         shaderSetting.LIL_FEATURE_GLITTER = false;
         shaderSetting.LIL_FEATURE_BACKLIGHT = false;
-        shaderSetting.LIL_FEATURE_SSAO = false;
+        shaderSetting.LIL_FEATURE_REALTIMEAO = false;
         shaderSetting.LIL_FEATURE_SSS = false;
         shaderSetting.LIL_FEATURE_PARALLAX = false;
         shaderSetting.LIL_FEATURE_POM = false;
@@ -307,7 +307,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_Shadow2ndColorTex = false;
         shaderSetting.LIL_FEATURE_Shadow3rdColorTex = false;
         shaderSetting.LIL_FEATURE_ShadowReceiveMask = false;
-        shaderSetting.LIL_FEATURE_SSAOMask = false;
+        shaderSetting.LIL_FEATURE_REALTIMEAOMask = false;
         shaderSetting.LIL_FEATURE_RimShadeMask = false;
         shaderSetting.LIL_FEATURE_BacklightColorTex = false;
         shaderSetting.LIL_FEATURE_SSSThicknessMap = false;
@@ -379,7 +379,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = true;
         shaderSetting.LIL_FEATURE_GLITTER = true;
         shaderSetting.LIL_FEATURE_BACKLIGHT = true;
-        shaderSetting.LIL_FEATURE_SSAO = true;
+        shaderSetting.LIL_FEATURE_REALTIMEAO = true;
         shaderSetting.LIL_FEATURE_SSS = true;
         shaderSetting.LIL_FEATURE_PARALLAX = true;
         shaderSetting.LIL_FEATURE_POM = true;
@@ -419,7 +419,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_Shadow2ndColorTex = true;
             shaderSetting.LIL_FEATURE_Shadow3rdColorTex = true;
             shaderSetting.LIL_FEATURE_ShadowReceiveMask = true;
-            shaderSetting.LIL_FEATURE_SSAOMask = true;
+            shaderSetting.LIL_FEATURE_REALTIMEAOMask = true;
             shaderSetting.LIL_FEATURE_RimShadeMask = true;
             shaderSetting.LIL_FEATURE_BacklightColorTex = true;
             shaderSetting.LIL_FEATURE_SSSThicknessMap = true;
@@ -584,7 +584,7 @@ public class lilToonSetting : ScriptableObject
         }
         if (shaderSetting.LIL_FEATURE_GLITTER) sb.AppendLine("#define LIL_FEATURE_GLITTER");
         if (shaderSetting.LIL_FEATURE_BACKLIGHT) sb.AppendLine("#define LIL_FEATURE_BACKLIGHT");
-        if (shaderSetting.LIL_FEATURE_SSAO) sb.AppendLine("#define LIL_FEATURE_SSAO");
+        if (shaderSetting.LIL_FEATURE_REALTIMEAO) sb.AppendLine("#define LIL_FEATURE_REALTIMEAO");
         if (shaderSetting.LIL_FEATURE_SSS) sb.AppendLine("#define LIL_FEATURE_SSS");
         if (shaderSetting.LIL_FEATURE_PARALLAX)
         {
@@ -626,7 +626,7 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_Shadow2ndColorTex) sb.AppendLine("#define LIL_FEATURE_Shadow2ndColorTex");
         if (shaderSetting.LIL_FEATURE_Shadow3rdColorTex) sb.AppendLine("#define LIL_FEATURE_Shadow3rdColorTex");
         if (shaderSetting.LIL_FEATURE_ShadowReceiveMask) sb.AppendLine("#define LIL_FEATURE_ShadowReceiveMask");
-        if (shaderSetting.LIL_FEATURE_SSAOMask) sb.AppendLine("#define LIL_FEATURE_SSAOMask");
+        if (shaderSetting.LIL_FEATURE_REALTIMEAOMask) sb.AppendLine("#define LIL_FEATURE_REALTIMEAOMask");
         if (shaderSetting.LIL_FEATURE_RimShadeMask) sb.AppendLine("#define LIL_FEATURE_RimShadeMask");
         if (shaderSetting.LIL_FEATURE_BacklightColorTex) sb.AppendLine("#define LIL_FEATURE_BacklightColorTex");
         if (shaderSetting.LIL_FEATURE_SSSThicknessMap) sb.AppendLine("#define LIL_FEATURE_SSSThicknessMap");
@@ -1164,10 +1164,10 @@ public class lilToonSetting : ScriptableObject
             logs.Add("[lilToon] LIL_FEATURE_BACKLIGHT : " + AssetDatabase.GetAssetPath(material));
             shaderSetting.LIL_FEATURE_BACKLIGHT = true;
         }
-        if(!shaderSetting.LIL_FEATURE_SSAO && material.HasProperty("_UseScreenSpaceAO") && material.GetFloat("_UseScreenSpaceAO") != 0.0f)
+        if(!shaderSetting.LIL_FEATURE_REALTIMEAO && material.HasProperty("_UseRealtimeAO") && material.GetFloat("_UseRealtimeAO") != 0.0f)
         {
-            logs.Add("[lilToon] LIL_FEATURE_SSAO : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_SSAO = true;
+            logs.Add("[lilToon] LIL_FEATURE_REALTIMEAO : " + AssetDatabase.GetAssetPath(material));
+            shaderSetting.LIL_FEATURE_REALTIMEAO = true;
         }
         if(!shaderSetting.LIL_FEATURE_SSS && material.HasProperty("_UseSSS") && material.GetFloat("_UseSSS") != 0.0f)
         {
@@ -1273,7 +1273,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_RIMLIGHT = shaderSetting.LIL_FEATURE_RIMLIGHT || propname.Contains("_UseRim");
             shaderSetting.LIL_FEATURE_GLITTER = shaderSetting.LIL_FEATURE_GLITTER || propname.Contains("_UseGlitter");
             shaderSetting.LIL_FEATURE_BACKLIGHT = shaderSetting.LIL_FEATURE_BACKLIGHT || propname.Contains("_UseBacklight");
-            shaderSetting.LIL_FEATURE_SSAO = shaderSetting.LIL_FEATURE_SSAO || propname.Contains("_UseScreenSpaceAO");
+            shaderSetting.LIL_FEATURE_REALTIMEAO = shaderSetting.LIL_FEATURE_REALTIMEAO || propname.Contains("_UseRealtimeAO");
             shaderSetting.LIL_FEATURE_SSS = shaderSetting.LIL_FEATURE_SSS || propname.Contains("_UseSSS");
             shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION = shaderSetting.LIL_FEATURE_RIMLIGHT_DIRECTION || propname.Contains("_RimDirStrength");
             shaderSetting.LIL_FEATURE_PARALLAX = shaderSetting.LIL_FEATURE_PARALLAX || propname.Contains("_UseParallax");
@@ -1333,7 +1333,7 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow2ndColorTex         , "_Shadow2ndColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow3rdColorTex         , "_Shadow3rdColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_ShadowReceiveMask         , "_ShadowReceiveMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_SSAOMask                  , "_SSAOMask", material);
+        CheckTexture(ref shaderSetting.LIL_FEATURE_REALTIMEAOMask                , "_RealtimeAOMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_RimShadeMask              , "_RimShadeMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_BacklightColorTex         , "_BacklightColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_SSSThicknessMap           , "_SSSThicknessMap", material);
@@ -1395,7 +1395,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_Shadow2ndColorTex          = shaderSetting.LIL_FEATURE_Shadow2ndColorTex        || propname.Contains("_Shadow2ndColorTex");
         shaderSetting.LIL_FEATURE_Shadow3rdColorTex          = shaderSetting.LIL_FEATURE_Shadow3rdColorTex        || propname.Contains("_Shadow3rdColorTex");
         shaderSetting.LIL_FEATURE_ShadowReceiveMask          = shaderSetting.LIL_FEATURE_ShadowReceiveMask        || propname.Contains("_ShadowReceiveMask");
-        shaderSetting.LIL_FEATURE_SSAOMask                   = shaderSetting.LIL_FEATURE_SSAOMask                 || propname.Contains("_SSAOMask");
+        shaderSetting.LIL_FEATURE_REALTIMEAOMask                   = shaderSetting.LIL_FEATURE_REALTIMEAOMask                 || propname.Contains("_RealtimeAOMask");
         shaderSetting.LIL_FEATURE_RimShadeMask               = shaderSetting.LIL_FEATURE_RimShadeMask             || propname.Contains("_RimShadeMask");
         shaderSetting.LIL_FEATURE_BacklightColorTex          = shaderSetting.LIL_FEATURE_BacklightColorTex        || propname.Contains("_BacklightColorTex");
         shaderSetting.LIL_FEATURE_SSSThicknessMap            = shaderSetting.LIL_FEATURE_SSSThicknessMap          || propname.Contains("_SSSThicknessMap");

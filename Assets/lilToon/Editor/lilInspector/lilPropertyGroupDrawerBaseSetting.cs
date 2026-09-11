@@ -491,16 +491,18 @@ namespace lilToon
                 {
                     LocalizedProperty(htraceSSGIBackfaceNormalFix);
                 }
-                if(useScreenSpaceAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
+                if(useRealtimeAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
-                    LocalizedProperty(useScreenSpaceAO.p, "HoAO", false);
-                    if(useScreenSpaceAO.floatValue == 1)
+                    LocalizedProperty(useRealtimeAO.p, "HoAO", false);
+                    if(useRealtimeAO.floatValue == 1)
                     {
                         EditorGUI.indentLevel++;
-                        LocalizedProperty(ssaoStrength);
+                        LocalizedProperty(realtimeAOStrength);
                         DrawHoAORemapGUI();
-                        LocalizedProperty(ssaoContrast);
-                        TextureGUI(ref edSet.isShowSSAOMask, new GUIContent("HoAO Mask", "R: HoAO receive area"), ssaoMask);
+                        LocalizedProperty(realtimeAOContrast);
+                        TextureGUI(ref edSet.isShowRealtimeAOColor, new GUIContent("HoAO Color", "RGB: HoAO color multiplier"), realtimeAOColorTex, realtimeAOColor);
+                        LocalizedProperty(realtimeAOColorFromMain, "HoAO Color From Main", false);
+                        TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("HoAO Mask", "R: HoAO receive area"), realtimeAOMask);
                         EditorGUI.indentLevel--;
                     }
                 }
@@ -560,21 +562,21 @@ namespace lilToon
 
         private void DrawHoAORemapGUI()
         {
-            if(ssaoRemap.p == null) return;
-            Vector4 remap = ssaoRemap.vectorValue;
+            if(realtimeAORemap.p == null) return;
+            Vector4 remap = realtimeAORemap.vectorValue;
             float min = remap.x;
             float max = remap.y;
             EditorGUI.BeginChangeCheck();
-            EditorGUI.showMixedValue = ssaoRemap.hasMixedValue;
-            min = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "AO Min", min, 0.0f, 1.0f);
-            max = lilEditorGUI.Slider(Event.current.alt ? ssaoRemap.name : "AO Max", max, 0.0f, 1.0f);
+            EditorGUI.showMixedValue = realtimeAORemap.hasMixedValue;
+            min = lilEditorGUI.Slider(Event.current.alt ? realtimeAORemap.name : "AO Min", min, 0.0f, 1.0f);
+            max = lilEditorGUI.Slider(Event.current.alt ? realtimeAORemap.name : "AO Max", max, 0.0f, 1.0f);
             EditorGUI.showMixedValue = false;
 
             if(EditorGUI.EndChangeCheck())
             {
                 if(min == max) max = Mathf.Min(min + 0.001f, 1.0f);
                 if(min >= max) min = Mathf.Max(max - 0.001f, 0.0f);
-                ssaoRemap.vectorValue = new Vector4(min, max, remap.z, remap.w);
+                realtimeAORemap.vectorValue = new Vector4(min, max, remap.z, remap.w);
             }
         }
 
