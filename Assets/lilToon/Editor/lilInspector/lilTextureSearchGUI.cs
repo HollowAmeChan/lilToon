@@ -290,6 +290,22 @@ namespace lilToon
             if(GUI.Button(rect, content, textureSearchNextActionStyle)) action();
         }
 
+        private static void DrawTextureSearchPendingField(Rect rect, TextureSearchRow row)
+        {
+            EditorGUI.BeginChangeCheck();
+            Texture selectedTexture = (Texture)EditorGUI.ObjectField(
+                rect,
+                GUIContent.none,
+                row.pendingTexture,
+                typeof(Texture),
+                false);
+            if(EditorGUI.EndChangeCheck())
+            {
+                row.pendingTexture = selectedTexture;
+                GUI.changed = true;
+            }
+        }
+
         private void ClearTextureSearchCurrent(TextureSearchRow row)
         {
             if(row.property.textureValue == null && !row.property.hasMixedValue) return;
