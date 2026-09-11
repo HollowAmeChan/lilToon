@@ -290,7 +290,7 @@ namespace lilToon
             if(GUI.Button(rect, content, textureSearchNextActionStyle)) action();
         }
 
-        private static void DrawTextureSearchPendingField(Rect rect, Material material, string materialPath, TextureSearchRow row, bool nextStyle)
+        private void DrawTextureSearchPendingField(Rect rect, Material material, string materialPath, TextureSearchRow row, bool nextStyle)
         {
             GUIContent content = row.pendingTexture == null
                 ? new GUIContent("-", GetLoc("sTextureSearchPendingValue"))
