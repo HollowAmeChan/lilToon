@@ -35,7 +35,6 @@
         [lilVec2]       _SSAORemap                  ("HoAO Remap Min Max", Vector) = (0,1,0,0)
                         _SSAOContrast               ("HoAO Contrast", Range(0, 4)) = 1
         [NoScaleOffset] _SSAOMask                   ("HoAO Mask", 2D) = "white" {}
-        [HideInInspector] [NoScaleOffset] _HoAOTexture ("HoAO Runtime", 2D) = "white" {}
                         _HoMetadataBufferCustom0Color          ("MetadataBuffer Custom 0 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoMetadataBufferCustom0Tex            ("MetadataBuffer Custom 0", 2D) = "white" {}
                         _HoMetadataBufferCustom1Color          ("MetadataBuffer Custom 1 Color", Color) = (0,0,0,0)
