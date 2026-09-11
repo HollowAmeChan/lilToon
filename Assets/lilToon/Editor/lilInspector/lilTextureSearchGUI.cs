@@ -204,7 +204,7 @@ namespace lilToon
             DrawTextureSearchTextureField(new Rect(rect.x + columns[0], rect.y + 1f, columns[1], rect.height - 2f), row);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1], rect.y, columns[2], rect.height), new GUIContent(row.displayLabel ?? row.propertyName, row.propertyName), nextStyle ? textureSearchNextPropertyStyle : EditorStyles.miniLabel);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1] + columns[2], rect.y, columns[3], rect.height), GetTextureDisplayContent(row.property), nextStyle ? textureSearchNextCurrentStyle : EditorStyles.miniLabel);
-            DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y, columns[4], rect.height), row);
+            DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y, columns[4], rect.height), material, materialPath, row, nextStyle);
             DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[5], rect.y + 1f, columns[5], rect.height - 2f), GetTextureSearchButtonContent(), delegate { SearchTextureRow(material, materialPath, row); });
             if(row.pendingTexture != null) DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1], rect.y + 1f, columns[1], rect.height - 2f), GetTextureSearchClearContent(), delegate { row.pendingTexture = null; GUI.changed = true; });
         }
@@ -290,19 +290,15 @@ namespace lilToon
             if(GUI.Button(rect, content, textureSearchNextActionStyle)) action();
         }
 
-        private static void DrawTextureSearchPendingField(Rect rect, TextureSearchRow row)
+        private static void DrawTextureSearchPendingField(Rect rect, Material material, string materialPath, TextureSearchRow row, bool nextStyle)
         {
-            EditorGUI.BeginChangeCheck();
-            Texture selectedTexture = (Texture)EditorGUI.ObjectField(
-                rect,
-                GUIContent.none,
-                row.pendingTexture,
-                typeof(Texture),
-                false);
-            if(EditorGUI.EndChangeCheck())
+            GUIContent content = row.pendingTexture == null
+                ? new GUIContent("-", GetLoc("sTextureSearchPendingValue"))
+                : new GUIContent(row.pendingTexture.name, AssetPreview.GetMiniThumbnail(row.pendingTexture), GetLoc("sTextureSearchPendingValue"));
+            GUIStyle style = nextStyle ? textureSearchNextPendingStyle : EditorStyles.miniLabel;
+            if(GUI.Button(rect, content, style))
             {
-                row.pendingTexture = selectedTexture;
-                GUI.changed = true;
+                ShowTextureSearchMatchMenu(material, materialPath, row);
             }
         }
 
@@ -318,22 +314,18 @@ namespace lilToon
             GUI.changed = true;
         }
 
-        private void DrawTextureSearchTextureField(Rect rect, TextureSearchRow row)
+        private static void DrawTextureSearchTextureField(Rect rect, TextureSearchRow row)
         {
-            var previousMixedValue = EditorGUI.showMixedValue;
-            EditorGUI.showMixedValue = row.property.hasMixedValue;
-            EditorGUI.BeginChangeCheck();
-            var selectedTexture = (Texture)EditorGUI.ObjectField(rect, GUIContent.none, row.property.textureValue, typeof(Texture), false);
-            if(EditorGUI.EndChangeCheck())
+            Texture texture = row.property.textureValue;
+            if(texture == null)
             {
-                if(materials != null && materials.Length > 0)
-                {
-                    Undo.RecordObjects(materials, GetLoc("sTextureSearchUndo"));
-                }
-                row.property.textureValue = selectedTexture;
-                GUI.changed = true;
+                GUI.Label(rect, "-", textureSearchNextMutedStyle);
+                return;
             }
-            EditorGUI.showMixedValue = previousMixedValue;
+
+            Texture thumbnail = AssetPreview.GetMiniThumbnail(texture);
+            if(thumbnail != null) GUI.DrawTexture(rect, thumbnail, ScaleMode.ScaleToFit, true);
+            else GUI.Label(rect, new GUIContent(texture.name), textureSearchNextMutedStyle);
         }
 
         private void ResetTextureSearchStateIfMaterialChanged(Material material)
@@ -489,6 +481,39 @@ namespace lilToon
 
         private void SearchTextureRow(Material material, string materialPath, TextureSearchRow row)
         {
+            var matches = FindTextureSearchMatches(material, materialPath, row);
+
+            if(matches.Count == 0) return;
+            // The highest-scoring candidate is the default recommendation. Keep it in the
+            // pending column so the user can review and apply it with the other matches.
+            row.pendingTexture = matches[0].candidate.texture;
+            GUI.changed = true;
+        }
+
+        private void ShowTextureSearchMatchMenu(Material material, string materialPath, TextureSearchRow row)
+        {
+            var matches = FindTextureSearchMatches(material, materialPath, row);
+            if(matches.Count == 0) return;
+
+            GenericMenu menu = new GenericMenu();
+            foreach(var match in matches)
+            {
+                Texture selectedTexture = match.candidate.texture;
+                bool selected = row.pendingTexture == selectedTexture;
+                string label = selectedTexture.name + "  [" + match.score.ToString("0.00") + "]";
+                menu.AddItem(new GUIContent(label, match.candidate.assetPath), selected, delegate
+                {
+                    row.pendingTexture = selectedTexture;
+                    GUI.changed = true;
+                });
+            }
+            menu.ShowAsContext();
+        }
+
+        private static List<TextureSearchMatch> FindTextureSearchMatches(Material material, string materialPath, TextureSearchRow row)
+        {
+            if(material == null || row == null) return new List<TextureSearchMatch>();
+
             var candidates = FindTextureSearchAssets(GetTextureSearchDirectory(materialPath), materialPath);
             var materialTokens = GetTextureSearchTokens(material.name);
             var matches = candidates
@@ -503,25 +528,18 @@ namespace lilToon
                 .Take(30)
                 .ToList();
 
-            if(matches.Count == 0)
-            {
-                matches = candidates
-                    .Select(candidate => new TextureSearchMatch
-                    {
-                        candidate = candidate,
-                        score = CalculateTextureMatchScore(materialTokens, row.propertyName, candidate.tokens)
-                    })
-                    .OrderByDescending(match => match.score)
-                    .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
-                    .Take(1)
-                    .ToList();
-            }
+            if(matches.Count > 0) return matches;
 
-            if(matches.Count == 0) return;
-            // The highest-scoring candidate is the default recommendation. Keep it in the
-            // pending column so the user can review and apply it with the other matches.
-            row.pendingTexture = matches[0].candidate.texture;
-            GUI.changed = true;
+            return candidates
+                .Select(candidate => new TextureSearchMatch
+                {
+                    candidate = candidate,
+                    score = CalculateTextureMatchScore(materialTokens, row.propertyName, candidate.tokens)
+                })
+                .OrderByDescending(match => match.score)
+                .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
+                .Take(30)
+                .ToList();
         }
 
         private static List<TextureSearchAsset> FindTextureSearchAssets(string directory, string materialPath)
