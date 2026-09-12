@@ -51,6 +51,7 @@ struct lilHoMetadataBufferOutput
     half4 custom0 : SV_Target2;
     half4 objectCustom0 : SV_Target3;
     half4 objectCustom1 : SV_Target4;
+    half4 reflectionMaterial : SV_Target5;
 };
 
 float _HoMetadataBufferMaskWeight;
@@ -187,7 +188,28 @@ float4 lilHoMetadataBufferResolveCustom0To3(float2 uv)
 float4 lilHoMetadataBufferResolveSurfaceColor(float4 surfaceColor)
 {
     // Base diffuse/albedo is a core MetadataBuffer output and is not gated by SSS.
-    return float4(saturate(surfaceColor.rgb), saturate(surfaceColor.a));
+    return float4(surfaceColor.rgb, saturate(surfaceColor.a));
+}
+
+float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
+{
+    float smoothness = _Smoothness;
+    #if defined(LIL_FEATURE_SmoothnessTex)
+        smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
+    #endif
+    GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
+
+    float metallic = _Metallic;
+    #if defined(LIL_FEATURE_MetallicGlossMap)
+        metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, sampler_MainTex, fd.uvMain).r;
+    #endif
+
+    float planarReflectionEnabled = _UsePlanarReflection != 0 ? 1.0 : 0.0;
+    return float4(
+        saturate(1.0 - smoothness),
+        saturate(metallic),
+        saturate(_Reflectance),
+        saturate(_PlanarReflectionStrength) * planarReflectionEnabled);
 }
 
 float lilHoMetadataBufferResolveThickness(float2 uv)
@@ -421,6 +443,7 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
     output.custom0 = half4(lilHoMetadataBufferResolveCustom0To3(fd.uvMain) * subjectValid);
     output.objectCustom0 = half4(lilHoMetadataBufferDecodeObjectCustom0(objectCustomMask) * subjectValid);
     output.objectCustom1 = half4(lilHoMetadataBufferDecodeObjectCustom1(objectCustomMask) * subjectValid);
+    output.reflectionMaterial = half4(lilHoMetadataBufferResolveReflectionMaterial(fd) * subjectValid);
     return output;
 }
 
