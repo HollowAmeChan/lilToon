@@ -619,6 +619,21 @@ namespace lilToon
             string directory = GetTextureSearchRootDirectory(materialPath);
             var candidates = FindTextureSearchAssets(directory, materialPath);
             var materialTokens = GetTextureSearchTokens(material.name);
+            int shadowLayer = GetShadowColorLayer(row.propertyName);
+            if(shadowLayer > 0)
+            {
+                return candidates
+                    .Select(candidate => new TextureSearchMatch
+                    {
+                        candidate = candidate,
+                        score = CalculateShadowColorMatchScore(materialTokens, candidate, shadowLayer)
+                    })
+                    .OrderByDescending(match => match.score)
+                    .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
+                    .Take(30)
+                    .ToList();
+            }
+
             var matches = candidates
                 .Select(candidate => new TextureSearchMatch
                 {
@@ -643,6 +658,33 @@ namespace lilToon
                 .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
                 .Take(30)
                 .ToList();
+        }
+
+        private static int GetShadowColorLayer(string propertyName)
+        {
+            if(propertyName == "_ShadowColorTex") return 1;
+            if(propertyName == "_Shadow2ndColorTex") return 2;
+            if(propertyName == "_Shadow3rdColorTex") return 3;
+            return 0;
+        }
+
+        private static float CalculateShadowColorMatchScore(string[] materialTokens, TextureSearchAsset candidate, int desiredLayer)
+        {
+            float score = CalculateTokenMatchScore(materialTokens, candidate.tokens);
+            int candidateLayer = GetShadowColorLayer(candidate.texture != null ? candidate.texture.name : candidate.assetPath);
+            if(candidateLayer == desiredLayer) score += 10f;
+            else if(candidateLayer > 0) score -= 10f;
+            return score;
+        }
+
+        private static int GetShadowColorLayer(string candidateName)
+        {
+            if(string.IsNullOrEmpty(candidateName)) return 0;
+            string normalized = candidateName.ToLowerInvariant();
+            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:3rd|third|color3|color_3|color-3|3color|3_color|3-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])3(?:[^0-9]|$)")) return 3;
+            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:2nd|second|color2|color_2|color-2|2color|2_color|2-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])2(?:[^0-9]|$)")) return 2;
+            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:1st|first|color1|color_1|color-1|1color|1_color|1-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])1(?:[^0-9]|$)")) return 1;
+            return 0;
         }
 
         private static List<TextureSearchAsset> FindTextureSearchAssets(string directory, string materialPath)
