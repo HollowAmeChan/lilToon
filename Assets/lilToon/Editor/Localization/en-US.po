@@ -1625,6 +1625,9 @@ msgstr "Apply"
 msgid "sTextureSearchSearchAll"
 msgstr "Search All"
 
+msgid "sTextureSearchClearTextures"
+msgstr "Clear All Texture Slots"
+
 msgid "sTextureSearchClearAll"
 msgstr "Clear All Pending"
 

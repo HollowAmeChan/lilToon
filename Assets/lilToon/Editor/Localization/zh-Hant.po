@@ -1625,6 +1625,9 @@ msgstr "確認填入"
 msgid "sTextureSearchSearchAll"
 msgstr "搜尋全部"
 
+msgid "sTextureSearchClearTextures"
+msgstr "清空所有圖片槽"
+
 msgid "sTextureSearchClearAll"
 msgstr "取消全部暫存"
 

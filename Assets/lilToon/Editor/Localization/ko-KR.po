@@ -1625,6 +1625,9 @@ msgstr "적용"
 msgid "sTextureSearchSearchAll"
 msgstr "모두 검색"
 
+msgid "sTextureSearchClearTextures"
+msgstr "모든 텍스처 슬롯 지우기"
+
 msgid "sTextureSearchClearAll"
 msgstr "대기 항목 모두 취소"
 

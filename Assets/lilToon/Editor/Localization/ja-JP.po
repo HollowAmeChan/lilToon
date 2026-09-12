@@ -1625,6 +1625,9 @@ msgstr "適用"
 msgid "sTextureSearchSearchAll"
 msgstr "すべて検索"
 
+msgid "sTextureSearchClearTextures"
+msgstr "すべてのテクスチャスロットをクリア"
+
 msgid "sTextureSearchClearAll"
 msgstr "保留をすべて解除"
 

@@ -121,6 +121,7 @@ namespace lilToon
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
+            if(GUILayout.Button(GetLoc("sTextureSearchClearTextures"), GUI.skin.button)) ClearAllTextureSlots(material);
             if(GUILayout.Button(GetLoc("sTextureSearchSearchAll"), GUI.skin.button)) SearchAllTextureRows(material, materialPath);
             if(GUILayout.Button(GetLoc("sTextureSearchClearAll"), GUI.skin.button)) ClearAllTextureSearchPending();
             if(GUILayout.Button(GetLoc("sTextureSearchApplyAll"), GUI.skin.button)) ApplyTextureSearchResults(material);
@@ -577,6 +578,23 @@ namespace lilToon
             GUI.changed = true;
         }
 
+        private void ClearAllTextureSlots(Material material)
+        {
+            if(material == null) return;
+            var textureProperties = AllProperties()
+                .Where(property => property.isTexture && property.p != null && property.propertyType == UnityEngine.Rendering.ShaderPropertyType.Texture)
+                .ToList();
+            Undo.RecordObject(material, GetLoc("sTextureSearchUndo"));
+            foreach(var property in textureProperties)
+            {
+                if(material.HasProperty(property.propertyName)) material.SetTexture(property.propertyName, null);
+                var row = textureSearchRows.FirstOrDefault(candidate => candidate.propertyName == property.propertyName);
+                if(row != null) row.pendingTexture = null;
+            }
+            EditorUtility.SetDirty(material);
+            GUI.changed = true;
+        }
+
         private void ApplyTextureSearchRow(Material material, TextureSearchRow row)
         {
             if(row == null || row.pendingTexture == null || row.property == null) return;
@@ -634,6 +652,20 @@ namespace lilToon
                     .ToList();
             }
 
+            if(row.propertyName == "_SmoothnessTex" || row.propertyName == "_MetallicGlossMap")
+            {
+                return candidates
+                    .Select(candidate => new TextureSearchMatch
+                    {
+                        candidate = candidate,
+                        score = CalculatePbrTextureMatchScore(row.propertyName, candidate)
+                    })
+                    .OrderByDescending(match => match.score)
+                    .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
+                    .Take(30)
+                    .ToList();
+            }
+
             var matches = candidates
                 .Select(candidate => new TextureSearchMatch
                 {
@@ -666,6 +698,26 @@ namespace lilToon
             if(propertyName == "_Shadow2ndColorTex") return 2;
             if(propertyName == "_Shadow3rdColorTex") return 3;
             return 0;
+        }
+
+        private static float CalculatePbrTextureMatchScore(string propertyName, TextureSearchAsset candidate)
+        {
+            string[] tokens = candidate.tokens ?? new string[0];
+            bool smoothness = propertyName == "_SmoothnessTex";
+            string[] preferred = smoothness
+                ? new[] { "smoothness", "glossiness", "gloss", "roughness" }
+                : new[] { "metallic", "metal", "metalness" };
+            string[] forbidden = smoothness
+                ? new[] { "metallic", "metal", "metalness" }
+                : new[] { "smoothness", "glossiness", "gloss", "roughness" };
+
+            float score = 0f;
+            foreach(string token in tokens)
+            {
+                if(preferred.Contains(token, StringComparer.OrdinalIgnoreCase)) score += 10f;
+                if(forbidden.Contains(token, StringComparer.OrdinalIgnoreCase)) score -= 10f;
+            }
+            return score;
         }
 
         private static float CalculateShadowColorMatchScore(string[] materialTokens, TextureSearchAsset candidate, int desiredLayer)
