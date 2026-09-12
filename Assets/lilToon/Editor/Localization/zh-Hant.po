@@ -1622,6 +1622,15 @@ msgstr "暫存貼圖填入結果"
 msgid "sTextureSearchApply"
 msgstr "確認填入"
 
+msgid "sTextureSearchSearchAll"
+msgstr "搜尋全部"
+
+msgid "sTextureSearchClearAll"
+msgstr "取消全部暫存"
+
+msgid "sTextureSearchApplyAll"
+msgstr "全部套用"
+
 msgid "sTextureSearchClear"
 msgstr "移除本行暫存結果"
 

@@ -1622,6 +1622,15 @@ msgstr "Pending texture assignments"
 msgid "sTextureSearchApply"
 msgstr "Apply"
 
+msgid "sTextureSearchSearchAll"
+msgstr "Search All"
+
+msgid "sTextureSearchClearAll"
+msgstr "Clear All Pending"
+
+msgid "sTextureSearchApplyAll"
+msgstr "Apply All"
+
 msgid "sTextureSearchClear"
 msgstr "Remove this pending entry"
 

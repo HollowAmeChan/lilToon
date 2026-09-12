@@ -1622,6 +1622,15 @@ msgstr "テクスチャ割り当ての一時リスト"
 msgid "sTextureSearchApply"
 msgstr "適用"
 
+msgid "sTextureSearchSearchAll"
+msgstr "すべて検索"
+
+msgid "sTextureSearchClearAll"
+msgstr "保留をすべて解除"
+
+msgid "sTextureSearchApplyAll"
+msgstr "すべて適用"
+
 msgid "sTextureSearchClear"
 msgstr "この行を削除"
 

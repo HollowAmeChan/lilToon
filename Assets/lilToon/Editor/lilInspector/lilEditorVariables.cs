@@ -101,6 +101,7 @@ namespace lilToon
             public bool isShowTextureSearch             = false;
             public bool useNextInspector               = true;
             public int nextInspectorPage                = 0;
+            public string textureSearchDirectory        = "";
             public bool[] isShowCategorys = new bool[(int)lilPresetCategory.Ho+1]{false,false,false,false,false,false,false,false};
             public string searchKeyWord = "";
         }

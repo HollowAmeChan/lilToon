@@ -39,6 +39,7 @@ namespace lilToon
         private GUIContent textureSearchClearContent;
         private GUIContent textureSearchRemoveCurrentContent;
         private GUIContent textureSearchButtonContent;
+        private GUIContent textureSearchApplyContent;
         private GUIContent textureSearchFixContent;
         private int textureSearchMaterialId;
         private static GUIStyle textureSearchNextHeaderStyle;
@@ -81,6 +82,8 @@ namespace lilToon
                 return;
             }
 
+            if(!showFoldout) DrawTextureSearchToolbar(material, materialPath);
+
             if(textureSearchRows.Count == 0)
             {
                 EditorGUILayout.HelpBox(GetLoc("sTextureSearchNoSlots"), MessageType.Info);
@@ -109,6 +112,32 @@ namespace lilToon
             }
             if(!showFoldout) DrawTextureImportChecks();
             if(showFoldout) EditorGUILayout.EndVertical();
+        }
+
+        private void DrawTextureSearchToolbar(Material material, string materialPath)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel(GetLoc("sTextureSearchDirectory"));
+            string directory = string.IsNullOrEmpty(edSet.textureSearchDirectory) ? string.Empty : edSet.textureSearchDirectory;
+            EditorGUI.BeginChangeCheck();
+            directory = EditorGUILayout.TextField(directory);
+            if(EditorGUI.EndChangeCheck()) edSet.textureSearchDirectory = directory;
+            if(GUILayout.Button(EditorGUIUtility.IconContent("Folder Icon"), textureSearchNextActionStyle, GUILayout.Width(24f), GUILayout.Height(EditorGUIUtility.singleLineHeight + 2f)))
+            {
+                string selectedDirectory = EditorUtility.OpenFolderPanel(GetLoc("sTextureSearchDirectory"), Application.dataPath, string.Empty);
+                if(!string.IsNullOrEmpty(selectedDirectory))
+                {
+                    edSet.textureSearchDirectory = NormalizeTextureSearchPath(FileUtil.GetProjectRelativePath(selectedDirectory));
+                    GUI.changed = true;
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            if(GUILayout.Button(GetLoc("sTextureSearchSearchAll"), textureSearchNextActionStyle)) SearchAllTextureRows(material, materialPath);
+            if(GUILayout.Button(GetLoc("sTextureSearchClearAll"), textureSearchNextActionStyle)) ClearAllTextureSearchPending();
+            if(GUILayout.Button(GetLoc("sTextureSearchApplyAll"), textureSearchNextActionStyle)) ApplyTextureSearchResults(material);
+            EditorGUILayout.EndHorizontal();
         }
 
         private static void InitializeTextureSearchStyles()
@@ -208,7 +237,7 @@ namespace lilToon
             GUI.Label(new Rect(rect.x + columns[0] + columns[1], rect.y, columns[2], rect.height), new GUIContent(row.displayLabel ?? row.propertyName, row.propertyName), nextStyle ? textureSearchNextPropertyStyle : EditorStyles.miniLabel);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1] + columns[2], rect.y, columns[3], rect.height), GetTextureDisplayContent(row.property), nextStyle ? textureSearchNextCurrentStyle : EditorStyles.miniLabel);
             DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y, columns[4], rect.height), material, materialPath, row, nextStyle);
-            DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[5], rect.y + 1f, columns[5], rect.height - 2f), GetTextureSearchButtonContent(), delegate { SearchTextureRow(material, materialPath, row); });
+            DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[5], rect.y + 1f, columns[5], rect.height - 2f), GetTextureSearchActionContent(row), delegate { SearchTextureRow(material, materialPath, row); });
             if(row.pendingTexture != null) DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1], rect.y + 1f, columns[1], rect.height - 2f), GetTextureSearchClearContent(), delegate { row.pendingTexture = null; GUI.changed = true; });
         }
 
@@ -485,6 +514,18 @@ namespace lilToon
             return textureSearchButtonContent;
         }
 
+        private GUIContent GetTextureSearchActionContent(TextureSearchRow row)
+        {
+            if(row == null || row.pendingTexture == null) return GetTextureSearchButtonContent();
+            if(textureSearchApplyContent == null)
+            {
+                textureSearchApplyContent = new GUIContent(EditorGUIUtility.IconContent("Toolbar Plus"));
+            }
+            if(textureSearchApplyContent.image == null) textureSearchApplyContent.text = "A";
+            textureSearchApplyContent.tooltip = GetLoc("sTextureSearchApply");
+            return textureSearchApplyContent;
+        }
+
         private GUIContent GetTextureSearchClearContent()
         {
             if(textureSearchClearContent == null)
@@ -509,12 +550,50 @@ namespace lilToon
 
         private void SearchTextureRow(Material material, string materialPath, TextureSearchRow row)
         {
+            if(row.pendingTexture != null)
+            {
+                ApplyTextureSearchRow(material, row);
+                return;
+            }
+
             var matches = FindTextureSearchMatches(material, materialPath, row);
 
             if(matches.Count == 0) return;
             // The highest-scoring candidate is the default recommendation. Keep it in the
             // pending column so the user can review and apply it with the other matches.
             row.pendingTexture = matches[0].candidate.texture;
+            GUI.changed = true;
+        }
+
+        private void SearchAllTextureRows(Material material, string materialPath)
+        {
+            foreach(var row in textureSearchRows)
+            {
+                if(row.isReadOnly) continue;
+                var matches = FindTextureSearchMatches(material, materialPath, row);
+                if(matches.Count > 0) row.pendingTexture = matches[0].candidate.texture;
+            }
+            GUI.changed = true;
+        }
+
+        private void ClearAllTextureSearchPending()
+        {
+            foreach(var row in textureSearchRows) row.pendingTexture = null;
+            GUI.changed = true;
+        }
+
+        private void ApplyTextureSearchRow(Material material, TextureSearchRow row)
+        {
+            if(row == null || row.pendingTexture == null || row.property == null) return;
+            Undo.RecordObject(material, GetLoc("sTextureSearchUndo"));
+            material.SetTexture(row.propertyName, row.pendingTexture);
+            if(row.propertyName == "_MainTex")
+            {
+                if(material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", row.pendingTexture);
+                if(material.HasProperty("_BaseColorMap")) material.SetTexture("_BaseColorMap", row.pendingTexture);
+            }
+            row.pendingTexture = null;
+            EditorUtility.SetDirty(material);
             GUI.changed = true;
         }
 
@@ -542,7 +621,8 @@ namespace lilToon
         {
             if(material == null || row == null) return new List<TextureSearchMatch>();
 
-            var candidates = FindTextureSearchAssets(GetTextureSearchDirectory(materialPath), materialPath);
+            string directory = GetTextureSearchRootDirectory(materialPath);
+            var candidates = FindTextureSearchAssets(directory, materialPath);
             var materialTokens = GetTextureSearchTokens(material.name);
             var matches = candidates
                 .Select(candidate => new TextureSearchMatch
@@ -629,6 +709,21 @@ namespace lilToon
         {
             var directory = Path.GetDirectoryName(NormalizeTextureSearchPath(assetPath));
             return string.IsNullOrEmpty(directory) ? "" : NormalizeTextureSearchPath(directory);
+        }
+
+        private static string GetTextureSearchRootDirectory(string materialPath)
+        {
+            if(string.IsNullOrEmpty(edSet.textureSearchDirectory)) return GetTextureSearchDirectory(materialPath);
+            string configured = NormalizeTextureSearchPath(edSet.textureSearchDirectory).TrimEnd('/');
+            if(!Path.IsPathRooted(configured)) return configured;
+
+            string projectRoot = NormalizeTextureSearchPath(Directory.GetParent(Application.dataPath).FullName);
+            if(configured.StartsWith(projectRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                string relative = configured.Substring(projectRoot.Length).TrimStart('/');
+                return relative;
+            }
+            return GetTextureSearchDirectory(materialPath);
         }
 
         private static string NormalizeTextureSearchPath(string path)

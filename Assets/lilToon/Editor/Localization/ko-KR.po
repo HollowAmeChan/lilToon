@@ -1622,6 +1622,15 @@ msgstr "텍스처 할당 임시 목록"
 msgid "sTextureSearchApply"
 msgstr "적용"
 
+msgid "sTextureSearchSearchAll"
+msgstr "모두 검색"
+
+msgid "sTextureSearchClearAll"
+msgstr "대기 항목 모두 취소"
+
+msgid "sTextureSearchApplyAll"
+msgstr "모두 적용"
+
 msgid "sTextureSearchClear"
 msgstr "이 행 제거"
 
