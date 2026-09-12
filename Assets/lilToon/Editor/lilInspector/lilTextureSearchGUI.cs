@@ -36,6 +36,7 @@ namespace lilToon
         }
 
         private readonly List<TextureSearchRow> textureSearchRows = new List<TextureSearchRow>();
+        private readonly Dictionary<string, Texture> textureSearchPending = new Dictionary<string, Texture>();
         private GUIContent textureSearchClearContent;
         private GUIContent textureSearchRemoveCurrentContent;
         private GUIContent textureSearchButtonContent;
@@ -227,7 +228,7 @@ namespace lilToon
             DrawTextureSearchPendingThumbnail(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y + 1f, columns[4], rect.height - 2f), row);
             DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3] + columns[4], rect.y, columns[5], rect.height), material, materialPath, row, nextStyle);
             DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[6], rect.y + 1f, columns[6], rect.height - 2f), GetTextureSearchActionContent(row), delegate { SearchTextureRow(material, materialPath, row); });
-            if(row.pendingTexture != null) DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1], rect.y + 1f, columns[1], rect.height - 2f), GetTextureSearchClearContent(), delegate { row.pendingTexture = null; GUI.changed = true; });
+            if(row.pendingTexture != null) DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1], rect.y + 1f, columns[1], rect.height - 2f), GetTextureSearchClearContent(), delegate { SetTextureSearchPending(row, null); });
         }
 
         private void DrawTextureSearchReadOnlyRow(TextureSearchRow row, bool nextStyle)
@@ -388,14 +389,16 @@ namespace lilToon
 
             textureSearchMaterialId = materialId;
             textureSearchRows.Clear();
+            textureSearchPending.Clear();
         }
 
         private void RefreshTextureSearchRows()
         {
-            var pendingByPropertyName = textureSearchRows
-                .Where(row => row.pendingTexture != null)
-                .GroupBy(row => row.propertyName)
-                .ToDictionary(group => group.Key, group => group.First().pendingTexture);
+            // Pending textures live in a stable dictionary keyed by property name:
+            // rows are rebuilt every repaint, so pending state stored only on the
+            // transient row objects is lost when context-menu delegates write to a
+            // row that was detached by an earlier rebuild.
+            var pendingByPropertyName = textureSearchPending;
 
             var allProperties = AllProperties()
                 .Where(property => property.p != null)
@@ -459,6 +462,17 @@ namespace lilToon
                 linkedPropertyName = linkedPropertyName
                 ,displayLabel = GetTextureSearchDisplayLabel(property.propertyName)
             });
+        }
+
+        private void SetTextureSearchPending(TextureSearchRow row, Texture texture)
+        {
+            if(row != null && !string.IsNullOrEmpty(row.propertyName))
+            {
+                if(texture == null) textureSearchPending.Remove(row.propertyName);
+                else textureSearchPending[row.propertyName] = texture;
+            }
+            if(row != null) row.pendingTexture = texture;
+            GUI.changed = true;
         }
 
         private static string GetTextureSearchDisplayLabel(string propertyName)
@@ -557,8 +571,7 @@ namespace lilToon
             if(matches.Count == 0) return;
             // The highest-scoring candidate is the default recommendation. Keep it in the
             // pending column so the user can review and apply it with the other matches.
-            row.pendingTexture = matches[0].candidate.texture;
-            GUI.changed = true;
+            SetTextureSearchPending(row, matches[0].candidate.texture);
         }
 
         private void SearchAllTextureRows(Material material, string materialPath)
@@ -567,7 +580,7 @@ namespace lilToon
             {
                 if(row.isReadOnly) continue;
                 var matches = FindTextureSearchMatches(material, materialPath, row);
-                if(matches.Count > 0) row.pendingTexture = matches[0].candidate.texture;
+                if(matches.Count > 0) SetTextureSearchPending(row, matches[0].candidate.texture);
             }
             GUI.changed = true;
         }
@@ -575,6 +588,7 @@ namespace lilToon
         private void ClearAllTextureSearchPending()
         {
             foreach(var row in textureSearchRows) row.pendingTexture = null;
+            textureSearchPending.Clear();
             GUI.changed = true;
         }
 
@@ -591,6 +605,7 @@ namespace lilToon
                 var row = textureSearchRows.FirstOrDefault(candidate => candidate.propertyName == property.propertyName);
                 if(row != null) row.pendingTexture = null;
             }
+            textureSearchPending.Clear();
             EditorUtility.SetDirty(material);
             GUI.changed = true;
         }
@@ -605,6 +620,7 @@ namespace lilToon
                 if(material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", row.pendingTexture);
                 if(material.HasProperty("_BaseColorMap")) material.SetTexture("_BaseColorMap", row.pendingTexture);
             }
+            textureSearchPending.Remove(row.propertyName);
             row.pendingTexture = null;
             EditorUtility.SetDirty(material);
             GUI.changed = true;
@@ -623,8 +639,9 @@ namespace lilToon
                 string label = selectedTexture.name + "  [" + match.score.ToString("0.00") + "]";
                 menu.AddItem(new GUIContent(label, match.candidate.assetPath), selected, delegate
                 {
-                    row.pendingTexture = selectedTexture;
-                    GUI.changed = true;
+                    // Write through the stable pending dictionary: the captured row
+                    // object is detached by the next RefreshTextureSearchRows rebuild.
+                    SetTextureSearchPending(row, selectedTexture);
                 });
             }
             menu.ShowAsContext();
@@ -658,8 +675,9 @@ namespace lilToon
                     .Select(candidate => new TextureSearchMatch
                     {
                         candidate = candidate,
-                        score = CalculatePbrTextureMatchScore(row.propertyName, candidate)
+                        score = CalculatePbrTextureMatchScore(materialTokens, row.propertyName, candidate)
                     })
+                    .Where(match => IsPbrTextureMatch(materialTokens, row.propertyName, match.candidate.tokens))
                     .OrderByDescending(match => match.score)
                     .ThenBy(match => match.candidate.assetPath, StringComparer.OrdinalIgnoreCase)
                     .Take(30)
@@ -700,24 +718,61 @@ namespace lilToon
             return 0;
         }
 
-        private static float CalculatePbrTextureMatchScore(string propertyName, TextureSearchAsset candidate)
+        private static float CalculatePbrTextureMatchScore(string[] materialTokens, string propertyName, TextureSearchAsset candidate)
         {
             string[] tokens = candidate.tokens ?? new string[0];
             bool smoothness = propertyName == "_SmoothnessTex";
             string[] preferred = smoothness
-                ? new[] { "smoothness", "glossiness", "gloss", "roughness" }
-                : new[] { "metallic", "metal", "metalness" };
+                ? new[] { "smoothness", "glossiness", "gloss", "roughness", "rough", "mra", "rma", "orm", "arm" }
+                : new[] { "metallic", "metal", "metalness", "mra", "rma", "orm", "arm" };
             string[] forbidden = smoothness
                 ? new[] { "metallic", "metal", "metalness" }
-                : new[] { "smoothness", "glossiness", "gloss", "roughness" };
+                : new[] { "smoothness", "glossiness", "gloss", "roughness", "rough" };
 
-            float score = 0f;
+            float roleScore = 0f;
             foreach(string token in tokens)
             {
-                if(preferred.Contains(token, StringComparer.OrdinalIgnoreCase)) score += 10f;
-                if(forbidden.Contains(token, StringComparer.OrdinalIgnoreCase)) score -= 10f;
+                if(preferred.Contains(token, StringComparer.OrdinalIgnoreCase)) roleScore += 1f;
+                else if(forbidden.Contains(token, StringComparer.OrdinalIgnoreCase)) roleScore -= 1f;
             }
-            return score;
+
+            // Textures that clearly belong to this material must outrank
+            // keyword-only matches from unrelated materials.
+            float materialRelevance = Mathf.Max(
+                CalculateTokenMatchScore(materialTokens, tokens),
+                CalculateFuzzyNameScore(materialTokens, tokens) * 0.85f);
+            float roleRelevance = Mathf.Clamp01(0.5f + roleScore * 0.25f);
+            return Mathf.Clamp01(materialRelevance * 0.65f + roleRelevance * 0.35f);
+        }
+
+        private static bool IsPbrTextureMatch(string[] materialTokens, string propertyName, string[] textureTokens)
+        {
+            if(textureTokens == null || textureTokens.Length == 0) return false;
+            bool smoothness = propertyName == "_SmoothnessTex";
+            string[] preferred = smoothness
+                ? new[] { "smoothness", "glossiness", "gloss", "roughness", "rough", "mra", "rma", "orm", "arm" }
+                : new[] { "metallic", "metal", "metalness", "mra", "rma", "orm", "arm" };
+            string[] forbidden = smoothness
+                ? new[] { "metallic", "metal", "metalness" }
+                : new[] { "smoothness", "glossiness", "gloss", "roughness", "rough" };
+
+            bool hasPreferred = preferred.Any(token => textureTokens.Contains(token, StringComparer.OrdinalIgnoreCase));
+            bool hasForbidden = forbidden.Any(token => textureTokens.Contains(token, StringComparer.OrdinalIgnoreCase));
+
+            // A texture explicitly marked for the opposite channel is never suitable.
+            if(hasForbidden && !hasPreferred) return false;
+
+            // An explicit PBR keyword is a strong role signal.
+            if(hasPreferred) return true;
+
+            // Otherwise only suggest textures that clearly belong to this material
+            // and do not carry another role keyword (diffuse/normal/etc.).
+            var otherRoleTokens = new[] { "diffuse", "albedo", "base", "normal", "bump", "nrm", "emission", "emissive", "glow", "shadow", "shade", "outline", "matcap", "rim", "glitter", "parallax", "height", "depth", "dissolve", "fur", "hair", "occlusion", "ao", "opacity" };
+            if(otherRoleTokens.Any(token => textureTokens.Contains(token, StringComparer.OrdinalIgnoreCase))) return false;
+
+            return materialTokens.Length > 0 &&
+                CalculateTokenMatchScore(materialTokens, textureTokens) >= 0.6f &&
+                CalculateFuzzyNameScore(materialTokens, textureTokens) >= 0.6f;
         }
 
         private static float CalculateShadowColorMatchScore(string[] materialTokens, TextureSearchAsset candidate, int desiredLayer)
@@ -787,6 +842,7 @@ namespace lilToon
                     if(material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", row.pendingTexture);
                     if(material.HasProperty("_BaseColorMap")) material.SetTexture("_BaseColorMap", row.pendingTexture);
                 }
+                textureSearchPending.Remove(row.propertyName);
                 row.pendingTexture = null;
             }
 
