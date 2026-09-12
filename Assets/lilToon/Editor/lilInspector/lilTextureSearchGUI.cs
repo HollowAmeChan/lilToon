@@ -97,19 +97,6 @@ namespace lilToon
                 }
             }
 
-            var pendingCount = textureSearchRows.Count(row => row.pendingTexture != null);
-            if(pendingCount > 0)
-            {
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                GUIStyle applyStyle = showFoldout ? GUI.skin.button : textureSearchNextActionStyle;
-                float applyWidth = showFoldout ? 150f : 110f;
-                if(GUILayout.Button(GetLoc("sTextureSearchApply") + " (" + pendingCount + ")", applyStyle, GUILayout.Width(applyWidth)))
-                {
-                    ApplyTextureSearchResults(material);
-                }
-                EditorGUILayout.EndHorizontal();
-            }
             if(!showFoldout) DrawTextureImportChecks();
             if(showFoldout) EditorGUILayout.EndVertical();
         }
@@ -134,9 +121,9 @@ namespace lilToon
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            if(GUILayout.Button(GetLoc("sTextureSearchSearchAll"), textureSearchNextActionStyle)) SearchAllTextureRows(material, materialPath);
-            if(GUILayout.Button(GetLoc("sTextureSearchClearAll"), textureSearchNextActionStyle)) ClearAllTextureSearchPending();
-            if(GUILayout.Button(GetLoc("sTextureSearchApplyAll"), textureSearchNextActionStyle)) ApplyTextureSearchResults(material);
+            if(GUILayout.Button(GetLoc("sTextureSearchSearchAll"), GUI.skin.button)) SearchAllTextureRows(material, materialPath);
+            if(GUILayout.Button(GetLoc("sTextureSearchClearAll"), GUI.skin.button)) ClearAllTextureSearchPending();
+            if(GUILayout.Button(GetLoc("sTextureSearchApplyAll"), GUI.skin.button)) ApplyTextureSearchResults(material);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -203,8 +190,8 @@ namespace lilToon
             DrawTextureSearchColumnLabel(new Rect(rect.x + columns[0], rect.y, columns[1], rect.height), "", nextStyle);
             DrawTextureSearchColumnLabel(new Rect(rect.x + columns[0] + columns[1], rect.y, columns[2], rect.height), GetLoc("sTextureSearchProperty"), nextStyle);
             DrawTextureSearchColumnLabel(new Rect(rect.x + columns[0] + columns[1] + columns[2], rect.y, columns[3], rect.height), GetLoc("sTextureSearchCurrent"), nextStyle);
-            DrawTextureSearchColumnLabel(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y, columns[4], rect.height), GetLoc("sTextureSearchPendingValue"), nextStyle);
-            DrawTextureSearchColumnLabel(new Rect(rect.xMax - columns[1] - columns[5], rect.y, columns[5], rect.height), "", nextStyle);
+            DrawTextureSearchColumnLabel(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3] + columns[4], rect.y, columns[5], rect.height), GetLoc("sTextureSearchPendingValue"), nextStyle);
+            DrawTextureSearchColumnLabel(new Rect(rect.xMax - columns[1] - columns[6], rect.y, columns[6], rect.height), "", nextStyle);
             DrawTextureSearchColumnLabel(new Rect(rect.xMax - columns[1], rect.y, columns[1], rect.height), "", nextStyle);
         }
 
@@ -213,8 +200,8 @@ namespace lilToon
             float clear = 24f;
             float action = nextStyle ? 24f : 48f;
             float property = Mathf.Min(180f, Mathf.Max(118f, width * 0.25f));
-            float remaining = Mathf.Max(60f, width - clear - 24f - property - action - 24f);
-            return new[] { clear, 24f, property, remaining * 0.5f, remaining * 0.5f, action };
+            float remaining = Mathf.Max(60f, width - clear - 24f - property - 24f - action - 24f);
+            return new[] { clear, 24f, property, remaining * 0.5f, 24f, remaining * 0.5f, action };
         }
 
         private static void DrawTextureSearchColumnLabel(Rect rect, string label, bool nextStyle)
@@ -236,8 +223,9 @@ namespace lilToon
             DrawTextureSearchTextureField(new Rect(rect.x + columns[0], rect.y + 1f, columns[1], rect.height - 2f), row);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1], rect.y, columns[2], rect.height), new GUIContent(row.displayLabel ?? row.propertyName, row.propertyName), nextStyle ? textureSearchNextPropertyStyle : EditorStyles.miniLabel);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1] + columns[2], rect.y, columns[3], rect.height), GetTextureDisplayContent(row.property), nextStyle ? textureSearchNextCurrentStyle : EditorStyles.miniLabel);
-            DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y, columns[4], rect.height), material, materialPath, row, nextStyle);
-            DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[5], rect.y + 1f, columns[5], rect.height - 2f), GetTextureSearchActionContent(row), delegate { SearchTextureRow(material, materialPath, row); });
+            DrawTextureSearchPendingThumbnail(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3], rect.y + 1f, columns[4], rect.height - 2f), row);
+            DrawTextureSearchPendingField(new Rect(rect.x + columns[0] + columns[1] + columns[2] + columns[3] + columns[4], rect.y, columns[5], rect.height), material, materialPath, row, nextStyle);
+            DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1] - columns[6], rect.y + 1f, columns[6], rect.height - 2f), GetTextureSearchActionContent(row), delegate { SearchTextureRow(material, materialPath, row); });
             if(row.pendingTexture != null) DrawTextureSearchIconButton(new Rect(rect.xMax - columns[1], rect.y + 1f, columns[1], rect.height - 2f), GetTextureSearchClearContent(), delegate { row.pendingTexture = null; GUI.changed = true; });
         }
 
@@ -249,6 +237,13 @@ namespace lilToon
             string propertyLabel = string.IsNullOrEmpty(row.linkedPropertyName) ? (row.displayLabel ?? row.propertyName) : "  " + (row.displayLabel ?? row.propertyName);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1], rect.y, columns[2], rect.height), new GUIContent(propertyLabel, row.linkedPropertyName), nextStyle ? textureSearchNextMutedStyle : EditorStyles.miniLabel);
             GUI.Label(new Rect(rect.x + columns[0] + columns[1] + columns[2], rect.y, columns[3], rect.height), GetTextureDisplayContent(row.property), nextStyle ? textureSearchNextMutedStyle : EditorStyles.miniLabel);
+        }
+
+        private static void DrawTextureSearchPendingThumbnail(Rect rect, TextureSearchRow row)
+        {
+            if(row.pendingTexture == null) return;
+            Texture thumbnail = AssetPreview.GetMiniThumbnail(row.pendingTexture);
+            if(thumbnail != null) GUI.DrawTexture(new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, rect.height - 4f), thumbnail, ScaleMode.ScaleToFit, true);
         }
 
         private void DrawTextureImportChecks()
@@ -327,7 +322,7 @@ namespace lilToon
         {
             GUIContent content = row.pendingTexture == null
                 ? new GUIContent("-", GetLoc("sTextureSearchPendingValue"))
-                : new GUIContent(row.pendingTexture.name, AssetPreview.GetMiniThumbnail(row.pendingTexture), GetLoc("sTextureSearchPendingValue"));
+                : new GUIContent(row.pendingTexture.name, GetLoc("sTextureSearchPendingValue"));
             GUIStyle style = nextStyle ? textureSearchNextPendingStyle : EditorStyles.miniLabel;
             if(GUI.Button(rect, content, style))
             {
