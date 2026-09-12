@@ -681,9 +681,9 @@ namespace lilToon
         {
             if(string.IsNullOrEmpty(candidateName)) return 0;
             string normalized = candidateName.ToLowerInvariant();
-            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:3rd|third|color3|color_3|color-3|3color|3_color|3-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])3(?:[^0-9]|$)")) return 3;
-            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:2nd|second|color2|color_2|color-2|2color|2_color|2-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])2(?:[^0-9]|$)")) return 2;
-            if(Regex.IsMatch(normalized, "(?:shadow|shade).*(?:1st|first|color1|color_1|color-1|1color|1_color|1-color)") || Regex.IsMatch(normalized, "(?:^|[^0-9])1(?:[^0-9]|$)")) return 1;
+            if(Regex.IsMatch(normalized, "(?:shadow|shade)(?:color|colour)?(?:[_ -]?)(?:3rd|third|3)(?:color|colour)?(?:[^a-z0-9]|$)")) return 3;
+            if(Regex.IsMatch(normalized, "(?:shadow|shade)(?:color|colour)?(?:[_ -]?)(?:2nd|second|2)(?:color|colour)?(?:[^a-z0-9]|$)")) return 2;
+            if(Regex.IsMatch(normalized, "(?:shadow|shade)(?:color|colour)?(?:[_ -]?)(?:1st|first|1)(?:color|colour)?(?:[^a-z0-9]|$)")) return 1;
             return 0;
         }
 
