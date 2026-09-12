@@ -137,6 +137,9 @@ msgstr "覆盖环境反射 Cubemap"
 msgid "sEnableLighting"
 msgstr "启用照明"
 
+msgid "sOutlineShadowStrength"
+msgstr "描边阴影强度"
+
 msgid "sUVSetting"
 msgstr "UV 设置"
 

@@ -137,6 +137,9 @@ msgstr "Override"
 msgid "sEnableLighting"
 msgstr "라이팅을 적용"
 
+msgid "sOutlineShadowStrength"
+msgstr "아웃라인 그림자 강도"
+
 msgid "sUVSetting"
 msgstr "UV 설정"
 

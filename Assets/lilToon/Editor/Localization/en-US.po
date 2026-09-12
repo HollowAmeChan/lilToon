@@ -137,6 +137,9 @@ msgstr "Override"
 msgid "sEnableLighting"
 msgstr "Enable Lighting"
 
+msgid "sOutlineShadowStrength"
+msgstr "Outline Shadow Strength"
+
 msgid "sUVSetting"
 msgstr "UV Setting"
 

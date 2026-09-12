@@ -98,6 +98,7 @@
         [lilEnum]       _OutlineVertexR2Width       ("sOutlineVertexColorUsages", Int) = 0
         [lilToggle]     _OutlineDeleteMesh          ("sDeleteMesh0", Int) = 0
                         _OutlineEnableLighting      ("sEnableLighting", Range(0, 1)) = 1
+                        _OutlineShadowStrength      ("sOutlineShadowStrength", Range(0, 1)) = 0
         [NoScaleOffset] _OutlineZBiasMask           ("Mask", 2D) = "white" {}
                         _OutlineZBias               ("Z Bias", Float) = 0
 

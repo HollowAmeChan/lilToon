@@ -164,6 +164,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _PlanarReflectionFadeEnd;
     float   _OutlineWidth;
     float   _OutlineEnableLighting;
+    float   _OutlineShadowStrength;
     float   _OutlineFixWidth;
     float   _OutlineZBias;
     uint    _Cull;

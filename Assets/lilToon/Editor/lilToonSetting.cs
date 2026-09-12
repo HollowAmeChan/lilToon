@@ -1212,6 +1212,11 @@ public class lilToonSetting : ScriptableObject
                 logs.Add("[lilToon] LIL_FEATURE_OUTLINE_RECEIVE_SHADOW : " + AssetDatabase.GetAssetPath(material));
                 shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
             }
+            if(!shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW && material.HasProperty("_OutlineShadowStrength") && material.GetFloat("_OutlineShadowStrength") > 0.0f)
+            {
+                logs.Add("[lilToon] LIL_FEATURE_OUTLINE_RECEIVE_SHADOW : " + AssetDatabase.GetAssetPath(material));
+                shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
+            }
         }
 
         if(!shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT && material.HasProperty("_VertexLightStrength") && material.GetFloat("_VertexLightStrength") != 0.0f)
@@ -1283,7 +1288,7 @@ public class lilToonSetting : ScriptableObject
 
             shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV || propname.Contains("_OutlineTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");
-            shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW || propname.Contains("_OutlineLitShadowReceive");
+            shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW || propname.Contains("_OutlineLitShadowReceive") || propname.Contains("_OutlineShadowStrength");
 
             shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT || shaderSetting.LIL_FEATURE_FUR_COLLISION || propname.Contains("_VertexLightStrength");
 

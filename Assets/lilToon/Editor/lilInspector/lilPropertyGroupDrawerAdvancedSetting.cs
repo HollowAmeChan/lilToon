@@ -84,6 +84,7 @@ namespace lilToon
                     EditorGUI.indentLevel--;
                     lilEditorGUI.DrawLine();
                     LocalizedProperty(outlineEnableLighting);
+                    LocalizedProperty(outlineShadowStrength);
                     lilEditorGUI.DrawLine();
                     LocalizedPropertyTexture(widthMaskContent, outlineWidthMask, outlineWidth);
                     EditorGUI.indentLevel++;
@@ -103,6 +104,7 @@ namespace lilToon
                     EditorGUILayout.BeginVertical(boxInnerHalf);
                     TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
                     LocalizedProperty(outlineEnableLighting);
+                    LocalizedProperty(outlineShadowStrength);
                     lilEditorGUI.DrawLine();
                     LocalizedPropertyTexture(widthMaskContent, outlineWidthMask, outlineWidth);
                     EditorGUI.indentLevel++;

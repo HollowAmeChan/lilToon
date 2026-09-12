@@ -508,6 +508,7 @@
         [lilEnum]       _OutlineVectorUVMode        ("UV Mode|UV0|UV1|UV2|UV3", Int) = 0
                         _OutlineVectorScale         ("Vector scale", Range(-10,10)) = 1
                         _OutlineEnableLighting      ("sEnableLighting", Range(0, 1)) = 1
+                        _OutlineShadowStrength      ("sOutlineShadowStrength", Range(0, 1)) = 0
         [NoScaleOffset] _OutlineZBiasMask           ("Mask", 2D) = "white" {}
                         _OutlineZBias               ("Z Bias", Float) = 0
         [lilToggle]     _OutlineDisableInVR         ("sDisableInVR", Int) = 0
