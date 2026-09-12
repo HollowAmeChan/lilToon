@@ -671,13 +671,13 @@ namespace lilToon
         private static float CalculateShadowColorMatchScore(string[] materialTokens, TextureSearchAsset candidate, int desiredLayer)
         {
             float score = CalculateTokenMatchScore(materialTokens, candidate.tokens);
-            int candidateLayer = GetShadowColorLayer(candidate.texture != null ? candidate.texture.name : candidate.assetPath);
+            int candidateLayer = GetShadowColorCandidateLayer(candidate.texture != null ? candidate.texture.name : candidate.assetPath);
             if(candidateLayer == desiredLayer) score += 10f;
             else if(candidateLayer > 0) score -= 10f;
             return score;
         }
 
-        private static int GetShadowColorLayer(string candidateName)
+        private static int GetShadowColorCandidateLayer(string candidateName)
         {
             if(string.IsNullOrEmpty(candidateName)) return 0;
             string normalized = candidateName.ToLowerInvariant();
