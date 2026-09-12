@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -93,7 +93,10 @@ namespace lilToon
             {
                 DrawNextInspectorHeader(material);
             }
+            EditorGUILayout.BeginHorizontal();
             SelectEditorMode();
+            DrawInspectorUiSwitcher();
+            EditorGUILayout.EndHorizontal();
             DrawShaderTypeWarn(material);
             DrawMaterialVariantInfo(material);
             EditorGUILayout.Space();

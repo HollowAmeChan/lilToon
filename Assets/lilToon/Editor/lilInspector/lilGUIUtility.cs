@@ -107,7 +107,10 @@ namespace lilToon
             if(!edSet.useNextInspector)
             {
                 string[] legacyLabels = {GetLoc("sEditorModeAdvanced"), GetLoc("sEditorModePreset"), GetLoc("sEditorModeShaderSetting")};
-                edSet.editorMode = (EditorMode)GUILayout.Toolbar((int)edSet.editorMode, legacyLabels);
+                EditorMode[] legacyModes = {EditorMode.Advanced, EditorMode.Preset, EditorMode.Settings};
+                int legacyIndex = Array.IndexOf(legacyModes, edSet.editorMode);
+                if(legacyIndex < 0) legacyIndex = 0;
+                edSet.editorMode = legacyModes[GUILayout.Toolbar(legacyIndex, legacyLabels)];
                 return;
             }
 
