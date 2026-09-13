@@ -269,8 +269,8 @@ namespace lilToon
         {
             DrawNextPanel(delegate
             {
-                DrawNextSection("surface.outline", GetLoc("sOutlineSetting"), PropertyBlock.Outline, delegate { DrawNextOutline(material); }, true);
-                DrawNextSection("surface.main", GetLoc("sMainColorSetting"), PropertyBlock.MainColor, delegate { DrawNextMainSurface(material); }, true);
+                DrawNextSection("surface.outline", GetLoc("sOutlineSetting"), PropertyBlock.Outline, delegate { DrawNextOutline(material); }, false); // 折叠栏默认全部收起：defaultOpen 一律 false
+                DrawNextSection("surface.main", GetLoc("sMainColorSetting"), PropertyBlock.MainColor, delegate { DrawNextMainSurface(material); }, false);
                 DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNextNormal, false);
                 DrawNextSection("surface.uv", GetLoc("sMainUV"), PropertyBlock.UV, delegate
                 {
@@ -761,7 +761,7 @@ namespace lilToon
                 DrawNextSection("lighting.giao", GetLoc("GI"), PropertyBlock.GIAO, delegate
                 {
                     if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(htraceSSGIBackfaceNormalFix);
-                }, true);
+                }, false);
                 if(!isGem) DrawNextSection("lighting.shadow", GetLoc("sDirectShadow"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
                 if(!isGem && !isLite) DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false, GetLoc("Uses the Shadow section's AO input"));
                 DrawNextSection("lighting.emission", GetLoc("sEmissionSetting"), PropertyBlock.Emission, delegate { DrawNextEmission(material); }, false, null, true, useEmission);
@@ -921,7 +921,7 @@ namespace lilToon
         {
             DrawNextPanel(delegate
             {
-                DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, true);
+                DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, false);
                 DrawNextSection("pipeline.metadata", GetLoc("MetadataBuffer"), PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
                 DrawNextSection("pipeline.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
                 {
