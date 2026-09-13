@@ -40,6 +40,12 @@ namespace lilToon
             public Material[] materials;
             public MaterialEditor editor;
             public readonly List<PropertyBucket> buckets = new List<PropertyBucket>();
+
+            // 兜底写入用：所有会画出来的属性（扁平表）+ 上一次绘制前的值快照
+            public readonly List<MaterialProperty> allProperties = new List<MaterialProperty>();
+            public float[] snapFloat;
+            public Vector4[] snapVector;
+            public Texture[] snapTexture;
         }
 
         private static readonly string[] BucketOrder =
@@ -150,6 +156,9 @@ namespace lilToon
                     EditorGUILayout.LabelField(group.shader.name + "    (" + group.materials.Length + " 个材质)", EditorStyles.boldLabel);
                 }
 
+                // 本帧绘制前的值快照：这一帧里谁被改了，靠它 diff 出来
+                TakeSnapshot(group);
+
                 for(int b = 0; b < group.buckets.Count; b++)
                 {
                     PropertyBucket bucket = group.buckets[b];
@@ -214,8 +223,129 @@ namespace lilToon
                 if(!EditorGUI.EndChangeCheck()) return false;
             }
 
+            // 关键：MaterialProperty 的多目标写入在这种"自己 CreateEditor + 自己取属性"的场景里不一定铺开
+            // （实测只有一个材质真的被改了），所以这里 diff 出这一帧真正变化的属性，逐个材质显式写一遍。
+            // 只写变了的属性，没碰过的属性依然一个字节都不写。
+            SpreadChanges(group);
+
             RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
             return true;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 兜底写入：把"这一帧变了的属性"写到组里每一个材质上
+        private static void SpreadChanges(ShaderGroup group)
+        {
+            if(group.allProperties.Count == 0) return;
+
+            for(int i = 0; i < group.allProperties.Count; i++)
+            {
+                MaterialProperty property = group.allProperties[i];
+                if(property == null) continue;
+
+                bool textureChanged = false;
+                bool scaleOffsetChanged = false;
+                bool valueChanged;
+
+                switch(property.propertyType)
+                {
+                    case ShaderPropertyType.Texture:
+                        textureChanged     = group.snapTexture[i] != property.textureValue;
+                        scaleOffsetChanged = group.snapVector[i] != property.textureScaleAndOffset;
+                        valueChanged       = textureChanged || scaleOffsetChanged;
+                        break;
+                    case ShaderPropertyType.Color:
+                        valueChanged = group.snapVector[i] != (Vector4)property.colorValue;
+                        break;
+                    case ShaderPropertyType.Vector:
+                        valueChanged = group.snapVector[i] != property.vectorValue;
+                        break;
+                    case ShaderPropertyType.Int:
+                        valueChanged = group.snapFloat[i] != property.intValue;
+                        break;
+                    default:
+                        valueChanged = group.snapFloat[i] != property.floatValue;
+                        break;
+                }
+
+                if(valueChanged)
+                {
+                    WriteToAllMaterials(group, property, textureChanged, scaleOffsetChanged);
+                }
+            }
+
+            // 写完重新取一次快照（包括没变的），下一帧的 diff 从新状态算起
+            TakeSnapshot(group);
+        }
+
+        private static void WriteToAllMaterials(ShaderGroup group, MaterialProperty source, bool textureChanged, bool scaleOffsetChanged)
+        {
+            for(int m = 0; m < group.materials.Length; m++)
+            {
+                Material material = group.materials[m];
+                if(material == null) continue;
+
+                // 每次都重新取单目标属性：MaterialProperty 内部缓存了值，复用会漏写
+                MaterialProperty target = MaterialEditor.GetMaterialProperty(new Object[] { material }, source.name);
+                if(target == null) continue;
+
+                switch(source.propertyType)
+                {
+                    case ShaderPropertyType.Texture:
+                        if(textureChanged)     target.textureValue = source.textureValue;
+                        if(scaleOffsetChanged) target.textureScaleAndOffset = source.textureScaleAndOffset;
+                        break;
+                    case ShaderPropertyType.Color:
+                        target.colorValue = source.colorValue;
+                        break;
+                    case ShaderPropertyType.Vector:
+                        target.vectorValue = source.vectorValue;
+                        break;
+                    case ShaderPropertyType.Int:
+                        target.intValue = source.intValue;
+                        break;
+                    default:
+                        target.floatValue = source.floatValue;
+                        break;
+                }
+            }
+        }
+
+        private static void TakeSnapshot(ShaderGroup group)
+        {
+            int count = group.allProperties.Count;
+            if(group.snapFloat == null || group.snapFloat.Length != count)
+            {
+                group.snapFloat = new float[count];
+                group.snapVector = new Vector4[count];
+                group.snapTexture = new Texture[count];
+            }
+
+            for(int i = 0; i < count; i++)
+            {
+                MaterialProperty property = group.allProperties[i];
+                if(property == null) continue;
+
+                switch(property.propertyType)
+                {
+                    case ShaderPropertyType.Texture:
+                        group.snapTexture[i] = property.textureValue;
+                        group.snapVector[i] = property.textureScaleAndOffset;
+                        break;
+                    case ShaderPropertyType.Color:
+                        group.snapVector[i] = property.colorValue;
+                        break;
+                    case ShaderPropertyType.Vector:
+                        group.snapVector[i] = property.vectorValue;
+                        break;
+                    case ShaderPropertyType.Int:
+                        group.snapFloat[i] = property.intValue;
+                        break;
+                    default:
+                        group.snapFloat[i] = property.floatValue;
+                        break;
+                }
+            }
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -238,6 +368,7 @@ namespace lilToon
                         map[bucketName] = bucket;
                     }
                     bucket.properties.Add(property);
+                    group.allProperties.Add(property);
                 }
             }
 
@@ -376,6 +507,8 @@ namespace lilToon
                     Texture texture = property.textureValue;
                     return texture == null ? "None" : texture.name;
                 }
+                case ShaderPropertyType.Int:
+                    return property.intValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 default:
                     return FormatFloat(property.floatValue);
             }
