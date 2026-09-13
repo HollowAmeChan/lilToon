@@ -13,9 +13,9 @@
 | D2 | **允许编辑 Prefab 内的材质**；写入前必须提示影响面（改了会影响哪些物体 / Prefab 实例 / Prefab 资产）。 |
 | D3 | 本面板**不做任何 MaterialPropertyBlock 相关内容**。 |
 | D4 | 只面向 **Unity 6000+**，不做向下兼容。 |
-| D5 | 旧窗口 `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:156-204`）实测有 bug，**本面板可用后删掉它**。 |
+| D5 | 旧窗口 `Window/_lil/[测试版] lilToon 多材质编辑器` 实测有 bug，**本面板可用后删掉它** —— ✅ 已执行（M4）：窗口与其菜单根都已删除。 |
 | D6 | **列表只收 lilToon 材质**，非 lilToon 材质不入列。 |
-| D7 | 菜单入口**只挂 `HoLil/`**；不新增 `Window/_lil/` 项，且旧窗口删除时把 `Window/_lil/` 这个菜单根一并去掉。 |
+| D7 | 菜单入口**只挂 `HoLil/`**；不新增 `Window/_lil/` 项，且旧窗口删除时把 `Window/_lil/` 这个菜单根一并去掉 —— ✅ 已执行（M4）：`Window/_lil/` 已整个消失，批量材质编辑只剩 `HoLil/[材质] 材质管理器`。 |
 | D8 | **不做贴图批量匹配、不做预设批量、不做贴图反查**。 |
 | D9 | **不做任何结构操作**（清理未使用贴图 / 渲染模式切换 / 转 Lite、Multi / 烘培），面板里不出现这些按钮。 |
 | D10 | 面板只负责**输入值**的查看与批量编辑，其余一概不做。 |
@@ -43,7 +43,7 @@
 | 现有入口 | 为什么不够 |
 | --- | --- |
 | 材质 Inspector（含 Unity 原生多选） | 多选只认 Project 选择集；看不到"场景里谁在用"；无层级；选中 200 个材质后找不到"我想改的那几个" |
-| `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:156-204`） | 项目选择集来源、无场景/层级视角、实测有 bug；只比原生多选多了"一个独立窗口"这件事 |
+| ~~`Window/_lil/[测试版] lilToon 多材质编辑器`~~（已删除） | 项目选择集来源、无场景/层级视角、实测有 bug；只比原生多选多了"一个独立窗口"这件事 |
 | 贴图中控（材质 Inspector 内） | 单材质、只管贴图槽 |
 | 材质预设窗 | 整套覆盖，无法"只对齐我关心的几项" |
 
@@ -271,14 +271,14 @@ class MaterialEntry {                // 中栏一行
 
 | 能力 | 现有实现 | 复用方式 |
 | --- | --- | --- |
-| 多材质属性绘制与混合值语义 | `MaterialEditor`（`Editor.CreateEditor(materials, typeof(MaterialEditor))`，旧窗口同款用法 `lilInspector.cs:181`） | 右栏直接用 |
+| 多材质属性绘制与混合值语义 | `MaterialEditor`（`Editor.CreateEditor(materials, typeof(MaterialEditor))`） | 右栏用单材质 `MaterialEditor` 画行 + 自己 diff / 逐材质写（多目标赋值铺不开，见 §4.3） |
 | 属性分组（PropertyBlock） | `lilMaterialProperty.blocks`、`AllProperties()`（`lilMaterialProperties.cs:594`） | 建"属性名 → 分组"映射（需开 `internal`） |
 | 复制 / 粘贴 / 重置粒度 | `lilGUIUtility.cs:216 / :227 / :246` | 可迁移为"批量复制/粘贴整个分组" |
 | lilToon 材质判定 | `lilMaterialUtils.CheckShaderIslilToon`（`:663`） | 列表过滤 |
 | 属性搜索过滤 | `lilEditorGUI.CheckPropertyToDraw`（`:303`） | 属性搜索沿用 |
 | 显示名本地化 | `lilLanguageManager.GetDisplayName`（`:225`） | 属性行标签 |
 | 层级遍历先例 | `lilToonEditorUtils.cs:666`（`GetComponentsInChildren<Renderer>(true)`） | 参考写法 |
-| 窗口内绘制 Inspector 的先例 | `lilInspector.cs:170-192`（旧窗口） | 参考布局与生命周期管理（但选择集来源不同） |
+| 窗口内绘制 Inspector 的先例 | 原旧的多材质编辑器窗口（已删除） | 参考布局与生命周期管理（但选择集来源不同） |
 
 需要**新写**：tri-state 层级树、材质表（列头/排序/筛选）、属性分组折叠与搜索、变更记录与 Undo 合并、Prefab 归属与影响面统计。
 
@@ -291,9 +291,9 @@ class MaterialEntry {                // 中栏一行
 | 材质 Inspector | 单材质、全属性、精细调参 | 保留；新面板给"在 Inspector 中打开"跳转 |
 | 贴图中控（材质 Inspector 内） | 单材质贴图槽认领 | 保留不动（D8：新面板不做贴图批量） |
 | 材质预设窗 | 预设另存 | 保留不动 |
-| 多材质编辑器窗口（`Window/_lil/`） | Project 选择集的多材质 Inspector | **D5/D7：新面板可用后删除该窗口，并把 `Window/_lil/` 菜单根一并去掉**。删除后"批量改不在场景里的材质"仍可由 Unity 原生多选 Inspector 完成，能力不丢失（只剩"独立窗口"这一个便利性）。 |
+| ~~多材质编辑器窗口（`Window/_lil/`）~~ | Project 选择集的多材质 Inspector | **D5/D7：已删除（M4）**，`Window/_lil/` 菜单根一并消失。删除后"批量改不在场景里的材质"仍可由 Unity 原生多选 Inspector 完成，能力不丢失（只剩"独立窗口"这一个便利性）。 |
 
-**删除时要做的事**（M4）：删 `lilMaterialEditor` 类与菜单项 → 同步 `LILTOON_UI入口总览.md`（§10.3 / §11 / §16 里所有引用）→ 检查是否有别处引用该类名。
+**删除时要做的事**（M4）：删 `lilMaterialEditor` 类与菜单项 → 同步 `LILTOON_UI入口总览.md`（§10.3 / §11 / §16 里所有引用）→ 检查是否有别处引用该类名。**✅ 已完成**：类与菜单项已删（`lilInspector.cs` 尾部留了一行说明注释），`LILTOON_UI入口总览.md` 的 §10.3 / §11 / §16.14 已同步，`lilMaterialManager*` 是唯一入口。
 
 ---
 
@@ -331,9 +331,9 @@ class MaterialEntry {                // 中栏一行
 属性搜索、值广播（取某材质的值给全体）、混合值归属高亮、大材质量下的性能与虚拟化验证、内嵌材质的写入与保存策略、影响面提示（Prefab / 引用计数）。
 **验收**：500 个材质选中下操作不卡（交互 < 100 ms）；影响面数字与实际引用一致。
 
-### M4 — 删除旧窗口
+### M4 — 删除旧窗口 ✅ 已完成
 删除 `lilMaterialEditor` 与 `Window/_lil/` 菜单根，同步 `LILTOON_UI入口总览.md` 与相关注释。
-**验收**：仓库内无 `lilMaterialEditor` / `Window/_lil` 残留引用；文档与实际菜单一致。
+**验收**：仓库内无 `lilMaterialEditor` / `Window/_lil` 残留引用（只剩文档里的历史说明与上游 `CHANGELOG`）；文档与实际菜单一致。
 
 ---
 

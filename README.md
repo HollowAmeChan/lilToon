@@ -18,11 +18,14 @@
 - `Assets/lilToon/Shader/Includes/`：生成 shader 共用的 HLSL 实现。
 - `Assets/lilToon/Shader/`：Unity 实际编译的生成结果。
 - `Assets/lilToon/Editor/`：shader 生成器、Inspector、材质工具、本地化和导入辅助。
+- `Assets/lilToon/Editor/lilMaterialManager/`：场景级批量材质管理器面板（入口 `HoLil/[材质] 材质管理器`）。
 - 根目录下的 `LILTOON架构总览.md`、`接口契约.md`、URP AO/SSS 相关文档记录了本地 fork 的设计决策。
 - 根目录下的 `LILTOON_UI入口总览.md`：Inspector / 菜单栏 / 独立窗口的全部功能入口清单，改 UI 前后都要对照。
+- 根目录下的 `LILTOON_材质管理器设计.md`：批量材质管理器的设计决策（D1–D16）、界面与写入语义。
 
 ## 本地扩展
 
+- 场景级批量材质管理器（`HoLil/[材质] 材质管理器`）：按物体层级批量选材质、**只写你动过的属性**、跨 `Hidden/lilToon*` 变体 shader 广播写入、没吃到的材质在日志里点名；旧的多材质编辑器窗口（`Window/_lil/`）已删除。
 - URP HoAOV 和 HoCharacterCapture pass。
 - HoAOV 材质属性：custom channel、object/group ID、thickness、curvature、utility、capture opacity 等。
 - Screen Space AO 接收路径，可读取 URP `_ScreenSpaceOcclusionTexture` 或 HTrace `_HTraceBufferAO`。

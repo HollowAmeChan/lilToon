@@ -525,7 +525,7 @@ CustomEditor "lilToon.lilToonInspector"
 
 > 这些项**全部只对当前选择集生效**（`CheckExtension` / 各命令体读 `Selection.activeObject` 或 `Selection.objects`）。
 >
-> 菜单根从 `Assets/lilToon/` 改成了顶层 `HoLil/`：这些命令**不再出现在 Assets 菜单和 Project 窗口右键菜单**，而是在 Unity 顶层菜单栏单独占一项（与 Assets 同级）。`GameObject/lilToon/` 与 `Window/_lil/` 保持原位置，只是文案汉化。
+> 菜单根从 `Assets/lilToon/` 改成了顶层 `HoLil/`：这些命令**不再出现在 Assets 菜单和 Project 窗口右键菜单**，而是在 Unity 顶层菜单栏单独占一项（与 Assets 同级）。`GameObject/lilToon/` 保持原位置，只是文案汉化；`Window/_lil/` 连同它唯一的项（旧的多材质编辑器窗口）已删除，批量材质编辑改为挂在 `HoLil/`（见 §10.1 与 §11）。
 
 ### 10.2 `GameObject/lilToon/`
 
@@ -536,9 +536,7 @@ CustomEditor "lilToon.lilToonInspector"
 
 ### 10.3 `Window/_lil/`
 
-| 菜单项 | 行为 |
-| --- | --- |
-| `Window/_lil/[测试版] lilToon 多材质编辑器` | 打开多材质编辑器窗口（见 §11） |
+**已删除。** 这个菜单根下唯一的项是旧的多材质编辑器窗口，已随窗口一起移除（`LILTOON_材质管理器设计.md` D5/D7）。批量材质编辑现在只有 `HoLil/[材质] 材质管理器` 一个入口。
 
 ---
 
@@ -547,7 +545,6 @@ CustomEditor "lilToon.lilToonInspector"
 | 窗口 | 标题 | 打开方式 | 内容 | 代码 |
 | --- | --- | --- | --- | --- |
 | 材质管理器 | `[测试版] lilToon 材质管理器` | `HoLil/[材质] 材质管理器` | 场景级批量材质面板：左栏物体层级树（tri-state 批量选择）、中栏材质表 + 日志控制台、右栏输入值批量编辑（只写你碰过的属性、改动即时生效、逐材质铺开、跳过谁会在日志里点名） | `lilMaterialManager/*.cs`（设计见 `LILTOON_材质管理器设计.md`） |
-| lilToon Multi-Editor | `[测试版] lilToon 多材质编辑器` | `Window/_lil/[测试版] lilToon 多材质编辑器` | 对 Project 里选中的**所有** lilToon 材质统一编辑（`SelectionMode.DeepAssets`），顶部显示选中材质名，下面是完整 Inspector。**已被材质管理器取代，待删除**（见 `LILTOON_材质管理器设计.md` D5） | `lilInspector.cs:156-204` |
 | Preset Window | `[lilToon] 预设窗口` | 材质预设页 → `保存预设` | 见下表 | `lilToonPreset.cs:127` |
 | lilToon 容器导出 | `.lilcontainer` 的 Inspector | 选中 `.lilcontainer` 资源 | **[导出 Shader / `Export Shader`]** 按钮：把容器解包成 `.shader` 另存 | `lilShaderContainerImporter.cs:43-57` |
 
@@ -684,7 +681,7 @@ CustomEditor "lilToon.lilToonInspector"
    - 预设按钮靠 `bases[0].name` 回退显示（`lilSettingAndPresetGUI.cs:176-185`）。
    即"同一预设的多语言名字"这条链路目前是死路，修它要同时动 `lilLanguageManager` 和 `lilToonPreset`。
 
-10. **HoLil 等菜单文案是写死的中文**：`MenuItem` 的路径必须是**编译期常量**，无法调用 `GetLoc`，所以 `HoLil/*`、`GameObject/lilToon/*`、`Window/_lil/*` 三处菜单不走 `.po`。要支持别的语言只能改常量。除菜单外，面板、按钮、折叠栏标题、提示框**全部**走本地化表（§16.11 列出本次补齐的键）。
+10. **HoLil 等菜单文案是写死的中文**：`MenuItem` 的路径必须是**编译期常量**，无法调用 `GetLoc`，所以 `HoLil/*`、`GameObject/lilToon/*` 两处菜单不走 `.po`。要支持别的语言只能改常量。除菜单外，面板、按钮、折叠栏标题、提示框**全部**走本地化表（§16.11 列出本次补齐的键）。
 11. **本次补齐的本地化键**（`en-US.po` 与 `zh-Hans.po` 各新增 40 条，其余语言自动回退英文）：`Test`、`Save`、`Set Writer`、`Set Reader`、`Invert`、`Transparency`、`Show advanced editor`、`Min`、`Max`、`Parent`、`Select Parent Material`、`Optimize in NDMF (Apply on Play)`、`Migrate materials in startup`、`Apply`、`Face`、`Skin`、`Hair`、`Cloth`、`Main`、`Transparent backface`、`Fur Pre`、`Gem Pre`、`Select All`、`Deselect All`、`Render Queue`、`Ho Presets`、`Export Shader`、`UV Preset`，加上 MPB 覆写检查栏的 7 条（`MPB Parameter Overrides`、`Rescan`、`Select`、`Material Value` 与 3 条说明文案），以及 3 条材质变体提示框和 2 条贴图导入修复提示。约定沿用本 fork 的做法：**msgid 就是英文原文**，缺少翻译时自动显示英文，不会显示键名。
 12. **折叠栏默认全关**：新版 UI 的 31 个折叠栏 `defaultOpen` 一律 `false`；旧版 UI 的折叠栏、贴图子折叠、Blend 子折叠、预设分类都由 `edSet.isShowXxx`（默认 `false`）控制。注意折叠状态由 `SessionState` 记忆，**同一个 Unity 会话内用户手动展开过的栏会保持展开**，重启 Unity 才回到"全关"。
 13. **菜单项位置**：`HoLil` 是自定义顶层菜单，Unity 会把它排在自带顶层菜单之后（具体位置由 Unity 决定，不能保证紧邻 Assets）。若确实要求贴着 Assets 显示，需要改成往 Assets 菜单里塞项，或依赖 Unity 版本行为，不建议硬做。
@@ -709,4 +706,4 @@ CustomEditor "lilToon.lilToonInspector"
     - 因此**改 lilToon 的 inspector 无法去掉它**。用反射清 `MaterialEditor.m_PropertyBlock` 也不可行：Layout 事件下 Unity 在 `OnGUI` 之后还会重新填充一次，导致 Layout 与 Repaint 的控件序列不一致，出现布局错位。
     - 处理办法（数据侧）：用 `renderer.HasPropertyBlock()` 确认是谁设的，并按需在源头清掉。
     - **lilToon 侧只做只读检查，不做移除/抑制**（`管线与着色器` 页的「MPB参数覆写情况」栏，见 §3.4 / §4.2）：扫描已加载场景里「用了本材质且 MPB 非空」的 Renderer，并用 `MaterialPropertyBlock.HasProperty` 列出**具体被覆盖的 shader 参数与值**（工具提示里是材质原值）。**不改材质、不改 Renderer 上的 MPB、也不尝试动 Unity 的提示框**。`HasProperty` 是较新版本 Unity 才有的 API，本实现走反射取；取不到时降级为「只列 Renderer，列不出参数」。
-    - 只想安静看材质时，**在 Project 里选中材质资产**、或用 `Window/_lil/[测试版] lilToon 多材质编辑器` 都不会出现这个框（这两种情况下没有关联 Renderer）。
+    - 只想安静看材质时，**在 Project 里选中材质资产**（这种情况下没有关联 Renderer）就不会出现这个框。
