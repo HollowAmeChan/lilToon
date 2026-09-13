@@ -1713,9 +1713,6 @@ msgstr "HoSSS 透射半径"
 msgid "AO Mask"
 msgstr "AO 蒙版"
 
-msgid "AO Color"
-msgstr "AO 颜色"
-
 msgid "GI"
 msgstr "GI"
 
@@ -1809,23 +1806,14 @@ msgstr "Alpha 蒙版"
 msgid "AO"
 msgstr "AO"
 
-msgid "AO Color Texture"
-msgstr "AO 颜色贴图"
-
 msgid "AO Contrast"
 msgstr "AO 对比度"
 
 msgid "AO Level"
 msgstr "AO 电平"
 
-msgid "AO Main Strength"
-msgstr "AO 主色强度"
-
 msgid "AO Strength"
 msgstr "AO 强度"
-
-msgid "AO Threshold"
-msgstr "AO 阈值"
 
 msgid "Apply Specular"
 msgstr "应用高光"

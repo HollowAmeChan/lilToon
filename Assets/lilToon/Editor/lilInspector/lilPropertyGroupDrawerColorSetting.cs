@@ -195,10 +195,9 @@ namespace lilToon
                     LocalizedProperty(shadowBorderRange);
                     EditorGUILayout.EndVertical();
                 }
-                // AO is drawn outside the _UseShadow branches on purpose: the realtime
-                // AO also feeds the final multiply, which runs even with toon shadow
-                // off, so the controls must stay reachable then.
-                if(!isLite)
+                // AO only acts through the toon shadow ramp, so it is gated by
+                // _UseShadow like every other shadow control.
+                if(useShadow.floatValue == 1 && !isLite)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
                     DrawShadowAOFoldout();
@@ -209,33 +208,23 @@ namespace lilToon
         }
 
         // AO entry, shared by the legacy and the next shadow sections.
-        // It is deliberately not gated by _UseShadow: the realtime AO also drives the
-        // final multiply, which runs even when toon shadow is off. The forced
-        // DisabledScope(false) is what keeps it editable when the caller already sits
-        // inside a DisabledScope it does not own (the next inspector disables the whole
-        // shadow section with _UseShadow).
+        // AO drives nothing but the three toon shadow ramps, so it is only meaningful
+        // with _UseShadow on (both callers already sit inside that gate).
         private void DrawShadowAOFoldout()
         {
-            using(new EditorGUI.DisabledScope(false))
+            edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
+            if(edSet.isShowShadowAO)
             {
-                edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
-                if(edSet.isShowShadowAO)
-                {
-                    EditorGUI.indentLevel += 1;
-                    LocalizedProperty(useRealtimeAO);
-                    LocalizedProperty(shadowBorderMaskLOD, 2);
-                    lilEditorGUI.DrawLine();
-                    LocalizedProperty(aoThreshold);
-                    LocalizedProperty(aoStrength);
-                    LocalizedProperty(aoLevel);
-                    LocalizedProperty(aoContrast);
-                    lilEditorGUI.DrawLine();
-                    if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent(GetLoc("AO Mask"), GetLoc("R: 1 = receive AO. Gates both the realtime AO and the AO Map.")), aoMask);
-                    lilEditorGUI.DrawLine();
-                    if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent(GetLoc("AO Color"), GetLoc("RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers.")), aoColorTex, aoColor);
-                    LocalizedProperty(aoMainStrength);
-                    EditorGUI.indentLevel -= 1;
-                }
+                EditorGUI.indentLevel += 1;
+                LocalizedProperty(useRealtimeAO);
+                LocalizedProperty(shadowBorderMaskLOD, 2);
+                lilEditorGUI.DrawLine();
+                LocalizedProperty(aoStrength);
+                LocalizedProperty(aoLevel);
+                LocalizedProperty(aoContrast);
+                lilEditorGUI.DrawLine();
+                if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent(GetLoc("AO Mask"), GetLoc("R: 1 = receive AO. Gates both the realtime AO and the AO Map.")), aoMask);
+                EditorGUI.indentLevel -= 1;
             }
         }
     }

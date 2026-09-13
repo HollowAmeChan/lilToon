@@ -239,24 +239,15 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             fd.col.rgb = fd.col.rgb * fd.lightColor * _OutlineEnableLighting;
         #else
             fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * min(fd.lightColor + fd.addLightColor, _LightMaxLimit), _OutlineEnableLighting);
-            #if defined(LIL_FEATURE_SHADOW) || (defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE))
-                if(_OutlineShadowStrength > 0.0)
+            // Toon shadow is opt-in through _OutlineShadowStrength (it replaces the
+            // outline colour with the body shading ramp, which carries AO as well).
+            #if defined(LIL_FEATURE_SHADOW)
+                if(_UseShadow && _OutlineShadowStrength > 0.0)
                 {
-                    // Reuse the base shading ramp and HoAO so the outline receives
-                    // the same shadow and ambient occlusion as the main color,
-                    // blended by _OutlineShadowStrength.
                     float3 outlineShadowColor = fd.col.rgb;
-                    #if defined(LIL_FEATURE_SHADOW)
-                        if(_UseShadow)
-                        {
-                            fd.origN = fd.N;
-                            fd.ln = dot(fd.L, fd.N);
-                            OVERRIDE_SHADOW
-                        }
-                    #endif
-                    #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
-                        OVERRIDE_REALTIMEAO
-                    #endif
+                    fd.origN = fd.N;
+                    fd.ln = dot(fd.L, fd.N);
+                    OVERRIDE_SHADOW
                     fd.col.rgb = lerp(outlineShadowColor, fd.col.rgb, _OutlineShadowStrength);
                 }
             #endif
@@ -455,11 +446,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             #endif
             #if defined(LIL_FEATURE_MAIN3RD)
                 if(_UseMain3rdTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color3rd.rgb, color3rd.a - color3rd.a * _Main3rdEnableLighting, _Main3rdTexBlendMode);
-            #endif
-
-            BEFORE_REALTIMEAO
-            #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
-                OVERRIDE_REALTIMEAO
             #endif
 
             BEFORE_SSS

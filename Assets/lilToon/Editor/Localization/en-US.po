@@ -1713,9 +1713,6 @@ msgstr "HoSSS Transmission Radius"
 msgid "AO Mask"
 msgstr "AO Mask"
 
-msgid "AO Color"
-msgstr "AO Color"
-
 msgid "GI"
 msgstr "GI"
 
@@ -1809,23 +1806,14 @@ msgstr "AlphaMask"
 msgid "AO"
 msgstr "AO"
 
-msgid "AO Color Texture"
-msgstr "AO Color Texture"
-
 msgid "AO Contrast"
 msgstr "AO Contrast"
 
 msgid "AO Level"
 msgstr "AO Level"
 
-msgid "AO Main Strength"
-msgstr "AO Main Strength"
-
 msgid "AO Strength"
 msgstr "AO Strength"
-
-msgid "AO Threshold"
-msgstr "AO Threshold"
 
 msgid "Apply Specular"
 msgstr "Apply Specular"

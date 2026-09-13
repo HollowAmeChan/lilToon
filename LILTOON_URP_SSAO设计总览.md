@@ -11,9 +11,9 @@
 
 - Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
 - 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
-- 当前材质侧的 AO 参数组已收敛为 10 个属性（`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOThreshold`、`_AOStrength`、`_AOLevel`、`_AOMask`、`_AOColor`、`_AOColorTex`、`_AOMainStrength`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask` 与 `_ShadowAOShift`/`_ShadowPostAO` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
-- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 forward 光照完成后、SSS 前做一次材质侧乘法，并额外用同一份遮挡量偏移三层 toon 阴影边界（`_AOThreshold`，默认 0 = 不启用）。
-- inspector 入口：AO 参数在**阴影栏**内的 `AO` 折叠子级，不在独立的 "GI / HoAO" 栏。
+- 当前材质侧的 AO 参数组已收敛为 **7 个属性**（`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOLevel`、`_AOContrast`、`_AOMask`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask`、`_ShadowAOShift`/`_ShadowPostAO`、`_AOColor`/`_AOColorTex`/`_AOMainStrength` 与 `_AOThreshold` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
+- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 `lilGetShading` 内把合成后的 `aoVis` **乘进三层 toon ramp 的输入**（`lns.xyz *= aoVis`），AO 只决定像素落在哪一段阴影色，不做光照后的整体压暗，也不再偏移影边界。
+- inspector 入口：AO 参数在**阴影栏**内的 `AO` 折叠子级，不在独立的 "GI / HoAO" 栏；随 `_UseShadow` 灰显。
 - Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。
 
 ---
@@ -24,8 +24,8 @@ lilToon 目前不自己生成 AO，而是作为 Ho-GTAO 屏幕空间 AO 的材�
 
 - Ho-GTAO 生成并全局发布 `_HoAOTexture`，值为 0..1 visibility，1 表示无遮挡。
 - lilToon forward shader 不再依赖 `_SCREEN_SPACE_OCCLUSION` 变体。
-- 材质启用 `_UseRealtimeAO` 后，`lilRealtimeAO(...)` 采样 `_HoAOTexture`。
-- 当前接收端包含总强度、Min/Max remap、contrast、颜色/颜色贴图、从主色取色和 mask。
+- 材质启用 `_UseRealtimeAO` 后，`lilGetShading` 内的 `AO -> toon shadow ramp` 块采样 `_HoAOTexture`，合成结果**乘进三层 toon ramp 的输入**（`lns.xyz *= aoVis`）。
+- 当前接收端包含：总开关、离线 AO Map + mip 偏移、`_AOLevel`（电平）、`_AOContrast`（增益）、`_AOStrength`（总强度）与 `_AOMask`（同时门控两路）。
 
 这条路线适合第一阶段，因为它不需要先改 lilToon 光照主结构，也能同时复用项目已有 URP SSAO 与 HTrace AO 设置。
 
@@ -127,25 +127,30 @@ Backface / Distance Fade / Fog
 Output
 ```
 
-当前 SSAO 插入点：
+当前 SSAO 插入点（v7：不再有光照后的 AO pass，改为 toon ramp 乘算）：
 
 ```hlsl
-BEFORE_REALTIMEAO
-#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
-    OVERRIDE_REALTIMEAO
+// lilGetShading(...) 内，三层 toon 分级之前
+float3 aoVis = 1.0;
+#if defined(LIL_FEATURE_ShadowBorderMask)   // 离线 AO Map
+    aoVis *= lerp(1.0, aoBorderMask.rgb, aoMask);
 #endif
+#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
+    if(_UseRealtimeAO) aoVis *= lerp(1.0, aoScreen, aoMask);   // 实时 HoAO
+#endif
+aoVis = lerp(1.0, aoVis, _AOStrength);
+lns.xyz *= aoVis;                            // ← 唯一消费点
 ```
 
-当前 `lilRealtimeAO(...)` 的作用：
+当前 AO 接收端的动作：
 
 1. 通过 `GetNormalizedScreenSpaceUV(fd.positionCS)` 采样 `_HoAOTexture.r`。
-2. 做 `_RealtimeAORemap` Min/Max。
-3. 做 `_RealtimeAOContrast`。
-4. 采 `_RealtimeAOMask.r` 控制材质区域。
-5. 用 `_RealtimeAOColor` 与 `_RealtimeAOColorTex` 相乘；可选使用 `fd.albedo` 作为颜色来源。
-6. 最后按 `_RealtimeAOStrength` 混合到 `fd.col.rgb`。
+2. 乘 `_AOContrast`（以 0.5 为轴心的增益）、减 `_AOLevel`（有符号电平），得到 0..1 visibility。
+3. 采 `_AOMask.r` 同时门控实时与离线两路。
+4. 与离线 AO Map（`_ShadowBorderMask.rgb`）相乘，得到 `aoVis`。
+5. 按 `_AOStrength` 缩放后乘进三层 toon ramp 的输入 `lns.xyz`。
 
-这意味着当前模式本质上是 `Final Multiply`：在主 toon shadow 之后，后续 SSS / Rim / MatCap / Reflection / Emission 之前，对当前结果做接触暗化。
+这意味着当前模式本质上是 `Ramp Multiply`（与 lilToon 原本的 AO Map 语义一致）：AO 只改变像素落在哪一段 toon 阴影色，**不会**在光照完成后对 `fd.col.rgb` 做接触暗化（v6 的 `Final Multiply` 与 v5/v6 的阈值偏移都已在 v7 删除）。
 
 ---
 

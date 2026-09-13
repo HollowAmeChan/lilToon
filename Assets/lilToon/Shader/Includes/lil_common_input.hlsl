@@ -405,9 +405,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _AOStrength;
     float   _AOLevel;
     float   _AOContrast;
-    float   _AOThreshold;
-    float4  _AOColor;
-    float   _AOMainStrength;
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;
@@ -824,7 +821,6 @@ TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_AOMask);
-TEXTURE2D(_AOColorTex);
 // _HoAOTexture is a screen-space texture published by Ho-GTAO, so it follows the
 // same XR convention as _CameraOpaqueTexture (a texture array in stereo).
 TEXTURE2D_SCREEN(_HoAOTexture);

@@ -136,11 +136,7 @@ namespace lilToon
         private readonly lilMaterialProperty aoStrength                 = new lilMaterialProperty("_AOStrength", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoLevel                    = new lilMaterialProperty("_AOLevel", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoContrast                 = new lilMaterialProperty("_AOContrast", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoThreshold                = new lilMaterialProperty("_AOThreshold", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoMask                     = new lilMaterialProperty("_AOMask", true, PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoColor                    = new lilMaterialProperty("_AOColor", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoColorTex                 = new lilMaterialProperty("_AOColorTex", true, PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoMainStrength             = new lilMaterialProperty("_AOMainStrength", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColorType            = new lilMaterialProperty("_ShadowColorType", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColor                = new lilMaterialProperty("_ShadowColor", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColorTex             = new lilMaterialProperty("_ShadowColorTex", true, PropertyBlock.Shadow);
@@ -713,11 +709,7 @@ namespace lilToon
                 aoStrength,
                 aoLevel,
                 aoContrast,
-                aoThreshold,
                 aoMask,
-                aoColor,
-                aoColorTex,
-                aoMainStrength,
                 shadowColorType,
                 shadowColor,
                 shadowColorTex,
