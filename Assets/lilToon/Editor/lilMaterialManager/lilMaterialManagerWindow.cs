@@ -52,6 +52,11 @@ namespace lilToon
         private void OnEnable()
         {
             needsRescan = true;
+
+            // 必须先跑 lilToon 的标签初始化：很多属性的多段标签（例如 _LightDirectionOverride 的
+            // "光照方向覆盖|跟随物体"）是在 InitializeLabels() 里用 BuildParams 合成的；不初始化的话
+            // GetDisplayName 只能拿到单段键名，会喂给 lilVec3B / lilHSVG 这类要求多段的 drawer 导致越界。
+            lilLanguageManager.InitializeLanguage();
         }
 
         private void OnDisable()

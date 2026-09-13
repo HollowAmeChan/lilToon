@@ -22,6 +22,7 @@ namespace lilToon
         private readonly List<Row> rows = new List<Row>();
         private readonly HashSet<lilMaterialNode> expanded = new HashSet<lilMaterialNode>();
         private Vector2 scroll;
+        private bool expansionChanged;      // 折叠状态变了 → 需要调用方重建可见行
 
         public int RowCount { get { return rows.Count; } }
 
@@ -143,10 +144,11 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
-        // 绘制（返回选择是否发生变化）
+        // 绘制（返回"选择或折叠状态"是否发生变化；任一变化调用方都要重建可见行）
         public bool Draw(Rect pane, HashSet<lilMaterialEntry> selected)
         {
             bool changed = false;
+            expansionChanged = false;
             lilMaterialManagerStyles.Fill(pane, lilMaterialManagerStyles.PaneColor);
 
             float contentWidth = Mathf.Max(60.0f, pane.width - lilMaterialManagerStyles.ScrollbarWidth);
@@ -163,7 +165,7 @@ namespace lilToon
             }
 
             GUI.EndScrollView();
-            return changed;
+            return changed || expansionChanged;
         }
 
         private bool DrawRow(Rect rect, Row row, HashSet<lilMaterialEntry> selected)
@@ -191,6 +193,7 @@ namespace lilToon
                 {
                     if(nextExpanded) expanded.Add(node);
                     else             expanded.Remove(node);
+                    expansionChanged = true;
                 }
             }
             x += 14.0f;
@@ -236,6 +239,7 @@ namespace lilToon
                 {
                     if(isExpanded) expanded.Remove(node);
                     else           expanded.Add(node);
+                    expansionChanged = true;
                 }
                 evt.Use();
             }
