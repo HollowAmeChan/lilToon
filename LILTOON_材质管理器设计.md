@@ -24,6 +24,7 @@
 | D13 | **不做数值相对运算**（×系数 / +偏移），只做数值的直接设值。 |
 | D14 | 贴图槽按**普通输入值**处理：允许"选一批材质 → 拖一张贴图 → 全体生效"；不做关键词 / PBR 匹配那套自动认领。 |
 | D15 | `☐含 Prefab 资产` 开关**默认关**（一打开就扫全 Project 会卡，需要时手动勾）。 |
+| D16 | 属性分组按**属性名集合**分，不按 `Material.shader` 分：lilToon 的材质大多各自用不同的 `Hidden/lilToon*` 变体 shader（Cutout / Transparent / Outline / Fur…），按 shader 分会把一批材质拆成"每组 1 个"。组内只拿第一个材质当"代表"画控件，写入**逐个材质显式做**（见 §4.3）。 |
 
 > D3 只针对本面板。已落地的 Inspector 内 `MPB参数覆写情况` 只读栏（`lilNextInspectorGUI.cs:1707+`）是另一件事，保持不动。
 
@@ -108,10 +109,12 @@
 
 这是与"整套覆盖"式批量工具最本质的区别，也是本面板唯一需要精心设计的语义：
 
-- 右栏用一个**绑定到整批选中材质**的 `MaterialEditor`（`Editor.CreateEditor(materials, typeof(MaterialEditor))`）来画属性行，因此：
-  - 混合值显示、贴图槽、颜色选择器、滑条等**全部是 Unity 原生控件与原生语义**，不会出现"自绘控件和 Inspector 不一致"的问题；
+- 右栏里每一个"属性组"用一个 `MaterialEditor` 画属性行（组 = **属性名集合相同**的材质，见 D16），因此：
+  - 贴图槽、颜色选择器、滑条、缩进等**全部是 Unity 原生控件**，不会出现"自绘控件和 Inspector 不一致"的问题；
   - 你动某个属性 → **只写这一个属性**，其它属性一个字节都不写，各材质原有的差异自然保留（不存在"抹平"的机会，因为没有任何"应用全部"的路径）。
   - **写入不依赖 Unity 的多目标 `MaterialProperty`**：实测这种"自己 `CreateEditor` + 自己 `GetMaterialProperties`"的组合下，`MaterialProperty` 的赋值只落到第一个材质上。所以行内一出现改动，面板就 diff 出这一帧真正变化的属性（`allProperties` + 值快照 `snapFloat/snapVector/snapTexture`），再用**每个材质各自的单目标 `MaterialProperty`** 逐个写一遍。diff 机制顺带覆盖了"一个 drawer 顺手改了兄弟属性"的情况（例如多段向量、贴图 ST）。
+  - **分组按属性名集合，不按 shader**（D16）：组内只拿第一个材质当代表建 `MaterialEditor`（单材质），控件显示的是代表材质的值；"值是否混合"由面板自己按组内全部材质比出来，`showMixedValue` + `[混合]` 标记展示。写入永远遍历整组成员。
+  - **触发时机**：不要依赖 `EditorGUI.EndChangeCheck`（lilToon 自定义 drawer 内部会自己 Begin/EndChangeCheck，把 `GUI.changed` 吃掉），也不要无条件每帧都铺（那样在 Inspector 里改某个材质会被静默广播给整批）。实际做法 = 行内检出改动 **或** 这一帧有鼠标/键盘交互落在属性区（判断必须在窗口根坐标空间做：`Area`/`ScrollView` 里的 `mousePosition` 是相对那个区域的）。
 - 需要注意的两点：
   1. **混合值**：只显示「混合 (N 种值)」本身不够，要能点开看"这几种值分别属于哪些材质"（用于 U3 对齐）。
   2. **值广播**（U3）：原生控件只支持逐属性设值，若要"取某一个材质的值一键给全体"，需要额外的小工具行 —— **可选增强**，放 M3。数值相对运算（×/+）**不做**（D13）。
@@ -238,7 +241,7 @@ class MaterialEntry {                // 中栏一行
 8. **场景脏化**：应用后 `EditorSceneManager.MarkSceneDirty`，并在工具条上提示"已改 N 个材质"。
 9. **性能**：左栏/中栏都用官方虚拟化控件，行高固定；绘制循环内不 LINQ、不分配；属性行按折叠状态懒绘制。
 10. **筛选只影响显示**，不影响已选集合（§4.2-5）。
-11. **跨 shader 混选**：按 shader 分组显示；某材质没有的属性不显示（不静默写、也不报错）。
+11. **跨 shader 混选**：按**属性名集合**分组（D16），不按 shader 分 —— lilToon 材质大多各自用不同的 `Hidden/lilToon*` 变体 shader，按 shader 分会得到"每组 1 个材质"、批量改退化成改第一个。同一组内写入遍历全体；某材质没有的属性不写、也不报错。
 12. **多目标 `MaterialProperty` 的赋值铺不开**（实测）：`GetMaterialProperties(materials)` + `ShaderProperty` 的写法下，改一个值只有第一个材质真的变了 —— 原生控件能画混合值，但写不铺开。**必须自己逐个材质写**（见 §4.3），只靠"Unity 原生会写全部"的假设会得到"批量改了但只有一个材质生效"的结果。这套写法是从旧的多材质编辑器窗口沿用下来的，旧窗口大概率同一个毛病。
 
 ---

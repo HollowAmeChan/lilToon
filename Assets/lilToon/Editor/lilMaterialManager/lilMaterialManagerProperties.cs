@@ -36,7 +36,9 @@ namespace lilToon
 
         private sealed class ShaderGroup
         {
-            public Shader shader;
+            public int id;                                  // 组序号（扩展开关 / 混值缓存的键用它，不用 shader）
+            public Shader shader;                           // 代表 shader（只用于显示）
+            public int shaderKindCount = 1;                 // 这一组里一共有几种 shader
             public Material[] materials;
             public MaterialEditor editor;
             public readonly List<PropertyBucket> buckets = new List<PropertyBucket>();
@@ -94,38 +96,87 @@ namespace lilToon
             Dispose();
             if(entries == null || entries.Count == 0) return true;
 
-            // GetMaterialProperties 要求同一 shader，所以先按 shader 分组
-            var byShader = new Dictionary<Shader, List<Material>>();
+            // 分组键是"属性名集合"，不是 Shader 对象。
+            // lilToon 的材质常常各自用不同的 Hidden/lilToon* 变体 shader（Cutout / Transparent /
+            // Outline / Fur …），按 shader 分会把 30 个材质拆成 30 组、每组 1 个，于是"批量改"
+            // 退化成"只能改第一个"。属性集合相同 = 这些材质能安全地一起编辑。
+            // 组内只拿第一个材质当"代表"去取属性列表和画控件；真正的写入由 SpreadChanges 逐个材质做。
+            var signatureToMaterials = new Dictionary<string, List<Material>>();
+            var signatureToProperties = new Dictionary<string, MaterialProperty[]>();
+            var signatureOrder = new List<string>();
+
             for(int i = 0; i < entries.Count; i++)
             {
                 Material material = entries[i] != null ? entries[i].material : null;
-                if(material == null) continue;
-                Shader shader = material.shader;
-                if(shader == null) continue;
+                if(material == null || material.shader == null) continue;
 
-                if(!byShader.TryGetValue(shader, out List<Material> list))
+                MaterialProperty[] properties = MaterialEditor.GetMaterialProperties(new Object[] { material });
+                if(properties == null || properties.Length == 0) continue;
+
+                string signature = BuildPropertySignature(properties);
+                if(!signatureToMaterials.TryGetValue(signature, out List<Material> list))
                 {
                     list = new List<Material>();
-                    byShader[shader] = list;
+                    signatureToMaterials[signature] = list;
+                    signatureToProperties[signature] = properties;
+                    signatureOrder.Add(signature);
                 }
                 if(!list.Contains(material)) list.Add(material);
             }
 
-            foreach(KeyValuePair<Shader, List<Material>> pair in byShader)
+            for(int i = 0; i < signatureOrder.Count; i++)
             {
-                Material[] materials = pair.Value.ToArray();
-                var group = new ShaderGroup { shader = pair.Key, materials = materials };
-                group.editor = (MaterialEditor)Editor.CreateEditor(materials, typeof(MaterialEditor));
+                string signature = signatureOrder[i];
+                Material[] materials = signatureToMaterials[signature].ToArray();
+                var group = new ShaderGroup
+                {
+                    id = i,
+                    shader = materials[0].shader,
+                    materials = materials,
+                    shaderKindCount = CountShaderKinds(materials)
+                };
+
+                // 只绑代表材质：属性列表就是它的，写不写得到别人身上由我们自己控制
+                group.editor = (MaterialEditor)Editor.CreateEditor(new Object[] { materials[0] }, typeof(MaterialEditor));
                 if(group.editor != null) group.editor.hideFlags = HideFlags.HideAndDontSave;
-                BuildBuckets(group, MaterialEditor.GetMaterialProperties(materials));
+                BuildBuckets(group, signatureToProperties[signature]);
                 groups.Add(group);
             }
 
-            groups.Sort(delegate(ShaderGroup a, ShaderGroup b)
-            {
-                return string.Compare(a.shader.name, b.shader.name, System.StringComparison.OrdinalIgnoreCase);
-            });
             return true;
+        }
+
+        // 属性名集合的签名（排序后拼起来）：集合一样 → 可以放一组
+        private static string BuildPropertySignature(MaterialProperty[] properties)
+        {
+            var names = new List<string>(properties.Length);
+            for(int i = 0; i < properties.Length; i++)
+            {
+                if(properties[i] != null) names.Add(properties[i].name);
+            }
+            names.Sort(System.StringComparer.Ordinal);
+            return string.Join("|", names.ToArray());
+        }
+
+        private static int CountShaderKinds(Material[] materials)
+        {
+            var shaders = new List<Shader>();
+            for(int i = 0; i < materials.Length; i++)
+            {
+                if(materials[i] == null || materials[i].shader == null) continue;
+                if(!shaders.Contains(materials[i].shader)) shaders.Add(materials[i].shader);
+            }
+            return Mathf.Max(1, shaders.Count);
+        }
+
+        // 组标题：把"这批属性会写到几个材质上"和"跨了几种 shader"讲清楚
+        private static string BuildGroupLabel(ShaderGroup group)
+        {
+            if(group.shaderKindCount <= 1)
+            {
+                return group.shader.name + "    ×" + group.materials.Length + " 个材质";
+            }
+            return group.materials.Length + " 个材质    (" + group.shaderKindCount + " 种 shader：" + group.shader.name + " 等)";
         }
 
         public void Dispose()
@@ -159,7 +210,7 @@ namespace lilToon
                 ShaderGroup group = groups[g];
 
                 // 批量范围写清楚：这一组属性会写到哪几个材质上（跨 shader 混选时每组一个标题条）
-                EditorGUILayout.LabelField(group.shader.name + "    ×" + group.materials.Length + " 个材质", EditorStyles.miniBoldLabel);
+                EditorGUILayout.LabelField(BuildGroupLabel(group), EditorStyles.miniBoldLabel);
 
                 // 本帧绘制前的值快照：这一帧里谁被改了，靠它 diff 出来
                 TakeSnapshot(group);
@@ -168,7 +219,7 @@ namespace lilToon
                 for(int b = 0; b < group.buckets.Count; b++)
                 {
                     PropertyBucket bucket = group.buckets[b];
-                    string bucketKey = group.shader.GetInstanceID() + "|" + bucket.name;
+                    string bucketKey = group.id + "|" + bucket.name;
 
                     int matchCount = hasFilter ? CountMatches(bucket, filter) : bucket.properties.Count;
                     if(matchCount == 0) continue;                       // 过滤时整组没命中就不显示
@@ -249,7 +300,7 @@ namespace lilToon
         {
             if(group.materials.Length < 2) return false;
 
-            string key = group.shader.GetInstanceID() + "|" + property.name;
+            string key = group.id + "|" + property.name;
             if(mixedCache.TryGetValue(key, out bool mixed)) return mixed;
 
             mixed = ComputeMixed(group, property);
@@ -368,7 +419,7 @@ namespace lilToon
                 VerifyWrite(group, property);
 
                 // 刚写成了一致的值，这一项不再是混值
-                mixedCache[group.shader.GetInstanceID() + "|" + property.name] = false;
+                mixedCache[group.id + "|" + property.name] = false;
                 RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
 
                 // TODO(诊断): 确认"铺开"真的跑起来了就删掉这几行
