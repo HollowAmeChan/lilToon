@@ -164,6 +164,12 @@ float4 lilHoMetadataBufferDecodeObjectCustom1(uint mask)
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
 
+// lil_common_input.hlsl aliases sampler_MainTex to sampler_OutlineTex when
+// LIL_OUTLINE is defined, so drop the old definition before rebinding it here.
+// Without this the compiler reports a macro redefinition warning.
+#if defined(sampler_MainTex)
+    #undef sampler_MainTex
+#endif
 #define sampler_MainTex lil_sampler_trilinear_repeat
 
 float4 lilHoMetadataBufferSampleCustom0To3(float2 uv)

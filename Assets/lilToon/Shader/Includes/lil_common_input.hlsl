@@ -610,6 +610,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _OutlineLitOffset;
         float   _OutlineWidth;
         float   _OutlineEnableLighting;
+        float   _OutlineShadowStrength;
         float   _OutlineVectorScale;
         float   _OutlineFixWidth;
         float   _OutlineZBias;
