@@ -11,7 +11,7 @@
 
 - Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
 - 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
-- 当前材质侧的 AO 参数组为 **9 个属性**（`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOMask`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`、`_AOColor`、`_AODarkStrength`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask`、`_ShadowAOShift`/`_ShadowPostAO`、`_AOColorTex`/`_AOMainStrength` 与 `_AOThreshold` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
+- 当前材质侧的 AO 参数组为 **9 个属性**（`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOMask`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`、`_AOColor`、`_AODarkStrength`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask`、`_ShadowAOShift`/`_ShadowPostAO`、`_AOColorTex`/`_AOMainStrength` 与 `_AOThreshold` **已移除或改名**。**权威清单见 `LILTOON_AO设计.md` §1.4**；下文 §4/§6 里的旧名字是收敛前的记录。
 - Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 把 AO Map 与实时 AO 合成成一份 `fd.aoVis`，然后**两个输出**：光照结果乘 `lerp(1, _AOColor.rgb, saturate(1 - aoVis) * _AODarkStrength)`（整体压暗，颜色由 `_AOColor` 给出），toon ramp 输入乘 `lerp(1, aoVis, _AOStrength)`（三段阴影偏移）。
 - inspector 入口：会隐式影响阴影的那部分在**阴影栏内的 `AO` 折叠子级**（AO Map / ramp 强度 / 实时源 / Mask）；**顶层独立栏 `AO`** 只放整体压暗（`_AOColor` + `_AODarkStrength`）。
 - Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。

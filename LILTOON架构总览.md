@@ -561,7 +561,7 @@ lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/l
 
 它依赖：
 
-- 材质属性 `_UseRealtimeAO`（实时源开关）与 `_AO*` 参数组（9 个属性，清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）
+- 材质属性 `_UseRealtimeAO`（实时源开关）与 `_AO*` 参数组（9 个属性，清单见 `LILTOON_AO设计.md` §1.4）
 - shader setting 宏 **`LIL_FEATURE_REALTIMEAO`**（`LIL_FEATURE_SSAO` / `_UseSSAO` / `_ScreenSpaceAOSource` 等旧名**已废弃并移除**，参见 `LILTOON_URP_SSAO设计总览.md` §0）
 - Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`（0..1 visibility，1 = 无遮挡；关闭生产端时每相机重置为 white）
 
@@ -574,7 +574,7 @@ lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/l
 5. **两个输出**：光照结果乘 `lerp(1, _AOColor.rgb, saturate(1 - fd.aoVis) * _AODarkStrength)`（整体压暗，颜色由 `_AOColor` 给出，默认黑 = 纯压暗）；toon ramp 输入乘 `lerp(1, fd.aoVis, _AOStrength)`（三段阴影偏移）。两个强度互相独立
 6. 描边：`_OutlineShadowStrength > 0` 时先跑主色同款光照模型，再叠加同一个压暗；描边 pass **不应用** `_BackfaceForceShadow`（反向壳的朝向不代表本体背面，否则整条描边会被钉在最深层阴影）
 
-inspector 入口：会隐式影响阴影的那部分在**阴影栏内的 `AO` 折叠子级**（AO Map + LOD / ramp 强度 / 实时源 / AO Mask）；**顶层独立栏 `AO`** 只放整体压暗（`_AOColor` + `_AODarkStrength`），并注明复用阴影栏的 AO 输入。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
+inspector 入口：会隐式影响阴影的那部分在**阴影栏内的 `AO` 折叠子级**（AO Map + LOD / ramp 强度 / 实时源 / AO Mask）；**顶层独立栏 `AO`** 只放整体压暗（`_AOColor` + `_AODarkStrength`），并注明复用阴影栏的 AO 输入。参数清单与设计理由见 `LILTOON_AO设计.md` §1.4 / §2.1。
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 
