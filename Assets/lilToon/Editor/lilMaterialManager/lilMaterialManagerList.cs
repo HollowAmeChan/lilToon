@@ -112,8 +112,8 @@ namespace lilToon
                 GUI.Label(new Rect(rect.xMax - BadgeColumnWidth, rect.y, BadgeColumnWidth - 4.0f, rect.height), new GUIContent("变体", "Material Variant：改基材质会影响它"), lilMaterialManagerStyles.RowRightLabel);
             }
 
-            // 点行内空白 = 切换勾选
-            if(!evt.used && evt.type == EventType.MouseDown && evt.button == 0 && hover)
+            // 点行内空白 = 切换勾选（勾选框自己已经处理过点击，这里用命中区域避开它）
+            if(!checkRect.Contains(evt.mousePosition) && evt.type == EventType.MouseDown && evt.button == 0 && hover)
             {
                 if(isSelected) selected.Remove(entry);
                 else           selected.Add(entry);

@@ -183,9 +183,9 @@ namespace lilToon
             bool isExpanded = expanded.Contains(node);
 
             // 折叠箭头
+            Rect arrowRect = new Rect(x, rect.y + 1.0f, 12.0f, rect.height - 2.0f);
             if(hasChildren)
             {
-                Rect arrowRect = new Rect(x, rect.y + 1.0f, 12.0f, rect.height - 2.0f);
                 bool nextExpanded = lilMaterialManagerStyles.DrawFoldoutArrow(arrowRect, isExpanded);
                 if(nextExpanded != isExpanded)
                 {
@@ -196,10 +196,10 @@ namespace lilToon
             x += 14.0f;
 
             // 勾选框
+            Rect checkRect = new Rect(x, rect.y + 1.0f, lilMaterialManagerStyles.CheckboxWidth - 2.0f, rect.height - 2.0f);
             if(node.materialTotal > 0)
             {
                 int state = GetCheckState(node);
-                Rect checkRect = new Rect(x, rect.y + 1.0f, lilMaterialManagerStyles.CheckboxWidth - 2.0f, rect.height - 2.0f);
                 string tooltip = "勾选 / 取消该分支下的 " + node.materialTotal + " 个材质";
                 int next = lilMaterialManagerStyles.DrawTriStateCheckbox(checkRect, state, tooltip);
                 if(next != state)
@@ -223,7 +223,9 @@ namespace lilToon
             }
 
             // 点行内空白：有材质 → 切换整枝勾选；纯容器 → 折叠 / 展开
-            if(!evt.used && evt.type == EventType.MouseDown && evt.button == 0 && hover)
+            // （勾选框与折叠箭头各自处理自己的点击，这里用命中区域避开它们）
+            if(!checkRect.Contains(evt.mousePosition) && !(hasChildren && arrowRect.Contains(evt.mousePosition))
+               && evt.type == EventType.MouseDown && evt.button == 0 && hover)
             {
                 if(node.materialTotal > 0)
                 {

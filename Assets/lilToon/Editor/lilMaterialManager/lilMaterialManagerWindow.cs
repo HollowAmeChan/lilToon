@@ -17,13 +17,14 @@ namespace lilToon
     internal sealed class lilMaterialManagerWindow : EditorWindow
     {
         private const float LeftPaneWidth = 260.0f;
-        private const float RightPaneWidth = 300.0f;
-        private const int MaxSelectionRows = 400;
+        private const float RightPaneWidth = 320.0f;
+        private const int MaxChangeRows = 200;
         private const string WindowTitle = "[测试版] lilToon 材质管理器";
 
         private lilMaterialManagerScanResult scan;
         private readonly lilMaterialManagerTreeView treeView = new lilMaterialManagerTreeView();
         private readonly lilMaterialManagerListView listView = new lilMaterialManagerListView();
+        private readonly lilMaterialManagerPropertyPane propertyPane = new lilMaterialManagerPropertyPane();
         private readonly HashSet<lilMaterialEntry> selected = new HashSet<lilMaterialEntry>();
         private readonly List<lilMaterialEntry> filteredMaterials = new List<lilMaterialEntry>();
         private readonly List<lilMaterialEntry> selectedMaterials = new List<lilMaterialEntry>();
@@ -32,8 +33,10 @@ namespace lilToon
         private bool includeInactive = true;
         private bool needsRescan = true;
         private bool needsViewRefresh = true;
-        private bool selectionExpanded = true;
-        private Vector2 selectionScroll;
+        private bool propertiesExpanded = true;
+        private bool changeLogExpanded = true;
+        private Vector2 propertiesScroll;
+        private Vector2 changeLogScroll;
 
         [MenuItem("HoLil/[材质] 材质管理器")]
         private static void Open()
@@ -47,6 +50,11 @@ namespace lilToon
         private void OnEnable()
         {
             needsRescan = true;
+        }
+
+        private void OnDisable()
+        {
+            propertyPane.Dispose();
         }
 
         private void OnGUI()
@@ -74,7 +82,7 @@ namespace lilToon
             if(listView.Draw(middleRect, selected)) changed = true;
             if(changed) RefreshViews();
 
-            DrawSelectionPane(rightRect);
+            DrawRightPane(rightRect);
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -186,6 +194,9 @@ namespace lilToon
             {
                 return string.Compare(a.Name, b.Name, System.StringComparison.OrdinalIgnoreCase);
             });
+
+            // 选择变了就重建属性面板（内部按签名比对，没变不会重建）
+            propertyPane.SetSelection(selectedMaterials);
         }
 
         private bool MatchesSearch(lilMaterialEntry entry)
@@ -230,41 +241,64 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
-        // 右栏：M1 显示已选材质清单，M2 换成输入值编辑区
-        private void DrawSelectionPane(Rect rect)
+        // 右栏：输入值编辑（上）+ 本次改动（下）
+        private void DrawRightPane(Rect rect)
         {
             GUILayout.BeginArea(rect);
             GUILayout.Space(2.0f);
 
             int total = scan != null ? scan.materials.Count : 0;
-            lilMaterialManagerStyles.DrawSectionHeader(ref selectionExpanded, "已选材质", selected.Count + " / " + total, new Color(0.16f, 0.18f, 0.22f));
+            lilMaterialManagerStyles.DrawSectionHeader(ref propertiesExpanded, "输入值", selected.Count + " / " + total + " 个材质", new Color(0.16f, 0.18f, 0.22f));
 
-            if(selectionExpanded)
+            float logHeight = changeLogExpanded ? 128.0f : lilMaterialManagerStyles.SectionHeaderHeight;
+            float propsTop = lilMaterialManagerStyles.SectionHeaderHeight + 6.0f;
+            float propsHeight = Mathf.Max(80.0f, rect.height - propsTop - logHeight - 6.0f);
+
+            if(propertiesExpanded)
             {
-                EditorGUILayout.HelpBox("M1 只做浏览：输入值编辑（M2）还没接上。\n下面是当前选中、将来会被批量编辑的材质。", MessageType.Info);
-
-                selectionScroll = EditorGUILayout.BeginScrollView(selectionScroll);
-                if(selectedMaterials.Count == 0)
-                {
-                    EditorGUILayout.LabelField("没有选中任何材质：在左栏勾选分支，或在中栏勾选材质。", EditorStyles.miniLabel);
-                }
-                else
-                {
-                    int count = Mathf.Min(selectedMaterials.Count, MaxSelectionRows);
-                    for(int i = 0; i < count; i++)
-                    {
-                        lilMaterialEntry entry = selectedMaterials[i];
-                        EditorGUILayout.LabelField(entry.Name + "   (" + entry.ShaderName + ")", EditorStyles.miniLabel);
-                    }
-                    if(selectedMaterials.Count > count)
-                    {
-                        EditorGUILayout.LabelField("…还有 " + (selectedMaterials.Count - count) + " 个未显示", EditorStyles.miniLabel);
-                    }
-                }
+                GUILayout.BeginArea(new Rect(2.0f, propsTop, rect.width - 4.0f, propsHeight));
+                propertiesScroll = EditorGUILayout.BeginScrollView(propertiesScroll);
+                // 改动记录是实时读取的，属性改动不需要重建树 / 列表
+                propertyPane.Draw();
                 EditorGUILayout.EndScrollView();
+                GUILayout.EndArea();
             }
 
+            GUILayout.BeginArea(new Rect(2.0f, rect.height - logHeight, rect.width - 4.0f, logHeight));
+            DrawChangeLog();
             GUILayout.EndArea();
+
+            GUILayout.EndArea();
+        }
+
+        private void DrawChangeLog()
+        {
+            lilMaterialManagerStyles.DrawSectionHeader(ref changeLogExpanded, "本次改动", propertyPane.ChangeCount + " 项", new Color(0.22f, 0.17f, 0.17f));
+
+            if(!changeLogExpanded) return;
+
+            using(new EditorGUILayout.HorizontalScope())
+            {
+                if(GUILayout.Button("清空记录", EditorStyles.miniButton, GUILayout.Width(72.0f))) propertyPane.ClearChanges();
+                GUILayout.Label("改动即时生效，Ctrl+Z 可撤销（只写你碰过的属性）", EditorStyles.miniLabel);
+            }
+
+            changeLogScroll = EditorGUILayout.BeginScrollView(changeLogScroll);
+            List<lilMaterialChangeRecord> changes = propertyPane.Changes;
+            if(changes.Count == 0)
+            {
+                EditorGUILayout.LabelField("还没有改动。", EditorStyles.miniLabel);
+            }
+            else
+            {
+                int count = Mathf.Min(changes.Count, MaxChangeRows);
+                for(int i = 0; i < count; i++)
+                {
+                    lilMaterialChangeRecord record = changes[i];
+                    EditorGUILayout.LabelField(record.propertyName + " : " + record.oldValue + "  →  " + record.newValue + "    (" + record.materialCount + " 个材质)", EditorStyles.miniLabel);
+                }
+            }
+            EditorGUILayout.EndScrollView();
         }
     }
 }
