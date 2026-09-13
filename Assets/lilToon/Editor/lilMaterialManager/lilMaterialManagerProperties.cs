@@ -130,9 +130,11 @@ namespace lilToon
 
         //--------------------------------------------------------------------------------------------------------------------------
         // 绘制（用 GUILayout，调用方负责套在 area / scroll view 里）；返回本帧是否有属性被改动
-        public bool Draw()
+        // filter：按属性名 / 显示名过滤；有过滤词时整组自动展开
+        public bool Draw(string filter)
         {
             bool changed = false;
+            bool hasFilter = !string.IsNullOrEmpty(filter);
 
             if(groups.Count == 0)
             {
@@ -152,18 +154,24 @@ namespace lilToon
                 {
                     PropertyBucket bucket = group.buckets[b];
                     string bucketKey = group.shader.GetInstanceID() + "|" + bucket.name;
-                    bool expanded = !collapsedBuckets.Contains(bucketKey);
 
-                    lilMaterialManagerStyles.DrawSectionHeader(ref expanded, bucket.name, bucket.properties.Count + " 项", new Color(0.18f, 0.20f, 0.24f));
+                    int matchCount = hasFilter ? CountMatches(bucket, filter) : bucket.properties.Count;
+                    if(matchCount == 0) continue;                       // 过滤时整组没命中就不显示
 
-                    if(expanded) collapsedBuckets.Remove(bucketKey);
-                    else         collapsedBuckets.Add(bucketKey);
+                    bool expanded = hasFilter || !collapsedBuckets.Contains(bucketKey);
+                    lilMaterialManagerStyles.DrawSectionHeader(ref expanded, bucket.name, matchCount + " 项", new Color(0.18f, 0.20f, 0.24f));
+
+                    if(hasFilter) collapsedBuckets.Remove(bucketKey);    // 过滤不污染折叠状态
+                    else if(expanded) collapsedBuckets.Remove(bucketKey);
+                    else collapsedBuckets.Add(bucketKey);
                     if(!expanded) continue;
 
                     EditorGUI.indentLevel++;
                     for(int p = 0; p < bucket.properties.Count; p++)
                     {
-                        if(DrawPropertyRow(group, bucket.properties[p])) changed = true;
+                        MaterialProperty property = bucket.properties[p];
+                        if(hasFilter && !MatchesFilter(property, filter)) continue;
+                        if(DrawPropertyRow(group, property)) changed = true;
                     }
                     EditorGUI.indentLevel--;
                     GUILayout.Space(2.0f);
@@ -273,6 +281,23 @@ namespace lilToon
             if(lilPropertyNameChecker.IsStencilProperty(name)) return "Stencil";
             if(lilPropertyNameChecker.IsRenderingProperty(name)) return "渲染";
             return "其它";
+        }
+
+        private static bool MatchesFilter(MaterialProperty property, string filter)
+        {
+            if(string.IsNullOrEmpty(filter)) return true;
+            if(property.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            return lilLanguageManager.GetDisplayName(property).IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static int CountMatches(PropertyBucket bucket, string filter)
+        {
+            int count = 0;
+            for(int i = 0; i < bucket.properties.Count; i++)
+            {
+                if(MatchesFilter(bucket.properties[i], filter)) count++;
+            }
+            return count;
         }
 
         private void RecordChange(string propertyName, string oldValue, string newValue, int materialCount)

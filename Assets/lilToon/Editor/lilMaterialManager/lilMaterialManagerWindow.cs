@@ -17,7 +17,7 @@ namespace lilToon
     internal sealed class lilMaterialManagerWindow : EditorWindow
     {
         private const float LeftPaneWidth = 260.0f;
-        private const float RightPaneWidth = 320.0f;
+        private const float RightPaneWidth = 360.0f;
         private const int MaxChangeRows = 200;
         private const string WindowTitle = "[测试版] lilToon 材质管理器";
 
@@ -30,6 +30,8 @@ namespace lilToon
         private readonly List<lilMaterialEntry> selectedMaterials = new List<lilMaterialEntry>();
 
         private string searchText = string.Empty;
+        private string propertySearch = string.Empty;
+        private string selectionSummary = "0 个材质";
         private bool includeInactive = true;
         private bool needsRescan = true;
         private bool needsViewRefresh = true;
@@ -197,6 +199,7 @@ namespace lilToon
 
             // 选择变了就重建属性面板（内部按签名比对，没变不会重建）
             propertyPane.SetSelection(selectedMaterials);
+            selectionSummary = BuildSelectionSummary();
         }
 
         private bool MatchesSearch(lilMaterialEntry entry)
@@ -242,33 +245,78 @@ namespace lilToon
 
         //--------------------------------------------------------------------------------------------------------------------------
         // 右栏：输入值编辑（上）+ 本次改动（下）
+        // 布局：上半区用 GUILayout 自适应高度（搜索框 / 标题条 / 影响面摘要高度都可能变），
+        //       再用 GetLastRect 把剩下的空间给属性滚动区，避免写死偏移导致重叠。
         private void DrawRightPane(Rect rect)
         {
-            GUILayout.BeginArea(rect);
+            float logHeight = changeLogExpanded ? 136.0f : lilMaterialManagerStyles.SectionHeaderHeight;
+            float topHeight = Mathf.Max(120.0f, rect.height - logHeight - 2.0f);
+
+            GUILayout.BeginArea(new Rect(rect.x, rect.y, rect.width, topHeight));
             GUILayout.Space(2.0f);
+
+            // 属性搜索（按属性名 / 显示名过滤，过滤时整组自动展开）
+            using(new EditorGUILayout.HorizontalScope())
+            {
+                string nextPropertySearch = GUILayout.TextField(propertySearch, EditorStyles.toolbarSearchField);
+                if(nextPropertySearch != propertySearch) propertySearch = nextPropertySearch;
+                if(GUILayout.Button("清", EditorStyles.miniButton, GUILayout.Width(26.0f)) && !string.IsNullOrEmpty(propertySearch))
+                {
+                    propertySearch = string.Empty;
+                    GUI.FocusControl(null);
+                }
+            }
 
             int total = scan != null ? scan.materials.Count : 0;
             lilMaterialManagerStyles.DrawSectionHeader(ref propertiesExpanded, "输入值", selected.Count + " / " + total + " 个材质", new Color(0.16f, 0.18f, 0.22f));
 
-            float logHeight = changeLogExpanded ? 128.0f : lilMaterialManagerStyles.SectionHeaderHeight;
-            float propsTop = lilMaterialManagerStyles.SectionHeaderHeight + 6.0f;
-            float propsHeight = Mathf.Max(80.0f, rect.height - propsTop - logHeight - 6.0f);
+            if(selectedMaterials.Count > 0)
+            {
+                GUILayout.Label(selectionSummary, EditorStyles.wordWrappedMiniLabel);
+            }
 
             if(propertiesExpanded)
             {
-                GUILayout.BeginArea(new Rect(2.0f, propsTop, rect.width - 4.0f, propsHeight));
+                float propsTop = GUILayoutUtility.GetLastRect().yMax + 2.0f;
+                GUILayout.BeginArea(new Rect(2.0f, propsTop, rect.width - 4.0f, Mathf.Max(60.0f, topHeight - propsTop - 4.0f)));
                 propertiesScroll = EditorGUILayout.BeginScrollView(propertiesScroll);
                 // 改动记录是实时读取的，属性改动不需要重建树 / 列表
-                propertyPane.Draw();
+                propertyPane.Draw(propertySearch);
                 EditorGUILayout.EndScrollView();
                 GUILayout.EndArea();
             }
 
-            GUILayout.BeginArea(new Rect(2.0f, rect.height - logHeight, rect.width - 4.0f, logHeight));
-            DrawChangeLog();
             GUILayout.EndArea();
 
+            GUILayout.BeginArea(new Rect(rect.x + 2.0f, rect.y + topHeight + 2.0f, rect.width - 4.0f, logHeight));
+            DrawChangeLog();
             GUILayout.EndArea();
+        }
+
+        // 影响面摘要：改材质资产是全局生效的，这里给出"会被影响多少"的量级
+        private string BuildSelectionSummary()
+        {
+            if(selectedMaterials.Count == 0) return "0 个材质";
+
+            int usages = 0;
+            int prefabUsages = 0;
+            int embedded = 0;
+            for(int i = 0; i < selectedMaterials.Count; i++)
+            {
+                lilMaterialEntry entry = selectedMaterials[i];
+                usages += entry.UsageCount;
+                if(entry.isEmbedded) embedded++;
+                for(int u = 0; u < entry.usages.Count; u++)
+                {
+                    if(entry.usages[u].fromPrefabInstance) prefabUsages++;
+                }
+            }
+
+            // 影响面：改材质资产是全局生效的，这些数字是"改动会波及多少"的量级
+            string summary = "选中 " + selectedMaterials.Count + " 个材质，共 " + usages + " 个使用点";
+            if(prefabUsages > 0) summary += "，其中 " + prefabUsages + " 个来自 Prefab 实例";
+            if(embedded > 0) summary += "；另有 " + embedded + " 个是内嵌材质（改动会落在宿主资产上）";
+            return summary;
         }
 
         private void DrawChangeLog()
