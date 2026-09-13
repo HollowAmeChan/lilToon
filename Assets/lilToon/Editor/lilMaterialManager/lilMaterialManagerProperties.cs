@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace lilToon
 {
@@ -216,7 +217,7 @@ namespace lilToon
                 {
                     MaterialProperty property = properties[i];
                     if(property == null) continue;
-                    if((property.flags & MaterialProperty.PropFlags.HideInInspector) != 0) continue;
+                    if((property.propertyFlags & UnityEngine.Rendering.ShaderPropertyFlags.HideInInspector) != 0) continue;
                     if(lilPropertyNameChecker.IsDummyProperty(property.name)) continue;
 
                     string bucketName = ClassifyProperty(property.name);
