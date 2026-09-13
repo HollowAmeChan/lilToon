@@ -173,24 +173,6 @@ namespace lilToon
                     lilEditorGUI.DrawLine();
                     LocalizedPropertyTexture(blurMaskRGBContent, shadowBlurMask);
                     LocalizedProperty(shadowBlurMaskLOD, 2);
-                    lilEditorGUI.DrawLine();
-                    edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
-                    if(edSet.isShowShadowAO)
-                    {
-                        EditorGUI.indentLevel += 1;
-                        LocalizedProperty(useRealtimeAO);
-                        LocalizedProperty(shadowBorderMaskLOD, 2);
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(aoThreshold);
-                        LocalizedProperty(aoStrength);
-                        LocalizedProperty(aoLevel);
-                        lilEditorGUI.DrawLine();
-                        if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
-                        lilEditorGUI.DrawLine();
-                        if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
-                        LocalizedProperty(aoMainStrength);
-                        EditorGUI.indentLevel -= 1;
-                    }
                     EditorGUILayout.EndVertical();
                 }
                 else if(useShadow.floatValue == 1)
@@ -213,7 +195,47 @@ namespace lilToon
                     LocalizedProperty(shadowBorderRange);
                     EditorGUILayout.EndVertical();
                 }
+                // AO is drawn outside the _UseShadow branches on purpose: the realtime
+                // AO also feeds the final multiply, which runs even with toon shadow
+                // off, so the controls must stay reachable then.
+                if(!isLite)
+                {
+                    EditorGUILayout.BeginVertical(boxInnerHalf);
+                    DrawShadowAOFoldout();
+                    EditorGUILayout.EndVertical();
+                }
                 EditorGUILayout.EndVertical();
+            }
+        }
+
+        // AO entry, shared by the legacy and the next shadow sections.
+        // It is deliberately not gated by _UseShadow: the realtime AO also drives the
+        // final multiply, which runs even when toon shadow is off. The forced
+        // DisabledScope(false) is what keeps it editable when the caller already sits
+        // inside a DisabledScope it does not own (the next inspector disables the whole
+        // shadow section with _UseShadow).
+        private void DrawShadowAOFoldout()
+        {
+            using(new EditorGUI.DisabledScope(false))
+            {
+                edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
+                if(edSet.isShowShadowAO)
+                {
+                    EditorGUI.indentLevel += 1;
+                    LocalizedProperty(useRealtimeAO);
+                    LocalizedProperty(shadowBorderMaskLOD, 2);
+                    lilEditorGUI.DrawLine();
+                    LocalizedProperty(aoThreshold);
+                    LocalizedProperty(aoStrength);
+                    LocalizedProperty(aoLevel);
+                    LocalizedProperty(aoContrast);
+                    lilEditorGUI.DrawLine();
+                    if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
+                    lilEditorGUI.DrawLine();
+                    if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
+                    LocalizedProperty(aoMainStrength);
+                    EditorGUI.indentLevel -= 1;
+                }
             }
         }
     }

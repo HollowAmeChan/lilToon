@@ -278,6 +278,7 @@ float   _MultiLightCastShadowStrength;
 // LIL_FEATURE_REALTIMEAO guard.
 float   _AOStrength;
 float   _AOLevel;
+float   _AOContrast;
 float   _AOThreshold;
 float4  _AOColor;
 float   _AOMainStrength;

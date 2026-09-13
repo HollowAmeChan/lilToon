@@ -830,10 +830,16 @@
 #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
     float lilSampleRealtimeAO(float2 screenUV)
     {
-        // _HoAOTexture.r is 0..1 visibility (1 = unoccluded). _AOLevel shifts the
-        // whole mask so a baked AO range that never reaches white can be lifted
-        // into range in one control.
-        return saturate(LIL_SAMPLE_SCREEN(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r + _AOLevel);
+        // _HoAOTexture.r is 0..1 visibility (1 = unoccluded).
+        // _AOContrast is a gain pivoted at 0.5: it compresses or expands the mask
+        // range (what the old Remap Min/Max window did). _AOLevel then shifts the
+        // result; positive means stronger AO.
+        // A non-positive contrast is treated as identity: 0 would otherwise flatten
+        // the whole mask to 0.5, and materials whose shader has not been regenerated
+        // yet read the property as 0.
+        float aoContrast = _AOContrast > 0.0 ? _AOContrast : 1.0;
+        float ao = LIL_SAMPLE_SCREEN(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
+        return saturate((ao - 0.5) * aoContrast + 0.5 - _AOLevel);
     }
 #endif
 
@@ -929,7 +935,7 @@
             #endif
 
             float aoMask = 1.0;
-            #if defined(LIL_FEATURE_REALTIMEAOMask)
+            #if defined(LIL_FEATURE_AOMask)
                 aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
             #endif
 
@@ -1294,7 +1300,7 @@
             float ao = lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS));
 
             float aoMask = 1.0;
-            #if defined(LIL_FEATURE_REALTIMEAOMask)
+            #if defined(LIL_FEATURE_AOMask)
                 aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
             #endif
 

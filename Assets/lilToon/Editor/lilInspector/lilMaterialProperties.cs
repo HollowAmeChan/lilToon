@@ -135,6 +135,7 @@ namespace lilToon
         private readonly lilMaterialProperty useRealtimeAO              = new lilMaterialProperty("_UseRealtimeAO", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoStrength                 = new lilMaterialProperty("_AOStrength", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoLevel                    = new lilMaterialProperty("_AOLevel", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoContrast                 = new lilMaterialProperty("_AOContrast", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoThreshold                = new lilMaterialProperty("_AOThreshold", PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoMask                     = new lilMaterialProperty("_AOMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty aoColor                    = new lilMaterialProperty("_AOColor", PropertyBlock.Shadow);
@@ -711,6 +712,7 @@ namespace lilToon
                 useRealtimeAO,
                 aoStrength,
                 aoLevel,
+                aoContrast,
                 aoThreshold,
                 aoMask,
                 aoColor,

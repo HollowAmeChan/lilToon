@@ -556,23 +556,7 @@ namespace lilToon
             LocalizedPropertyTexture(blurMaskRGBContent, shadowBlurMask);
             LocalizedProperty(shadowBlurMaskLOD, 2);
             lilEditorGUI.DrawLine();
-            edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
-            if(edSet.isShowShadowAO)
-            {
-                EditorGUI.indentLevel++;
-                LocalizedProperty(useRealtimeAO);
-                LocalizedProperty(shadowBorderMaskLOD, 2);
-                lilEditorGUI.DrawLine();
-                LocalizedProperty(aoThreshold);
-                LocalizedProperty(aoStrength);
-                LocalizedProperty(aoLevel);
-                lilEditorGUI.DrawLine();
-                if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
-                lilEditorGUI.DrawLine();
-                if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
-                LocalizedProperty(aoMainStrength);
-                EditorGUI.indentLevel--;
-            }
+            DrawShadowAOFoldout();
         }
 
         private void DrawNextEmission(Material material)

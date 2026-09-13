@@ -1,8 +1,9 @@
 # HoAO 接入阴影阈值（Shadow Grade）技术方案
 
 > 状态：**已落地（v5）**。阶段 0-3 与"入口 + 参数收敛"都已实现，52 个 shader 已在 Unity 内重新生成并编译通过。
-> v5 修订（入口与参数收敛）：AO 归入**阴影栏**下的单一折叠子级；参数 **17 → 10**。删除 `_ShadowAOShift`、`_ShadowAOShift2`、`_ShadowPostAO`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`；`_RealtimeAOStrength` → `_AOStrength`、`_RealtimeAOMask` → `_AOMask`；新增 `_AOLevel`（取代 remap + contrast）。
-> ⚠️ **§2 / §3 / §4.1-4.6 / §5 是 v3-v4 时期的推理记录，正文里的旧属性名已被 v5 取代；属性的当前名称一律以 §4.7 为准。**
+> v5 修订（入口与参数收敛）：AO 归入**阴影栏**下的单一折叠子级；参数 **17 → 11**。删除 `_ShadowAOShift`、`_ShadowAOShift2`、`_ShadowPostAO`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`；`_RealtimeAOStrength` → `_AOStrength`、`_RealtimeAOMask` → `_AOMask`；新增 `_AOLevel`（电平；**正值 = AO 更强**）与 `_AOContrast`（掩码增益，即窗口能力）。
+> v5.1：`_HoAOTexture` 改走 XR 屏幕纹理通道（`TEXTURE2D_SCREEN`/`LIL_SAMPLE_SCREEN`）；AO 界面不再随 `_UseShadow` 灰掉（抽成共享的 `DrawShadowAOFoldout`）；特性宏改名 `LIL_FEATURE_AOMask`。
+> ⚠️ 只有 §2 / §5 / §6.1 的历史行仍保留 v5 前的属性名作为记录；§3 / §4 / §7 / §8 全部使用当前名字（权威清单见 §4.7）。
 > v4：AO Color 永远单层、直接混入三层；AO Mask 同时门控实时与离线；新属性统一 `_AO` 前缀；删除 `_RealtimeAOColorFromMain`。
 > v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 质量达标，噪声/方向偏置不构成门槛。
 > 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准。
@@ -15,9 +16,9 @@
 1. **阈值偏移方案成立且已落地**：生产端从设计上就支持材质在 forward 采样本帧 AO —— Ho-GTAO 强制 `BeforeRenderingOpaques(250)`（`HoGTAORendererFeature.cs:615-623`，注释原文 `// AO is sampled by opaque lilToon materials ...`），`_HoAOTexture` 每相机重置为 white（`:147-149`）→ 关闭或输入缺失时自动退化为无操作。
 2. **实现方式**：有符号阈值偏移（不用 `lns *= ssao`），**三层同时偏移**；偏移量本身即作用带宽，不需要额外门控。默认 `_AOThreshold = 0` → 新的阈值链路不生效，行为等价于 legacy 的"AO Map 乘 ramp"路径。
 3. **入口**：AO 全部参数收进**阴影栏**（原"直接阴影"）末尾的 `AO` 折叠子级；GI 栏只剩自己的控制。两套 inspector（legacy + next）都已改。
-4. **10 个属性**（权威清单见 §4.7）：`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOThreshold`、`_AOStrength`、`_AOLevel`、`_AOMask`、`_AOColor`、`_AOColorTex`、`_AOMainStrength`。
+4. **11 个属性**（权威清单见 §4.7）：`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOThreshold`、`_AOStrength`、`_AOLevel`、`_AOContrast`、`_AOMask`、`_AOColor`、`_AOColorTex`、`_AOMainStrength`。可见度 = `saturate((_HoAOTexture.r − 0.5) * _AOContrast + 0.5 − _AOLevel)`：`_AOContrast` 是轴心 0.5 的增益（压缩/扩张掩码范围），`_AOLevel` 是有符号电平（**正值 = AO 更强**）。
 5. **关键设计决定（v4 起未变）**：AO Color 的驱动量是「**AO 真正造成的额外遮蔽量**」（`shadeNoAO - shadeAO`，三层取最大并按层存在量加权），而不是 `occ` 或 AO visibility。理由见 §4.3。附带收益：`_AOThreshold = 0` → 驱动量为 0 → **色层自动完全不生效**，整条新链路只有一个开关。
-6. **已知取舍**（见 §8）：`_AOLevel` 只做电平平移，**丢掉了旧 Min/Max 窗口 + contrast 的压缩能力**；改名使老材质的 `_RealtimeAO*` 值丢失（**按裁决不做迁移**，资产很少）。
+6. **已知取舍**（见 §8）：改名使老材质的 `_RealtimeAO*` 取值丢失（**按裁决不做迁移**，资产很少）；6 个 Min/Max 滑块被 `_AOLevel` + `_AOContrast` 取代（窗口能力保留，但语义从"绝对 min/max"变成"电平 + 轴心增益"）。
 
 ---
 
@@ -72,7 +73,7 @@
 ### 3.1 数学
 
 ```
-shift_k       = occ_k * _RealtimeAOStrength * _AOThreshold            // 有符号，k ∈ {1st,2nd,3rd}
+shift_k       = occ_k * _AOStrength * _AOThreshold                    // 有符号，k ∈ {1st,2nd,3rd}
 borderEff_k   = clamp(border_k - shift_k, 0.001, 0.999)
 ```
 
@@ -106,7 +107,7 @@ borderEff_k   = clamp(border_k - shift_k, 0.001, 0.999)
 |---|---|---|---|
 | **AO Map**（离线） | `_ShadowBorderMask`（R/G/B → 1st/2nd/3rd） | 驱动量：逐 texel shading grade | `white`（=1，中性） |
 | **屏幕 AO**（实时） | `_HoAOTexture.r` | 驱动量：实时遮挡 visibility | feature 关闭时为 white |
-| **AO Mask** | `_AOMask`（建议由 `_RealtimeAOMask` 改名，见 §4.8） | 门控量：**同时门控实时与离线两路** | `white`（=1，全接收） |
+| **AO Mask** | `_AOMask` | 门控量：**同时门控实时与离线两路** | `white`（=1，全接收） |
 | **AO Color** | `_AOColor`(RGBA) × `_AOColorTex`(RGBA) + `_AOMainStrength` | 染色：单层补充色，混入全部三层 | `_AOColor.a = 0`（=不存在） |
 
 对齐：三张贴图共用 `fd.uvMain`（已含 `_MainTex_ST`，`:262-263`）且都是 `[NoScaleOffset]` → **AO Map / AO Mask / 主色天然同一 UV 空间**。唯一采样差异：AO Map 用 `lil_sampler_linear_repeat`，AO Mask 用材质 `samp`；若 AO 图在 UV 边界需要 clamp，应统一（§7）。
@@ -116,12 +117,13 @@ borderEff_k   = clamp(border_k - shift_k, 0.001, 0.999)
 ```hlsl
 // ---- 1) 驱动量 ----
 float3 aoMap    = shadowBorderMask.rgb;                        // _ShadowBorderMask, 默认 1
-float  aoScreen = lilSampleRealtimeAO(screenUV);               // _HoAOTexture, 默认 1
+float  aoScreen = _UseRealtimeAO ? lilSampleRealtimeAO(screenUV) : 1.0;
+               // = saturate((_HoAOTexture.r − 0.5) * _AOContrast + 0.5 − _AOLevel)
 float  aoMask   = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;   // 默认 1
 
 float3 aoTotal  = aoMap * aoScreen;                            // visibility 串联（乘）
 float3 occ      = saturate((1.0 - aoTotal) * aoMask);          // ← mask 同时门控两路
-float3 shift    = occ * _RealtimeAOStrength * _AOThreshold;    // 每层一个有符号偏移
+float3 shift    = occ * _AOStrength * _AOThreshold;            // 每层一个有符号偏移
 
 // ---- 2) 阈值：三层都偏移 ----
 float s0x = saturate(lilTooningNoSaturateScale(aastrencth, lns.x, _ShadowBorder,    shadowBlur));
@@ -172,7 +174,7 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 - **取 max 而非求和**：求和会过早饱和，max 更保守且不叠加。
 - **负 `_AOThreshold`** → `d < 0` → `aoAmount = 0` → 收窄阴影时不上色，语义自洽。
 
-代价：AO 在"已经全阴影"处不产生颜色（没有额外交互量可给）。这正是"**补充**"的语义；要全局接触暗化染色用既有 `_RealtimeAOColor` 最终乘算（§4.5）。
+代价：AO 在"已经全阴影"处不产生颜色（没有额外交互量可给）。这正是"**补充**"的语义；要全局接触暗化染色则靠最终乘算（§4.5），它的染色方向也用 `_AOColor.rgb`。
 
 ### 4.4 AO Color 与 Shadow Color 的平行关系
 
@@ -187,27 +189,30 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 
 ### 4.5 两条 color 路径的分工（都保留）
 
-| | 新 `_AOColor` | 既有 `_RealtimeAOColor` |
+| | 新 `_AOColor` 影色层 | 最终乘算（`lilRealtimeAO`） |
 |---|---|---|
 | 位置 | `lilGetShading` 内、最终 lerp 之后 | 光照后、SSS 前（`lil_pass_forward_normal.hlsl:460-463`） |
-| 驱动 | AO 造成的**额外遮蔽量** | AO 的**全表面**遮挡量 |
-| 形式 | 替换式 lerp（同 shadow color） | 乘法 `lerp(col, col*aoColor.rgb, ...)` |
+| 驱动 | AO 造成的**额外遮蔽量**（`aoAmount`） | AO 的**全表面**遮挡量（`1 - ao`） |
+| 形式 | 替换式 lerp（同 shadow color） | 乘法 `lerp(col, col * _AOColor.rgb, ...)` |
 | 影响范围 | 仅被 AO 推进阴影的那部分 | 整个材质表面（含 MatCap/Rim/Emission 之后） |
-| 用途 | "AO 影的补充色" | "全局接触暗化 + 染色" |
+| 用途 | "AO 影的补充色" | "全局接触暗化（染色方向也是 `_AOColor.rgb`）" |
+
+两者共用同一个 `_AOColor`：`rgb` 决定最终乘算往哪个颜色压，`a` 决定影色层存在多少（默认 0 = 只有乘算）。
 
 ### 4.6 边界规则（实现里写死）
 
 | 情形 | 规则 |
 |---|---|
-| `_ShadowPostAO == 1`（legacy） | 走原路径，`aoAmount` 差值公式不适用 → 新色层在该模式下不参与 |
-| `_ShadowMaskType == 2`（SDF） | `aastrencth = 0`、ramp 是 SDF 语义。第一阶段**禁用新链路**，单独验证后再定 |
+| `_AOMask` 涂黑区域 | `aoMask = 0` → `occ = 0` → 阈值偏移与最终乘算同时关闭（**同时门控两路**） |
+| `_ShadowMaskType == 2`（SDF） | `aastrencth = 0`、ramp 是 SDF 语义。新阈值链路未在该模式下单独验证 |
 | `_Shadow2ndColor.a == 0` / `_Shadow3rdColor.a == 0` | 该层不参与 `aoAmount`（层存在量 = 0），但阈值偏移仍作用于它（无害，因为该层不可见） |
 | `_ShadowStrength == 0` 或 `_ShadowStrengthMask` 涂黑区 | `aoAmount` 已乘 `shadowStrength` → 色层一同关闭，与"这里没有阴影"一致 |
 | 屏幕 AO 关闭 / feature 关闭 | `_HoAOTexture` 为 white → `occ = 0` → `shift = 0` → 无操作 |
 | AO Map 为 white + 屏幕 AO 有值 | `aoTotal = aoScreen` → 纯实时驱动（最常见用法） |
-| AO Map 有值 + 屏幕 AO 关闭 | `aoTotal = aoMap` → 由 `_AOThreshold` 语义驱动（legacy 的 Min/Max 语义仍归 legacy 路径） |
+| AO Map 有值 + `_AOThreshold = 0` | 新阈值链路不启用 → 离线 AO Map 走 legacy 的"AO 乘 ramp"路径（可强制影，但无 `aoAmount` 色层） |
+| `_UseShadow = 0`（无 toon 阴影） | 阈值链路无对象；最终乘算仍执行 → **AO 界面在阴影栏内始终可达**（不随 `_UseShadow` 灰掉） |
 
-### 4.7 参数清单（v5 已落地的权威清单）
+### 4.7 参数清单（v5 已落地的权威清单：11 个属性）
 
 | 属性 | 角色 | 范围 / 默认 | 状态 |
 |---|---|---|---|
@@ -216,7 +221,8 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | `_ShadowBorderMaskLOD` | AO Map mip 偏移 | 0..1 / 0 | 沿用 |
 | `_AOThreshold` | 每层阈值偏移上限 + 作用带宽（有符号） | -0.5..0.5 / **0** | 新增 |
 | `_AOStrength` | AO 总强度（同时缩放阈值偏移与最终乘算） | 0..1 / 1 | 改名（原 `_RealtimeAOStrength`） |
-| `_AOLevel` | AO 可见度电平（有符号平移） | -1..1 / 0 | 新增（取代 `_RealtimeAORemap` + `_RealtimeAOContrast`） |
+| `_AOLevel` | AO 可见度电平（有符号平移；**正值 = AO 更强**） | -1..1 / 0 | 新增（取代 `_RealtimeAORemap` 的偏移部分） |
+| `_AOContrast` | AO 掩码的增益（以 0.5 为轴心压缩/扩张），即窗口能力 | 0..4 / 1 | 新增（取代 `_RealtimeAORemap` 的窗口 + `_RealtimeAOContrast`） |
 | `_AOMask` | AO Mask（门控实时 + 离线两路） | white | 改名（原 `_RealtimeAOMask`） |
 | `_AOColor` | AO 颜色。rgb = 最终乘算的染色方向；A = AO 影色层的存在量 | RGBA / **(0,0,0,0)** | 新增（取代 `_RealtimeAOColor`） |
 | `_AOColorTex` | AO 影色层贴图，A = mask | RGBA / white | 新增（取代 `_RealtimeAOColorTex`） |
@@ -270,10 +276,21 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 |---|---|
 | 入口 | 阴影栏标题 `sDirectShadow` 由"直接阴影"改为"阴影"（5 种语言）；栏内末尾的折叠子级换成 **AO**，装全部 AO 参数 |
 | GI 栏 | 只保留 `_HTraceSSGIBackfaceNormalFix`，标题 "GI / HoAO" → "GI" |
-| 参数 | 17 → 10：删 7 个（见 §4.7），`_RealtimeAOStrength` → `_AOStrength`，新增 `_AOLevel` |
+| 参数 | 17 → 11：删 7 个（见 §4.7），`_RealtimeAOStrength` → `_AOStrength`，新增 `_AOLevel` + `_AOContrast` |
 | 分类 | AO 属性 `PropertyBlock` → `Shadow`；`IsShadowProperty` 覆盖 `_AO` 前缀 + `_UseRealtimeAO`；`IsGIAOProperty` 只留 GI |
 | 语言表 | `lilLanguageManager` 新增 `shadowAOContent`（"AO" + tooltip），并在 `lilEditorVariables` 补 `lilToonInspector` 的代理属性（漏掉代理会 CS0103） |
 | 清理 | 删除失效的 `DrawHoAORemapGUI()`、`isShowRealtimeAOColor`，以及 3 个头文件里的 `_ShadowAOShift`/`_ShadowAOShift2`/`_ShadowPostAO` 声明 |
+
+**v5.1 追加（本轮小修复）**：
+
+| 改动 | 内容 |
+|---|---|
+| `_AOLevel` 符号 | 翻转为**正值 = AO 更强**（`saturate(... + 0.5 - _AOLevel)`） |
+| 窗口能力 | 新增 `_AOContrast`（`0..4` 默认 1，以 0.5 为轴心的增益），把旧 Remap Min/Max 的压缩能力找回来 |
+| 可达性 | AO 折叠子级从 `_UseShadow` 分支里移出；Next inspector 的阴影 section 会被 `_UseShadow` 灰掉整个内容，AO 用 `using(new EditorGUI.DisabledScope(false))` 局部解灰。两套 inspector 共用 `DrawShadowAOFoldout()` |
+| 宏名 | `LIL_FEATURE_REALTIMEAOMask` → **`LIL_FEATURE_AOMask`**（8 处；属性名与宏名不再不一致） |
+| XR | `_HoAOTexture` 改走 `TEXTURE2D_SCREEN` / `LIL_SAMPLE_SCREEN`（见 §9.1） |
+| 文档 | §3 / §4 / §7 / §8 全部改用当前属性名；§2 / §5 / §6.1 保留旧名作为历史记录 |
 
 已落地的文件（12 个）：
 
@@ -355,8 +372,13 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | 8 | `_RealtimeAOMask` 改名 | **采纳**（已实现；内部宏保留） |
 | 9 | legacy AO Map 乘算 | 实现期决定：统一模式启用时抑制（§6.1 决定 1） |
 | 10 | AO 的归属入口 | **AO 是阴影栏的子级**：阴影栏标题改"阴影"，AO 做成栏内折叠子级；不单独占一个顶层入口 |
-| 11 | 参数削减 | **17 → 10**（§4.7）。6 个 Min/Max 滑块随 `_ShadowAOShift` 一起删除，不再有"电平窗口"控件 |
+| 11 | 参数削减 | **17 → 11**（§4.7）。6 个 Min/Max 滑块随 `_ShadowAOShift` 一起删除，改由 `_AOLevel` + `_AOContrast` 表达 |
 | 12 | 旧值迁移 | **不做**（老资产很少）；改名导致的老材质取值丢失由使用者手工重设 |
+| 13 | `_AOLevel` 符号 | **正值 = AO 更强**（v5.1 翻转） |
+| 14 | 窗口能力 | **补 `_AOContrast`**（0..4 / 1，轴心 0.5 的增益）；旧的绝对 Min/Max 不再回来 |
+| 15 | `_UseShadow = 0` 时的可达性 | **修**：AO 折叠子级移出 `_UseShadow` 分支；Next inspector 用 `DisabledScope(false)` 局部解灰；两套共用 `DrawShadowAOFoldout()` |
+| 16 | 特性宏名 | **改名 `LIL_FEATURE_AOMask`**（与属性 `_AOMask` 一致） |
+| 17 | `_HoAOTexture` 采样 | **改走 XR 屏幕纹理通道**（§9.1） |
 
 ---
 
