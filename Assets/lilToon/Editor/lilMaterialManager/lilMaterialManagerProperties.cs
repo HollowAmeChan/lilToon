@@ -6,23 +6,16 @@ using UnityEngine.Rendering;
 
 namespace lilToon
 {
-    // 一条"本次改动"记录（只为展示，不参与写入）
-    internal sealed class lilMaterialChangeRecord
-    {
-        public string propertyName;
-        public string oldValue;
-        public string newValue;
-        public int materialCount;
-    }
-
     //------------------------------------------------------------------------------------------------------------------------------
     // 材质管理器：右栏输入值编辑（M2）
     //
-    // 语义（设计文档 §4.3）：右栏绑定一个覆盖整批选中材质的多选 MaterialEditor，用 Unity 原生控件画属性行 ——
-    //   * 混值显示、贴图槽、颜色选择器、滑条全部是原生行为；
+    // 语义（设计文档 §4.3）：
+    //   * 一个属性组（= 属性名集合相同的材质）用一个单材质 MaterialEditor 画原生属性行：
+    //     贴图槽、颜色选择器、滑条、缩进都是 Unity 原生控件；
     //   * 你动哪个属性就写哪个，没碰过的属性一个字节都不写；
     //   * 面板里刻意没有"应用全部属性"的路径，所以不存在手滑把一批材质刷成一样的可能；
-    //   * MaterialProperty 的赋值走 Unity 原生路径（自带 Undo），不需要额外 RegisterPropertyChangeUndo。
+    //   * 写入逐个材质显式做（see SpreadChanges），不依赖 MaterialProperty 的多目标赋值；
+    //   * 谁没吃到会在中栏的日志控制台里点名。
     //
     // 属性分组复用 lilPropertyNameChecker（预设系统用的那套分类），避免改动 lilToon 内部的私有属性表。
     //------------------------------------------------------------------------------------------------------------------------------
@@ -60,21 +53,16 @@ namespace lilToon
         };
 
         private readonly List<ShaderGroup> groups = new List<ShaderGroup>();
-        private readonly List<lilMaterialChangeRecord> changes = new List<lilMaterialChangeRecord>();
         private readonly HashSet<string> expandedBuckets = new HashSet<string>();
         private readonly Dictionary<string, bool> mixedCache = new Dictionary<string, bool>();
-        private string lastSpreadLogName;
-        private float lastSpreadLogTime;
+        private readonly List<Material> skippedMaterials = new List<Material>();
+        private readonly List<Material> failedMaterials = new List<Material>();
         private int selectionSignature;
 
-        public int ChangeCount { get { return changes.Count; } }
-        public List<lilMaterialChangeRecord> Changes { get { return changes; } }
-        public bool HasSelection { get { return groups.Count > 0; } }
+        // 日志由窗口持有并注入（中栏下半区那块控制台）
+        public lilMaterialManagerLogView log;
 
-        public void ClearChanges()
-        {
-            changes.Clear();
-        }
+        public bool HasSelection { get { return groups.Count > 0; } }
 
         //--------------------------------------------------------------------------------------------------------------------------
         // 选择变化时重建（按签名比对，没变就直接返回）
@@ -415,20 +403,15 @@ namespace lilToon
                 if(!valueChanged) continue;
 
                 string oldValue = FormatSnapshotValue(group, i, property);
-                WriteToAllMaterials(group, property, textureChanged, scaleOffsetChanged);
-                VerifyWrite(group, property);
+                int applied = WriteToAllSelected(property, textureChanged, scaleOffsetChanged);
 
-                // 刚写成了一致的值，这一项不再是混值
-                mixedCache[group.id + "|" + property.name] = false;
-                RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
+                // 刚写成了一致的值：所有组里这一项都不再是混值
+                for(int g = 0; g < groups.Count; g++) mixedCache[groups[g].id + "|" + property.name] = false;
 
-                // TODO(诊断): 确认"铺开"真的跑起来了就删掉这几行
-                if(lastSpreadLogName != property.name || Time.realtimeSinceStartup - lastSpreadLogTime > 0.5f)
+                if(log != null)
                 {
-                    lastSpreadLogName = property.name;
-                    lastSpreadLogTime = Time.realtimeSinceStartup;
-                    Debug.Log("[材质管理器·诊断] 铺开 " + property.name + " (" + property.propertyType + ") → " +
-                              group.materials.Length + " 个材质 | " + SampleMaterialNames(group) + " | shader: " + group.shader.name);
+                    log.RecordChange(property.name, oldValue, FormatValue(property), applied);
+                    ReportSkipped(property.name, applied);
                 }
 
                 any = true;
@@ -439,79 +422,113 @@ namespace lilToon
             return any;
         }
 
-        private static void WriteToAllMaterials(ShaderGroup group, MaterialProperty source, bool textureChanged, bool scaleOffsetChanged)
+        // 一次改动写到"所有选中材质里拥有这个属性的那些"，返回回读确认成功的数量。
+        // 不局限在当前组：lilToon 的材质常常分在多个属性组（不同 Hidden/lilToon* 变体），
+        // 只写本组会漏掉别的组 —— 用户看到的"选了 12 个只改了 11 个"就是这么来的。
+        private int WriteToAllSelected(MaterialProperty source, bool textureChanged, bool scaleOffsetChanged)
         {
-            for(int m = 0; m < group.materials.Length; m++)
+            skippedMaterials.Clear();
+            failedMaterials.Clear();
+
+            int applied = 0;
+            int nameId = Shader.PropertyToID(source.name);
+            for(int g = 0; g < groups.Count; g++)
             {
-                Material material = group.materials[m];
-                if(material == null) continue;
-
-                // 每次都重新取单目标属性：MaterialProperty 内部缓存了值，复用会漏写
-                MaterialProperty target = MaterialEditor.GetMaterialProperty(new Object[] { material }, source.name);
-                if(target == null) continue;
-
-                switch(source.propertyType)
+                Material[] materials = groups[g].materials;
+                for(int m = 0; m < materials.Length; m++)
                 {
-                    case ShaderPropertyType.Texture:
-                        if(textureChanged)     target.textureValue = source.textureValue;
-                        if(scaleOffsetChanged) target.textureScaleAndOffset = source.textureScaleAndOffset;
-                        break;
-                    case ShaderPropertyType.Color:
-                        target.colorValue = source.colorValue;
-                        break;
-                    case ShaderPropertyType.Vector:
-                        target.vectorValue = source.vectorValue;
-                        break;
-                    case ShaderPropertyType.Int:
-                        target.intValue = source.intValue;
-                        break;
-                    default:
-                        target.floatValue = source.floatValue;
-                        break;
+                    Material material = materials[m];
+                    if(material == null) continue;
+
+                    if(!material.HasProperty(nameId))
+                    {
+                        skippedMaterials.Add(material);
+                        continue;
+                    }
+
+                    // 每次都重新取单目标属性：MaterialProperty 内部缓存了值，复用会漏写
+                    MaterialProperty target = MaterialEditor.GetMaterialProperty(new Object[] { material }, source.name);
+                    if(target == null)
+                    {
+                        skippedMaterials.Add(material);
+                        continue;
+                    }
+
+                    switch(source.propertyType)
+                    {
+                        case ShaderPropertyType.Texture:
+                            if(textureChanged)     target.textureValue = source.textureValue;
+                            if(scaleOffsetChanged) target.textureScaleAndOffset = source.textureScaleAndOffset;
+                            break;
+                        case ShaderPropertyType.Color:
+                            target.colorValue = source.colorValue;
+                            break;
+                        case ShaderPropertyType.Vector:
+                            target.vectorValue = source.vectorValue;
+                            break;
+                        case ShaderPropertyType.Int:
+                            target.intValue = source.intValue;
+                            break;
+                        default:
+                            target.floatValue = source.floatValue;
+                            break;
+                    }
+
+                    // 写完回读，只有确认拿到新值才算 applied；对不上就点名（不静默失败）
+                    if(ValueMatches(material, source)) applied++;
+                    else                               failedMaterials.Add(material);
                 }
+            }
+
+            return applied;
+        }
+
+        private static bool ValueMatches(Material material, MaterialProperty source)
+        {
+            switch(source.propertyType)
+            {
+                case ShaderPropertyType.Texture: return material.GetTexture(source.name) == source.textureValue;
+                case ShaderPropertyType.Color:   return material.GetColor(source.name) == source.colorValue;
+                case ShaderPropertyType.Vector:  return material.GetVector(source.name) == source.vectorValue;
+                case ShaderPropertyType.Int:     return material.GetInt(source.name) == source.intValue;
+                default:                          return material.GetFloat(source.name) == source.floatValue;
             }
         }
 
-        // TODO(诊断): 确认铺开没问题后连这个方法一起删掉
-        private static string SampleMaterialNames(ShaderGroup group)
+        // 诊断：这次改动哪些选中的材质没吃到，分别是谁、为什么
+        private void ReportSkipped(string propertyName, int applied)
         {
-            int count = Mathf.Min(3, group.materials.Length);
+            if(log == null) return;
+
+            if(failedMaterials.Count > 0)
+            {
+                log.Add("⚠ " + failedMaterials.Count + " 个材质写入没生效（属性 " + propertyName + "）：" + DescribeMaterials(failedMaterials), true);
+            }
+
+            if(skippedMaterials.Count > 0)
+            {
+                log.Add("⚠ 跳过 " + skippedMaterials.Count + " 个材质（没有属性 " + propertyName + "）：" + DescribeMaterials(skippedMaterials), true);
+            }
+
+            if(applied == 0 && failedMaterials.Count == 0 && skippedMaterials.Count == 0)
+            {
+                log.Add("⚠ " + propertyName + " 没有写到任何材质上", true);
+            }
+        }
+
+        private static string DescribeMaterials(List<Material> materials)
+        {
+            const int MaxNames = 6;
             string text = string.Empty;
+            int count = Mathf.Min(MaxNames, materials.Count);
             for(int i = 0; i < count; i++)
             {
-                if(group.materials[i] == null) continue;
+                if(materials[i] == null) continue;
                 if(text.Length > 0) text += ", ";
-                text += group.materials[i].name;
+                text += materials[i].name;
             }
-            if(group.materials.Length > count) text += ", …";
+            if(materials.Count > count) text += " 等 " + materials.Count + " 个";
             return text;
-        }
-
-        // 写完回读一遍自检：哪个材质没拿到新值就直接报出来，不静默失败
-        // （正常人操作不该看到这条警告；看到了说明"铺开"这一步有材质被跳过了）
-        private static void VerifyWrite(ShaderGroup group, MaterialProperty source)
-        {
-            for(int m = 0; m < group.materials.Length; m++)
-            {
-                Material material = group.materials[m];
-                if(material == null) continue;
-
-                bool ok;
-                switch(source.propertyType)
-                {
-                    case ShaderPropertyType.Texture: ok = material.GetTexture(source.name) == source.textureValue; break;
-                    case ShaderPropertyType.Color:   ok = material.GetColor(source.name) == source.colorValue; break;
-                    case ShaderPropertyType.Vector:  ok = material.GetVector(source.name) == source.vectorValue; break;
-                    case ShaderPropertyType.Int:     ok = material.GetInt(source.name) == source.intValue; break;
-                    default:                          ok = material.GetFloat(source.name) == source.floatValue; break;
-                }
-
-                if(!ok)
-                {
-                    Debug.LogWarning("[材质管理器] 写入没铺开：" + source.name + " → " + material.name +
-                                     "（第 " + (m + 1) + " / " + group.materials.Length + " 个材质没拿到新值）", material);
-                }
-            }
         }
 
         private static void TakeSnapshot(ShaderGroup group)
@@ -635,27 +652,6 @@ namespace lilToon
                 if(MatchesFilter(bucket.properties[i], filter)) count++;
             }
             return count;
-        }
-
-        private void RecordChange(string propertyName, string oldValue, string newValue, int materialCount)
-        {
-            // 同一属性连续改（拖滑条）：接在上一条后面，避免刷屏
-            for(int i = changes.Count - 1; i >= 0; i--)
-            {
-                lilMaterialChangeRecord record = changes[i];
-                if(record.propertyName != propertyName || record.materialCount != materialCount) continue;
-                if(record.newValue != oldValue) break;
-                record.newValue = newValue;
-                return;
-            }
-
-            changes.Add(new lilMaterialChangeRecord
-            {
-                propertyName = propertyName,
-                oldValue = oldValue,
-                newValue = newValue,
-                materialCount = materialCount
-            });
         }
 
         private static void ShowMixedValueMenu(ShaderGroup group, MaterialProperty property)

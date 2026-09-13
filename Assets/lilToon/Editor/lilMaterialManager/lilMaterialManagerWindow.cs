@@ -20,8 +20,6 @@ namespace lilToon
         private const float MinLeftPaneWidth = 150.0f;
         private const float MinMiddlePaneWidth = 180.0f;
         private const float MinRightPaneWidth = 260.0f;
-        private const float ChangeLogHeight = 150.0f;
-        private const int MaxChangeRows = 200;
         private const string WindowTitle = "[测试版] lilToon 材质管理器";
         private const string EditorPrefsLeftWidth = "lilMaterialManager.leftPaneWidth";
         private const string EditorPrefsRightWidth = "lilMaterialManager.rightPaneWidth";
@@ -30,20 +28,18 @@ namespace lilToon
         private readonly lilMaterialManagerTreeView treeView = new lilMaterialManagerTreeView();
         private readonly lilMaterialManagerListView listView = new lilMaterialManagerListView();
         private readonly lilMaterialManagerPropertyPane propertyPane = new lilMaterialManagerPropertyPane();
+        private readonly lilMaterialManagerLogView logView = new lilMaterialManagerLogView();
         private readonly HashSet<lilMaterialEntry> selected = new HashSet<lilMaterialEntry>();
         private readonly List<lilMaterialEntry> filteredMaterials = new List<lilMaterialEntry>();
         private readonly List<lilMaterialEntry> selectedMaterials = new List<lilMaterialEntry>();
 
         private string searchText = string.Empty;
         private string propertySearch = string.Empty;
-        private string selectionSummary = "0 个材质";
+        private string logSummary = "未选中材质";
         private bool includeInactive = true;
         private bool needsRescan = true;
         private bool needsViewRefresh = true;
-        private bool propertiesExpanded;
-        private bool changeLogExpanded;
         private Vector2 propertiesScroll;
-        private Vector2 changeLogScroll;
 
         // 三栏列宽（可拖）：中间列不存宽度，它拿剩下的空间
         private float leftPaneWidth = 230.0f;
@@ -62,6 +58,7 @@ namespace lilToon
         private void OnEnable()
         {
             needsRescan = true;
+            propertyPane.log = logView;
 
             // 列宽跟着走，下次开窗还是你拖出来的样子
             leftPaneWidth = EditorPrefs.GetFloat(EditorPrefsLeftWidth, leftPaneWidth);
@@ -114,13 +111,23 @@ namespace lilToon
 
             bool changed = false;
             if(treeView.Draw(leftRect, selected)) changed = true;
-            if(listView.Draw(middleRect, selected)) changed = true;
+            if(listView.Draw(MiddleListRect(middleRect), selected)) changed = true;
             if(changed) RefreshViews();
 
             HandleSplitter(leftSplitterRect, 1);
             HandleSplitter(rightSplitterRect, 2);
 
+            float logHeight = Mathf.Min(logView.Height, Mathf.Max(30.0f, middleRect.height - 80.0f));
+            logView.Draw(new Rect(middleRect.x, middleRect.yMax - logHeight, middleRect.width, logHeight), logSummary);
+
             DrawRightPane(rightRect);
+        }
+
+        // 中栏上半区：材质表（下半区留给日志控制台）
+        private Rect MiddleListRect(Rect middleRect)
+        {
+            float logHeight = Mathf.Min(logView.Height, Mathf.Max(30.0f, middleRect.height - 80.0f));
+            return new Rect(middleRect.x, middleRect.y, middleRect.width, Mathf.Max(40.0f, middleRect.height - logHeight - 2.0f));
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -156,8 +163,6 @@ namespace lilToon
                 }
 
                 GUILayout.FlexibleSpace();
-                GUILayout.Label(GetStatusText(), EditorStyles.miniLabel);
-                GUILayout.Space(6.0f);
 
                 string nextSearch = GUILayout.TextField(searchText, EditorStyles.toolbarSearchField, GUILayout.Width(170.0f));
                 if(nextSearch != searchText)
@@ -166,13 +171,6 @@ namespace lilToon
                     needsViewRefresh = true;
                 }
             }
-        }
-
-        private string GetStatusText()
-        {
-            if(scan == null) return "未扫描";
-            return "物体 " + scan.nodeCount + " / 材质 " + scan.materials.Count + " / 已选 " + selected.Count
-                 + "   " + scan.scanMilliseconds.ToString("0.0") + " ms";
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -233,9 +231,20 @@ namespace lilToon
                 return string.Compare(a.Name, b.Name, System.StringComparison.OrdinalIgnoreCase);
             });
 
-            // 选择变了就重建属性面板（内部按签名比对，没变不会重建）
-            propertyPane.SetSelection(selectedMaterials);
-            selectionSummary = BuildSelectionSummary();
+            // 选择变了就重建属性面板（内部按签名比对，没变不会重建），并往日志里记一笔影响面
+            if(propertyPane.SetSelection(selectedMaterials))
+            {
+                logView.Add(BuildSelectionSummary());
+            }
+            logSummary = BuildLogSummary();
+        }
+
+        // 日志控制台标题条右端的短摘要
+        private string BuildLogSummary()
+        {
+            if(scan == null) return "未扫描";
+            if(selectedMaterials.Count == 0) return "已选 0 / 材质 " + scan.materials.Count;
+            return "已选 " + selectedMaterials.Count + " / 材质 " + scan.materials.Count + "  ·  物体 " + scan.nodeCount + "  ·  " + scan.scanMilliseconds.ToString("0.0") + " ms";
         }
 
         private bool MatchesSearch(lilMaterialEntry entry)
@@ -280,26 +289,15 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
-        // 右栏：输入值编辑 + 本次改动
-        // 全部走 GUILayout 一个滚动视图，不再混用绝对定位（之前用 GetLastRect 算偏移会和 Area 的
-        // 坐标空间混在一起，导致上部绘制叠在一起）。
+        // 右栏：输入值（永远展开，只有搜索框 + 属性列表；选中摘要和改动记录都搬去中栏的日志控制台了）
         private void DrawRightPane(Rect rect)
         {
-            // 下半区（本次改动）用固定高度，上半区（输入值）拿走剩下的。
-            // 注意：不要再在里面用 GetLastRect 去算属性滚动区的位置——Area 里的坐标空间和外面
-            // 不是一回事，上一版就是这么把属性区顶出面板、看起来"上部叠在一起"的。
-            // 现在滚动区直接放在 Area 里，GUILayout 会自动把剩余高度给它。
-            float logHeight = changeLogExpanded ? ChangeLogHeight : lilMaterialManagerStyles.SectionHeaderHeight;
-            float propsHeight = Mathf.Max(80.0f, rect.height - logHeight - 2.0f);
-            Rect propsRect = new Rect(rect.x, rect.y, rect.width, propsHeight);
-            Rect logRect = new Rect(rect.x, propsRect.yMax + 2.0f, rect.width, Mathf.Max(30.0f, rect.height - propsHeight - 2.0f));
-
             // "这一帧的鼠标交互是不是落在属性区里"必须在**进入 Area 之前**判断：
             // Event.mousePosition 在 BeginArea / BeginScrollView 之后是相对那个区域的，
             // 拿它去和窗口坐标的 rect 比会永远是 false（属性面板的铺开逻辑之前就是这么哑掉的）。
-            bool pointerInPropertyPane = IsPointerInPropertyPane(propsRect);
+            bool pointerInPropertyPane = IsPointerInPropertyPane(rect);
 
-            GUILayout.BeginArea(propsRect);
+            GUILayout.BeginArea(rect);
             GUILayout.Space(2.0f);
 
             // 属性搜索（按属性名 / 显示名过滤，过滤时整组自动展开）
@@ -314,22 +312,10 @@ namespace lilToon
                 }
             }
 
-            int total = scan != null ? scan.materials.Count : 0;
-            lilMaterialManagerStyles.DrawSectionHeader(ref propertiesExpanded, "输入值", selected.Count + " / " + total + " 个材质", new Color(0.16f, 0.18f, 0.22f));
-
-            if(selectedMaterials.Count > 0)
-            {
-                GUILayout.Label(selectionSummary, EditorStyles.wordWrappedMiniLabel);
-            }
-
             propertiesScroll = EditorGUILayout.BeginScrollView(propertiesScroll);
-            if(propertiesExpanded) propertyPane.Draw(propertySearch, pointerInPropertyPane);
+            propertyPane.Draw(propertySearch, pointerInPropertyPane);
             EditorGUILayout.EndScrollView();
 
-            GUILayout.EndArea();
-
-            GUILayout.BeginArea(logRect);
-            DrawChangeLog();
             GUILayout.EndArea();
         }
 
@@ -420,37 +406,6 @@ namespace lilToon
             if(prefabUsages > 0) summary += "，其中 " + prefabUsages + " 个来自 Prefab 实例";
             if(embedded > 0) summary += "；另有 " + embedded + " 个是内嵌材质（改动会落在宿主资产上）";
             return summary;
-        }
-
-        private void DrawChangeLog()
-        {
-            lilMaterialManagerStyles.DrawSectionHeader(ref changeLogExpanded, "本次改动", propertyPane.ChangeCount + " 项", new Color(0.22f, 0.17f, 0.17f));
-
-            if(!changeLogExpanded) return;
-
-            using(new EditorGUILayout.HorizontalScope())
-            {
-                if(GUILayout.Button("清空记录", EditorStyles.miniButton, GUILayout.Width(72.0f))) propertyPane.ClearChanges();
-                GUILayout.Label("改动即时生效，Ctrl+Z 可撤销（只写你碰过的属性）", EditorStyles.miniLabel);
-            }
-
-            changeLogScroll = EditorGUILayout.BeginScrollView(changeLogScroll);
-            List<lilMaterialChangeRecord> changes = propertyPane.Changes;
-            if(changes.Count == 0)
-            {
-                EditorGUILayout.LabelField("还没有改动。", EditorStyles.miniLabel);
-            }
-            else
-            {
-                int count = Mathf.Min(changes.Count, MaxChangeRows);
-                for(int i = 0; i < count; i++)
-                {
-                    lilMaterialChangeRecord record = changes[i];
-                    EditorGUILayout.LabelField(record.propertyName + " : " + record.oldValue + "  →  " + record.newValue + "    (" + record.materialCount + " 个材质)", EditorStyles.miniLabel);
-                }
-                if(changes.Count > count) EditorGUILayout.LabelField("…还有 " + (changes.Count - count) + " 条未显示", EditorStyles.miniLabel);
-            }
-            EditorGUILayout.EndScrollView();
         }
     }
 }
