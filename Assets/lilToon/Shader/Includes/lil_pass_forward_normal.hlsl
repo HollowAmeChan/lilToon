@@ -523,6 +523,10 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_REFLECTION
         #endif
 
+        #ifndef LIL_PASS_FORWARDADD
+            OVERRIDE_PLANAR_REFLECTION
+        #endif
+
         //------------------------------------------------------------------------------------------------------------------------------
         // MatCap
         BEFORE_MATCAP
@@ -592,12 +596,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     BEFORE_DISTANCE_FADE
     #if defined(LIL_FEATURE_DISTANCE_FADE)
         OVERRIDE_DISTANCE_FADE
-    #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
-    // Planar Reflection
-    #ifndef LIL_PASS_FORWARDADD
-        OVERRIDE_PLANAR_REFLECTION
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------

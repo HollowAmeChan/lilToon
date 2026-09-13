@@ -884,7 +884,6 @@ namespace lilToon
             {
                 if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, "强度");
                 if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, "颜色");
-                if(planarReflectionBlendMode.p != null) LocalizedProperty(planarReflectionBlendMode);
                 if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, "最小光滑度");
                 if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, "边缘淡出");
                 if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, "距离淡出开始");

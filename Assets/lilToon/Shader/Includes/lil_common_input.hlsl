@@ -170,7 +170,6 @@ CBUFFER_START(UnityPerMaterial)
     uint    _Cull;
     uint    _OutlineCull;
     uint    _EmissionMap_UVMode;
-    uint    _PlanarReflectionBlendMode;
     uint    _OutlineVertexR2Width;
     lilBool _Invisible;
     lilBool _UseShadow;
@@ -513,7 +512,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _Anisotropy2ndShiftNoiseScale;
         float   _Anisotropy2ndSpecularStrength;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM) || defined(LIL_URP)
         float   _Reflectance;
         float   _SpecularNormalStrength;
         float   _SpecularBorder;
@@ -521,10 +520,10 @@ CBUFFER_START(UnityPerMaterial)
         float   _ReflectionNormalStrength;
         float   _ReflectionCubeEnableLighting;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
         float   _Smoothness;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_URP)
         float   _Metallic;
         float   _GSAAStrength;
     #endif
@@ -658,7 +657,6 @@ CBUFFER_START(UnityPerMaterial)
         uint    _ShadowColorType;
         uint    _ShadowMaskType;
     #endif
-    uint    _PlanarReflectionBlendMode;
     #if defined(LIL_MULTI_INPUTS_NORMAL_2ND)
         uint    _Bump2ndMap_UVMode;
     #endif

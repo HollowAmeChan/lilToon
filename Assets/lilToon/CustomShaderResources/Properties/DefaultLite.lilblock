@@ -29,17 +29,6 @@
                         _HoMetadataBufferCustom3Color          ("MetadataBuffer Custom 3 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoMetadataBufferCustom3Tex            ("MetadataBuffer Custom 3", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
-        [lilToggle]     _UsePlanarReflection        ("平面反射", Int) = 0
-                        _PlanarReflectionStrength   ("强度", Range(0, 1)) = 1
-                        _PlanarReflectionMinSmoothness ("最小光滑度", Range(0, 1)) = 0
-                        _PlanarReflectionEdgeFade   ("边缘淡出", Range(0, 32)) = 0
-                        _PlanarReflectionFadeStart  ("距离淡出开始", Float) = 0
-                        _PlanarReflectionFadeEnd    ("距离淡出结束", Float) = 0
-                        _PlanarReflectionTint       ("颜色", Color) = (1,1,1,1)
-        [lilEnum]       _PlanarReflectionBlendMode  ("sBlendModes", Int) = 0
-        [lilToggle]     _PlanarReflectionFlipY      ("垂直翻转", Int) = 0
-        [HideInInspector][NoScaleOffset] _LILPBRPlanarReflectionTexture ("平面反射纹理", 2D) = "black" {}
-
         //----------------------------------------------------------------------------------------------------------------------
         // Main
         [lilHDR] [MainColor] _Color                 ("sColor", Color) = (1,1,1,1)

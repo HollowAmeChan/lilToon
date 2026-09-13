@@ -396,7 +396,7 @@ float   _PlanarReflectionFadeEnd;
     float   _Anisotropy2ndShiftNoiseScale;
     float   _Anisotropy2ndSpecularStrength;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM) || defined(LIL_URP)
     float   _Reflectance;
     float   _SpecularNormalStrength;
     float   _SpecularBorder;
@@ -404,10 +404,10 @@ float   _PlanarReflectionFadeEnd;
     float   _ReflectionNormalStrength;
     float   _ReflectionCubeEnableLighting;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
     float   _Smoothness;
 #endif
-#if defined(LIL_FEATURE_REFLECTION)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Metallic;
     float   _GSAAStrength;
 #endif
@@ -565,7 +565,6 @@ uint    _Cull;
     uint    _ShadowColorType;
     uint    _ShadowMaskType;
 #endif
-uint    _PlanarReflectionBlendMode;
 #if defined(LIL_FEATURE_NORMAL_2ND)
     uint    _Bump2ndMap_UVMode;
 #endif

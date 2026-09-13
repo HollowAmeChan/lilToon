@@ -55,7 +55,6 @@
                         _PlanarReflectionFadeStart  ("距离淡出开始", Float) = 0
                         _PlanarReflectionFadeEnd    ("距离淡出结束", Float) = 0
                         _PlanarReflectionTint       ("颜色", Color) = (1,1,1,1)
-        [lilEnum]       _PlanarReflectionBlendMode  ("sBlendModes", Int) = 0
         [lilToggle]     _PlanarReflectionFlipY      ("垂直翻转", Int) = 0
         [HideInInspector][NoScaleOffset] _LILPBRPlanarReflectionTexture ("平面反射纹理", 2D) = "black" {}
                         _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10

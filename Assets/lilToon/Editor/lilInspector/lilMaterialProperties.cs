@@ -190,7 +190,6 @@ namespace lilToon
         private readonly lilMaterialProperty planarReflectionFadeStart  = new lilMaterialProperty("_PlanarReflectionFadeStart", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionFadeEnd    = new lilMaterialProperty("_PlanarReflectionFadeEnd", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionTint       = new lilMaterialProperty("_PlanarReflectionTint", PropertyBlock.PlanarReflection);
-        private readonly lilMaterialProperty planarReflectionBlendMode  = new lilMaterialProperty("_PlanarReflectionBlendMode", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionFlipY      = new lilMaterialProperty("_PlanarReflectionFlipY", PropertyBlock.PlanarReflection);
 
         private readonly lilMaterialProperty useRimShade            = new lilMaterialProperty("_UseRimShade", PropertyBlock.RimShade);
@@ -773,7 +772,6 @@ namespace lilToon
                 planarReflectionFadeStart,
                 planarReflectionFadeEnd,
                 planarReflectionTint,
-                planarReflectionBlendMode,
                 planarReflectionFlipY,
 
                 useRimShade,

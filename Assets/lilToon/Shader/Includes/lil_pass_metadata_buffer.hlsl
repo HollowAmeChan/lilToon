@@ -193,6 +193,9 @@ float4 lilHoMetadataBufferResolveSurfaceColor(float4 surfaceColor)
 
 float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
 {
+    #if defined(LIL_LITE) || defined(LIL_GEM)
+        return 0.0;
+    #else
     float smoothness = _Smoothness;
     #if defined(LIL_FEATURE_SmoothnessTex)
         smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
@@ -210,6 +213,7 @@ float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
         saturate(metallic),
         saturate(_Reflectance),
         saturate(_PlanarReflectionStrength) * planarReflectionEnabled);
+    #endif
 }
 
 float lilHoMetadataBufferResolveThickness(float2 uv)
