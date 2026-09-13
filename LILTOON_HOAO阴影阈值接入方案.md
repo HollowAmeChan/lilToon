@@ -13,7 +13,7 @@
 > v4：AO Color 永远单层、直接混入三层；AO Mask 同时门控实时与离线；新属性统一 `_AO` 前缀；删除 `_RealtimeAOColorFromMain`。
 > v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 质量达标，噪声/方向偏置不构成门槛。
 > 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准。
-> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化；v7 为本轮提交。
+> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化 / `36d9e40` v7（AO 只作用于 toon ramp）。
 
 ---
 
@@ -316,7 +316,7 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 
 **v6 追加（语义收敛，`44d0d2c` 前后的提交）**：删除 AO 影色层（`_AOColor` / `_AOColorTex` / `_AOMainStrength` + `aoShadeAmount` 差分量 + `isShowAOColor`），AO 只剩"阈值偏移 + 最终压暗"两条明暗输出；描边改为无条件复用本体 AO。
 
-**v7 追加（本轮）—— AO 回退到只影响三段颜色 ramp**：
+**v7 追加（`36d9e40`）—— AO 回退到只影响三段颜色 ramp**：
 
 | 改动 | 内容 |
 |---|---|
@@ -330,7 +330,7 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 顺带清理 | `AO Map & Toon` 的 `#if defined(LIL_FEATURE_ShadowBorderMask)` 双分支合并为一条（`lilTooningScale` = `saturate(lilTooningNoSaturateScale)`，原差别只是 saturate 位置，逐分量等价） |
 | 文档 | 本文件 v7 头 + §0 / §3 / §4.1 / §4.2 / §4.6 / §4.7 / §6.1 / §7 / §8 改写；`LILTOON架构总览.md` §10.3、`LILTOON_URP_SSAO设计总览.md`、`LILTON_URP提升渲染质感路径.md` 同步 |
 
-**v7 之后仍需在 Unity 内做**：`[Shader] Refresh shaders` 重新生成 52 个 shader（`_AOThreshold` 会从 Properties 块消失），以及 §7 的实机视觉清单。
+**v7 的 shader 生成已自动完成**：lilblock 改动后 Unity 自动重新生成了 50 个材质 shader（`lts*` / `ltsl*` / `ltsmulti*` / `ltspass_*`），`_AOThreshold` 已从 Properties 块消失、`_AOStrength` / `_AOLevel` / `_AOContrast` / `_AOMask` 在位，编辑器日志（`Editor.log`）无 shader 编译错误。剩下只有 §7 的实机视觉清单。
 
 已落地的文件（12 个）：
 
@@ -377,8 +377,8 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 
 ## 7. 验证清单
 
-- [ ] 在 Unity 内执行 `[Shader] Refresh shaders` 重新生成 52 个 shader（**必须**：`_AOThreshold` 要从 Properties 块消失，否则材质上会留一个无效属性）。
-- [ ] 重新生成后无编译错误（重点看删除 `OVERRIDE_REALTIMEAO` / `BEFORE_REALTIMEAO` 后没有残留引用）。
+- [x] shader 已重新生成（Unity 自动，v7 提交后）：`_AOThreshold` 从 Properties 块消失，编辑器日志无编译错误。
+- [ ] 重新生成后无编译错误（重点看删除 `OVERRIDE_REALTIMEAO` / `BEFORE_REALTIMEAO` 后没有残留引用）—— 编辑器日志已是 0 错误，仍建议开着 Inspector 逐个切一遍材质确认。
 - [ ] **默认值等价性（legacy AO Map 材质）**：`_UseRealtimeAO = 1` 但 Ho-GTAO 关闭时 `_HoAOTexture` 为 white → `aoVis = lerp(1, AO Map, aoMask)`；`_AOStrength = 1`、`_AOContrast = 1`、`_AOLevel = 0`、`_AOMask = white` 时应与改造前的 `_ShadowBorderMask` 乘算路径逐像素一致。
 - [ ] **AO 不会越过最深阴影色**：把 AO 拉到最强，画面最暗处应等于 3rd 阴影色（或 1st/2nd，取决于材质开了哪几层），而不是纯黑 —— 这是本轮语义的核心验收点。
 - [ ] **AO 不染其它通道**：MatCap / Rim / Emission / 描边颜色不应因为 AO 而变化（除描边本身 opt-in 了 toon 影）。
