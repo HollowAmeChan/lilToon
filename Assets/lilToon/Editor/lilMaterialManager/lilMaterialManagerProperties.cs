@@ -62,7 +62,6 @@ namespace lilToon
         // 日志由窗口持有并注入（中栏下半区那块控制台）
         public lilMaterialManagerLogView log;
 
-        public bool HasSelection { get { return groups.Count > 0; } }
 
         //--------------------------------------------------------------------------------------------------------------------------
         // 选择变化时重建（按签名比对，没变就直接返回）

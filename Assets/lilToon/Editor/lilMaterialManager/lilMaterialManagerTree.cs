@@ -27,7 +27,6 @@ namespace lilToon
         // Shift+点击的锚点：按节点对象记（重建可见行 / 折叠展开后行号会变，对象引用不会）
         private lilMaterialNode anchorNode;
 
-        public int RowCount { get { return rows.Count; } }
 
         //--------------------------------------------------------------------------------------------------------------------------
         // 重建可见行

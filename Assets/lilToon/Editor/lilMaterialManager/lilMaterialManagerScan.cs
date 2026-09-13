@@ -48,7 +48,6 @@ namespace lilToon
         public int checkedTotal;
 
         public string Name { get { return gameObject != null ? gameObject.name : "(null)"; } }
-        public bool HasOwnMaterials { get { return ownMaterials.Count > 0; } }
     }
 
     internal sealed class lilMaterialManagerScanResult

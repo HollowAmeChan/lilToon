@@ -38,7 +38,6 @@ namespace lilToon
         private static GUIStyle groupSummaryStyle;
 
         public int Count { get { return entries.Count; } }
-        public float ScrollY { get { return scroll.y; } }
 
         public void Clear()
         {

@@ -150,59 +150,9 @@ namespace lilToon
         public static void LoadCustomLanguage(string langFileGUID)  { lilLanguageManager.LoadCustomLanguage(langFileGUID); }
         #endregion
 
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Custom Window
-        #region
-        public class lilMaterialEditor : EditorWindow
-        {
-            private Vector2 scrollPosition = Vector2.zero;
-            private MaterialEditor materialEditor;
-            private Material material;
-            private MaterialProperty[] props;
-
-            [MenuItem("Window/_lil/[测试版] lilToon 多材质编辑器")]
-            static void Init()
-            {
-                var window = (lilMaterialEditor)GetWindow(typeof(lilMaterialEditor), false, "[测试版] lilToon 多材质编辑器");
-                window.Show();
-            }
-
-            private void OnGUI()
-            {
-                var materials = Selection.GetFiltered<Material>(SelectionMode.DeepAssets).Where(m => m.shader != null).Where(m => m.shader.name.Contains("lilToon")).ToArray();
-                if(materials.Length == 0) return;
-
-                props = MaterialEditor.GetMaterialProperties(materials);
-                if(props == null) return;
-
-                material = materials[0];
-                isCustomEditor = true;
-                isMultiVariants = materials.Any(m => m.shader != material.shader);
-                materialEditor = (MaterialEditor)Editor.CreateEditor(materials, typeof(MaterialEditor));
-                var inspector = new lilToonInspector();
-
-                EditorGUILayout.LabelField(GetLoc("Selected Materials"), string.Join(", ", materials.Select(m => m.name).ToArray()), EditorStyles.boldLabel);
-                lilEditorGUI.DrawLine();
-                scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-                EditorGUILayout.BeginVertical(InitializeMarginBox(20, 4, 4));
-                inspector.SetMaterials(materials);
-                inspector.DrawAllGUI(materialEditor, props, material);
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndScrollView();
-            }
-
-            private static GUIStyle InitializeMarginBox(int left, int right, int top)
-            {
-                return new GUIStyle
-                    {
-                        border = new RectOffset(0, 0, 0, 0),
-                        margin = new RectOffset(left, right, top, 0),
-                        padding = new RectOffset(0, 0, 0, 0),
-                        overflow = new RectOffset(0, 0, 0, 0)
-                    };
-            }
-        }
-        #endregion
+        // 旧的多材质编辑器窗口（`Window/_lil/[测试版] lilToon 多材质编辑器`）已删除：
+        // 它是"Project 选择集 + 完整 Inspector"的做法，实测写入铺不开、也不带场景/层级视角。
+        // 场景级批量编辑现在由 `HoLil/[材质] 材质管理器` 负责（见 LILTOON_材质管理器设计.md D5/D7）。
     }
 }
 #endif

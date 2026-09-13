@@ -19,7 +19,6 @@ namespace lilToon
         public const float CheckboxWidth = 18.0f;
         public const float SectionHeaderHeight = 30.0f;
         public const float ScrollbarWidth = 16.0f;
-        public const float PaneGap = 6.0f;
 
         private static GUIStyle rowLabel;
         private static GUIStyle rowMutedLabel;
