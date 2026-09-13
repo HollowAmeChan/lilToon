@@ -139,10 +139,15 @@ namespace lilToon
         //--------------------------------------------------------------------------------------------------------------------------
         // 绘制（用 GUILayout，调用方负责套在 area / scroll view 里）；返回本帧是否有属性被改动
         // filter：按属性名 / 显示名过滤；有过滤词时整组自动展开
-        public bool Draw(string filter)
+        // paneRect：属性区在窗口里的矩形，用来判断"这一帧的鼠标交互是不是发生在本面板里"
+        public bool Draw(string filter, Rect paneRect)
         {
             bool changed = false;
             bool hasFilter = !string.IsNullOrEmpty(filter);
+
+            // 事件类型和鼠标位置要在画行之前先抓下来：行里的控件可能 evt.Use()，事件类型会变成 Used
+            EventType frameEvent = Event.current.type;
+            Vector2 frameMouse = Event.current.mousePosition;
 
             if(groups.Count == 0)
             {
@@ -153,13 +158,13 @@ namespace lilToon
             for(int g = 0; g < groups.Count; g++)
             {
                 ShaderGroup group = groups[g];
-                if(groups.Count > 1)
-                {
-                    EditorGUILayout.LabelField(group.shader.name + "    (" + group.materials.Length + " 个材质)", EditorStyles.boldLabel);
-                }
+
+                // 批量范围写清楚：这一组属性会写到哪几个材质上（跨 shader 混选时每组一个标题条）
+                EditorGUILayout.LabelField(group.shader.name + "    ×" + group.materials.Length + " 个材质", EditorStyles.miniBoldLabel);
 
                 // 本帧绘制前的值快照：这一帧里谁被改了，靠它 diff 出来
                 TakeSnapshot(group);
+                bool rowChanged = false;
 
                 for(int b = 0; b < group.buckets.Count; b++)
                 {
@@ -185,14 +190,42 @@ namespace lilToon
                     {
                         MaterialProperty property = bucket.properties[p];
                         if(hasFilter && !MatchesFilter(property, filter)) continue;
-                        if(DrawPropertyRow(group, property)) changed = true;
+                        if(DrawPropertyRow(group, property)) rowChanged = true;
                     }
                     EditorGUI.indentLevel--;
                     GUILayout.Space(2.0f);
                 }
+
+                // 铺开的触发条件（两条都要）：
+                //   1) 这一行自己检出了改动（EditorGUI.EndChangeCheck）——但 lilToon 的自定义 drawer 内部
+                //      可能自己 Begin/EndChangeCheck，把 GUI.changed 吃掉，导致这条不可靠；
+                //   2) 这一帧有鼠标 / 键盘交互落在属性区里 —— 兜底，只要你在面板里动手，就一定 diff 一次。
+                // 不做"无条件下每帧都铺"：那样在 Inspector 里改某个材质也会被静默广播给整批。
+                if(rowChanged || IsPropertyPaneInteraction(frameEvent, frameMouse, paneRect))
+                {
+                    if(SpreadChanges(group)) changed = true;
+                }
             }
 
             return changed;
+        }
+
+        private static bool IsPropertyPaneInteraction(EventType frameEvent, Vector2 frameMouse, Rect paneRect)
+        {
+            switch(frameEvent)
+            {
+                case EventType.MouseDown:
+                case EventType.MouseDrag:
+                case EventType.MouseUp:
+                case EventType.ScrollWheel:
+                case EventType.ContextClick:
+                    return paneRect.Contains(frameMouse);
+                case EventType.KeyDown:
+                case EventType.KeyUp:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private bool DrawPropertyRow(ShaderGroup group, MaterialProperty property)
@@ -202,8 +235,6 @@ namespace lilToon
             string label = lilLanguageManager.GetDisplayName(property);
             bool mixed = IsMixed(group, property);
             if(mixed) label += "   [混合]";
-
-            string oldValue = FormatValue(property);
 
             using(new EditorGUILayout.HorizontalScope())
             {
@@ -225,16 +256,9 @@ namespace lilToon
                 EditorGUI.showMixedValue = mixed;
                 group.editor.ShaderProperty(property, label);
                 EditorGUI.showMixedValue = previousMixed;
-                if(!EditorGUI.EndChangeCheck()) return false;
+                // 只作为"该铺开了"的提示之一；真正写了哪个属性由 SpreadChanges 里的 diff 决定
+                return EditorGUI.EndChangeCheck();
             }
-
-            // 关键：MaterialProperty 的多目标写入在这种"自己 CreateEditor + 自己取属性"的场景里不一定铺开
-            // （实测只有一个材质真的被改了），所以这里 diff 出这一帧真正变化的属性，逐个材质显式写一遍。
-            // 只写变了的属性，没碰过的属性依然一个字节都不写。
-            SpreadChanges(group);
-
-            RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
-            return true;
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -318,11 +342,14 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
-        // 兜底写入：把"这一帧变了的属性"写到组里每一个材质上
-        private void SpreadChanges(ShaderGroup group)
+        // 兜底写入：把"这一帧变了的属性"写到组里每一个材质上；返回是否有属性被改
+        // 为什么必须自己写：MaterialProperty 的多目标写入在这种"自己 CreateEditor + 自己取属性"的
+        // 场景下铺不开（实测只有第一个材质真的变了），所以只能 diff 出变化后逐个材质写。
+        private bool SpreadChanges(ShaderGroup group)
         {
-            if(group.allProperties.Count == 0) return;
+            if(group.allProperties.Count == 0) return false;
 
+            bool any = false;
             for(int i = 0; i < group.allProperties.Count; i++)
             {
                 MaterialProperty property = group.allProperties[i];
@@ -353,16 +380,21 @@ namespace lilToon
                         break;
                 }
 
-                if(valueChanged)
-                {
-                    WriteToAllMaterials(group, property, textureChanged, scaleOffsetChanged);
-                    // 刚写成了一致的值，这一项不再是混值
-                    mixedCache[group.shader.GetInstanceID() + "|" + property.name] = false;
-                }
+                if(!valueChanged) continue;
+
+                string oldValue = FormatSnapshotValue(group, i, property);
+                WriteToAllMaterials(group, property, textureChanged, scaleOffsetChanged);
+                VerifyWrite(group, property);
+
+                // 刚写成了一致的值，这一项不再是混值
+                mixedCache[group.shader.GetInstanceID() + "|" + property.name] = false;
+                RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
+                any = true;
             }
 
-            // 写完重新取一次快照（包括没变的），下一帧的 diff 从新状态算起
+            // 不管有没有变都重新取快照，下一帧的 diff 从最新状态算起
             TakeSnapshot(group);
+            return any;
         }
 
         private static void WriteToAllMaterials(ShaderGroup group, MaterialProperty source, bool textureChanged, bool scaleOffsetChanged)
@@ -394,6 +426,33 @@ namespace lilToon
                     default:
                         target.floatValue = source.floatValue;
                         break;
+                }
+            }
+        }
+
+        // 写完回读一遍自检：哪个材质没拿到新值就直接报出来，不静默失败
+        // （正常人操作不该看到这条警告；看到了说明"铺开"这一步有材质被跳过了）
+        private static void VerifyWrite(ShaderGroup group, MaterialProperty source)
+        {
+            for(int m = 0; m < group.materials.Length; m++)
+            {
+                Material material = group.materials[m];
+                if(material == null) continue;
+
+                bool ok;
+                switch(source.propertyType)
+                {
+                    case ShaderPropertyType.Texture: ok = material.GetTexture(source.name) == source.textureValue; break;
+                    case ShaderPropertyType.Color:   ok = material.GetColor(source.name) == source.colorValue; break;
+                    case ShaderPropertyType.Vector:  ok = material.GetVector(source.name) == source.vectorValue; break;
+                    case ShaderPropertyType.Int:     ok = material.GetInt(source.name) == source.intValue; break;
+                    default:                          ok = material.GetFloat(source.name) == source.floatValue; break;
+                }
+
+                if(!ok)
+                {
+                    Debug.LogWarning("[材质管理器] 写入没铺开：" + source.name + " → " + material.name +
+                                     "（第 " + (m + 1) + " / " + group.materials.Length + " 个材质没拿到新值）", material);
                 }
             }
         }
@@ -573,6 +632,38 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 把"上一帧快照里的值"格式化成改动记录里的旧值
+        private static string FormatSnapshotValue(ShaderGroup group, int i, MaterialProperty property)
+        {
+            switch(property.propertyType)
+            {
+                case ShaderPropertyType.Texture:
+                {
+                    string name = group.snapTexture[i] != null ? group.snapTexture[i].name : "None";
+                    Vector4 scaleOffset = group.snapVector[i];
+                    if(scaleOffset != new Vector4(1.0f, 1.0f, 0.0f, 0.0f)) name += "  ST" + FormatVector4(scaleOffset);
+                    return name;
+                }
+                case ShaderPropertyType.Color:
+                {
+                    Color color = group.snapVector[i];
+                    return "RGBA(" + FormatFloat(color.r) + ", " + FormatFloat(color.g) + ", " + FormatFloat(color.b) + ", " + FormatFloat(color.a) + ")";
+                }
+                case ShaderPropertyType.Vector:
+                    return FormatVector4(group.snapVector[i]);
+                case ShaderPropertyType.Int:
+                    return ((int)group.snapFloat[i]).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                default:
+                    return FormatFloat(group.snapFloat[i]);
+            }
+        }
+
+        private static string FormatVector4(Vector4 value)
+        {
+            return "(" + FormatFloat(value.x) + ", " + FormatFloat(value.y) + ", " + FormatFloat(value.z) + ", " + FormatFloat(value.w) + ")";
+        }
+
         public static string FormatValue(MaterialProperty property)
         {
             if(property == null) return "(无)";

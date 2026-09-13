@@ -318,7 +318,7 @@ namespace lilToon
             }
 
             propertiesScroll = EditorGUILayout.BeginScrollView(propertiesScroll);
-            if(propertiesExpanded) propertyPane.Draw(propertySearch);
+            if(propertiesExpanded) propertyPane.Draw(propertySearch, propsRect);
             EditorGUILayout.EndScrollView();
 
             GUILayout.EndArea();
