@@ -20,10 +20,17 @@ namespace lilToon
         private readonly List<lilMaterialEntry> rows = new List<lilMaterialEntry>();
         private Vector2 scroll;
 
+        // Shift+点击的锚点：按"材质对象"记，不按行号 —— 列表重排 / 过滤后行号会变，
+        // 对象引用不会（锚点被过滤掉了就退化成普通切换）。
+        private lilMaterialEntry anchorEntry;
+
         public void SetRows(List<lilMaterialEntry> source)
         {
             rows.Clear();
             if(source != null) rows.AddRange(source);
+
+            // 锚点已经不在列表里就清掉
+            if(anchorEntry != null && !rows.Contains(anchorEntry)) anchorEntry = null;
         }
 
         // 返回选择是否发生变化
@@ -46,7 +53,7 @@ namespace lilToon
             for(int i = first; i <= last; i++)
             {
                 Rect rowRect = new Rect(0.0f, i * lilMaterialManagerStyles.RowStride, contentWidth, lilMaterialManagerStyles.RowHeight);
-                if(DrawRow(rowRect, rows[i], selected)) changed = true;
+                if(DrawRow(rowRect, i, rows[i], selected)) changed = true;
             }
 
             GUI.EndScrollView();
@@ -67,7 +74,7 @@ namespace lilToon
             lilMaterialManagerStyles.DrawHorizontalLine(rect, rect.yMax);
         }
 
-        private static bool DrawRow(Rect rect, lilMaterialEntry entry, HashSet<lilMaterialEntry> selected)
+        private bool DrawRow(Rect rect, int index, lilMaterialEntry entry, HashSet<lilMaterialEntry> selected)
         {
             if(entry == null) return false;
             Event evt = Event.current;
@@ -83,12 +90,11 @@ namespace lilToon
             // 勾选框
             Rect checkRect = new Rect(rect.x + 2.0f, rect.y + 1.0f, lilMaterialManagerStyles.CheckboxWidth - 2.0f, rect.height - 2.0f);
             int state = isSelected ? 2 : 0;
-            string tooltip = "把这个材质加入 / 移出编辑集合";
+            string tooltip = "把这个材质加入 / 移出编辑集合（Shift+点击 = 从上次点的那行刷到这一行）";
             int next = lilMaterialManagerStyles.DrawTriStateCheckbox(checkRect, state, tooltip);
             if(next != state)
             {
-                if(next == 2) selected.Add(entry);
-                else          selected.Remove(entry);
+                ApplyToggle(index, next == 2, selected);
                 changed = true;
             }
 
@@ -115,13 +121,37 @@ namespace lilToon
             // 点行内空白 = 切换勾选（勾选框自己已经处理过点击，这里用命中区域避开它）
             if(!checkRect.Contains(evt.mousePosition) && evt.type == EventType.MouseDown && evt.button == 0 && hover)
             {
-                if(isSelected) selected.Remove(entry);
-                else           selected.Add(entry);
+                ApplyToggle(index, !isSelected, selected);
                 changed = true;
                 evt.Use();
             }
 
             return changed;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 勾选：普通点击 = 切换这一行，并把这一行设为锚点；
+        //       Shift+点击 = 把"锚点行 → 这一行"整段统一设成 sameAsClicked（点一下刷一列），锚点不动，
+        //       所以可以接着 Shift+点别处来调整这一段的长度。
+        private void ApplyToggle(int index, bool value, HashSet<lilMaterialEntry> selected)
+        {
+            int anchor = anchorEntry != null ? rows.IndexOf(anchorEntry) : -1;
+
+            if(Event.current.shift && anchor >= 0 && anchor != index)
+            {
+                int from = Mathf.Min(anchor, index);
+                int to = Mathf.Max(anchor, index);
+                for(int i = from; i <= to; i++)
+                {
+                    if(value) selected.Add(rows[i]);
+                    else      selected.Remove(rows[i]);
+                }
+                return;
+            }
+
+            if(value) selected.Add(rows[index]);
+            else      selected.Remove(rows[index]);
+            anchorEntry = rows[index];
         }
     }
 }

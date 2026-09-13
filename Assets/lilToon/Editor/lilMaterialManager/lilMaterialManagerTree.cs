@@ -24,6 +24,9 @@ namespace lilToon
         private Vector2 scroll;
         private bool expansionChanged;      // 折叠状态变了 → 需要调用方重建可见行
 
+        // Shift+点击的锚点：按节点对象记（重建可见行 / 折叠展开后行号会变，对象引用不会）
+        private lilMaterialNode anchorNode;
+
         public int RowCount { get { return rows.Count; } }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -161,14 +164,14 @@ namespace lilToon
             for(int i = first; i <= last; i++)
             {
                 Rect rowRect = new Rect(0.0f, i * lilMaterialManagerStyles.RowStride, contentWidth, lilMaterialManagerStyles.RowHeight);
-                if(DrawRow(rowRect, rows[i], selected)) changed = true;
+                if(DrawRow(rowRect, i, rows[i], selected)) changed = true;
             }
 
             GUI.EndScrollView();
             return changed || expansionChanged;
         }
 
-        private bool DrawRow(Rect rect, Row row, HashSet<lilMaterialEntry> selected)
+        private bool DrawRow(Rect rect, int index, Row row, HashSet<lilMaterialEntry> selected)
         {
             lilMaterialNode node = row.node;
             Event evt = Event.current;
@@ -203,11 +206,11 @@ namespace lilToon
             if(node.materialTotal > 0)
             {
                 int state = GetCheckState(node);
-                string tooltip = "勾选 / 取消该分支下的 " + node.materialTotal + " 个材质";
+                string tooltip = "勾选 / 取消该分支下的 " + node.materialTotal + " 个材质（Shift+点击 = 从上次点的那行刷到这一行）";
                 int next = lilMaterialManagerStyles.DrawTriStateCheckbox(checkRect, state, tooltip);
                 if(next != state)
                 {
-                    SetSubtreeSelection(node, selected, next == 2);
+                    ApplyToggle(index, next == 2, selected);
                     changed = true;
                 }
             }
@@ -232,7 +235,7 @@ namespace lilToon
             {
                 if(node.materialTotal > 0)
                 {
-                    SetSubtreeSelection(node, selected, GetCheckState(node) != 2);
+                    ApplyToggle(index, GetCheckState(node) != 2, selected);
                     changed = true;
                 }
                 else if(hasChildren)
@@ -245,6 +248,39 @@ namespace lilToon
             }
 
             return changed;
+        }
+
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 勾选：普通点击 = 切换这一枝（整棵子树），并把这行设为锚点；
+        //       Shift+点击 = 把"锚点行 → 这一行"之间的每个节点都统一按这个状态刷一遍（点一下刷一段），
+        //       锚点不动，可以接着 Shift+点别处调整这一段的范围。
+        private void ApplyToggle(int index, bool value, HashSet<lilMaterialEntry> selected)
+        {
+            int anchor = FindRowIndex(anchorNode);
+
+            if(Event.current.shift && anchor >= 0 && anchor != index)
+            {
+                int from = Mathf.Min(anchor, index);
+                int to = Mathf.Max(anchor, index);
+                for(int i = from; i <= to; i++)
+                {
+                    SetSubtreeSelection(rows[i].node, selected, value);
+                }
+                return;
+            }
+
+            SetSubtreeSelection(rows[index].node, selected, value);
+            anchorNode = rows[index].node;
+        }
+
+        private int FindRowIndex(lilMaterialNode node)
+        {
+            if(node == null) return -1;
+            for(int i = 0; i < rows.Count; i++)
+            {
+                if(rows[i].node == node) return i;
+            }
+            return -1;
         }
     }
 }
