@@ -21,8 +21,12 @@ namespace lilToon
         private const float MinMiddlePaneWidth = 180.0f;
         private const float MinRightPaneWidth = 260.0f;
         private const string WindowTitle = "[测试版] lilToon 材质管理器";
+        private const float DefaultLogHeight = 150.0f;
+        private const float MinLogHeight = 60.0f;
+        private const float MinListHeight = 80.0f;
         private const string EditorPrefsLeftWidth = "lilMaterialManager.leftPaneWidth";
         private const string EditorPrefsRightWidth = "lilMaterialManager.rightPaneWidth";
+        private const string EditorPrefsLogHeight = "lilMaterialManager.logHeight";
 
         private lilMaterialManagerScanResult scan;
         private readonly lilMaterialManagerTreeView treeView = new lilMaterialManagerTreeView();
@@ -35,7 +39,6 @@ namespace lilToon
 
         private string searchText = string.Empty;
         private string propertySearch = string.Empty;
-        private string logSummary = "未选中材质";
         private bool includeInactive = true;
         private bool needsRescan = true;
         private bool needsViewRefresh = true;
@@ -45,6 +48,10 @@ namespace lilToon
         private float leftPaneWidth = 230.0f;
         private float rightPaneWidth = 430.0f;
         private int draggingSplitter;       // 0 = 没在拖，1 = 左分隔条，2 = 右分隔条
+
+        // 中栏：材质表 / 日志区之间的横向分隔条
+        private float logHeight = DefaultLogHeight;
+        private bool draggingLogSplitter;
 
         [MenuItem("HoLil/[材质] 材质管理器")]
         private static void Open()
@@ -63,6 +70,7 @@ namespace lilToon
             // 列宽跟着走，下次开窗还是你拖出来的样子
             leftPaneWidth = EditorPrefs.GetFloat(EditorPrefsLeftWidth, leftPaneWidth);
             rightPaneWidth = EditorPrefs.GetFloat(EditorPrefsRightWidth, rightPaneWidth);
+            logHeight = EditorPrefs.GetFloat(EditorPrefsLogHeight, logHeight);
 
             // 必须先跑 lilToon 的标签初始化：很多属性的多段标签（例如 _LightDirectionOverride 的
             // "光照方向覆盖|跟随物体"）是在 InitializeLabels() 里用 BuildParams 合成的；不初始化的话
@@ -109,25 +117,27 @@ namespace lilToon
             Rect rightSplitterRect = new Rect(rightRect.x - SplitterWidth, paneTop, SplitterWidth, paneHeight);
             Rect middleRect = new Rect(leftSplitterRect.xMax, paneTop, Mathf.Max(80.0f, rightSplitterRect.x - leftSplitterRect.xMax), paneHeight);
 
+            // 中栏 = 材质表（上，自适应）+ 横向分隔条（可拖）+ 日志区（下，高度记在 EditorPrefs）
+            float logSpace = logView.Expanded ? Mathf.Clamp(logHeight, MinLogHeight, Mathf.Max(MinLogHeight, middleRect.height - MinListHeight)) : lilMaterialManagerLogView.CollapsedHeight;
+            Rect logRect = new Rect(middleRect.x, middleRect.yMax - logSpace, middleRect.width, logSpace);
+            Rect logSplitterRect = new Rect(middleRect.x, logRect.y - SplitterWidth, middleRect.width, SplitterWidth);
+            Rect listRect = new Rect(middleRect.x, middleRect.y, middleRect.width, Mathf.Max(40.0f, logSplitterRect.y - middleRect.y));
+
             bool changed = false;
             if(treeView.Draw(leftRect, selected)) changed = true;
-            if(listView.Draw(MiddleListRect(middleRect), selected)) changed = true;
+            if(listView.Draw(listRect, selected)) changed = true;
             if(changed) RefreshViews();
 
             HandleSplitter(leftSplitterRect, 1);
             HandleSplitter(rightSplitterRect, 2);
+            HandleLogSplitter(logSplitterRect);
 
-            float logHeight = Mathf.Min(logView.Height, Mathf.Max(30.0f, middleRect.height - 80.0f));
-            logView.Draw(new Rect(middleRect.x, middleRect.yMax - logHeight, middleRect.width, logHeight), logSummary);
-
+            logView.Draw(logRect);
             DrawRightPane(rightRect);
-        }
 
-        // 中栏上半区：材质表（下半区留给日志控制台）
-        private Rect MiddleListRect(Rect middleRect)
-        {
-            float logHeight = Mathf.Min(logView.Height, Mathf.Max(30.0f, middleRect.height - 80.0f));
-            return new Rect(middleRect.x, middleRect.y, middleRect.width, Mathf.Max(40.0f, middleRect.height - logHeight - 2.0f));
+            // 右键菜单：材质表 / 日志区都弹同一份（选中情况 + 常用动作）。
+            // 坐标判断在这里做 —— 根坐标空间里 mousePosition 和这些 rect 才是同一个空间。
+            HandleContextMenu(listRect, logRect);
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -231,20 +241,9 @@ namespace lilToon
                 return string.Compare(a.Name, b.Name, System.StringComparison.OrdinalIgnoreCase);
             });
 
-            // 选择变了就重建属性面板（内部按签名比对，没变不会重建），并往日志里记一笔影响面
-            if(propertyPane.SetSelection(selectedMaterials))
-            {
-                logView.Add(BuildSelectionSummary());
-            }
-            logSummary = BuildLogSummary();
-        }
-
-        // 日志控制台标题条右端的短摘要
-        private string BuildLogSummary()
-        {
-            if(scan == null) return "未扫描";
-            if(selectedMaterials.Count == 0) return "已选 0 / 材质 " + scan.materials.Count;
-            return "已选 " + selectedMaterials.Count + " / 材质 " + scan.materials.Count + "  ·  物体 " + scan.nodeCount + "  ·  " + scan.scanMilliseconds.ToString("0.0") + " ms";
+            // 选择变了就重建属性面板（内部按签名比对，没变不会重建）
+            // （选中情况不再往日志里塞，改成右键菜单里看）
+            propertyPane.SetSelection(selectedMaterials);
         }
 
         private bool MatchesSearch(lilMaterialEntry entry)
@@ -340,7 +339,117 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
-        // 三栏之间的分隔条：按住拖动改列宽
+        // 中栏：材质表 / 日志区之间的横向分隔条（上下拖动改日志区高度，双击复位）
+        private void HandleLogSplitter(Rect splitterRect)
+        {
+            Event evt = Event.current;
+            EditorGUIUtility.AddCursorRect(splitterRect, MouseCursor.ResizeVertical);
+
+            Color splitterColor = draggingLogSplitter ? new Color(0.45f, 0.62f, 0.85f) : new Color(0.30f, 0.30f, 0.30f);
+            lilMaterialManagerStyles.Fill(new Rect(splitterRect.x, splitterRect.y + SplitterWidth * 0.5f - 1.0f, splitterRect.width, 2.0f), splitterColor);
+
+            if(evt.type == EventType.MouseDown && evt.button == 0 && splitterRect.Contains(evt.mousePosition))
+            {
+                if(evt.clickCount == 2)
+                {
+                    logHeight = DefaultLogHeight;       // 双击复位
+                    EditorPrefs.SetFloat(EditorPrefsLogHeight, logHeight);
+                }
+                else
+                {
+                    draggingLogSplitter = true;
+                }
+                evt.Use();
+            }
+
+            if(draggingLogSplitter && evt.type == EventType.MouseDrag)
+            {
+                // 往下拖 = 日志变矮
+                logHeight = Mathf.Clamp(logHeight - evt.delta.y, MinLogHeight, Mathf.Max(MinLogHeight, position.height - MinListHeight - 80.0f));
+                Repaint();
+                evt.Use();
+            }
+
+            if(draggingLogSplitter && (evt.type == EventType.MouseUp || evt.rawType == EventType.MouseUp))
+            {
+                draggingLogSplitter = false;
+                EditorPrefs.SetFloat(EditorPrefsLogHeight, logHeight);
+                evt.Use();
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 右键菜单：选中情况（只读信息）+ 常用动作
+        // 原本这些数字挤在日志标题条/工具条上，现在收进右键里，界面更干净。
+        private void HandleContextMenu(Rect listRect, Rect logRect)
+        {
+            Event evt = Event.current;
+            if(evt.type != EventType.ContextClick) return;
+
+            bool inLog = logRect.Contains(evt.mousePosition);
+            bool inList = listRect.Contains(evt.mousePosition);
+            if(!inLog && !inList) return;
+
+            var menu = new GenericMenu();
+            AppendSelectionInfo(menu);
+
+            if(inLog)
+            {
+                menu.AddSeparator(string.Empty);
+                menu.AddItem(new GUIContent("清空日志"), false, logView.Clear);
+                menu.AddItem(new GUIContent("复制日志到剪贴板"), false, CopyLogToClipboard);
+            }
+
+            menu.AddSeparator(string.Empty);
+            menu.AddItem(new GUIContent("全选材质"), false, delegate { SelectAllMaterials(true); });
+            menu.AddItem(new GUIContent("清空选择"), false, delegate { SelectAllMaterials(false); });
+            menu.AddItem(new GUIContent("刷新扫描"), false, delegate { needsRescan = true; Repaint(); });
+
+            menu.ShowAsContext();
+            evt.Use();
+        }
+
+        // 只读信息项（灰显）：把"这批选中了什么、会影响多少"讲清楚
+        private void AppendSelectionInfo(GenericMenu menu)
+        {
+            int total = scan != null ? scan.materials.Count : 0;
+            menu.AddDisabledItem(new GUIContent("选中材质：" + selectedMaterials.Count + " / " + total));
+
+            if(scan == null)
+            {
+                menu.AddDisabledItem(new GUIContent("还没有扫描"));
+                return;
+            }
+
+            menu.AddDisabledItem(new GUIContent("场景：物体 " + scan.nodeCount + "  ·  扫描 " + scan.scanMilliseconds.ToString("0.0") + " ms"));
+
+            if(selectedMaterials.Count == 0) return;
+
+            int usages = 0;
+            int prefabUsages = 0;
+            int embedded = 0;
+            for(int i = 0; i < selectedMaterials.Count; i++)
+            {
+                lilMaterialEntry entry = selectedMaterials[i];
+                usages += entry.UsageCount;
+                if(entry.isEmbedded) embedded++;
+                for(int u = 0; u < entry.usages.Count; u++)
+                {
+                    if(entry.usages[u].fromPrefabInstance) prefabUsages++;
+                }
+            }
+
+            menu.AddDisabledItem(new GUIContent("使用点：" + usages + "  ·  Prefab 实例：" + prefabUsages));
+            menu.AddDisabledItem(new GUIContent("内嵌材质：" + embedded + " 个（改动会落在宿主资产上）"));
+            menu.AddDisabledItem(new GUIContent("日志记录：" + logView.Count + " 条"));
+        }
+
+        private void CopyLogToClipboard()
+        {
+            EditorGUIUtility.systemCopyBuffer = logView.BuildText();
+        }
+        //--------------------------------------------------------------------------------------------------------------------------
+        // 三栏之间的竖向分隔条：按住拖动改列宽。
         // 中间那一栏不存宽度，它拿左右两栏剩下的空间，所以拖任意一条都会同时改中间栏
         private void HandleSplitter(Rect splitterRect, int index)
         {
@@ -382,31 +491,6 @@ namespace lilToon
             }
         }
 
-        // 影响面摘要：改材质资产是全局生效的，这里给出"会被影响多少"的量级
-        private string BuildSelectionSummary()
-        {
-            if(selectedMaterials.Count == 0) return "0 个材质";
-
-            int usages = 0;
-            int prefabUsages = 0;
-            int embedded = 0;
-            for(int i = 0; i < selectedMaterials.Count; i++)
-            {
-                lilMaterialEntry entry = selectedMaterials[i];
-                usages += entry.UsageCount;
-                if(entry.isEmbedded) embedded++;
-                for(int u = 0; u < entry.usages.Count; u++)
-                {
-                    if(entry.usages[u].fromPrefabInstance) prefabUsages++;
-                }
-            }
-
-            // 影响面：改材质资产是全局生效的，这些数字是"改动会波及多少"的量级
-            string summary = "选中 " + selectedMaterials.Count + " 个材质，共 " + usages + " 个使用点";
-            if(prefabUsages > 0) summary += "，其中 " + prefabUsages + " 个来自 Prefab 实例";
-            if(embedded > 0) summary += "；另有 " + embedded + " 个是内嵌材质（改动会落在宿主资产上）";
-            return summary;
-        }
     }
 }
 #endif

@@ -23,12 +23,11 @@ namespace lilToon
     internal sealed class lilMaterialManagerLogView
     {
         private const int MaxEntries = 400;
-        private const float CollapsedHeight = 30.0f;        // 只留标题条
+        public const float CollapsedHeight = 30.0f;         // 只留标题条
 
         private readonly List<lilMaterialManagerLogEntry> entries = new List<lilMaterialManagerLogEntry>();
         private Vector2 scroll;
         private bool expanded = true;
-        private float height = 150.0f;
 
         // 合并连续改动用（拖动滑条：值一变一变地走，日志只留一条）
         private lilMaterialManagerLogEntry mergingEntry;
@@ -39,9 +38,9 @@ namespace lilToon
         private static GUIStyle logStyle;
         private static GUIStyle warningStyle;
 
-        public static float HeaderHeight { get { return CollapsedHeight; } }
-        public float Height { get { return expanded ? height : CollapsedHeight; } }
+        public bool Expanded { get { return expanded; } }
         public int Count { get { return entries.Count; } }
+        public float ScrollY { get { return scroll.y; } }
 
         public void Clear()
         {
@@ -95,18 +94,33 @@ namespace lilToon
             while(entries.Count > MaxEntries) entries.RemoveAt(entries.Count - 1);
         }
 
-        // summary：画在标题条右端的选中摘要
-        public void Draw(Rect rect, string summary)
+        // 导出成纯文本（右键菜单"复制日志到剪贴板"）。
+        // 注意方向：entries 是新的在前，导出成人读的顺序（旧 → 新）。
+        public string BuildText()
+        {
+            if(entries.Count == 0) return string.Empty;
+
+            var builder = new System.Text.StringBuilder();
+            for(int i = entries.Count - 1; i >= 0; i--)
+            {
+                lilMaterialManagerLogEntry entry = entries[i];
+                builder.Append(entry.time).Append("  ").Append(entry.message).Append('\n');
+            }
+            return builder.ToString();
+        }
+
+        // 日志区高度由窗口控制（中栏和材质表之间有一条可拖的横向分隔条）
+        public void Draw(Rect rect)
         {
             GUILayout.BeginArea(rect);
-            lilMaterialManagerStyles.DrawSectionHeader(ref expanded, "日志", summary, new Color(0.20f, 0.20f, 0.24f));
+            lilMaterialManagerStyles.DrawSectionHeader(ref expanded, "日志", string.Empty, new Color(0.20f, 0.20f, 0.24f));
 
             if(expanded)
             {
                 using(new EditorGUILayout.HorizontalScope())
                 {
                     if(GUILayout.Button("清空", EditorStyles.miniButton, GUILayout.Width(44.0f))) Clear();
-                    GUILayout.Label("改动即时生效，Ctrl+Z 撤销；没吃到的材质会在这里点名", EditorStyles.miniLabel);
+                    GUILayout.Label("改动即时生效，Ctrl+Z 撤销；没吃到的材质会点名（右键看选中情况）", EditorStyles.miniLabel);
                 }
 
                 scroll = EditorGUILayout.BeginScrollView(scroll);
