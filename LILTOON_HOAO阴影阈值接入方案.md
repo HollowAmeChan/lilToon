@@ -252,13 +252,47 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 
 ---
 
-## 6. 分阶段落地
+## 6.1 实现记录（阶段 0-3 已落地，commit `3461566`）
+
+阶段 0-3 已一次性实现（它们共享同一个 `occ`/`shift` 计算，拆开提交只会增加 churn；`_RealtimeAOColorFromMain` 的删除按阶段 0 独立描述，但按你的要求与实现同批入库）。
+
+已落地的文件（12 个）：
+
+| 文件 | 内容 |
+|---|---|
+| `Shader/Includes/lil_common_frag.hlsl` | `lilSampleRealtimeAO` 上移至 `lilGetShading` 之前；新增 `AO -> shadow grade` 合成块；三层 toon 调用改为 `clamp(border − aoShift.k)`；`aoShadeAmount` 差分量；单层 AO 色层 |
+| `Shader/Includes/lil_common_input.hlsl` | 新增 `_AOThreshold` / `_AOColor` / `_AOMainStrength`（**无条件声明**，在 `LIL_FEATURE_REALTIMEAO` 保护块之外）；`TEXTURE2D(_RealtimeAOMask)` → `TEXTURE2D(_AOMask)` + 新增 `TEXTURE2D(_AOColorTex)`；删除 `_RealtimeAOColorFromMain` |
+| `Shader/Includes/lil_common_input_base.hlsl` | 同步新增三个标量、删除 `_RealtimeAOColorFromMain` |
+| `Shader/Includes/lil_common_input_opt.hlsl` | 删除 `_RealtimeAOColorFromMain`（该文件无任何 include 引用，属遗留） |
+| `Properties/Default.lilblock`、`Properties/DefaultAll.lilblock` | 删除 `_RealtimeAOColorFromMain`；`_RealtimeAOMask` 改名 `_AOMask`；新增 4 个属性（默认全中性） |
+| `Editor/lilToonSetting.cs` | `CheckTexture` / 属性名探测改用 `_AOMask` |
+| `Editor/lilPropertyNameChecker.cs` | `IsGIAOProperty` 增加 `_AO` 前缀匹配 |
+| `Editor/lilInspector/lilMaterialProperties.cs` | 字段改名 + 新增 4 个属性 + 属性数组 |
+| `Editor/lilInspector/lilPropertyGroupDrawerBaseSetting.cs`、`lilNextInspectorGUI.cs` | AO Mask / Threshold / Color / Main Strength UI |
+| `Editor/lilInspector/lilEditorVariables.cs` | 新增 `isShowAOColor` 折叠状态 |
+
+**实现期做出的三个决定（文档未预先规定，需要评审）**：
+
+1. **legacy AO Map 乘算的抑制**
+   `occ` 合成意味着离线 AO Map 已经被统一机制消费。若不抑制，同一张贴图会被用两次（`ramp *= aoMap` + `border −= (1−aoMap*aoScreen)*T`）。因此在 `abs(_AOThreshold) > 1e-6` 时，`_ShadowPostAO` 的两处 legacy 乘算被淡出（`aoLegacy = 1 − aoUnified`）。**后果：`_AOThreshold` 从 0 拉起来会把 AO Map 的机制从"ramp 乘算"切换成"阈值偏移"**，这是刻意行为，但美术会看到一次形态变化；`_ShadowAOShift` 的 Min/Max 在统一模式下不再生效。
+2. **没有新增 `LIL_FEATURE_*` 特性宏**
+   三个新标量无条件声明（否则 `LIL_FEATURE_ShadowBorderMask` 分支在未启用 REALTIMEAO 时会引用不到符号）；`_AOColorTex` 也没有特性宏，改为在 `if(_AOColor.a > 0.0)` 的一致分支内采样。代价：每个材质多一个纹理槽绑定（不采样时不产生取指）。若日后要做严格剥离，可补 `LIL_FEATURE_AOColorTex`。
+3. **`_RealtimeAOMask` 已改名 `_AOMask`，内部宏 `LIL_FEATURE_REALTIMEAOMask` 保留不变**（避免扩散到 `lilToonSetting` 的序列化字段与生成器）。因此属性名与宏名不再一致，已在 `lil_common_frag.hlsl` 的采样处留注释。
+
+**尚未完成 / 未验证**：
+
+- 生成 shader（`Assets/lilToon/Shader/*.shader`，52 个）**未重新生成**（需要 Unity 内执行 `[Shader] Refresh shaders`）。在重新生成之前，新属性不在材质上，`_AOThreshold` 读作 0 → 整条新链路不生效，即当前工作区行为与改动前等价。
+- §7 的验证清单全部**未执行**（无 Unity 环境）。
+
+---
+
+## 6.2 分阶段落地（原始计划）
 
 | 阶段 | 内容 | 风险 |
 |---|---|---|
-| 0 | 删除 `_RealtimeAOColorFromMain`（§5），独立提交 | 低；预设 0 影响 |
+| 0 | 删除 `_RealtimeAOColorFromMain`（§5） | 低；预设 0 影响 |
 | 1 | §3 阈值偏移：三层同时偏移 + `_AOThreshold`（默认 0） | 低，可一键回退 |
-| 2 | §4.2 的 `occ` 合成 + `_AOMask` 统一门控（含改名，若采纳） | 低，默认 white |
+| 2 | §4.2 的 `occ` 合成 + `_AOMask` 统一门控 | 低，默认 white |
 | 3 | `_AOColor` / `_AOColorTex` / `_AOMainStrength` 单层色层 | 低，默认 alpha 0 |
 | 4 | 参数收敛（合并 legacy：`_RealtimeAORemap`+`Contrast` → 带符号 Level；删 `_RealtimeAOColorTex`；`_ShadowPostAO` 枚举化） | **推迟**：`LILTOON_FORMAL_PIPELINE_DRAFT.md:16,128`「先做 7 个系统，后收敛 lilToon 暴露面」「AO…会决定材质接口的正确数量…避免裁了又开」。等 AO 系统接口定稿再做，且必须保留 `RampMultiply_Legacy` 兼容值 |
 
@@ -266,7 +300,9 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 
 ## 7. 验证清单
 
-- [ ] 重新生成 shader（52 个）无编译错误。
+- [ ] 在 Unity 内执行 `[Shader] Refresh shaders` 重新生成 52 个 shader（**必须**：新属性只加在模板里，不重新生成则 `_AOThreshold` 读作 0，新链路完全不生效）。
+- [ ] 重新生成后无编译错误（重点看 `_AO*` 三个新 uniform 与 `_AOColorTex` 是否进了 Properties 块）。
+- [ ] **AO Map 的"无遮挡"区域需为纯白**：统一模式用贴图原始值（没有 Min/Max 电平补偿），若贴图最高只有 0.8，则 `occ ≥ 0.2` 恒定 → 全身出现基线偏移。这是已知的简化，补偿手段要等阶段 4 的 `Level`。
 - [ ] **默认值等价性**：新属性全默认时与改动前逐像素一致（`_AOThreshold = 0` 是唯一安全阀，必须验证）。
 - [ ] 单路可用性：仅 AO Map / 仅屏幕 AO / 两者同开，三种情况的影形状与强度符合预期（§4.6 各行）。
 - [ ] **三层偏移**：三层 shadow color alpha 均为 1 时，AO 是否同时作用于 1/2/3 层边界；关掉 2nd/3rd 色（alpha 0）时不应出现"色块出现但画面没变"（层存在量加权生效）。
@@ -284,6 +320,8 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 
 ## 8. 已裁决记录
 
+已裁决（含实现期新增）：
+
 | # | 议题 | 裁决 |
 |---|---|---|
 | 1 | AO Color 层数 | **永远单层**（不做 3 层平行色） |
@@ -293,8 +331,8 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | 5 | `_RealtimeAOColorFromMain` | **删除，功能一并去掉** |
 | 6 | 消费模型 | 材质采样（非 ScreenProcess 施加） |
 | 7 | GI 与 AO | GI 用 AO 做 RT 光线参考，不直接叠暗 → 无重复叠暗 |
-
-仍待你定：§4.8 的 `_RealtimeAOMask` → `_AOMask` 改名是否采纳（建议采纳，预设 0 影响）。
+| 8 | `_RealtimeAOMask` 改名 | **采纳**（已实现；内部宏保留） |
+| 9 | legacy AO Map 乘算 | 实现期决定：统一模式启用时抑制（§6.1 决定 1）——**需评审** |
 
 ---
 
