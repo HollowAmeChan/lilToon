@@ -282,7 +282,7 @@ new GUIContent(GetLoc("sReceiveShadow"), GetLoc("sBlendR"))
 
 这种改动以后，必须执行：
 
-- `Assets/lilToon/[Shader] Refresh shaders`
+- `HoLil/[着色器] 刷新着色器`
 
 否则：
 
@@ -430,7 +430,7 @@ else LocalizedProperty(shadow3rdReceive);
 
 菜单：
 
-- `Assets/lilToon/[Shader] Refresh shaders`
+- `HoLil/[着色器] 刷新着色器`
 
 这是这次最关键的一步之一。
 

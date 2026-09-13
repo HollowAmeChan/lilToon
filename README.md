@@ -19,6 +19,7 @@
 - `Assets/lilToon/Shader/`：Unity 实际编译的生成结果。
 - `Assets/lilToon/Editor/`：shader 生成器、Inspector、材质工具、本地化和导入辅助。
 - 根目录下的 `LILTOON架构总览.md`、`接口契约.md`、URP AO/SSS 相关文档记录了本地 fork 的设计决策。
+- 根目录下的 `LILTOON_UI入口总览.md`：Inspector / 菜单栏 / 独立窗口的全部功能入口清单，改 UI 前后都要对照。
 
 ## 本地扩展
 

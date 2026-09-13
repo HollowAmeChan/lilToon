@@ -314,7 +314,7 @@ Build 前会为了优化做一次重写，Build 后又可能恢复。
 
 推荐手动触发：
 
-- 菜单：`Assets/lilToon/[Shader] Refresh shaders`
+- 菜单：`HoLil/[着色器] 刷新着色器`
 
 或者在设置面板里点：
 
@@ -353,7 +353,7 @@ Unity 通常会重新编译相关 shader，但这不等于“重新从模板展�
 
 1. 改 `BaseShaderResources/*.lilinternal`
 2. 或改 `CustomShaderResources/**/*.lilblock`
-3. 手动执行 `Assets/lilToon/[Shader] Refresh shaders`
+3. 手动执行 `HoLil/[着色器] 刷新着色器`
 4. 检查生成后的 `Assets/lilToon/Shader/*.shader`
 
 ### 8.2 改实现层时
