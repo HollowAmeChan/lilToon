@@ -1655,3 +1655,399 @@ msgstr "当前材质没有可显示的贴图槽。"
 msgid "sTextureSearchUndo"
 msgstr "应用 lilToon 贴图搜索结果"
 
+
+# ----------------------------------------------------------------------------
+# UI strings added by this fork (msgid = the English text; en-US keeps it)
+# ----------------------------------------------------------------------------
+msgid "Strength"
+msgstr "强度"
+
+msgid "Color"
+msgstr "颜色"
+
+msgid "Receive Shadow Mask"
+msgstr "接收阴影蒙版"
+
+msgid "Multi Light Intensity"
+msgstr "多光源强度"
+
+msgid "Multi Light Cast Shadow Strength"
+msgstr "附加光阴影强度"
+
+msgid "Planar Reflection"
+msgstr "平面反射"
+
+msgid "Min Smoothness"
+msgstr "最小光滑度"
+
+msgid "Edge Fade"
+msgstr "边缘淡出"
+
+msgid "Distance Fade Start"
+msgstr "距离淡出开始"
+
+msgid "Distance Fade End"
+msgstr "距离淡出结束"
+
+msgid "Flip Y"
+msgstr "垂直翻转"
+
+msgid "Legacy UI"
+msgstr "旧版 UI"
+
+msgid "New UI"
+msgstr "新版 UI"
+
+msgid "HoSSS Profile ID"
+msgstr "HoSSS 配置 ID"
+
+msgid "HoSSS Thickness Scale"
+msgstr "HoSSS 厚度倍率"
+
+msgid "HoSSS Transmission Strength"
+msgstr "HoSSS 透射强度"
+
+msgid "HoSSS Transmission Radius"
+msgstr "HoSSS 透射半径"
+
+msgid "AO Mask"
+msgstr "AO 蒙版"
+
+msgid "AO Color"
+msgstr "AO 颜色"
+
+msgid "GI"
+msgstr "GI"
+
+msgid "Global Illumination"
+msgstr "全局光照"
+
+msgid "Double Sided Global Illumination"
+msgstr "双面全局光照"
+
+msgid "MetadataBuffer"
+msgstr "MetadataBuffer"
+
+msgid "SSS"
+msgstr "SSS"
+
+msgid "SDF"
+msgstr "SDF"
+
+msgid "PrePass"
+msgstr "PrePass"
+
+msgid "Weighted OIT"
+msgstr "加权 OIT"
+
+msgid "Character Capture Opacity"
+msgstr "角色捕获不透明度"
+
+msgid "Material Variant"
+msgstr "材质变体"
+
+msgid "[Shader] LightMode Override"
+msgstr "[Shader] LightMode 覆盖"
+
+msgid "[GameObject] Fix lighting"
+msgstr "[GameObject] 修正光照"
+
+msgid "[Model] Setup from FBX"
+msgstr "[Model] 从 FBX 设置"
+
+msgid "Selected Materials"
+msgstr "已选材质"
+
+msgid "Fix"
+msgstr "修正"
+
+msgid "Custom 0"
+msgstr "Custom 0"
+
+msgid "Custom 1"
+msgstr "Custom 1"
+
+msgid "Custom 2"
+msgstr "Custom 2"
+
+msgid "Custom 3"
+msgstr "Custom 3"
+
+msgid "1st Specular"
+msgstr "第一层高光"
+
+msgid "2nd Specular"
+msgstr "第二层高光"
+
+msgid "HSV / Gamma"
+msgstr "HSV / Gamma"
+
+msgid "Blend Y Direction"
+msgstr "Y 方向混合"
+
+msgid "Ambient occlusion: shapes the toon shadow boundary, adds contact darkening, and can tint the AO-caused shadow"
+msgstr "环境光遮蔽：驱动卡通阴影边界、叠加接触暗化，并可给 AO 造成的阴影染色"
+
+msgid "R: 1 = receive AO. Gates both the realtime AO and the AO Map."
+msgstr "R：1 = 接收 AO。同时门控实时 AO 与 AO 贴图。"
+
+msgid "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."
+msgstr "RGBA：A = AO 阴影量。单层，混入全部三层阴影。"
+
+msgid "2nd Color"
+msgstr "第二层颜色"
+
+msgid "3rd Color"
+msgstr "第三层颜色"
+
+msgid "Adjust Mask"
+msgstr "调整蒙版"
+
+msgid "AlphaMask"
+msgstr "Alpha 蒙版"
+
+msgid "AO"
+msgstr "AO"
+
+msgid "AO Color Texture"
+msgstr "AO 颜色贴图"
+
+msgid "AO Contrast"
+msgstr "AO 对比度"
+
+msgid "AO Level"
+msgstr "AO 电平"
+
+msgid "AO Main Strength"
+msgstr "AO 主色强度"
+
+msgid "AO Strength"
+msgstr "AO 强度"
+
+msgid "AO Threshold"
+msgstr "AO 阈值"
+
+msgid "Apply Specular"
+msgstr "应用高光"
+
+msgid "Back"
+msgstr "背面"
+
+msgid "Blend"
+msgstr "混合"
+
+msgid "Blend Main"
+msgstr "与主色混合"
+
+msgid "Border"
+msgstr "边界"
+
+msgid "Comp"
+msgstr "Comp"
+
+msgid "Contrast"
+msgstr "对比度"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Cutout Length"
+msgstr "裁剪长度"
+
+msgid "Dissolve Mask"
+msgstr "溶解蒙版"
+
+msgid "Dissolve Noise Mask"
+msgstr "溶解噪点蒙版"
+
+msgid "Dissolve Noise Strength"
+msgstr "溶解噪点强度"
+
+msgid "Dissolve Position"
+msgstr "溶解位置"
+
+msgid "Dither"
+msgstr "Dither"
+
+msgid "DstBlendAlpha"
+msgstr "DstBlendAlpha"
+
+msgid "Fail"
+msgstr "Fail"
+
+msgid "Flip Copy"
+msgstr "翻转复制"
+
+msgid "Flip Mirror"
+msgstr "翻转镜像"
+
+msgid "Front"
+msgstr "正面"
+
+msgid "Gradation Map"
+msgstr "渐变映射"
+
+msgid "Gradation Speed"
+msgstr "渐变速度"
+
+msgid "Gradation Strength"
+msgstr "渐变强度"
+
+msgid "Gradation Texture"
+msgstr "渐变贴图"
+
+msgid "GSAA"
+msgstr "GSAA"
+
+msgid "HoCharacter Capture Opacity"
+msgstr "角色捕获不透明度"
+
+msgid "Invert Thickness"
+msgstr "反转厚度"
+
+msgid "Left Only"
+msgstr "仅左侧"
+
+msgid "Length Mask"
+msgstr "长度蒙版"
+
+msgid "LOD"
+msgstr "LOD"
+
+msgid "Main Color Strength"
+msgstr "主色强度"
+
+msgid "Mask"
+msgstr "蒙版"
+
+msgid "MatCap"
+msgstr "MatCap"
+
+msgid "Metallic"
+msgstr "金属度"
+
+msgid "Multiply"
+msgstr "相乘"
+
+msgid "Noise"
+msgstr "噪点"
+
+msgid "Normal Map"
+msgstr "法线贴图"
+
+msgid "Off"
+msgstr "关闭"
+
+msgid "Offset"
+msgstr "偏移"
+
+msgid "Parallax Map"
+msgstr "视差贴图"
+
+msgid "Parallax Scale"
+msgstr "视差强度"
+
+msgid "Particle Size"
+msgstr "粒子大小"
+
+msgid "Pass"
+msgstr "Pass"
+
+msgid "Power"
+msgstr "幂"
+
+msgid "Pre Cutoff"
+msgstr "Pre Cutoff"
+
+msgid "ReadMask"
+msgstr "ReadMask"
+
+msgid "Ref"
+msgstr "Ref"
+
+msgid "Right Only"
+msgstr "仅右侧"
+
+msgid "Rim"
+msgstr "边缘光"
+
+msgid "Tangent Map"
+msgstr "切线贴图"
+
+msgid "Texture"
+msgstr "贴图"
+
+msgid "Thickness"
+msgstr "厚度"
+
+msgid "Tiling"
+msgstr "平铺"
+
+msgid "TriMask"
+msgstr "TriMask"
+
+msgid "Use Emission"
+msgstr "使用自发光"
+
+msgid "Use Outline"
+msgstr "使用轮廓"
+
+msgid "UV0"
+msgstr "UV0"
+
+msgid "UV1"
+msgstr "UV1"
+
+msgid "UV2"
+msgstr "UV2"
+
+msgid "UV3"
+msgstr "UV3"
+
+msgid "Vector"
+msgstr "向量"
+
+msgid "Vector scale"
+msgstr "向量缩放"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "Width"
+msgstr "宽度"
+
+msgid "WriteMask"
+msgstr "WriteMask"
+
+msgid "ZFail"
+msgstr "ZFail"
+
+msgid "ZTest"
+msgstr "ZTest"
+
+msgid "ZWrite"
+msgstr "ZWrite"
+
+msgid "MetadataBuffer Custom 0"
+msgstr "MetadataBuffer 自定义 0"
+
+msgid "MetadataBuffer Custom 0 Color"
+msgstr "MetadataBuffer 自定义 0 颜色"
+
+msgid "MetadataBuffer Custom 1"
+msgstr "MetadataBuffer 自定义 1"
+
+msgid "MetadataBuffer Custom 1 Color"
+msgstr "MetadataBuffer 自定义 1 颜色"
+
+msgid "MetadataBuffer Custom 2"
+msgstr "MetadataBuffer 自定义 2"
+
+msgid "MetadataBuffer Custom 2 Color"
+msgstr "MetadataBuffer 自定义 2 颜色"
+
+msgid "MetadataBuffer Custom 3"
+msgstr "MetadataBuffer 自定义 3"
+
+msgid "MetadataBuffer Custom 3 Color"
+msgstr "MetadataBuffer 自定义 3 颜色"

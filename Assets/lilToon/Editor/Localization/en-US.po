@@ -1655,3 +1655,399 @@ msgstr "This material has no texture slots available for display."
 msgid "sTextureSearchUndo"
 msgstr "Apply lilToon texture search results"
 
+
+# ----------------------------------------------------------------------------
+# UI strings added by this fork (msgid = the English text; en-US keeps it)
+# ----------------------------------------------------------------------------
+msgid "Strength"
+msgstr "Strength"
+
+msgid "Color"
+msgstr "Color"
+
+msgid "Receive Shadow Mask"
+msgstr "Receive Shadow Mask"
+
+msgid "Multi Light Intensity"
+msgstr "Multi Light Intensity"
+
+msgid "Multi Light Cast Shadow Strength"
+msgstr "Multi Light Cast Shadow Strength"
+
+msgid "Planar Reflection"
+msgstr "Planar Reflection"
+
+msgid "Min Smoothness"
+msgstr "Min Smoothness"
+
+msgid "Edge Fade"
+msgstr "Edge Fade"
+
+msgid "Distance Fade Start"
+msgstr "Distance Fade Start"
+
+msgid "Distance Fade End"
+msgstr "Distance Fade End"
+
+msgid "Flip Y"
+msgstr "Flip Y"
+
+msgid "Legacy UI"
+msgstr "Legacy UI"
+
+msgid "New UI"
+msgstr "New UI"
+
+msgid "HoSSS Profile ID"
+msgstr "HoSSS Profile ID"
+
+msgid "HoSSS Thickness Scale"
+msgstr "HoSSS Thickness Scale"
+
+msgid "HoSSS Transmission Strength"
+msgstr "HoSSS Transmission Strength"
+
+msgid "HoSSS Transmission Radius"
+msgstr "HoSSS Transmission Radius"
+
+msgid "AO Mask"
+msgstr "AO Mask"
+
+msgid "AO Color"
+msgstr "AO Color"
+
+msgid "GI"
+msgstr "GI"
+
+msgid "Global Illumination"
+msgstr "Global Illumination"
+
+msgid "Double Sided Global Illumination"
+msgstr "Double Sided Global Illumination"
+
+msgid "MetadataBuffer"
+msgstr "MetadataBuffer"
+
+msgid "SSS"
+msgstr "SSS"
+
+msgid "SDF"
+msgstr "SDF"
+
+msgid "PrePass"
+msgstr "PrePass"
+
+msgid "Weighted OIT"
+msgstr "Weighted OIT"
+
+msgid "Character Capture Opacity"
+msgstr "Character Capture Opacity"
+
+msgid "Material Variant"
+msgstr "Material Variant"
+
+msgid "[Shader] LightMode Override"
+msgstr "[Shader] LightMode Override"
+
+msgid "[GameObject] Fix lighting"
+msgstr "[GameObject] Fix lighting"
+
+msgid "[Model] Setup from FBX"
+msgstr "[Model] Setup from FBX"
+
+msgid "Selected Materials"
+msgstr "Selected Materials"
+
+msgid "Fix"
+msgstr "Fix"
+
+msgid "Custom 0"
+msgstr "Custom 0"
+
+msgid "Custom 1"
+msgstr "Custom 1"
+
+msgid "Custom 2"
+msgstr "Custom 2"
+
+msgid "Custom 3"
+msgstr "Custom 3"
+
+msgid "1st Specular"
+msgstr "1st Specular"
+
+msgid "2nd Specular"
+msgstr "2nd Specular"
+
+msgid "HSV / Gamma"
+msgstr "HSV / Gamma"
+
+msgid "Blend Y Direction"
+msgstr "Blend Y Direction"
+
+msgid "Ambient occlusion: shapes the toon shadow boundary, adds contact darkening, and can tint the AO-caused shadow"
+msgstr "Ambient occlusion: shapes the toon shadow boundary, adds contact darkening, and can tint the AO-caused shadow"
+
+msgid "R: 1 = receive AO. Gates both the realtime AO and the AO Map."
+msgstr "R: 1 = receive AO. Gates both the realtime AO and the AO Map."
+
+msgid "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."
+msgstr "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."
+
+msgid "2nd Color"
+msgstr "2nd Color"
+
+msgid "3rd Color"
+msgstr "3rd Color"
+
+msgid "Adjust Mask"
+msgstr "Adjust Mask"
+
+msgid "AlphaMask"
+msgstr "AlphaMask"
+
+msgid "AO"
+msgstr "AO"
+
+msgid "AO Color Texture"
+msgstr "AO Color Texture"
+
+msgid "AO Contrast"
+msgstr "AO Contrast"
+
+msgid "AO Level"
+msgstr "AO Level"
+
+msgid "AO Main Strength"
+msgstr "AO Main Strength"
+
+msgid "AO Strength"
+msgstr "AO Strength"
+
+msgid "AO Threshold"
+msgstr "AO Threshold"
+
+msgid "Apply Specular"
+msgstr "Apply Specular"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Blend"
+msgstr "Blend"
+
+msgid "Blend Main"
+msgstr "Blend Main"
+
+msgid "Border"
+msgstr "Border"
+
+msgid "Comp"
+msgstr "Comp"
+
+msgid "Contrast"
+msgstr "Contrast"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Cutout Length"
+msgstr "Cutout Length"
+
+msgid "Dissolve Mask"
+msgstr "Dissolve Mask"
+
+msgid "Dissolve Noise Mask"
+msgstr "Dissolve Noise Mask"
+
+msgid "Dissolve Noise Strength"
+msgstr "Dissolve Noise Strength"
+
+msgid "Dissolve Position"
+msgstr "Dissolve Position"
+
+msgid "Dither"
+msgstr "Dither"
+
+msgid "DstBlendAlpha"
+msgstr "DstBlendAlpha"
+
+msgid "Fail"
+msgstr "Fail"
+
+msgid "Flip Copy"
+msgstr "Flip Copy"
+
+msgid "Flip Mirror"
+msgstr "Flip Mirror"
+
+msgid "Front"
+msgstr "Front"
+
+msgid "Gradation Map"
+msgstr "Gradation Map"
+
+msgid "Gradation Speed"
+msgstr "Gradation Speed"
+
+msgid "Gradation Strength"
+msgstr "Gradation Strength"
+
+msgid "Gradation Texture"
+msgstr "Gradation Texture"
+
+msgid "GSAA"
+msgstr "GSAA"
+
+msgid "HoCharacter Capture Opacity"
+msgstr "HoCharacter Capture Opacity"
+
+msgid "Invert Thickness"
+msgstr "Invert Thickness"
+
+msgid "Left Only"
+msgstr "Left Only"
+
+msgid "Length Mask"
+msgstr "Length Mask"
+
+msgid "LOD"
+msgstr "LOD"
+
+msgid "Main Color Strength"
+msgstr "Main Color Strength"
+
+msgid "Mask"
+msgstr "Mask"
+
+msgid "MatCap"
+msgstr "MatCap"
+
+msgid "Metallic"
+msgstr "Metallic"
+
+msgid "Multiply"
+msgstr "Multiply"
+
+msgid "Noise"
+msgstr "Noise"
+
+msgid "Normal Map"
+msgstr "Normal Map"
+
+msgid "Off"
+msgstr "Off"
+
+msgid "Offset"
+msgstr "Offset"
+
+msgid "Parallax Map"
+msgstr "Parallax Map"
+
+msgid "Parallax Scale"
+msgstr "Parallax Scale"
+
+msgid "Particle Size"
+msgstr "Particle Size"
+
+msgid "Pass"
+msgstr "Pass"
+
+msgid "Power"
+msgstr "Power"
+
+msgid "Pre Cutoff"
+msgstr "Pre Cutoff"
+
+msgid "ReadMask"
+msgstr "ReadMask"
+
+msgid "Ref"
+msgstr "Ref"
+
+msgid "Right Only"
+msgstr "Right Only"
+
+msgid "Rim"
+msgstr "Rim"
+
+msgid "Tangent Map"
+msgstr "Tangent Map"
+
+msgid "Texture"
+msgstr "Texture"
+
+msgid "Thickness"
+msgstr "Thickness"
+
+msgid "Tiling"
+msgstr "Tiling"
+
+msgid "TriMask"
+msgstr "TriMask"
+
+msgid "Use Emission"
+msgstr "Use Emission"
+
+msgid "Use Outline"
+msgstr "Use Outline"
+
+msgid "UV0"
+msgstr "UV0"
+
+msgid "UV1"
+msgstr "UV1"
+
+msgid "UV2"
+msgstr "UV2"
+
+msgid "UV3"
+msgstr "UV3"
+
+msgid "Vector"
+msgstr "Vector"
+
+msgid "Vector scale"
+msgstr "Vector scale"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Width"
+msgstr "Width"
+
+msgid "WriteMask"
+msgstr "WriteMask"
+
+msgid "ZFail"
+msgstr "ZFail"
+
+msgid "ZTest"
+msgstr "ZTest"
+
+msgid "ZWrite"
+msgstr "ZWrite"
+
+msgid "MetadataBuffer Custom 0"
+msgstr "MetadataBuffer Custom 0"
+
+msgid "MetadataBuffer Custom 0 Color"
+msgstr "MetadataBuffer Custom 0 Color"
+
+msgid "MetadataBuffer Custom 1"
+msgstr "MetadataBuffer Custom 1"
+
+msgid "MetadataBuffer Custom 1 Color"
+msgstr "MetadataBuffer Custom 1 Color"
+
+msgid "MetadataBuffer Custom 2"
+msgstr "MetadataBuffer Custom 2"
+
+msgid "MetadataBuffer Custom 2 Color"
+msgstr "MetadataBuffer Custom 2 Color"
+
+msgid "MetadataBuffer Custom 3"
+msgstr "MetadataBuffer Custom 3"
+
+msgid "MetadataBuffer Custom 3 Color"
+msgstr "MetadataBuffer Custom 3 Color"

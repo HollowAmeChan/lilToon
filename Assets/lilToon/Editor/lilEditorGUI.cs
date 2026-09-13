@@ -937,7 +937,7 @@ namespace lilToon
 
         public static void LightmapEmissionFlagsProperty(MaterialEditor materialEditor)
         {
-            if(!CheckPropertyToDraw("Global Illumination")) return;
+            if(!CheckPropertyToDraw(GetLoc("Global Illumination"))) return;
             #if UNITY_2019_1_OR_NEWER
                 materialEditor.LightmapEmissionFlagsProperty(0, true, true);
             #else

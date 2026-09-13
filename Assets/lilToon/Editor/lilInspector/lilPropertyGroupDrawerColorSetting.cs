@@ -23,7 +23,7 @@ namespace lilToon
             {
                 LocalizedPropertyTexture(maskBlendContent, mainColorAdjustMask);
                 EditorGUI.indentLevel++;
-                EditorGUILayout.LabelField("HSV / Gamma", boldLabel);
+                EditorGUILayout.LabelField(GetLoc("HSV / Gamma"), boldLabel);
                 ToneCorrectionGUI(mainTexHSVG, 1);
                 //EditorGUILayout.LabelField(GetLoc("sGradationMap"), boldLabel);
                 //LocalizedProperty(mainGradationStrength);
@@ -117,10 +117,10 @@ namespace lilToon
                     }
                     else if(shadowMaskType.floatValue == 2.0f)
                     {
-                        LocalizedPropertyTexture(new GUIContent("SDF", "Right (R), Left (G)"), shadowStrengthMask);
+                        LocalizedPropertyTexture(new GUIContent(GetLoc("SDF"), "Right (R), Left (G)"), shadowStrengthMask);
                         EditorGUI.indentLevel += 2;
                             LocalizedProperty(shadowStrengthMaskLOD);
-                            LocalizedProperty(shadowFlatBlur, "Blend Y Direction");
+                            LocalizedProperty(shadowFlatBlur, GetLoc("Blend Y Direction"));
                         EditorGUI.indentLevel -= 2;
                         LocalizedProperty(shadowStrength);
                     }
@@ -129,7 +129,7 @@ namespace lilToon
                         LocalizedPropertyTexture(maskStrengthContent, shadowStrengthMask, shadowStrength);
                         LocalizedProperty(shadowStrengthMaskLOD, 2);
                     }
-                    if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent("接收阴影蒙版"), shadowReceiveMask);
+                    if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Receive Shadow Mask")), shadowReceiveMask);
                     lilEditorGUI.DrawLine();
                     LocalizedProperty(shadowColorType);
                     LocalizedPropertyTexture(shadow1stColorRGBAContent, shadowColorTex, shadowColor);
@@ -230,9 +230,9 @@ namespace lilToon
                     LocalizedProperty(aoLevel);
                     LocalizedProperty(aoContrast);
                     lilEditorGUI.DrawLine();
-                    if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
+                    if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent(GetLoc("AO Mask"), GetLoc("R: 1 = receive AO. Gates both the realtime AO and the AO Map.")), aoMask);
                     lilEditorGUI.DrawLine();
-                    if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
+                    if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent(GetLoc("AO Color"), GetLoc("RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers.")), aoColorTex, aoColor);
                     LocalizedProperty(aoMainStrength);
                     EditorGUI.indentLevel -= 1;
                 }

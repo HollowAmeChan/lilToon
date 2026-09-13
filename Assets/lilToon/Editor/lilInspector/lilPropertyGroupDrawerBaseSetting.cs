@@ -115,7 +115,7 @@ namespace lilToon
                     }
                     if(isTransparent && lilOITEnabled.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                     {
-                        LocalizedProperty(lilOITEnabled, "Weighted OIT");
+                        LocalizedProperty(lilOITEnabled, GetLoc("Weighted OIT"));
                     }
                     if(!isGem && !isFakeShadow)
                     {
@@ -186,7 +186,7 @@ namespace lilToon
 
                 if(transparentModeBuf == TransparentMode.TwoPass)
                 {
-                    EditorGUILayout.LabelField("PrePass");
+                    EditorGUILayout.LabelField(GetLoc("PrePass"));
                     EditorGUILayout.BeginVertical(customBox);
                     LocalizedProperty(preOutType);
 
@@ -465,8 +465,8 @@ namespace lilToon
                         asUnlit.floatValue = 0.0f;
                     }
                     LocalizedProperty(vertexLightStrength);
-                    if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
-                    if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "附加光阴影强度");
+                    if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, GetLoc("Multi Light Intensity"));
+                    if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
                     LocalizedProperty(lightDirectionOverride);
                     if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();
@@ -479,13 +479,13 @@ namespace lilToon
         private void DrawGIAOSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.GIAO)) return;
-            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI", edSet.isShowGIAOSettings);
+            edSet.isShowGIAOSettings = lilEditorGUI.Foldout(GetLoc("GI"), edSet.isShowGIAOSettings);
             lilEditorGUI.DrawHelpButton("GI");
             if(edSet.isShowGIAOSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("Global Illumination", customToggleFont);
-                DrawMenuButton("GI", PropertyBlock.GIAO);
+                EditorGUILayout.LabelField(GetLoc("Global Illumination"), customToggleFont);
+                DrawMenuButton(GetLoc("GI"), PropertyBlock.GIAO);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
                 if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
@@ -499,19 +499,19 @@ namespace lilToon
         private void DrawMetadataBufferSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.MetadataBuffer)) return;
-            edSet.isShowMetadataBufferSettings = lilEditorGUI.Foldout("MetadataBuffer", edSet.isShowMetadataBufferSettings);
+            edSet.isShowMetadataBufferSettings = lilEditorGUI.Foldout(GetLoc("MetadataBuffer"), edSet.isShowMetadataBufferSettings);
             lilEditorGUI.DrawHelpButton("MetadataBuffer");
             if(edSet.isShowMetadataBufferSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("MetadataBuffer", customToggleFont);
-                DrawMenuButton("MetadataBuffer", PropertyBlock.MetadataBuffer);
+                EditorGUILayout.LabelField(GetLoc("MetadataBuffer"), customToggleFont);
+                DrawMenuButton(GetLoc("MetadataBuffer"), PropertyBlock.MetadataBuffer);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 0", "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
-                if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
-                if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
-                if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
-                if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, "Character Capture Opacity");
+                if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 0"), "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
+                if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 1"), "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
+                if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 2"), "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
+                if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 3"), "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
+                if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, GetLoc("Character Capture Opacity"));
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
             }
@@ -520,24 +520,24 @@ namespace lilToon
         private void DrawPlanarReflectionSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.PlanarReflection)) return;
-            edSet.isShowPlanarReflectionSettings = lilEditorGUI.Foldout("平面反射", edSet.isShowPlanarReflectionSettings);
+            edSet.isShowPlanarReflectionSettings = lilEditorGUI.Foldout(GetLoc("Planar Reflection"), edSet.isShowPlanarReflectionSettings);
             lilEditorGUI.DrawHelpButton("Planar Reflection");
             if(edSet.isShowPlanarReflectionSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("平面反射", customToggleFont);
+                EditorGUILayout.LabelField(GetLoc("Planar Reflection"), customToggleFont);
                 DrawMenuButton("Planar Reflection", PropertyBlock.PlanarReflection);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, "平面反射", false);
+                if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, GetLoc("Planar Reflection"), false);
                 if(usePlanarReflection.p == null || usePlanarReflection.floatValue != 0.0f)
                 {
-                    if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, "强度");
-                    if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, "颜色");
-                    if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, "最小光滑度");
-                    if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, "边缘淡出");
-                    if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, "距离淡出开始");
-                    if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, "距离淡出结束");
-                    if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, "垂直翻转");
+                    if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, GetLoc("Strength"));
+                    if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, GetLoc("Color"));
+                    if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, GetLoc("Min Smoothness"));
+                    if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, GetLoc("Edge Fade"));
+                    if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, GetLoc("Distance Fade Start"));
+                    if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, GetLoc("Distance Fade End"));
+                    if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, GetLoc("Flip Y"));
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();

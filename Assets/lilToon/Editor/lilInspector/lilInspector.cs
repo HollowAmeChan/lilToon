@@ -181,7 +181,7 @@ namespace lilToon
                 materialEditor = (MaterialEditor)Editor.CreateEditor(materials, typeof(MaterialEditor));
                 var inspector = new lilToonInspector();
 
-                EditorGUILayout.LabelField("Selected Materials", string.Join(", ", materials.Select(m => m.name).ToArray()), EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(GetLoc("Selected Materials"), string.Join(", ", materials.Select(m => m.name).ToArray()), EditorStyles.boldLabel);
                 lilEditorGUI.DrawLine();
                 scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
                 EditorGUILayout.BeginVertical(InitializeMarginBox(20, 4, 4));

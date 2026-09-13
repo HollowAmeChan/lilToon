@@ -90,7 +90,7 @@ namespace lilToon
             if(material.parent == null) return;
 
             EditorGUILayout.BeginVertical(boxOuter);
-            EditorGUILayout.LabelField("Material Variant", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(GetLoc("Material Variant"), EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.ObjectField("Parent", material.parent, typeof(Material), false);
             EditorGUI.EndDisabledGroup();

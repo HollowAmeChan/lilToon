@@ -220,7 +220,7 @@ namespace lilToon
                         if(transparentModeBuf == TransparentMode.TwoPass)
                         {
                             EditorGUILayout.BeginVertical(boxOuter);
-                            EditorGUILayout.LabelField("PrePass", customToggleFont);
+                            EditorGUILayout.LabelField(GetLoc("PrePass"), customToggleFont);
                             EditorGUILayout.BeginVertical(boxInner);
                             LocalizedProperty(preCull);
                             LocalizedProperty(preZclip);
@@ -918,14 +918,14 @@ namespace lilToon
                                 if(anisotropy2Reflection.floatValue != 0.0f)
                                 {
                                     EditorGUI.indentLevel++;
-                                    EditorGUILayout.LabelField("1st Specular", boldLabel);
+                                    EditorGUILayout.LabelField(GetLoc("1st Specular"), boldLabel);
                                     LocalizedProperty(anisotropyTangentWidth);
                                     LocalizedProperty(anisotropyBitangentWidth);
                                     LocalizedProperty(anisotropyShift);
                                     LocalizedProperty(anisotropyShiftNoiseScale);
                                     LocalizedProperty(anisotropySpecularStrength);
                                     lilEditorGUI.DrawLine();
-                                    EditorGUILayout.LabelField("2nd Specular", boldLabel);
+                                    EditorGUILayout.LabelField(GetLoc("2nd Specular"), boldLabel);
                                     LocalizedProperty(anisotropy2ndTangentWidth);
                                     LocalizedProperty(anisotropy2ndBitangentWidth);
                                     LocalizedProperty(anisotropy2ndShift);
@@ -982,13 +982,13 @@ namespace lilToon
                 // SSS
                 if(!isGem && ShouldDrawBlock(PropertyBlock.SSS))
                 {
-                    edSet.isShowSSS = lilEditorGUI.Foldout("SSS", edSet.isShowSSS);
-                    DrawMenuButton("SSS", PropertyBlock.SSS);
+                    edSet.isShowSSS = lilEditorGUI.Foldout(GetLoc("SSS"), edSet.isShowSSS);
+                    DrawMenuButton(GetLoc("SSS"), PropertyBlock.SSS);
                     if(edSet.isShowSSS)
                     {
                         EditorGUILayout.BeginVertical(boxOuter);
                         LocalizedProperty(useSSS, false);
-                        DrawMenuButton("SSS", PropertyBlock.SSS);
+                        DrawMenuButton(GetLoc("SSS"), PropertyBlock.SSS);
                         if(useSSS.floatValue == 1)
                         {
                             EditorGUILayout.BeginVertical(boxInnerHalf);
@@ -996,10 +996,10 @@ namespace lilToon
                             EditorGUI.indentLevel++;
                             LocalizedPropertyAlpha(sssColor);
                             LocalizedProperty(sssStrength);
-                            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, "HoSSS 配置 ID");
-                            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, "HoSSS 厚度倍率");
-                            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, "HoSSS 透射强度");
-                            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, "HoSSS 透射半径");
+                            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, GetLoc("HoSSS Profile ID"));
+                            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, GetLoc("HoSSS Thickness Scale"));
+                            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, GetLoc("HoSSS Transmission Strength"));
+                            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, GetLoc("HoSSS Transmission Radius"));
                             LocalizedProperty(sssReceiveShadow);
                             LocalizedProperty(sssThicknessInvert);
                             EditorGUI.indentLevel--;
@@ -1340,7 +1340,7 @@ namespace lilToon
                         if(transparentModeBuf == TransparentMode.TwoPass)
                         {
                             EditorGUILayout.BeginVertical(boxOuter);
-                            EditorGUILayout.LabelField("PrePass", customToggleFont);
+                            EditorGUILayout.LabelField(GetLoc("PrePass"), customToggleFont);
                             EditorGUILayout.BeginVertical(boxInner);
                             LocalizedProperty(preCull);
                             LocalizedProperty(preZclip);

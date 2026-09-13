@@ -374,7 +374,7 @@ namespace lilToon
                 if(!isGem && mainColorAdjustMask.p != null && mainTexHSVG.p != null && mainGradationStrength.p != null)
                 {
                     LocalizedPropertyTexture(maskBlendContent, mainColorAdjustMask);
-                    EditorGUILayout.LabelField("HSV / Gamma", boldLabel);
+                    EditorGUILayout.LabelField(GetLoc("HSV / Gamma"), boldLabel);
                     ToneCorrectionGUI(mainTexHSVG, 1);
                     lilEditorGUI.DrawLine();
                     LocalizedPropertyTexture(gradationMapContent, mainGradationTex, mainGradationStrength);
@@ -499,10 +499,10 @@ namespace lilToon
             }
             else if(shadowMaskType.floatValue == 2f)
             {
-                LocalizedPropertyTexture(new GUIContent("SDF", "Right (R), Left (G)"), shadowStrengthMask);
+                LocalizedPropertyTexture(new GUIContent(GetLoc("SDF"), "Right (R), Left (G)"), shadowStrengthMask);
                 EditorGUI.indentLevel += 2;
                 LocalizedProperty(shadowStrengthMaskLOD);
-                LocalizedProperty(shadowFlatBlur, "Blend Y Direction");
+                LocalizedProperty(shadowFlatBlur, GetLoc("Blend Y Direction"));
                 EditorGUI.indentLevel -= 2;
                 LocalizedProperty(shadowStrength);
             }
@@ -511,7 +511,7 @@ namespace lilToon
                 LocalizedPropertyTexture(maskStrengthContent, shadowStrengthMask, shadowStrength);
                 LocalizedProperty(shadowStrengthMaskLOD, 2);
             }
-            if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent("接收阴影蒙版"), shadowReceiveMask);
+            if(shadowReceiveMask.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Receive Shadow Mask")), shadowReceiveMask);
             lilEditorGUI.DrawLine();
             LocalizedProperty(shadowColorType);
             LocalizedPropertyTexture(shadow1stColorRGBAContent, shadowColorTex, shadowColor);
@@ -636,14 +636,14 @@ namespace lilToon
                     if(anisotropy2Reflection.floatValue != 0f)
                     {
                         EditorGUI.indentLevel++;
-                        EditorGUILayout.LabelField("1st Specular", boldLabel);
+                        EditorGUILayout.LabelField(GetLoc("1st Specular"), boldLabel);
                         LocalizedProperty(anisotropyTangentWidth);
                         LocalizedProperty(anisotropyBitangentWidth);
                         LocalizedProperty(anisotropyShift);
                         LocalizedProperty(anisotropyShiftNoiseScale);
                         LocalizedProperty(anisotropySpecularStrength);
                         lilEditorGUI.DrawLine();
-                        EditorGUILayout.LabelField("2nd Specular", boldLabel);
+                        EditorGUILayout.LabelField(GetLoc("2nd Specular"), boldLabel);
                         LocalizedProperty(anisotropy2ndTangentWidth);
                         LocalizedProperty(anisotropy2ndBitangentWidth);
                         LocalizedProperty(anisotropy2ndShift);
@@ -682,10 +682,10 @@ namespace lilToon
             LocalizedPropertyTexture(maskStrengthContent, sssThicknessMap);
             LocalizedPropertyColorWithAlpha(sssColor);
             LocalizedProperty(sssStrength);
-            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, "HoSSS 配置 ID");
-            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, "HoSSS 厚度倍率");
-            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, "HoSSS 透射强度");
-            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, "HoSSS 透射半径");
+            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, GetLoc("HoSSS Profile ID"));
+            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, GetLoc("HoSSS Thickness Scale"));
+            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, GetLoc("HoSSS Transmission Strength"));
+            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, GetLoc("HoSSS Transmission Radius"));
             LocalizedProperty(sssReceiveShadow);
             LocalizedProperty(sssThicknessInvert);
             LocalizedProperty(sssMainStrength);
@@ -748,7 +748,7 @@ namespace lilToon
         {
             DrawNextPanel(delegate
             {
-                DrawNextSection("lighting.giao", "GI", PropertyBlock.GIAO, delegate
+                DrawNextSection("lighting.giao", GetLoc("GI"), PropertyBlock.GIAO, delegate
                 {
                     if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                 }, true);
@@ -758,7 +758,7 @@ namespace lilToon
                 if(!isGem) DrawNextSection("lighting.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, false, null, true, useRimShade);
                 DrawNextSection("lighting.rim", GetLoc("sRimLightSetting"), PropertyBlock.RimLight, DrawNextRim, false, null, true, useRim);
                 if(!isGem) DrawNextSection("lighting.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, false, null, true, useBacklight);
-                if(!isGem) DrawNextSection("lighting.sss", "SSS", PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
+                if(!isGem) DrawNextSection("lighting.sss", GetLoc("SSS"), PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
             });
         }
 
@@ -778,8 +778,8 @@ namespace lilToon
                 asUnlit.floatValue = 0.0f;
             }
             LocalizedProperty(vertexLightStrength);
-            if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, "多光源强度");
-            if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, "附加光阴影强度");
+            if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, GetLoc("Multi Light Intensity"));
+            if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
             LocalizedProperty(lightDirectionOverride);
             if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
             BlendOpFASetting();
@@ -812,25 +812,25 @@ namespace lilToon
 
         private void DrawNextMetadata()
         {
-            if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 0", "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
-            if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 1", "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
-            if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 2", "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
-            if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent("Custom 3", "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
-            if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, "Character Capture Opacity");
+            if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 0"), "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
+            if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 1"), "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
+            if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 2"), "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
+            if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 3"), "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
+            if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, GetLoc("Character Capture Opacity"));
         }
 
         private void DrawNextPlanarReflection()
         {
-            if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, "平面反射", false);
+            if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, GetLoc("Planar Reflection"), false);
             if(usePlanarReflection.p == null || usePlanarReflection.floatValue != 0f)
             {
-                if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, "强度");
-                if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, "颜色");
-                if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, "最小光滑度");
-                if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, "边缘淡出");
-                if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, "距离淡出开始");
-                if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, "距离淡出结束");
-                if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, "垂直翻转");
+                if(planarReflectionStrength.p != null) LocalizedProperty(planarReflectionStrength.p, GetLoc("Strength"));
+                if(planarReflectionTint.p != null) LocalizedProperty(planarReflectionTint.p, GetLoc("Color"));
+                if(planarReflectionMinSmoothness.p != null) LocalizedProperty(planarReflectionMinSmoothness.p, GetLoc("Min Smoothness"));
+                if(planarReflectionEdgeFade.p != null) LocalizedProperty(planarReflectionEdgeFade.p, GetLoc("Edge Fade"));
+                if(planarReflectionFadeStart.p != null) LocalizedProperty(planarReflectionFadeStart.p, GetLoc("Distance Fade Start"));
+                if(planarReflectionFadeEnd.p != null) LocalizedProperty(planarReflectionFadeEnd.p, GetLoc("Distance Fade End"));
+                if(planarReflectionFlipY.p != null) LocalizedProperty(planarReflectionFlipY.p, GetLoc("Flip Y"));
             }
         }
 
@@ -902,7 +902,7 @@ namespace lilToon
                 }, false);
                 if(isRefr) DrawNextSection("effects.refraction", GetLoc("sRefractionSetting"), PropertyBlock.Refraction, DrawNextRefraction, false);
                 if(isFur) DrawNextSection("effects.fur", GetLoc("sFurSetting"), PropertyBlock.Fur, DrawNextFur, false);
-                DrawNextSection("effects.planar", "平面反射", PropertyBlock.PlanarReflection, DrawNextPlanarReflection, false);
+                DrawNextSection("effects.planar", GetLoc("Planar Reflection"), PropertyBlock.PlanarReflection, DrawNextPlanarReflection, false);
             });
         }
 
@@ -911,7 +911,7 @@ namespace lilToon
             DrawNextPanel(delegate
             {
                 DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, true);
-                DrawNextSection("pipeline.metadata", "MetadataBuffer", PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
+                DrawNextSection("pipeline.metadata", GetLoc("MetadataBuffer"), PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
                 DrawNextSection("pipeline.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
                 {
                     if(lilEditorGUI.Button(GetLoc("sRenderingReset")))
@@ -954,7 +954,7 @@ namespace lilToon
                     if(transparentModeBuf == TransparentMode.TwoPass)
                     {
                         lilEditorGUI.DrawLine();
-                        EditorGUILayout.LabelField("PrePass", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField(GetLoc("PrePass"), EditorStyles.boldLabel);
                         EditorGUI.indentLevel++;
                         LocalizedProperty(preCull);
                         LocalizedProperty(preZclip);
@@ -1028,7 +1028,7 @@ namespace lilToon
         {
             if(isMulti) LocalizedProperty(asOverlay);
             if(isUseAlpha) LocalizedProperty(cutoff);
-            if(isTransparent && lilOITEnabled.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(lilOITEnabled, "Weighted OIT");
+            if(isTransparent && lilOITEnabled.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(lilOITEnabled, GetLoc("Weighted OIT"));
             if(!isGem && !isFakeShadow)
             {
                 LocalizedProperty(cull);
@@ -1095,7 +1095,7 @@ namespace lilToon
             if(transparentModeBuf == TransparentMode.TwoPass)
             {
                 lilEditorGUI.DrawLine();
-                EditorGUILayout.LabelField("PrePass", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(GetLoc("PrePass"), EditorStyles.boldLabel);
                 LocalizedProperty(preOutType);
                 int preBlendMode = -1;
                 if(preSrcBlend.floatValue == 1f && preDstBlend.floatValue == 10f) preBlendMode = 0; // Normal
@@ -1591,7 +1591,7 @@ namespace lilToon
             DrawNextStencilBlock(stencilRef, stencilReadMask, stencilWriteMask, stencilComp, stencilPass, stencilFail, stencilZFail);
             if(transparentModeBuf == TransparentMode.TwoPass)
             {
-                EditorGUILayout.LabelField("PrePass", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(GetLoc("PrePass"), EditorStyles.boldLabel);
                 DrawNextStencilBlock(preStencilRef, preStencilReadMask, preStencilWriteMask, preStencilComp, preStencilPass, preStencilFail, preStencilZFail);
             }
             if(isOutl)

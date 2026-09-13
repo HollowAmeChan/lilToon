@@ -300,7 +300,7 @@ namespace lilToon
             {
                 GUILayout.Label(chinese ? chineseMessage : englishMessage, EditorStyles.miniLabel, GUILayout.ExpandWidth(true));
                 GUIContent fixContent = EditorGUIUtility.IconContent("Refresh", chinese ? chineseMessage : englishMessage);
-                if(fixContent == null || fixContent.image == null) fixContent = new GUIContent("Fix", chinese ? chineseMessage : englishMessage);
+                if(fixContent == null || fixContent.image == null) fixContent = new GUIContent(GetLoc("Fix"), chinese ? chineseMessage : englishMessage);
                 if(GUILayout.Button(fixContent, textureSearchNextActionStyle, GUILayout.Width(24f), GUILayout.Height(EditorGUIUtility.singleLineHeight + 2f)))
                 {
                     fix();

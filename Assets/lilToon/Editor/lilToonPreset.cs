@@ -280,7 +280,7 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveAnisotropy                = EditorGUILayout.ToggleLeft(GetLoc("sAnisotropy"), shouldSaveAnisotropy);
                 shouldSaveRimShade                  = EditorGUILayout.ToggleLeft(GetLoc("sRimShade"), shouldSaveRimShade);
                 shouldSaveBacklight                 = EditorGUILayout.ToggleLeft(GetLoc("sBacklight"), shouldSaveBacklight);
-                shouldSaveSSS                       = EditorGUILayout.ToggleLeft("SSS", shouldSaveSSS);
+                shouldSaveSSS                       = EditorGUILayout.ToggleLeft(GetLoc("SSS"), shouldSaveSSS);
                 shouldSaveReflection                = EditorGUILayout.ToggleLeft(GetLoc("sReflection"), shouldSaveReflection);
                 shouldSaveMatCap                    = EditorGUILayout.ToggleLeft(GetLoc("sMatCap"), shouldSaveMatCap);
                 shouldSaveMatCap2nd                 = EditorGUILayout.ToggleLeft(GetLoc("sMatCap2nd"), shouldSaveMatCap2nd);

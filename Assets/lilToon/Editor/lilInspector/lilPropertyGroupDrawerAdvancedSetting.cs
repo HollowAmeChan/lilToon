@@ -238,7 +238,7 @@ namespace lilToon
 
                 if(transparentModeBuf == TransparentMode.TwoPass)
                 {
-                    EditorGUILayout.LabelField("PrePass");
+                    EditorGUILayout.LabelField(GetLoc("PrePass"));
                     EditorGUILayout.BeginVertical(customBox);
                     LocalizedProperty(preStencilRef);
                     LocalizedProperty(preStencilReadMask);

@@ -99,7 +99,7 @@ namespace lilToon
 
         private static void ShaderSettingDefaultValueGUI()
         {
-            EditorGUILayout.LabelField("[GameObject] Fix lighting", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(GetLoc("[GameObject] Fix lighting"), EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             shaderSetting.defaultAsUnlit                        = EditorGUILayout.Slider(GetLoc("sAsUnlit"), shaderSetting.defaultAsUnlit, 0.0f, 1.0f);
             shaderSetting.defaultVertexLightStrength            = EditorGUILayout.Slider(GetLoc("sVertexLightStrength"), shaderSetting.defaultVertexLightStrength, 0.0f, 1.0f);
@@ -109,14 +109,14 @@ namespace lilToon
             shaderSetting.defaultBeforeExposureLimit            = EditorGUILayout.FloatField(GetLoc("sBeforeExposureLimit"), shaderSetting.defaultBeforeExposureLimit);
             shaderSetting.defaultlilDirectionalLightStrength    = EditorGUILayout.Slider(GetLoc("sDirectionalLightStrength"), shaderSetting.defaultlilDirectionalLightStrength, 0.0f, 1.0f);
             EditorGUI.indentLevel--;
-            EditorGUILayout.LabelField("[Model] Setup from FBX", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(GetLoc("[Model] Setup from FBX"), EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             shaderSetting.presetFace = (lilToonPreset)EditorGUILayout.ObjectField("Face", shaderSetting.presetFace, typeof(lilToonPreset), false);
             shaderSetting.presetSkin = (lilToonPreset)EditorGUILayout.ObjectField("Skin", shaderSetting.presetSkin, typeof(lilToonPreset), false);
             shaderSetting.presetHair = (lilToonPreset)EditorGUILayout.ObjectField("Hair", shaderSetting.presetHair, typeof(lilToonPreset), false);
             shaderSetting.presetCloth = (lilToonPreset)EditorGUILayout.ObjectField("Cloth", shaderSetting.presetCloth, typeof(lilToonPreset), false);
             EditorGUI.indentLevel--;
-            EditorGUILayout.LabelField("[Shader] LightMode Override", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(GetLoc("[Shader] LightMode Override"), EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             GUI.enabled = !File.Exists(lilDirectoryManager.GetSettingLockPath());
             shaderSetting.mainLightModeName = EditorGUILayout.TextField("Main", shaderSetting.mainLightModeName);

@@ -18,8 +18,8 @@ namespace lilToon
         {
             bool chinese = lilLanguageManager.langSet.languageName.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
             GUIContent[] labels = chinese
-                ? new[] { new GUIContent("新版 UI", "切换到新版 Inspector UI"), new GUIContent("旧版 UI", "切换到经典 Inspector UI") }
-                : new[] { new GUIContent("New UI", "Switch to the new Inspector UI"), new GUIContent("Legacy UI", "Switch to the classic Inspector UI") };
+                ? new[] { new GUIContent(GetLoc("New UI"), "切换到新版 Inspector UI"), new GUIContent(GetLoc("Legacy UI"), "切换到经典 Inspector UI") }
+                : new[] { new GUIContent(GetLoc("New UI"), "Switch to the new Inspector UI"), new GUIContent(GetLoc("Legacy UI"), "Switch to the classic Inspector UI") };
 
             int current = edSet.useNextInspector ? InspectorUiNext : InspectorUiLegacy;
             EditorGUI.BeginChangeCheck();
