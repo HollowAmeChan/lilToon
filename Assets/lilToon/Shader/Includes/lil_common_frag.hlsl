@@ -1020,7 +1020,15 @@
             #endif
 
             // Force shadow on back face
-            float bfshadow = (fd.facing < 0.0) ? 1.0 - _BackfaceForceShadow : 1.0;
+            // The outline is an inverted hull (drawn with its own cull mode, usually Front),
+            // so its facing describes the hull's inner side rather than the body surface it
+            // borders. Applying the backface rule there would push the whole outline to the
+            // deepest shadow with no lit/shadow variation, so it is skipped in that pass.
+            #if defined(LIL_OUTLINE)
+                float bfshadow = 1.0;
+            #else
+                float bfshadow = (fd.facing < 0.0) ? 1.0 - _BackfaceForceShadow : 1.0;
+            #endif
             lns.x *= bfshadow;
             lns.y *= bfshadow;
             lns.w *= bfshadow;
@@ -1137,8 +1145,12 @@
             ln2 = lilTooningScale(_AAStrength, ln2, _Shadow2ndBorder, _Shadow2ndBlur);
             lnB = lilTooningScale(_AAStrength, lnB, _ShadowBorder, _ShadowBlur, _ShadowBorderRange);
 
-            // Force shadow on back face
-            float bfshadow = (fd.facing < 0.0) ? 1.0 - _BackfaceForceShadow : 1.0;
+            // Force shadow on back face (skipped in the outline pass, see lilGetShading above)
+            #if defined(LIL_OUTLINE)
+                float bfshadow = 1.0;
+            #else
+                float bfshadow = (fd.facing < 0.0) ? 1.0 - _BackfaceForceShadow : 1.0;
+            #endif
             ln1 *= bfshadow;
             ln2 *= bfshadow;
             lnB *= bfshadow;

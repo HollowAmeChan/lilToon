@@ -1,12 +1,11 @@
 # HoAO 接入方案（AO 系统：toon 阴影 ramp + 整体压暗）
 
-> 状态：**已落地（v9）**。阶段 0-3 + 入口/参数收敛 + 汉化都已实现；52 个 shader 已重新生成并编译通过。
-> **v9（本轮，压暗颜色 + 参数归位）**：
-> - **压暗颜色回来了**：新增 `_AOColor`（`AO Dark Color`，Color，默认 **(0,0,0,1)** = 纯压暗）。输出 1 改为
->   `fd.col.rgb *= lerp(1.0, _AOColor.rgb, saturate(1.0 - fd.aoVis) * _AODarkStrength)`
->   —— 遮挡量仍来自共用输入（AO Map × 实时 AO，`_AOMask` 门控），颜色由 `_AOColor` 给出；alpha 不参与（沿用 `_ShadowBorderColor` 那种"只用 RGB"的先例）。`_AOColor` 默认黑时与 v8 公式逐像素等价。
-> - **参数归位**：AO 里"隐式影响阴影"的那部分（共用 AO Map + LOD、`_AOStrength` ramp 偏移、实时源 `Realtime AO`/Level/Contrast、`_AOMask`）**放回阴影栏**，仍是栏内 `AO` 折叠子级（两套 inspector 共用 `DrawShadowAOGroup()`）；顶层 `AO` 栏只留**整体压暗**（`_AOColor` + `_AODarkStrength`），并在标题/摘要里注明它复用阴影栏的 AO 输入。
-> - **参数 8 → 9**：新增 `_AOColor`。
+> 状态：**已落地（v10）**。阶段 0-3 + 入口/参数收敛 + 汉化都已实现；52 个 shader 已重新生成并编译通过。
+> **v10（本轮，描边阴影不再被背面规则拍平）**：
+> - **根因**：`_BackfaceForceShadow` 用 `fd.facing` 判定，而描边是**反向壳**（`_OutlineCull` 默认 `Front` = 剔除正面 → 光栅化出来的片元都是背面 → `SV_IsFrontFace = false` → `fd.facing = -1`）。于是描边**每个像素**都被当成"本体背面"，`bfshadow = 1 - _BackfaceForceShadow = 0` → `lns.x/y/z/w` 全部乘 0 → 整条描边被钉在最深层阴影（`_ShadowStrength` 只把它拉回一部分），表现就是"打开描边阴影 = 整条变黑、没有区域区分"。
+> - **修法**：`lilGetShading`（本体版与 lite 版）里的背面强制阴影加 `#if defined(LIL_OUTLINE)` 分支 → 描边 pass 取 `bfshadow = 1.0`。理由：描边的朝向描述的是壳的内侧，不是它贴着的本体表面；本体的背面强制阴影不受影响。
+> - **顺带纠正**：v8/v9 文档里"描边读不到实时 AO"的说法**是错的**。Ho-GTAO 的深度/法线来自 Ho-GeometryBuffer，而**描边几何不在其中**（`HO_GEOMETRY_BUFFER` pass 不定义 `LIL_OUTLINE`，描边只进 `HO_OUTLINE_NORMAL_DEPTH`），所以描边在自己的屏幕位置采样到的正是"它背后那块表面"的 AO —— 这是想要的语义，不需要插值器、也不该跳过实时源（见 §3.2）。
+> v9：压暗颜色 `_AOColor` 回归；会隐式影响阴影的 AO 参数放回阴影栏，顶层 `AO` 栏只留整体压暗。
 > v8：AO 独立成栏、一份输入两个输出（`fd.aoVis` 合成一次 → 压暗 + ramp 偏移）。
 > v7（语义回退）：AO 只作用于三段颜色 ramp，删除 v5/v6 的阈值偏移与 v6 的整体压暗（v8 起压暗按新语义重新加回）。
 > v6（语义收敛）：删除整个 AO 影色层（`_AOColor` / `_AOColorTex` / `_AOMainStrength` 三个属性 + 差值驱动、采样、UI、`aoShadeAmount` 机制）。（v9 只把 `_AOColor` 以"压暗颜色"的身份收回，`_AOColorTex` 不再回来 —— 贴图输入共用阴影栏的 AO Map。）
@@ -16,7 +15,7 @@
 > v4：AO Color 永远单层、直接混入三层；AO Mask 同时门控实时与离线；新属性统一 `_AO` 前缀；删除 `_RealtimeAOColorFromMain`。
 > v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 质量达标，噪声/方向偏置不构成门槛。
 > 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准。
-> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化 / `36d9e40` v7（AO 只作用于 ramp）/ `019b6d1` v8（AO 独立栏、一份输入两个输出）；v9 为本轮提交。
+> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化 / `36d9e40` v7（AO 只作用于 ramp）/ `019b6d1` v8（一份输入两个输出）/ `4cf1f80` v9（压暗颜色 + 参数归位）；v10 为本轮提交。
 
 ---
 
@@ -29,7 +28,7 @@
    - 两条输出强度独立；**共用同一张贴图、同一个遮挡量、同一个 mask**，没有第二张贴图。
 3. **入口（v9 归位）**：会隐式影响阴影的那部分放回**阴影栏**，作为栏内 `AO` 折叠子级（`DrawShadowAOGroup()`，两套 inspector 共用）：共用 AO Map（+LOD）、`_AOStrength`（ramp 偏移）、`_AOMask`、实时源（`Realtime AO` / Level / Contrast）。**顶层 `AO` 栏只放整体压暗**（`_AOColor` + `_AODarkStrength`），标题/摘要注明它复用阴影栏的 AO 输入。阴影栏的 AO 子级不随 `_UseShadow` 灰掉（同一份输入也喂压暗），顶层 `AO` 栏始终可编辑。
 4. **9 个属性**（权威清单见 §4.7）：`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOMask`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`（以上在阴影栏的 AO 子级内）、`_AOColor`、`_AODarkStrength`（以上在顶层 AO 栏）。实时可见度 = `saturate((_HoAOTexture.r − 0.5) * _AOContrast + 0.5 − _AOLevel)`（`_AOContrast` 是轴心 0.5 的增益，`_AOLevel` **正值 = AO 更强**）。
-5. **描边**：`_UseShadow && _OutlineShadowStrength > 0` 时，描边**先走一遍与主色相同的光照模型**（`OVERRIDE_SHADOW`，`fd.albedo` = 描边色），按 `_OutlineShadowStrength` 混合进描边色，**再叠加同一个 AO 压暗**（`OVERRIDE_AODARK`）——光照与压暗在同一个门控内，作为一件事生效；`_OutlineShadowStrength = 0` 时两者一起不做。
+5. **描边**：`_UseShadow && _OutlineShadowStrength > 0` 时，描边**先走一遍与主色相同的光照模型**（`OVERRIDE_SHADOW`，`fd.albedo` = 描边色），按 `_OutlineShadowStrength` 混合进描边色，**再叠加同一个 AO 压暗**（`OVERRIDE_AODARK`）——光照与压暗在同一个门控内，作为一件事生效；`_OutlineShadowStrength = 0` 时两者一起不做。**背面强制阴影（`_BackfaceForceShadow`）在描边 pass 里不应用**：描边是反向壳（`_OutlineCull` 默认 Front），它的朝向不代表本体背面（v10）。
 
 ---
 
@@ -117,7 +116,7 @@ lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)
   - 毛发 `lil_pass_forward_fur.hlsl`：同样先合成再压暗（非 FORWARDADD）。
   - 输出 2 在 `lilGetShading` 内（三层 `lilTooningScale` 与 `lns.w = lns.x` 之前），与 legacy AO Map 乘算位置相同。
 - Guard：`!defined(LIL_LITE)`（`lilCalcAO` / `lilApplyAODark` 只在这之外定义）；实时源另外要求 `LIL_FEATURE_REALTIMEAO && LIL_URP`，离线路要求 `LIL_FEATURE_ShadowBorderMask`；`LIL_GEM` 走自己的 pass，不调用 AO。
-- **描边的实时 AO 采样点**：描边 pass 的 `fd.positionCS` 是**外扩后**的位置，`GetNormalizedScreenSpaceUV` 得到的是描边自己那个像素（通常落在轮廓外 → AO ≈ 1）；离线 AO Map 走 `fd.uvMain`，能正常读到。要"按本体位置"采样需要新增一个未外扩的插值器，本轮明确不做（§9.4）。
+- **描边的实时 AO 采样点是对的（v10 纠正）**：描边 pass 的 `fd.positionCS` 是**外扩后**的位置，而 Ho-GTAO 的深度/法线来自 Ho-GeometryBuffer —— **描边几何不在其中**（`HO_GEOMETRY_BUFFER` pass 不定义 `LIL_OUTLINE`，描边只写进单独的 `HO_OUTLINE_NORMAL_DEPTH`）。所以描边在自己的屏幕位置采样 `_HoAOTexture`，读到的就是**它背后那块表面**的 AO —— 这正是想要的语义（描边贴着谁，就吃谁的 AO），不需要未外扩位置的插值器，也不需要跳过实时源。轮廓外（背景）的像素读到的自然是"无遮挡"（远端 depth → GTAO 输出 visibility = 1）。
 
 
 ### 3.3 已删除的阈值偏移（v5/v6，决策记录）
@@ -258,7 +257,8 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | AO Map 未指定（white）+ 实时有值 | `aoVis = 实时可见度` → 纯实时驱动，压暗退化为"按遮挡量乘 `_AOColor`" |
 | `_UseShadow = 0`（无 toon 阴影） | ramp 偏移无对象，但**整体压暗照常生效** → 阴影栏的 AO 子级与顶层 AO 栏都仍可编辑 |
 | 描边（`_OutlineShadowStrength`） | `> 0` 时先跑主色同款光照模型、再叠加同一个 AO 压暗；`= 0` 时两者一起不做 |
-| 描边的实时 AO | 采样点在描边自身（外扩后）的屏幕位置，通常 ≈ 1；离线 AO Map 正常 |
+| 描边的背面强制阴影（v10） | 描边 pass 不应用 `_BackfaceForceShadow`（反向壳的朝向不代表本体背面）→ `bfshadow = 1` |
+| 描边的实时 AO | 采样点在描边自身的屏幕位置 = **它背后那块表面**（描边不在 GTAO 的几何缓冲里）→ 语义正确；背景处读到 visibility = 1 |
 | 部分材质未重新生成 shader | `_AOContrast` 读作 0 → 代码里按身份处理（`> 0 ? _AOContrast : 1`）；新增的 `_AODarkStrength` / `_AOColor` 读作 0 会让压暗不生效或变黑，**必须重新生成 shader** |
 
 ### 4.7 参数清单（v9 权威清单：**9 个属性**）
@@ -376,7 +376,18 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 语言表 | 新增 msgid `Realtime AO`、`AO Dark Strength`、`RGB: drives the three toon shadow layers and tints the AO darkening.`；`shadowAOMapContent` 换用新 tooltip；新增 `aoMaskContent`（+ `lilEditorVariables` 代理，漏掉代理会 CS0103） |
 | 文档 | 本文件 v8 头 + §0 / §3 / §4.2 / §4.6 / §4.7 / §6.1 / §7 / §8 / §9 改写；`LILTOON架构总览.md` §10.3、`LILTOON_URP_SSAO设计总览.md`、`LILTON_URP提升渲染质感路径.md` 同步 |
 
-**v9 追加（本轮）—— 压暗颜色 + 参数归位**：
+**v10 追加（本轮）—— 描边吃阴影不再被背面规则拍平**：
+
+| 改动 | 内容 |
+|---|---|
+| 现象 | `_OutlineShadowStrength > 0` 时整条描边恒定为深色/黑，没有受光/背光的区域区分 |
+| 根因 | `_BackfaceForceShadow` 用 `fd.facing` 判定；描边是反向壳（`_OutlineCull` 默认 `Front` = 剔除正面 → 片元都是背面 → `fd.facing = -1`）→ `bfshadow = 1 - _BackfaceForceShadow`。用户材质 `_BackfaceForceShadow = 1` → 描边**每个像素** `lns.x/y/z/w *= 0` → 恒定落在最深层阴影（`_ShadowStrength` 只把它按比例拉回），于是整条描边只有一个颜色 |
+| 修法 | `lilGetShading`（本体版 + lite 版）的背面强制阴影加 `#if defined(LIL_OUTLINE)` 分支 → 描边取 `bfshadow = 1.0`；本体不受影响 |
+| 影响面 | 只有"描边吃阴影 + `Cull Front` 描边 + `_BackfaceForceShadow > 0`"三者同时成立时才会踩到；`_OutlineCull = Back` 的材质本来就正常 |
+| 验证 | 关掉 `_BackfaceForceShadow` 时描边就应该恢复区域区分（可作为对照实验） |
+| 文档 | 同时纠正"描边读不到实时 AO"的说法（§3.2 / §9.4） |
+
+**v9 追加（`4cf1f80`）—— 压暗颜色 + 参数归位**：
 
 | 改动 | 内容 |
 |---|---|
@@ -442,8 +453,10 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 - [ ] **共用输入**：同一张贴图既推 ramp 又提供压暗的遮挡量；`_AOStrength = 0` 时只剩压暗，`_AODarkStrength = 0` 时只剩 ramp 偏移。
 - [ ] **实时源**：`_UseRealtimeAO = 1` + Ho-GTAO 开启时，`_AOLevel` / `_AOContrast` 只影响实时那一路；`_AOMask` 涂黑区域两路遮蔽与两个输出同时消失。
 - [ ] **默认中性**：AO Map 未指定（white）+ 实时无遮挡时两条输出都是恒等（画面与 AO 关闭一致）。
-- [ ] **描边**：`_OutlineShadowStrength = 0` → 描边完全不受 AO 影响；`= 1` → 描边先按主色光照模型着色，再叠加同一个 AO 压暗；受光区描边与本体着色一致（描边色为白 + 浅阴影色的材质上差异本来就小，验证时把 `_ShadowColor` 调深更直观）。
-- [ ] **描边的实时 AO**：确认描边上的实时 AO 基本不可见（采样点在描边自身像素）——这是已知取舍，不是 bug。
+- [ ] **描边吃阴影有区域区分（v10）**：`_OutlineShadowStrength = 1` 时描边应随本体一起分受光/背光，而不是整条一个颜色；对照实验：把 `_BackfaceForceShadow` 设为 0，若描边"恢复正常"则确认是同一根因。
+- [ ] 描边：`_OutlineShadowStrength = 0` → 描边完全不受 AO 影响；`= 1` → 描边先按主色光照模型着色，再叠加同一个 AO 压暗；受光区描边与本体着色一致（描边色为白 + 浅阴影色的材质上差异本来就小，验证时把 `_ShadowColor` 调深更直观）。
+- [ ] **描边的实时 AO**：描边应吃到"它背后那块表面"的 AO（例如裙摆压在腿上时，那段描边跟着变暗）—— 这是正确语义，不是 bug。
+- [ ] **本体背面强制阴影未被破坏**：`_BackfaceForceShadow = 1` 的两面材质（裙内、披风内侧）本体仍然全阴影。
 - [ ] `_UseShadow = 0`：ramp 偏移无效果但压暗正常，阴影栏的 AO 子级与顶层 AO 栏都可编辑。
 - [ ] 极端参数：`_ShadowBlur = 0` 且 `_AAStrength = 0` 下无 NaN/黑块。
 - [ ] `_ShadowMaskType = 2`（SDF）单独验证。
@@ -485,7 +498,8 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 23 | 压暗的颜色来源（v8） | **复用 ramp 偏移的颜色贴图**（`_ShadowBorderMask` RGB），不新增第二张贴图；实时 AO 只贡献标量遮挡量 |
 | 24 | 压暗的着色位置（v8） | 光照结果之后、**SSS / Rim / MatCap / Emission 之前**（本体与描边都是"先光照模型、再压暗"），附加光 pass 不重复压暗 |
 | 25 | 描边与 AO（v8） | `_OutlineShadowStrength > 0` 时描边**先跑主色同款光照模型、再叠加同一个 AO 压暗**，两者在同一个门控内作为一件事生效；`= 0` 时两者都不做 |
-| 26 | 描边的实时 AO 采样点（v8） | **本轮不修**：描边 `fd.positionCS` 是外扩后的位置 → 实时 AO 基本读不到（≈1）；离线 AO Map 走 UV 正常。要按本体位置采样需新增未外扩的插值器（§9.4） |
+| 26 | 描边的实时 AO 采样点（v8→v10） | v8 曾记为"读不到/已知取舍"，**v10 纠正**：描边不在 GTAO 的几何缓冲里，所以在自己屏幕位置采样到的就是背后表面的 AO —— 语义正确，不做插值器 |
+| 27 | 描边的 `_BackfaceForceShadow`（v10） | **描边 pass 不应用**：反向壳（`_OutlineCull` 默认 Front）的片元都是背面，会让整条描边恒定落在最深层阴影；本体照常应用 |
 
 ---
 
@@ -494,7 +508,7 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 1. ~~**XR 采样不匹配**~~ → **已修**：`_HoAOTexture` 现在声明为 `TEXTURE2D_SCREEN(_HoAOTexture)`（`lil_common_input.hlsl:829`）、采样用 `LIL_SAMPLE_SCREEN`（`lil_common_frag.hlsl:836`），与 `_CameraOpaqueTexture` 一致。非 XR 下这两个宏分别展开为 `TEXTURE2D` / `LIL_SAMPLE_2D`，行为逐位不变；XR 下按 `unity_StereoEyeIndex` 取对应眼的切片。**这条同时修好了原先就存在的颜色乘算路径。** 前提是生产端在 XR 下发布的确实是纹理数组（`GetTextureDesc(cameraColor)` 继承相机颜色描述符 → XR 下为数组；SSGI 侧也用 `SAMPLE_TEXTURE2D_X` 采样），实机建议用 GTAO debug 视图左右眼各看一次确认。
 2. **AO 图 sampler 不一致**：`_ShadowBorderMask` 用 `lil_sampler_linear_repeat`，`_AOMask` 用材质 `samp`。UV 边界需要 clamp 时应统一。
 3. **契约 vs 实现**：`LILTOON_CHANNEL_CONTRACT_V1.md:92` 冻结 `ao = R8f(0..1)`，而 `HoGTAORendererFeature.cs:1272-1274` 用 `GetTextureDesc(cameraColor)` 建全屏相机颜色格式 RT（非 HDR 下可能 `R8G8B8A8_SRGB` → AO 值走 sRGB 往返，材质 `.r` 未必线性 0..1）。建议生产端固定 `R8_UNorm`。
-4. **描边的实时 AO 采样点（v8 已知取舍）**：描边 pass 的 `fd.positionCS` 是外扩后的裁剪坐标（`lil_common_vert.hlsl` 先 `lil_vert_outline.hlsl` 外扩 `input.positionOS`、再变换），因此 `GetNormalizedScreenSpaceUV(fd.positionCS)` 采到的是描边自身那个像素 —— 通常在轮廓外（背景 AO ≈ 1），描边上几乎读不到实时 AO；`_ShadowBorderMask` 走 `fd.uvMain`，正常可读。要按"描边贴着的那块本体"采样，需要在 vertex 里保存外扩前的对象空间位置、加一个插值器（`struct v2f` 尚有 spare TEXCOORD）、在 fragment 里用它算屏幕 UV，并注意 XR 立体矩阵。**本轮明确不做**（Ho-GTAO 有时域噪声，细线上的逐像素噪声也会闪烁）。
+4. ~~**描边的实时 AO 采样点**~~ → **v10 纠正：本来就对**。Ho-GTAO 的深度/法线来自 Ho-GeometryBuffer，描边几何不在其中，所以描边在自己的屏幕位置采样 `_HoAOTexture` 得到的就是"它背后那块表面"的 AO。不需要新插值器，也不该跳过实时源。真正需要修的是背面强制阴影（v10，见 §6.1）。
 5. **文档过期清单**：`LILTOON_FORMAL_PIPELINE_DRAFT.md:114,155` 与 `LILTOON架构总览.md` §10.3 仍用 `_UseScreenSpaceAO`/`_SSAO*`/`lilScreenSpaceAO`/`LIL_FEATURE_SSAO`；`LILTOON_GI_PLAN.md:50` 的 `GI*albedo*(1-metallic)*AO`；`LILTOON_GTAO_PLAN.md:56,62,80` 说 GeometryBuffer 在 300 需改 250，而 `HoGeometryBufferSettings.cs:24` 默认已是 `BeforeRenderingOpaques`。
 
 ---
