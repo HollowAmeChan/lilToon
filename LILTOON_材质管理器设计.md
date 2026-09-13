@@ -1,314 +1,295 @@
 # lilToon 材质管理器面板设计（规划）
 
-> 状态：**Draft 2 / 只做规划，未改任何代码**
-> 代码基准：`ef7df63`（HoLil 菜单 + 本地化 + 折叠栏默认关 + MPB 覆写检查栏已落地）
-> 目标 Unity：**6000+**（见 `Assets/lilToon/package.json` 的 `"unity": "6000.0"`）——**不做向下兼容**，因此可以直接用 `ObjectChangeEvents`、`PrefabStageUtility`、`ProgressBar`、`UIElements`/IMGUI 里较新的编辑器 API，不用写 `#if UNITY_20xx` 兜底。
+> 状态：**Draft 3 / 只做规划，未改任何代码**
+> 代码基准：`e2f4f07`（HoLil 菜单 + 本地化 + 折叠栏默认关 + Inspector 内 MPB 只读栏已落地）
+> 目标 Unity：**6000+**（`Assets/lilToon/package.json` 的 `"unity": "6000.0"`），不做向下兼容。
 > 相关文档：`LILTOON_UI入口总览.md`（现有 UI 入口清单）、`LILTOON架构总览.md`（代码分层）
 
-## 已拍板的结论（2026-09-14 与作者确认）
+## 已拍板的结论
 
 | # | 结论 |
 | --- | --- |
-| D1 | 扫描范围 = **当前场景**，**含未激活物体**、**含场景内 Prefab 实例**。多场景只在编辑器里确实加载了多个场景时提供一个显式开关（默认关）。 |
-| D2 | **允许编辑 Prefab 内的材质**（不设只读限制）。写入前必须提示影响面：改材质资产会影响所有引用它的物体 / Prefab 实例 / Prefab 资产。 |
-| D3 | **本面板不做任何 MaterialPropertyBlock 相关内容**：不检测、不标记、不筛选、不写入。 |
+| D1 | 扫描范围 = **当前场景**，**含未激活物体**、**含场景内 Prefab 实例**。 |
+| D2 | **允许编辑 Prefab 内的材质**；写入前必须提示影响面（改了会影响哪些物体 / Prefab 实例 / Prefab 资产）。 |
+| D3 | 本面板**不做任何 MaterialPropertyBlock 相关内容**。 |
 | D4 | 只面向 **Unity 6000+**，不做向下兼容。 |
+| D5 | 旧窗口 `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:156-204`）实测有 bug，**本面板可用后删掉它**。 |
+| D6 | **列表只收 lilToon 材质**，非 lilToon 材质不入列。 |
+| D7 | 菜单入口**只挂 `HoLil/`**；不新增 `Window/_lil/` 项，且旧窗口删除时把 `Window/_lil/` 这个菜单根一并去掉。 |
+| D8 | **不做贴图批量匹配、不做预设批量、不做贴图反查**。 |
+| D9 | **不做任何结构操作**（清理未使用贴图 / 渲染模式切换 / 转 Lite、Multi / 烘培），面板里不出现这些按钮。 |
+| D10 | 面板只负责**输入值**的查看与批量编辑，其余一概不做。 |
+| D11 | **UI 可以完全新写**，不受现有面板样式与结构约束。 |
 
-> D3 只针对本面板。已落地的 Inspector 内 `MPB参数覆写情况` 只读栏（`lilNextInspectorGUI.cs:1707+`）是另一件事，保持不动；如果要连它一起撤掉，需要单独说。
+> D3 只针对本面板。已落地的 Inspector 内 `MPB参数覆写情况` 只读栏（`lilNextInspectorGUI.cs:1707+`）是另一件事，保持不动。
 
 ---
 
 ## 0. 一句话目标
 
-**一个场景级的材质管理器**：把「当前场景里所有物体用到的所有材质」汇总成一张可筛选、**可按物体父子层级批量选择**的表，并对选中的整批材质做**只写改动项**的参数修改，全程可 Undo、可预览、可回退。
+**一个场景级的材质参数面板**：把当前场景（含未激活物体与 Prefab 实例）里**所有 lilToon 材质**汇总成一张表，支持**按物体父子层级批量选择**，并在同一个窗口里批量查看、编辑这些材质的**输入值**——只影响你实际动过的属性，其余差异原样保留。
 
-核心价值不在"能改参数"，而在两个别人没做好的点：
-
-1. **选择维度是场景与层级**，不是资产列表：我能说"把这套角色的衣服分支下所有材质统一改一下"。
-2. **写入维度是属性级的差异**，不是整套覆盖：我只动我碰过的属性，A/B 材质之间原有的差异不会被抹平。
+一句话概括与旧工具的区别：**旧窗口是"把 Inspector 搬到多选上"，新面板是"按场景层级找到该改的材质，再改它们的输入值"。**
 
 ---
 
-## 1. 要解决的痛点
+## 1. 痛点
 
-### 1.1 lilToon 现有工具各自的天花板
+| 现有入口 | 为什么不够 |
+| --- | --- |
+| 材质 Inspector（含 Unity 原生多选） | 多选只认 Project 选择集；看不到"场景里谁在用"；无层级；选中 200 个材质后找不到"我想改的那几个" |
+| `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:156-204`） | 项目选择集来源、无场景/层级视角、实测有 bug；只比原生多选多了"一个独立窗口"这件事 |
+| 贴图中控（材质 Inspector 内） | 单材质、只管贴图槽 |
+| 材质预设窗 | 整套覆盖，无法"只对齐我关心的几项" |
 
-| 现有入口 | 能做什么 | 为什么不够 |
-| --- | --- | --- |
-| 材质 Inspector（含 Unity 原生多选编辑） | 单材质精细调参；多选时 Unity 原生 mixed 语义 | 多选只认 Project 选择集；看不到"谁在用"；混合值一旦动一下就写死到全部材质，抹平差异；无层级 |
-| 贴图中控（`管线与着色器` 页内） | **单个**材质的贴图槽批量认领 / 清空 | 硬编码在单个材质的 Inspector 里，跨不了材质 |
-| `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:156-204`） | 对 **Project 选择集**里的多个 lilToon 材质统一显示一份 Inspector | 用 `Selection.GetFiltered<Material>(SelectionMode.DeepAssets)`，只吃 Project 选择集；不认场景、不认层级 |
-| 材质预设窗（`lilToonPreset.cs:61 ApplyPreset`） | 整套参数套用 / 另存 | 只能整套覆盖，没有"只合并我关心的那几项"；没有场景视角 |
-| `优化` 页 | 清理未使用贴图、转 Lite/Multi、烘培 | 单材质；且属于结构操作，不解决参数对齐 |
-
-### 1.2 外部方案为什么不够
-
-- **Unity 原生多选编辑**：值语义是"混合 → 一改就全写"，是批量编辑里最危险的部分；且以资产为中心，没有"场景里哪些物体在用"这一层。
-- **Material Variant**：解决的是继承与复用，不解决发现（find）与批量对齐（align）。
-- **资产型插件（Asset Store 上的各类 Material Manager / Batch Tool）**：绝大多数以 Project 资产列表为主体，做"重命名 / 换 shader / 批量改某属性"，但**不认场景内的父子关系**，也不处理 Prefab 与 Material Variant 这两条支线。
-- **具体缺口**：`场景/层级选择 → 属性级差异合并 → 可预览可撤销` 这个闭环，基本没人做。
+**核心缺口**：`场景/层级 → 筛出目标材质 → 批量改输入值` 这条链路，现有工具都不提供。
 
 ---
 
-## 2. 使用场景（用例）
+## 2. 用例（只保留与输入值相关的）
 
 | # | 场景 | 依赖能力 |
 | --- | --- | --- |
-| U1 | 一整套角色（根节点下的身体 / 头发 / 衣服）统一把某个参数改成 X | 层级批量选择 + 属性级写入 |
-| U2 | "场景里哪些材质用了这张贴图？" | 反查（贴图 → 材质 → 物体） |
-| U3 | 只改我关心的那一项，别动其它差异 | 脏属性语义 + diff 预览 |
-| U4 | 按身体部位（某个父节点分支）批量套同一个预设 | 层级选择 + 预设套用 |
-| U5 | 找出用某个渲染模式 / shader 变体的所有材质，批量切 | 按 shader / 渲染模式筛选 |
-| U6 | 批量清未使用贴图 / 转 Lite / 转 Multi | 结构操作批量化 |
-| U7 | 把选中的 N 个材质某属性列出来横向对比（对齐数值） | 值列举/对照视图 |
-| U8 | 场景里有两份同样的材质副本，想合并成一份 | 反查 + 重复检测（M5 可选） |
+| U1 | 一整套角色（根节点下的身体 / 头发 / 衣服）统一把某个参数改成 X | 层级批量选择 + 属性编辑 |
+| U2 | 只改我关心的那一项，别动其它差异 | 只写被改动属性的语义 |
+| U3 | 把某个材质的值"广播"给同分支的其它材质（对齐数值） | 值对比 + 广播 |
+| U4 | 数值做相对调整（例如整体 ×0.8、+0.1） | 相对运算 |
+| U5 | 找出手感不一致的材质（同名材质在场景里有多份拷贝、值不一样） | 列表排序/对比（可选） |
 
 ---
 
-## 3. 非目标（明确不做，避免范围失控）
+## 3. 非目标（明确不做）
 
-- **不做 MaterialPropertyBlock 相关内容**（D3）：不检测、不标记、不筛选、不写入。
-- 不做运行时 API、不做构建期处理（纯编辑器窗口；与 NDMF 优化流程的关系留到以后再说）。
-- **不做 Unity 6000 以下的兼容**（D4）：不写版本 guard、不为旧 API 留回退分支。
-- 不改 shader / 属性语义，不引入新的 shader 关键字。
-- 不做材质资产的重命名、移动、依赖图清理（"移除未使用贴图"沿用现有实现）。
-- 不替代 Inspector：单材质的精细调参仍在 Inspector 里做，新面板是"跨材质"工具。
-- 不做动画关键帧 / Timeline 的批量写入（只改材质资产与材质实例上的静态值）。
+- 不做 MaterialPropertyBlock 相关（D3）。
+- 不做贴图批量匹配 / 自动认领、不做预设批量套用、不做贴图反查（D8）。
+- 不做结构操作：清理未使用贴图、渲染模式 / shader 切换、转 Lite、Multi、烘培（D9）。
+- 不列非 lilToon 材质（D6）。
+- 不做运行时 API、不做构建期处理、不改 shader / 属性语义。
+- 不替代 Inspector 的全部能力：面板只覆盖输入值（见 §4.3 的属性范围），其余给"在 Inspector 中打开"。
+- 不做动画关键帧 / Timeline 的批量写入。
 
 ---
 
-## 4. 界面与交互设计
+## 4. 界面设计
 
 ### 4.1 三栏骨架
 
 ```
-┌ 顶部工具条 ────────────────────────────────────────────────────────────────────┐
-│ 范围:[当前场景] ☐多场景 ☐含 Prefab 资产  ☑含未激活  [搜索…] [刷新]  材质 128 / 物体 342 │
-├ 左栏：层级树 ──────┬ 中栏：材质表 ────────────────┬ 右栏：属性批量编辑 ──────────┤
-│ ▾ ☑ Avatar        │ ☑ Body_lilToon   lilToon  ×3 │ ▾ 主色 / Alpha 设置          │
-│   ▾ ☑ Body        │ ☑ Hair_lilToon   lilToon  ×1 │   主色      [混合 (3 种值) ▾] │
-│     ☑ Body_mesh   │ ☐ Cloth_lilToon  lilToon  ×2 │   贴图      [混合 (2 种)   ▾] │
-│   ▾ ◪ Cloth       │   Face_lilToon   变体     ×1 │   阴影强度  [0.5        ] ✎   │
-│     ☑ Skirt       │                              │   …                          │
-│     ☐ Coat        │                              │ [应用改动] [预览变更] [撤销]  │
-└───────────────────┴──────────────────────────────┴──────────────────────────────┘
+┌ 工具条 ─────────────────────────────────────────────────────────────────────┐
+│ [搜索材质/物体…] ☑含未激活 ☐含 Prefab 资产 [刷新]   材质 128  已选 12  改动 3 项 │
+├ 左栏：物体层级树 ──┬ 中栏：材质表 ─────────────────┬ 右栏：输入值 ──────────────┤
+│ ▾ ☑ Avatar        │ ☑ Body_lilToon  lilToon ×3     │ ▾ 主色 / Alpha            │
+│   ▾ ☑ Body        │ ☑ Hair_lilToon  lilToon ×1     │   主色      [混合 (3 种)▾] │
+│     ☑ Body_mesh   │ ☐ Cloth_lilToon lilToon ×2     │   阴影强度  [0.5       ]   │
+│   ▾ ◪ Cloth       │   Face_lilToon  变体    ×1     │   …（分组折叠）            │
+│     ☑ Skirt       │                                │ ── 本次改动 ──             │
+│     ☐ Coat        │                                │  阴影强度: 0.5 → 0.7 (12)  │
+│                   │                                │ [撤销本次改动]             │
+└───────────────────┴────────────────────────────────┴───────────────────────────┘
 ```
 
-- **左栏**：GameObject 层级树，带 tri-state 复选（父级勾选 = 递归选中其下所有"有材质的物体"）。叶子挂该物体使用的材质。
-- **中栏**：去重后的材质列表（一行一个**材质资产**，不是"物体×材质"），显示使用次数、Shader、是否 Material Variant、是否被 Prefab 引用。
-- **右栏**：属性批量编辑区，按 `(Shader, 属性)` 分组；每个属性显示当前值或显式「混合 (N 种值)」。
-- 三栏联动：左栏选中 → 聚合出材质集合 → 中栏勾选状态同步；中栏手动勾选（不经过层级）也要支持，用于"我只要这几个材质"。
+- **左栏**：当前场景的 GameObject 层级树，tri-state 复选（父级勾选 = 递归选中其下所有"有 lilToon 材质的物体"）；只显示到"有材质的节点 + 其祖先链"，避免整棵场景树噪声。
+- **中栏**：去重后的 lilToon 材质列表（一行一个材质**资产**）。列：勾选、材质名、Shader 变体、使用次数 `×N`、是否 Material Variant、Prefab 来源标记。
+- **右栏**：选中材质集的输入值编辑区，按 lilToon 的属性分组折叠显示。
+- 联动：左栏选择 → 聚合材质集合 → 中栏勾选同步；中栏也可以直接勾（不经过层级）。
 
-### 4.2 选择模型（本设计最关键的部分）
+### 4.2 选择模型
 
-1. **树 tri-state**：勾 / 半选 / 未勾。父级勾选会向下传播；子级部分勾选则父级半选（沿用 Unity 树的习惯）。
-2. **选择 → 材质集合的聚合**：选中的物体集合 → 遍历 `renderer.sharedMaterials` → 去重得到 `MaterialEntry[]`。同一材质被多处使用只出现一行（`×N` 表示使用次数），但可展开查看使用者列表。
-3. **避免"选择漂移"**：树选择与材质集合是**面板内的状态**，不跟随 `Selection`；另外提供：
-   - `[从场景选择同步]`：把 Unity 当前 Selection 拉到面板里
-   - `[在场景中选中]`：把面板选择推回 Unity Selection（配合 Frame Selected）
-   - `[钉住]`：固定当前材质集合，之后点场景不丢失
-4. **选择辅助**：全选 / 反选 / 只选当前分支 / 展开到材质 / 只选可见（Scene 视图可见）/ 排除某分支 / 只选变体 / 只选被 Prefab 引用的。
-5. **筛选不影响选择**：筛选只作用于"显示"，已选中的材质即使被筛掉也仍然在集合里（并在统计里注明"已选 N，其中 M 被折叠/被筛掉"），避免"看不见就漏改"。
+1. **树 tri-state**：勾 / 半选 / 未勾；父级勾选向下传播，子级部分勾选则父级半选。
+2. **聚合**：选中物体 → 遍历 `renderer.sharedMaterials` → 过滤出 lilToon 材质（D6）→ 去重成材质集合；同一材质被多处使用只占一行（`×N`），可展开看使用者。
+3. **不跟随 `Selection` 漂移**：面板选择是面板内状态，另给 `[从场景同步]` / `[在场景中选中]` / `[钉住]` 三个按钮。
+4. **选择辅助**：全选 / 反选 / 只选当前分支 / 只选变体 / 排除某分支。
+5. **筛选不影响选择**：筛选只影响显示；被筛掉但已选中的材质仍在集合里，统计里注明"已选 12，其中 3 个被筛掉"。
 
-### 4.3 属性编辑区的值语义（与 Unity 原生多选的根本差别）
+### 4.3 输入值编辑：**即时生效，但只碰你动过的属性**
 
-| 概念 | 行为 |
-| --- | --- |
-| **混合值显示** | 该属性在选中材质间取值不一致时，显示「混合 (N 种值)」+ 可选展开看每种值各属于哪些材质 |
-| **脏属性集合** | 只有用户**实际改动过**的属性才进入待写集合；未碰过的属性在应用时**完全不写**，各材质的原有差异原样保留 |
-| **单属性立即应用** | 每个属性行尾的 `✎` 按钮 = 只把这一个属性写到选中材质 |
-| **全局应用** | `[应用改动]` = 把整个脏属性集合一次性写入（一个 Undo group） |
-| **预览** | `[预览变更]` 打开 diff 表：`材质 → 属性 → 旧值 → 新值`，可勾选排除个别行后再应用（**这是防"手抖全改"的主要保险**） |
-| **相对操作** | 除"设为 X"外支持：乘系数 / 加减 / 取某一个材质的值当基准 / 恢复 shader 默认值 / 从另一个材质复制该属性 |
-| **跨 shader** | 选中材质 shader 不同时，属性按 `(Shader, 属性名)` 分组；某材质没有该属性就自动跳过（并在预览里列为"不适用"） |
-| **撤销** | 一次应用 = 一个 Undo group：`Undo.SetCurrentGroupName("lilToon 材质管理器: 修改 X")` + 对涉及的材质 `Undo.RecordObjects`，之后 `CollapseUndoOperations` 合并 |
+这是与"整套覆盖"式批量工具最本质的区别，也是本面板唯一需要精心设计的语义：
 
-### 4.4 与现有 UI 约定保持一致
+- 右栏用一个**绑定到整批选中材质**的 `MaterialEditor`（`Editor.CreateEditor(materials, typeof(MaterialEditor))`）来画属性行，因此：
+  - 混合值显示、贴图槽、颜色选择器、滑条等**全部是 Unity 原生控件与原生语义**，不会出现"自绘控件和 Inspector 不一致"的问题；
+  - 你动某个属性 → Unity 原生逻辑把新值写到**全部选中材质**上；你没动过的属性**一个字节都不写**，各材质原有的差异自然保留（不存在"抹平"的机会，因为没有任何"应用全部"的路径）。
+- 需要注意的两点：
+  1. **混合值**：只显示「混合 (N 种值)」本身不够，要能点开看"这几种值分别属于哪些材质"（用于 U3 对齐）。
+  2. **数值相对运算**（U4）：原生控件只支持绝对设值，需要额外的小工具行（`×系数` / `+偏移` / `取某材质的值广播给全部`），这是**可选增强**，放 M3。
+- **属性范围**：面板展示 lilToon 的全部输入属性（按 `PropertyBlock` 分组折叠，与 Inspector 分组一致），默认全部收起；搜索框可按属性名过滤（复用 `lilEditorGUI.CheckPropertyToDraw` 的机制）。
 
-- 文案一律走 `.po`（`GetLoc`，msgid = 英文原文），菜单文案例外（`MenuItem` 必须是编译期常量，沿用 HoLil 那套写死中文的做法）。
-- 折叠栏默认收起；⋮ 菜单（复制 / 粘贴 / 粘贴含贴图 / 重置 / 打开手册）复用现有 `PropertyBlock` 粒度。
-- 按住 Alt 显示 shader 属性原名（沿用 `Event.current.alt` 那套）。
-- 表格与工具条样式参考贴图中控（`lilTextureSearchGUI` 里的 miniLabel 风格初始化）。
-- 只读与写操作要分清：**所有写操作都要有明确的按钮 + Undo**，扫描/浏览永不写数据。
+### 4.4 变更记录与撤销
+
+- 右栏底部一块 **本次改动** 列表：`属性名：旧值 → 新值（涉及 N 个材质）`，并给 `[撤销本次改动]`。
+- 实现：每次属性写入前 `Undo.RecordObjects(选中材质, "lilToon 材质管理器: 改 X")` 并按操作合并 Undo group；改动记录只为展示（不用于延迟写入）。
+- 阈值保护：选中材质数超过阈值（如 500）时，改动前给一次确认（"将写入 512 个材质"）。
+
+### 4.5 UI 技术选型（D11：可以新写）
+
+建议：**IMGUI + Unity 自带的重型控件**，而不是 UI Toolkit：
+
+| 部件 | 选型 | 理由 |
+| --- | --- | --- |
+| 左栏层级树 | `UnityEditor.IMGUI.Controls.TreeView`（+ 自绘 tri-state 勾选框） | Unity 官方虚拟化树控件，Hierarchy 面板同源；IMGUI 下与其余编辑器一致 |
+| 中栏材质表 | `MultiColumnHeader` + `TreeView`（每行一个材质） | 官方列头/排序/虚拟化，省掉自己写列表 |
+| 右栏属性行 | `MaterialEditor.ShaderProperty` 等原生控件 | 只有 IMGUI 版；换 UI Toolkit 就得手写每种属性类型且行为难对齐 |
+| 窗口骨架 | IMGUI（`OnGUI`） | 与仓库其余 UI 一致，无 UI Toolkit/IMGUI 混用成本 |
+
+若后续确实想上 UI Toolkit，可以只把左栏/中栏换成 UI Toolkit（`TreeView`/`ListView`）而右栏保留 `IMGUIContainer`，但**不建议现在做**（两套 UI 体系的混用成本 > 收益）。
+
+### 4.6 项目约定
+
+- 文案走 `.po`（`GetLoc`，msgid = 英文原文）；菜单文案例外（`MenuItem` 必须编译期常量，沿用 HoLil 那套中文写死）。
+- 折叠栏默认收起；按住 Alt 显示 shader 属性原名（沿用现有做法）。
+- 所有写操作都要有 Undo；扫描 / 浏览永不写数据。
 
 ---
 
 ## 5. 数据模型与扫描
 
-### 5.1 三层结构
+### 5.1 结构
 
 ```csharp
-// 1) 物体节点（左栏树）
-class ManagerNode {
+class ManagerNode {                  // 左栏树
     GameObject gameObject;
-    string displayName;           // 物体名（tooltip 给层级路径）
-    List<ManagerNode> children;
-    MaterialEntry[] ownMaterials; // 该物体自己用到的材质（不含子物体）
+    ManagerNode[] children;
+    MaterialEntry[] ownMaterials;    // 该物体自用的 lilToon 材质（不含子物体）
     bool isPrefabInstance, isInactive;
 }
 
-// 2) 材质使用记录（一个 renderer 的一个槽 = 一条）
-class MaterialUsage {
+class MaterialUsage {                // 一个 renderer 的一个槽
     Material material;
     Renderer renderer;
     int slotIndex;
     string hierarchyPath;
-    bool fromPrefabInstance;      // 该使用点来自 Prefab 实例
+    bool fromPrefabInstance;
 }
 
-// 3) 材质条目（中栏一行）
-class MaterialEntry {
+class MaterialEntry {                // 中栏一行
     Material material;
     Shader shader;
-    MaterialUsage[] usages;       // 去重后的使用点
-    bool isVariant;               // Material Variant
-    bool isAsset;                 // 有独立资产路径（false = 内嵌子资产，见 §5.5）
-    bool isLilToon;               // 非 lilToon 材质：默认折叠、不可编辑参数
+    MaterialUsage[] usages;
+    bool isVariant;                  // Material Variant
+    bool isAsset;                    // 有独立资产路径（false = 内嵌子资产）
 }
 ```
 
-### 5.2 扫描范围与实现
+### 5.2 扫描
 
-- **遍历方式**：按场景根对象递归（`Scene.GetRootGameObjects()`），而不是 `Resources.FindObjectsOfTypeAll`——后者会带上 Prefab 资产、预览场景、隐藏对象，逐个过滤反而更慢也更难解释"为什么它出现在列表里"。管理器要展示层级，必须从场景根开始走。
-- **范围**（D1）：当前场景 + 含未激活（`GetComponentsInChildren<Renderer>(true)` 语义）+ 含场景内 Prefab 实例。工具条上另有 `☐多场景`（编辑器里加载了多个场景时才可用）、`☐含 Prefab 资产`（扫 Project 里 `.prefab` 引用的材质，默认关）两个显式开关。
-- **Renderer 类型**：`Renderer` 基类一把抓（MeshRenderer / SkinnedMeshRenderer / ParticleSystemRenderer / TrailRenderer / LineRenderer 都覆盖）。**必须用 `sharedMaterials`**，`materials` 会在编辑器里实例化材质（这是最经典的坑）。
-- **只用 `sharedMaterials` 读**：写的时候也只对材质资产写，不碰 renderer 的材质数组。
+- 从**场景根对象**递归（`Scene.GetRootGameObjects()`），不用 `Resources.FindObjectsOfTypeAll`：后者会带上 Prefab 资产、预览场景、隐藏对象，还得逐个解释"为什么它在列表里"。
+- 含未激活物体（递归时 `includeInactive`）；含场景内 Prefab 实例（`PrefabUtility.GetPrefabInstanceStatus` 标注，不排除）。
+- **一律 `renderer.sharedMaterials`**：`renderer.materials` 会在编辑器里实例化材质（最经典的坑）。
+- 只收 lilToon 材质：`lilMaterialUtils.CheckShaderIslilToon`（`lilMaterialUtils.cs:663`）。
+- 工具条范围开关：`☑含未激活`（默认开）、`☐含 Prefab 资产`（默认关）；`☐多场景` 仅在编辑器里确实加载了多个场景时出现。
 
 ### 5.3 缓存与失效
 
 | 来源 | 处理 |
 | --- | --- |
-| 层级 / 材质赋值变化 | `ObjectChangeEvents.changesPublished` → 标记脏，下一帧按需重扫 |
-| 材质资产被其它窗口修改 | 同上（`ChangeEventType.Asset*` / `GameObjectChange`） |
-| shader / 渲染模式切换 | shader 变了 → 属性模型要重建 |
-| 兜底 | `[刷新]` 按钮 + 面板失焦/获得焦点时按需校验（防止事件漏掉） |
-| 扫描本身 | 首次全扫 + 之后增量；扫描时用 `ProgressBar` 分帧，避免长卡（见 §11 预算） |
+| 层级 / 材质赋值变化 | `ObjectChangeEvents.changesPublished` → 标脏，下一帧按需重扫 |
+| 材质被其它窗口改 | 同上（资产变更事件） |
+| shader 变化（含渲染模式导致的换 shader） | 属性模型重建 |
+| 兜底 | `[刷新]` 按钮 + 窗口获得焦点时校验一次 |
+| 扫描本身 | 首次全扫 + 之后增量，扫描时 `ProgressBar`，避免长卡 |
 
-### 5.4 属性模型的复用
+### 5.4 属性模型
 
-- 复用 `lilMaterialProperties.cs` 的 `lilMaterialProperty`（字段：`p` / `propertyName` / `blocks: HashSet<PropertyBlock>` / `isTexture` / `propertyType` / `displayName` / `rangeLimits` / `hasMixedValue`）与 `AllProperties()`（`lilMaterialProperties.cs:594`，**当前是 private**）。
-- 跨材质批量编辑需要**按单一材质**取属性集（`MaterialProperty` 是绑在具体 material 数组上的），因此方案是：
-  - 对选中材质**按 shader 分组**，每组用 `MaterialEditor.GetMaterialProperties(groupMaterials)` 拿一次属性数组（Unity 原生多选语义，`hasMixedValue` 直接可用）；
-  - 显示名用 `lilLanguageManager.GetDisplayName(prop)`（`lilLanguageManager.cs:225`）；
-  - 需要 lilToon 自己的 `PropertyBlock` 归属时，用 `AllProperties()` 建立 `属性名 → blocks` 映射表（需要在 `lilToonInspector` 上开一个 `internal static` 访问点，或把这张表抽成独立静态类）。
-- **限制**：`MaterialEditor.GetMaterialProperties` 要求数组内**同一 shader**；跨 shader 必须分组处理。
+- 复用 `lilMaterialProperty` / `AllProperties()`（`lilMaterialProperties.cs:594`，当前 private → 需开 `internal` 访问点）拿到 **属性名 → `PropertyBlock` 分组** 的映射，用于右栏分组与折叠。
+- 属性值本身交给 `MaterialEditor.GetMaterialProperties(materials)` + `ShaderProperty`：多选混合值语义由 Unity 保证（要求数组内**同一 shader**，所以按 shader 分组）。
+- 显示名用 `lilLanguageManager.GetDisplayName`（`lilLanguageManager.cs:225`）。
 
 ### 5.5 Prefab 与写入影响面（D2）
 
-面板里出现的材质有四种来源，写入规则要分清：
+四种材质来源与提示：
 
-| 来源 | 例子 | 写入行为 | 面板提示 |
-| --- | --- | --- | --- |
-| 场景物体引用的材质资产 | 普通 `.mat` | 直接改资产 | "被 N 个场景物体 / M 个 Prefab 引用" |
-| Prefab 实例引用的材质资产 | 角色 prefab 实例上的 `.mat` | 同一份资产 → 与上一行等价 | 标注 `Prefab` 来源 |
-| 只被 Prefab 资产引用 | 未放进场景的 prefab 里的材质（需开 `☐含 Prefab 资产` 才可见） | 允许改（D2） | 标注"仅 Prefab 资产引用" |
-| 内嵌子资产 | 模型（`.fbx`）或 Prefab 内部带的材质，无独立资产路径 | 允许改，但保存位置随宿主资产 | 标注"内嵌材质"，并提示宿主资产路径 |
+| 来源 | 写入 | 提示 |
+| --- | --- | --- |
+| 场景物体引用的材质资产 | 直接改资产 | 被 N 个场景物体引用 |
+| Prefab 实例引用的材质资产 | 同一份资产，等价上一行 | 标注 `Prefab` 来源 |
+| 只被 Prefab 资产引用（未放进场景） | 允许改（需开 `☐含 Prefab 资产`） | 标注"仅 Prefab 资产引用" |
 
-**统一的写入前提示**：应用前在预览里列出「本次会改动 K 个材质资产，它们被 X 个场景物体、Y 个 Prefab 实例、Z 个 Prefab 资产引用」——因为改材质资产是全局生效的，用户必须知道影响面（这是 D2 允许编辑 Prefab 材质的前提）。
+**写入前提示影响面**：预览里给出"将改动 K 个材质资产，被 X 个场景物体、Y 个 Prefab 实例引用"。改材质资产是全局生效的，这是允许编辑 Prefab 材质的前提。
 
 ---
 
 ## 6. 关键实现要点与坑
 
 1. **`renderer.materials` 会实例化材质** → 一律 `sharedMaterials`。
-2. **Material Variant**：写变体 = 在该变体上建覆盖值；写基材质会影响所有子变体。面板里必须标出"这行是变体 / 基材"，并在批量写入前提示"其中 N 个是变体、M 个是基材，改基材会影响 K 个变体"。
-3. **改材质资产 = 改所有使用者**：这是 D2 允许编辑 Prefab 材质后最容易踩的坑，必须在预览里给出影响面数字（§5.5）。
-4. **内嵌材质（无独立资产路径）**：`AssetDatabase.GetAssetPath` 会返回宿主资产路径。写这类材质要 `EditorUtility.SetDirty(宿主)` + 保存策略要单独确认（M4）。
-5. **一个物体同一材质占多个槽**：去重为一个材质条目，但显示 `×2`，避免"以为只改了一处"。
-6. **Undo 体量**：几百个材质一次性 `Undo.RecordObjects` 会让 Undo 栈很重。策略：按 shader 分组分批记录 + `CollapseUndoOperations` 合成一个可撤销单元；超过阈值（比如 >500 个材质）时先弹确认。
-7. **别写未改动属性**：绝不对未进脏属性集合的属性调用 `SetX`——这是"抹平差异"的根源（Unity 原生多选的老毛病）。
-8. **渲染模式 / shader 切换是结构操作**：`SetupMaterialWithRenderingMode` 会换 shader 并重置一堆值（`lilMaterialConvertUtility.cs`），批量执行风险高 → 单独分组、单独确认、单独 Undo，并与"参数修改"分开。
-9. **场景脏化**：应用后 `EditorSceneManager.MarkSceneDirty`；窗口内提示"已改 N 个材质 / M 个场景已标记为已修改"。
-10. **性能**：中栏列表不加载资产预览缩略图（或懒加载）；行高固定；绘制循环内不 LINQ、不分配；筛选结果缓存。
-11. **选择与筛选的交互**：筛选只影响显示，不影响已选集合（§4.2-5）。
-12. **不要静默失败**：跨 shader 时"某材质没有该属性"必须在预览里明确列为"不适用"，而不是安静跳过。
+2. **同一材质被多处引用时只改一次**：材质集合去重后再写，避免同一资产被写几十遍（Undo 与性能都受影响）。
+3. **别提供"应用全部属性"的路径**：这是抹平差异的唯一入口，本面板刻意不提供（§4.3）。
+4. **Material Variant**：写变体 = 建覆盖值；写基材质影响所有子变体；列表要标出变体行，写入前提示影响面。
+5. **内嵌材质**：`AssetDatabase.GetAssetPath` 返回宿主资产路径，保存策略要单独确认（M3）。
+6. **一个物体同一材质占多槽**：去重为一行，显示 `×2`。
+7. **Undo 体量**：几百个材质一次写会让 Undo 很重 → 按操作合并 group；超阈值先确认；拖动滑条的 Undo 合并粒度实施时实测确认。
+8. **场景脏化**：应用后 `EditorSceneManager.MarkSceneDirty`，并在工具条上提示"已改 N 个材质"。
+9. **性能**：左栏/中栏都用官方虚拟化控件，行高固定；绘制循环内不 LINQ、不分配；属性行按折叠状态懒绘制。
+10. **筛选只影响显示**，不影响已选集合（§4.2-5）。
+11. **跨 shader 混选**：按 shader 分组显示；某材质没有的属性不显示（不静默写、也不报错）。
 
 ---
 
-## 7. 复用清单（现有代码）
+## 7. 复用清单
 
 | 能力 | 现有实现 | 复用方式 |
 | --- | --- | --- |
-| 属性模型（含 PropertyBlock 归属） | `lilMaterialProperty`、`AllProperties()`（`lilMaterialProperties.cs:594`） | 开 `internal` 访问点后直接建映射表 |
-| 复制 / 粘贴 / 重置（按 PropertyBlock 粒度） | `lilGUIUtility.cs:216 / :227 / :246` | 把"单材质"版本泛化成"材质集合"版本 |
-| 预设套用 | `lilToonPreset.ApplyPreset(Material, lilToonPreset, bool)`（`lilToonPreset.cs:61`） | 批量循环 + 只套用户勾选的功能块 |
-| 贴图模糊匹配 + PBR 角色打分 | `lilTextureSearchGUI.cs`（`CalculatePbrTextureMatchScore` `:719`、`IsPbrTextureMatch` `:676`） | 抽成可复用的匹配器，供跨材质批量配贴图 |
-| 未使用贴图清理 / shader 关键字清理 | `lilMaterialUtils.RemoveUnusedTexture` `:489`、`RemoveShaderKeywords` `:619` | 批量调用 |
-| 渲染模式 / Lite / Multi 转换 | `lilMaterialConvertUtility`、优化页按钮 | 结构操作分组复用 |
-| 搜索过滤机制 | `lilEditorGUI.CheckPropertyToDraw` `:303` | 属性级搜索沿用同名机制 |
+| 多材质属性绘制与混合值语义 | `MaterialEditor`（`Editor.CreateEditor(materials, typeof(MaterialEditor))`，旧窗口同款用法 `lilInspector.cs:181`） | 右栏直接用 |
+| 属性分组（PropertyBlock） | `lilMaterialProperty.blocks`、`AllProperties()`（`lilMaterialProperties.cs:594`） | 建"属性名 → 分组"映射（需开 `internal`） |
+| 复制 / 粘贴 / 重置粒度 | `lilGUIUtility.cs:216 / :227 / :246` | 可迁移为"批量复制/粘贴整个分组" |
+| lilToon 材质判定 | `lilMaterialUtils.CheckShaderIslilToon`（`:663`） | 列表过滤 |
+| 属性搜索过滤 | `lilEditorGUI.CheckPropertyToDraw`（`:303`） | 属性搜索沿用 |
+| 显示名本地化 | `lilLanguageManager.GetDisplayName`（`:225`） | 属性行标签 |
 | 层级遍历先例 | `lilToonEditorUtils.cs:666`（`GetComponentsInChildren<Renderer>(true)`） | 参考写法 |
-| 多场景打开先例 | `lilToonSetting.cs:720`（`EditorSceneManager.OpenScene`） | 参考写法 |
-| 表格 / 工具条 UI 风格 | `lilTextureSearchGUI` 的样式初始化 | 直接照搬风格，保证观感一致 |
+| 窗口内绘制 Inspector 的先例 | `lilInspector.cs:170-192`（旧窗口） | 参考布局与生命周期管理（但选择集来源不同） |
 
-需要**新写**的：Prefab 归属判定与影响面统计（`PrefabUtility.GetPrefabInstanceStatus` / `GetCorrespondingObjectFromSource` / `AssetDatabase.GetAssetPath`）、层级树控件（Unity 没有公开的 tri-state 树控件，`TreeView` 可以但需要自己搭 `TreeViewItem`；也可用 IMGUI 手写）。
+需要**新写**：tri-state 层级树、材质表（列头/排序/筛选）、属性分组折叠与搜索、变更记录与 Undo 合并、Prefab 归属与影响面统计。
 
 ---
 
-## 8. 与现有面板的边界
+## 8. 与现有入口的边界，以及旧窗口的删除计划
 
-| 面板 | 职责 | 与新面板的关系 |
+| 面板 | 职责 | 处理 |
 | --- | --- | --- |
-| 材质 Inspector | 单材质、全属性、精细 | 保留；新面板不复制全部属性控件（只做常见/筛选后的属性，无法覆盖的给"在 Inspector 中打开"） |
-| 贴图中控（材质 Inspector 内） | 单材质的贴图槽认领 | 保留；新面板的贴图批量复用其匹配算法 |
-| 多材质编辑器窗口 | Project 选择集的多材质统一 Inspector | 见下方说明；建议 M3 之后合并（待定，§12-Q5） |
-| 材质预设窗 | 预设的另存 | 保留；新面板增加"把当前选择 + 筛选保存为预设/规则" |
-| 新面板 | 场景/层级维度的批量发现与编辑 | —— |
+| 材质 Inspector | 单材质、全属性、精细调参 | 保留；新面板给"在 Inspector 中打开"跳转 |
+| 贴图中控（材质 Inspector 内） | 单材质贴图槽认领 | 保留不动（D8：新面板不做贴图批量） |
+| 材质预设窗 | 预设另存 | 保留不动 |
+| 多材质编辑器窗口（`Window/_lil/`） | Project 选择集的多材质 Inspector | **D5/D7：新面板可用后删除该窗口，并把 `Window/_lil/` 菜单根一并去掉**。删除后"批量改不在场景里的材质"仍可由 Unity 原生多选 Inspector 完成，能力不丢失（只剩"独立窗口"这一个便利性）。 |
 
-**关于「多材质编辑器窗口」到底是什么**（作者提问）：
-
-- 它是 lilToon 自己写的一个 `EditorWindow`：`lilToonInspector.lilMaterialEditor`（`lilInspector.cs:156-204`），菜单在 `Window/_lil/[测试版] lilToon 多材质编辑器`（`lilInspector.cs:163`），窗口标题同名。这是本仓库里**真实存在**的一个窗口，不是 Unity 原生行为。
-- 它的工作方式：每次 `OnGUI` 取 `Selection.GetFiltered<Material>(SelectionMode.DeepAssets)`（即 **Project 窗口里选中的材质资产**），`MaterialEditor.GetMaterialProperties(materials)`，然后用 `inspector.SetMaterials(materials)` 把**同一份 lilToon Inspector** 画出来 → 对选中的全部材质同时生效。顶部会列出选中材质名。
-- 和"多选材质后在 Inspector 里直接显示"（Unity 原生多选 Material Editor）是**两件不同的事**：原生那条路不需要我们的窗口，lilToon 材质多选本来就能用；我们的窗口只是把它做成了一个独立可停靠窗口，选择集仍由 Project 的选择决定，标记为 `[测试版]`。
-- 因此如果你平时看到的是"多选材质 → 原生 Inspector 显示 lilToon 面板"，那是原生路径；`Window/_lil/` 下那个菜单项才是我们自己的窗口。它比原生多选**没有增加语义能力**（同样是 Unity 的 mixed 语义），所以新面板成熟后建议把它合并成新面板的一种"来源 = Project 选择集"模式。
+**删除时要做的事**（M4）：删 `lilMaterialEditor` 类与菜单项 → 同步 `LILTOON_UI入口总览.md`（§10.3 / §11 / §16 里所有引用）→ 检查是否有别处引用该类名。
 
 ---
 
-## 9. 入口与命名
+## 9. 入口与文件规划
 
-- **类型与文件**（建议新建目录 `Assets/lilToon/Editor/lilMaterialManager/`，与现有 `lilInspector/` 平级）：
+- **菜单入口（只挂 HoLil，D7）**：`HoLil/[材质] 材质管理器`（文案写死中文，`MenuItem` 限制）。窗口标题：`[测试版] lilToon 材质管理器`。
+- 可选：材质 Inspector 顶部加一个"在材质管理器中显示"的小按钮，把当前材质带过去。
+- **文件**（新建目录 `Assets/lilToon/Editor/lilMaterialManager/`，与 `lilInspector/` 平级）：
 
   | 文件 | 职责 |
   | --- | --- |
-  | `lilMaterialManagerWindow.cs` | `EditorWindow`：三栏布局、状态、工具条、菜单入口 |
-  | `lilMaterialManagerScan.cs` | 场景扫描、缓存、失效（`ObjectChangeEvents`） |
-  | `lilMaterialManagerSelection.cs` | 层级树 + tri-state 选择 + 材质集合聚合 |
-  | `lilMaterialManagerTreeGUI.cs` | 左栏树绘制 |
-  | `lilMaterialManagerListGUI.cs` | 中栏材质表（排序 / 筛选 / 标记） |
-  | `lilMaterialManagerEditorGUI.cs` | 右栏属性批量编辑 + diff 预览 + apply/Undo |
-  | `lilMaterialManagerTextureGUI.cs` | 贴图批量（复用中控匹配器） |
-  | `lilMaterialManagerPrefab.cs` | Prefab 归属判定与影响面统计（§5.5） |
-  | `lilMaterialManagerActions.cs` | 结构操作（清理 / 渲染模式 / 转 Lite、Multi） |
+  | `lilMaterialManagerWindow.cs` | `EditorWindow`：三栏布局、状态、工具条、HoLil 菜单入口 |
+  | `lilMaterialManagerScan.cs` | 场景扫描、缓存、`ObjectChangeEvents` 失效、Prefab 归属 |
+  | `lilMaterialManagerTree.cs` | 左栏 tri-state 层级树（`TreeView`） |
+  | `lilMaterialManagerList.cs` | 中栏材质表（`MultiColumnHeader`） |
+  | `lilMaterialManagerProperties.cs` | 右栏属性分组、搜索、`MaterialEditor` 绑定 |
+  | `lilMaterialManagerChanges.cs` | 本次改动记录与 Undo 合并 |
+  | `lilMaterialManagerLocalization.cs`（可选） | 面板专用文案键的集中定义 |
 
-- **窗口名**：`[测试版] lilToon 材质管理器`（与现有 `[测试版] lilToon 多材质编辑器` 命名一致）。
-- **菜单入口**（建议同时挂两处，同一实现）：
-  - `Window/_lil/[测试版] lilToon 材质管理器`（窗口惯例）
-  - `HoLil/[材质] 材质管理器`（HoLil 现在是统一入口；文案写死中文，`MenuItem` 限制）
-  - 另可在材质 Inspector 顶部加一个"在材质管理器中显示"的小按钮（把当前材质与它的使用点带过去）。
-- 新增文件需要配套 `.meta`（本仓库跟踪 `.cs.meta`，`Editor/` 下 44/44 都有）——`.meta` 由 Unity 生成，提交时一并带上。
+- 新文件需要配套 `.meta`（仓库跟踪 `.cs.meta`，`Editor/` 下 44/44 都有）。
 
 ---
 
-## 10. 分期实施计划
+## 10. 里程碑
 
 ### M1 — 只读浏览（不写任何数据）
-- 当前场景扫描（含未激活、含 Prefab 实例）+ 三栏骨架 + 层级树 tri-state + 材质去重 + 统计 + 搜索/筛选 + `ObjectChangeEvents` 增量失效 + Prefab 归属标注。
-- **验收**：打开 3 万物体的场景，首次扫描 ≤ 300 ms、之后增量 ≤ 30 ms；树勾选能正确聚合出材质集合；改动物体层级后列表自动刷新；未被激活的物体与 Prefab 实例都能正确出现在树里；全程不写任何数据、不脏场景。
+场景扫描（含未激活 + Prefab 实例）+ 左栏 tri-state 树 + 中栏材质表 + 搜索 + 统计 + `ObjectChangeEvents` 增量失效。
+**验收**：3 万物体场景首次扫描 ≤ 300 ms、增量 ≤ 30 ms；勾选父节点能正确聚合出材质集合；改层级后自动刷新；未激活物体与 Prefab 实例都在树里；全程不写数据、不脏场景。
 
-### M2 — 属性级批量编辑
-- 按 shader 分组的属性表、`hasMixedValue` 显示、脏属性集合、单属性应用、全局应用、diff 预览（含影响面数字）、Undo group、Alt 显示原名。
-- **验收**：选中 50 个材质（含混合值），只改 1 个属性 → 其余属性在 50 个材质上的差异**零变化**；一次 Ctrl+Z 完整回退；预览里的"不适用"项准确；影响面数字与实际引用数一致。
+### M2 — 输入值编辑（本面板的核心）
+右栏属性分组折叠 + `MaterialEditor` 绑定 + 混合值显示（可展开看每种值属于哪些材质）+ 只写被改动属性 + Undo + 本次改动记录 + 超阈值确认。
+**验收**：选中 50 个材质（含混合值），只改 1 个属性 → 其余属性在 50 个材质上的差异**零变化**（用改动前后资产 diff 验证）；一次 Ctrl+Z 完整回退；混合值展开能准确列出归属。
 
-### M3 — 贴图与预设批量
-- 跨材质贴图批量（复用中控匹配算法）、预设批量套用（可勾选功能块）、跨材质复制/粘贴（按 `PropertyBlock` 粒度）、U2 反查（贴图 → 材质 → 物体）。
-- **验收**：选中一个分支 → 一次性给所有材质的对应槽配好贴图；预设套用后未勾选的功能块保持原值。
+### M3 — 打磨到"好用"
+属性搜索、数值相对运算（×/+）、值广播（取某材质的值给全体）、混合值归属高亮、大材质量下的性能与虚拟化验证、内嵌材质的写入与保存策略、影响面提示（Prefab / 引用计数）。
+**验收**：500 个材质选中下操作不卡（交互 < 100 ms）；影响面数字与实际引用一致。
 
-### M4 — 结构操作与 Prefab 资产编辑
-- 批量清理未使用贴图、批量渲染模式 / shader 切换（单独确认）、转 Lite / Multi、批量烘培（重操作，单独面板 + 进度）、`☐含 Prefab 资产` 开关 + 内嵌材质的写入与保存策略。
-- **验收**：所有结构操作都可单独撤销；改 Prefab 资产里独有的材质后，受影响的对象/Prefab 清单与预览里给的一致。
-
-### M5 — 规则持久化与优化
-- 把"范围 + 筛选 + 选择 + 脏属性"保存为可复用的规则/预设；重复材质检测与合并（可选）；大数据量下的虚拟化列表。
-- **验收**：一套规则能在另一个场景里一键复现同一批操作。
+### M4 — 删除旧窗口
+删除 `lilMaterialEditor` 与 `Window/_lil/` 菜单根，同步 `LILTOON_UI入口总览.md` 与相关注释。
+**验收**：仓库内无 `lilMaterialEditor` / `Window/_lil` 残留引用；文档与实际菜单一致。
 
 ---
 
@@ -316,39 +297,28 @@ class MaterialEntry {
 
 | 风险 | 说明 | 缓解 |
 | --- | --- | --- |
-| 大场景扫描性能 | 万级 Renderer | 分帧扫描 + `ProgressBar` + 增量失效；列表虚拟化 |
-| 值语义的心智负担 | 用户可能以为"看到的值就是全部材质的值" | 混合值显式呈现 + "只有改动项会写"的常驻提示 + diff 预览 |
-| 改材质资产的影响面 | D2 允许编辑 Prefab 材质后，一次写入可能影响整个项目 | 预览里给出被引用计数（物体 / Prefab 实例 / Prefab 资产），必要时二次确认 |
-| 内嵌材质的保存 | 无独立资产路径，改动落在宿主资产上 | M4 单独处理并提示宿主路径 |
-| Prefab 与 Variant 两条支线 | 各自都能单独出错 | M1 只读阶段就把标记做出来，写操作前给明确提示 |
-| Undo 体量与编辑器卡顿 | 数百材质一次写 | 分批 + 合并 Undo group + 阈值确认 |
-| 与 Unity 原生多选编辑的语义差异 | 用户习惯了"一改全写" | 默认走差异语义，但提供"强制写到全部材质"的高级开关 |
-| 属性覆盖不全 | 新面板不可能复刻整个 Inspector | 明确列出支持编辑的属性范围，其余给"在 Inspector 中打开"跳转 |
-| 多 shader 混选 | 属性对不齐 | 按 shader 分组，不适用项显式标注 |
+| 大场景扫描性能 | 万级 Renderer | 分帧 + `ProgressBar` + 增量失效 + 官方虚拟化控件 |
+| 改材质资产的影响面 | D2 允许编辑 Prefab 材质后，一次写入可能影响整个项目 | 写入前给出引用计数，超阈值二次确认 |
+| 混合值的心智 | 用户可能不理解"混合"与"只改我动的" | 混合值可展开归属 + 改动记录面板 |
+| Undo 粒度 | 拖动滑条会连续写 | 实施时实测并合并 Undo group |
+| 内嵌材质保存 | 无独立资产路径 | M3 单独处理并提示宿主路径 |
+| 与原生多选语义差异 | 用户习惯"一改全写" | 本面板刻意不提供"全部应用"，并在文档/工具提示里说明 |
 
 ---
 
-## 12. 问题清单
+## 12. 待定问题
 
-### 已定（见开头「已拍板的结论」）
-- Q1 扫描范围 → D1（当前场景 + 含未激活 + 含 Prefab 实例）
-- Q2 是否允许编辑 Prefab 内的材质 → D2（允许，需给影响面提示）
-- Q8 是否批量改 MPB 里的值 → D3（本面板完全不做 MPB）
-- Q9 Unity 版本 → D4（6000+，不做向下兼容）
-
-### 待定
 | # | 问题 | 我的建议 |
 | --- | --- | --- |
-| Q3 | 非 lilToon 材质要不要出现在列表里 | 要（否则"这个物体到底用了什么"不完整），但默认折叠、且不支持参数编辑 |
-| Q4 | 菜单入口：`Window/_lil` 还是 `HoLil` | 两处都挂（见 §9） |
-| Q5 | 是否把「多材质编辑器窗口」合并进来 | 建议 M3 结束后合并；先并存 |
-| Q6 | 需要 U2 反查（贴图 → 材质 → 物体）吗 | 建议要，放 M3 |
-| Q7 | 需要"保存为规则"（范围+筛选+选择+脏属性）吗 | 建议要，放 M5 |
+| Q1 | 贴图槽作为普通属性，允许"选中一批材质 → 拖一张贴图 → 全体生效"吗？（这是属性编辑的自然行为，但不是 D8 说的"贴图批量匹配/自动认领"） | 允许（就是普通属性写入），只是不做关键词/PBR 匹配那套 |
+| Q2 | 旧窗口删除后，需不需要新面板支持"来源 = Project 选择集"模式（用于改不在场景里的材质）？ | 先不做；真需要时再加一个来源开关 |
+| Q3 | 数值相对运算（×/+）与"广播某材质的值"要不要？ | 建议要，放 M3 |
+| Q4 | 中栏要不要显示材质在磁盘上的重复拷贝（同名多份）？ | 可作为 M3 的排序/着色提示，不做合并 |
 
 ---
 
 ## 13. 下一步
 
-1. 按 D1–D4 开工 **M1：只读浏览 + 层级选择**（不写任何数据，风险最低，主要验证扫描性能与树的交互手感）。
-2. M1 完成后更新 `LILTOON_UI入口总览.md`（新增窗口入口、菜单项、与其它入口的边界）。
-3. §12 的 Q3–Q7 可以在 M1 期间再定，不阻塞开工。
+1. 开工 **M1：只读浏览 + 层级选择**（不写任何数据）。
+2. M1 完成后再定 M2 的属性面板细节（分组顺序、折叠记忆、混合值展开的呈现）。
+3. §12 的 Q1–Q4 不阻塞 M1，可随时补。
