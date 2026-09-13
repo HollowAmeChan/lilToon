@@ -22,7 +22,7 @@ namespace lilToon
         private const float MinRightPaneWidth = 260.0f;
         private const string WindowTitle = "[测试版] lilToon 材质管理器";
         private const float DefaultLogHeight = 150.0f;
-        private const float MinLogHeight = 60.0f;
+        private const float MinLogHeight = 24.0f;        // 没有折叠头栏了，日志靠拖到最矮来收起来
         private const float MinListHeight = 80.0f;
         private const string EditorPrefsLeftWidth = "lilMaterialManager.leftPaneWidth";
         private const string EditorPrefsRightWidth = "lilMaterialManager.rightPaneWidth";
@@ -118,7 +118,7 @@ namespace lilToon
             Rect middleRect = new Rect(leftSplitterRect.xMax, paneTop, Mathf.Max(80.0f, rightSplitterRect.x - leftSplitterRect.xMax), paneHeight);
 
             // 中栏 = 材质表（上，自适应）+ 横向分隔条（可拖）+ 日志区（下，高度记在 EditorPrefs）
-            float logSpace = logView.Expanded ? Mathf.Clamp(logHeight, MinLogHeight, Mathf.Max(MinLogHeight, middleRect.height - MinListHeight)) : lilMaterialManagerLogView.CollapsedHeight;
+            float logSpace = Mathf.Clamp(logHeight, MinLogHeight, Mathf.Max(MinLogHeight, middleRect.height - MinListHeight));
             Rect logRect = new Rect(middleRect.x, middleRect.yMax - logSpace, middleRect.width, logSpace);
             Rect logSplitterRect = new Rect(middleRect.x, logRect.y - SplitterWidth, middleRect.width, SplitterWidth);
             Rect listRect = new Rect(middleRect.x, middleRect.y, middleRect.width, Mathf.Max(40.0f, logSplitterRect.y - middleRect.y));

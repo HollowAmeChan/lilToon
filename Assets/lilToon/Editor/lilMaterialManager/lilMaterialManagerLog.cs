@@ -23,11 +23,9 @@ namespace lilToon
     internal sealed class lilMaterialManagerLogView
     {
         private const int MaxEntries = 400;
-        public const float CollapsedHeight = 30.0f;         // 只留标题条
 
         private readonly List<lilMaterialManagerLogEntry> entries = new List<lilMaterialManagerLogEntry>();
         private Vector2 scroll;
-        private bool expanded = true;
 
         // 合并连续改动用（拖动滑条：值一变一变地走，日志只留一条）
         private lilMaterialManagerLogEntry mergingEntry;
@@ -38,7 +36,6 @@ namespace lilToon
         private static GUIStyle logStyle;
         private static GUIStyle warningStyle;
 
-        public bool Expanded { get { return expanded; } }
         public int Count { get { return entries.Count; } }
         public float ScrollY { get { return scroll.y; } }
 
@@ -109,39 +106,30 @@ namespace lilToon
             return builder.ToString();
         }
 
-        // 日志区高度由窗口控制（中栏和材质表之间有一条可拖的横向分隔条）
+        // 永远展开，没有折叠头栏：整块就是列表本身。
+        // 高度由窗口的横向分隔条控制；清空 / 复制在右键菜单里（列表为空时会提示一句）。
         public void Draw(Rect rect)
         {
             GUILayout.BeginArea(rect);
-            lilMaterialManagerStyles.DrawSectionHeader(ref expanded, "日志", string.Empty, new Color(0.20f, 0.20f, 0.24f));
 
-            if(expanded)
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+            if(entries.Count == 0)
             {
-                using(new EditorGUILayout.HorizontalScope())
+                EditorGUILayout.LabelField("还没有记录。改动会记在这里；右键可清空或复制。", EditorStyles.miniLabel);
+            }
+            else
+            {
+                for(int i = 0; i < entries.Count; i++)
                 {
-                    if(GUILayout.Button("清空", EditorStyles.miniButton, GUILayout.Width(44.0f))) Clear();
-                    GUILayout.Label("改动即时生效，Ctrl+Z 撤销；没吃到的材质会点名（右键看选中情况）", EditorStyles.miniLabel);
-                }
-
-                scroll = EditorGUILayout.BeginScrollView(scroll);
-                if(entries.Count == 0)
-                {
-                    EditorGUILayout.LabelField("还没有记录。", EditorStyles.miniLabel);
-                }
-                else
-                {
-                    for(int i = 0; i < entries.Count; i++)
+                    lilMaterialManagerLogEntry entry = entries[i];
+                    using(new EditorGUILayout.HorizontalScope())
                     {
-                        lilMaterialManagerLogEntry entry = entries[i];
-                        using(new EditorGUILayout.HorizontalScope())
-                        {
-                            GUILayout.Label(entry.time, EditorStyles.miniLabel, GUILayout.Width(52.0f));
-                            GUILayout.Label(entry.message, entry.warning ? WarningStyle : LogStyle);
-                        }
+                        GUILayout.Label(entry.time, EditorStyles.miniLabel, GUILayout.Width(52.0f));
+                        GUILayout.Label(entry.message, entry.warning ? WarningStyle : LogStyle);
                     }
                 }
-                EditorGUILayout.EndScrollView();
             }
+            EditorGUILayout.EndScrollView();
 
             GUILayout.EndArea();
         }
