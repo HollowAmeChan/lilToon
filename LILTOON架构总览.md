@@ -561,7 +561,7 @@ lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/l
 
 它依赖：
 
-- 材质属性 `_UseRealtimeAO`（实时源开关）与 `_AO*` 参数组（8 个属性，清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）
+- 材质属性 `_UseRealtimeAO`（实时源开关）与 `_AO*` 参数组（9 个属性，清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）
 - shader setting 宏 **`LIL_FEATURE_REALTIMEAO`**（`LIL_FEATURE_SSAO` / `_UseSSAO` / `_ScreenSpaceAOSource` 等旧名**已废弃并移除**，参见 `LILTOON_URP_SSAO设计总览.md` §0）
 - Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`（0..1 visibility，1 = 无遮挡；关闭生产端时每相机重置为 white）
 
@@ -571,10 +571,10 @@ lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/l
 2. Ho-GTAO 是否在 opaque 绘制之前发布 `_HoAOTexture`（GeometryBuffer 与 Ho-GTAO 同在 `BeforeRenderingOpaques`，先后由 Renderer Feature 列表顺序保证）
 3. 材质读 `_HoAOTexture.r`，经 `saturate((r − 0.5) * _AOContrast + 0.5 − _AOLevel)` 得到 visibility（XR 下走 `TEXTURE2D_SCREEN` / `LIL_SAMPLE_SCREEN`）
 4. 与共用颜色贴图（`_ShadowBorderMask` RGB）相乘，由 `_AOMask` 统一门控，得到一份 `fd.aoVis`
-5. **两个输出**：光照结果乘 `lerp(1, fd.aoVis, _AODarkStrength)`（整体压暗，AO Map 颜色即压暗颜色）；toon ramp 输入乘 `lerp(1, fd.aoVis, _AOStrength)`（三段阴影偏移）。两个强度互相独立
+5. **两个输出**：光照结果乘 `lerp(1, _AOColor.rgb, saturate(1 - fd.aoVis) * _AODarkStrength)`（整体压暗，颜色由 `_AOColor` 给出，默认黑 = 纯压暗）；toon ramp 输入乘 `lerp(1, fd.aoVis, _AOStrength)`（三段阴影偏移）。两个强度互相独立
 6. 描边：`_OutlineShadowStrength > 0` 时先跑主色同款光照模型，再叠加同一个压暗
 
-inspector 入口：AO 是**顶层独立栏 `AO`**（不在阴影栏内），栏内为 共用 AO Map → 压暗强度 → ramp 偏移强度 → 实时源（`Realtime AO` / Level / Contrast）→ AO Mask；不随 `_UseShadow` 灰显。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
+inspector 入口：会隐式影响阴影的那部分在**阴影栏内的 `AO` 折叠子级**（AO Map + LOD / ramp 强度 / 实时源 / AO Mask）；**顶层独立栏 `AO`** 只放整体压暗（`_AOColor` + `_AODarkStrength`），并注明复用阴影栏的 AO 输入。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 

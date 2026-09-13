@@ -822,7 +822,7 @@
 // AO public channel
 // One AO system, one shared colour input, two outputs:
 //   input    : the AO Map (_ShadowBorderMask RGB) and the realtime HoAO (_HoAOTexture)
-//   output 1 : overall darkening  fd.col.rgb *= lerp(1, aoVis, _AODarkStrength)
+//   output 1 : overall darkening  fd.col.rgb *= lerp(1, _AOColor.rgb, occ * _AODarkStrength)
 //   output 2 : toon ramp offset   lns.xyz    *= lerp(1, aoVis, _AOStrength)  (inside lilGetShading)
 // The shared visibility is composed once per fragment by lilCalcAO() and stored in
 // fd.aoVis, so both outputs consume the same value and the same AO Mask gate.
@@ -874,12 +874,14 @@
         fd.aoVis = aoVis;
     }
 
-    // Output 1: overall darkening. The lighting result is multiplied by the AO colour
-    // (the AO Map colour tinted by the realtime occluded amount), so an occluded pixel
-    // can go darker than the deepest shadow colour of the toon ramp.
+    // Output 1: overall darkening. The occlusion amount comes from the shared input (the
+    // AO Map and the realtime HoAO, gated by the AO Mask), and the colour it darkens
+    // toward is _AOColor - black by default, i.e. a plain darkening. Because this is a
+    // multiply it can go darker than the deepest shadow colour of the toon ramp.
     void lilApplyAODark(inout lilFragData fd)
     {
-        fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength);
+        float3 aoOcc = saturate(1.0 - fd.aoVis);
+        fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength);
     }
 #endif
 

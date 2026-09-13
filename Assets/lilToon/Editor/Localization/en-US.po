@@ -1809,6 +1809,9 @@ msgstr "AO"
 msgid "AO Contrast"
 msgstr "AO Contrast"
 
+msgid "AO Dark Color"
+msgstr "AO Dark Color"
+
 msgid "AO Dark Strength"
 msgstr "AO Dark Strength"
 
@@ -1817,6 +1820,9 @@ msgstr "AO Level"
 
 msgid "AO Strength"
 msgstr "AO Strength"
+
+msgid "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
+msgstr "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
 
 msgid "Apply Specular"
 msgstr "Apply Specular"
@@ -1959,8 +1965,8 @@ msgstr "Realtime AO"
 msgid "Ref"
 msgstr "Ref"
 
-msgid "RGB: drives the three toon shadow layers and tints the AO darkening."
-msgstr "RGB: drives the three toon shadow layers and tints the AO darkening."
+msgid "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
+msgstr "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
 
 msgid "Right Only"
 msgstr "Right Only"
@@ -1988,6 +1994,9 @@ msgstr "Use Emission"
 
 msgid "Use Outline"
 msgstr "Use Outline"
+
+msgid "Uses the Shadow section's AO input"
+msgstr "Uses the Shadow section's AO input"
 
 msgid "UV0"
 msgstr "UV0"

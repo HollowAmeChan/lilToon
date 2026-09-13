@@ -1,34 +1,34 @@
 # HoAO 接入方案（AO 系统：toon 阴影 ramp + 整体压暗）
 
-> 状态：**已落地（v8）**。阶段 0-3 + 入口/参数收敛 + 汉化都已实现；52 个 shader 已重新生成并编译通过。
-> **v8（本轮，AO 成为独立的一栏）**：AO 有自己的顶层入口 **`AO`**（不再挂在阴影栏下），内部是**一份共用的颜色贴图输入 + 两个输出**：
-> - **共用输入**：`_ShadowBorderMask`（AO Map，RGB）+ 实时 HoAO（`_HoAOTexture`），由 `_AOMask` 同时门控；每个像素只合成一次，存进 `fd.aoVis`（`lilCalcAO()`，`lil_common_frag.hlsl`）→ 两个输出天然共用同一张图、同一个遮挡量。
-> - **输出 1（新增）整体压暗**：`fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength)`（`lilApplyAODark()`，光照结果之后、SSS/Rim/MatCap/Emission 之前）。AO Map 的颜色直接作为压暗颜色，实时遮挡量决定压深 —— 因此 AO 可以比"最深阴影色"更暗。
-> - **输出 2** toon ramp 偏移：`lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)`（`lilGetShading` 内，三层 `lilTooningScale` 之前），与 legacy AO Map 位置一致。
-> - **参数 7 → 8**：新增 `_AODarkStrength`（`_AOStrength` 只管 ramp 偏移，两者各自独立）。
-> - **描边**：`_OutlineShadowStrength > 0` 时描边**先跑与主色相同的光照模型**（`OVERRIDE_SHADOW`，用描边色当 albedo），**再叠加同一个 AO 压暗**（`OVERRIDE_AODARK`）—— 两者在同一个门控里，作为一件事生效。
-> - **已知取舍（本轮明确跳过）**：描边 pass 的 `fd.positionCS` 是**外扩后**的位置，所以描边采样实时 AO 采到的是"描边自己那个像素"（通常是背景，AO ≈ 1）；离线 AO Map 走 UV，能正常读到。不做未外扩位置的插值器。
-> v7（语义回退）：AO 只作用于三段颜色 ramp，删除 v5/v6 的阈值偏移与 v6 的整体压暗（本轮的压暗是**重新按新语义加回**的，不再是当时那条耦合路径）。
-> v6（语义收敛）：删除整个 AO 影色层（`_AOColor` / `_AOColorTex` / `_AOMainStrength` 三个属性 + 差值驱动、采样、UI、`aoShadeAmount` 机制）。
+> 状态：**已落地（v9）**。阶段 0-3 + 入口/参数收敛 + 汉化都已实现；52 个 shader 已重新生成并编译通过。
+> **v9（本轮，压暗颜色 + 参数归位）**：
+> - **压暗颜色回来了**：新增 `_AOColor`（`AO Dark Color`，Color，默认 **(0,0,0,1)** = 纯压暗）。输出 1 改为
+>   `fd.col.rgb *= lerp(1.0, _AOColor.rgb, saturate(1.0 - fd.aoVis) * _AODarkStrength)`
+>   —— 遮挡量仍来自共用输入（AO Map × 实时 AO，`_AOMask` 门控），颜色由 `_AOColor` 给出；alpha 不参与（沿用 `_ShadowBorderColor` 那种"只用 RGB"的先例）。`_AOColor` 默认黑时与 v8 公式逐像素等价。
+> - **参数归位**：AO 里"隐式影响阴影"的那部分（共用 AO Map + LOD、`_AOStrength` ramp 偏移、实时源 `Realtime AO`/Level/Contrast、`_AOMask`）**放回阴影栏**，仍是栏内 `AO` 折叠子级（两套 inspector 共用 `DrawShadowAOGroup()`）；顶层 `AO` 栏只留**整体压暗**（`_AOColor` + `_AODarkStrength`），并在标题/摘要里注明它复用阴影栏的 AO 输入。
+> - **参数 8 → 9**：新增 `_AOColor`。
+> v8：AO 独立成栏、一份输入两个输出（`fd.aoVis` 合成一次 → 压暗 + ramp 偏移）。
+> v7（语义回退）：AO 只作用于三段颜色 ramp，删除 v5/v6 的阈值偏移与 v6 的整体压暗（v8 起压暗按新语义重新加回）。
+> v6（语义收敛）：删除整个 AO 影色层（`_AOColor` / `_AOColorTex` / `_AOMainStrength` 三个属性 + 差值驱动、采样、UI、`aoShadeAmount` 机制）。（v9 只把 `_AOColor` 以"压暗颜色"的身份收回，`_AOColorTex` 不再回来 —— 贴图输入共用阴影栏的 AO Map。）
 > v5 修订（入口与参数收敛）：删除 `_ShadowAOShift`、`_ShadowAOShift2`、`_ShadowPostAO`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`；`_RealtimeAOStrength` → `_AOStrength`、`_RealtimeAOMask` → `_AOMask`；新增 `_AOLevel`（**正值 = AO 更强**）与 `_AOContrast`。
 > v5.1：`_HoAOTexture` 改走 XR 屏幕纹理通道（`TEXTURE2D_SCREEN` / `LIL_SAMPLE_SCREEN`）；特性宏改名 `LIL_FEATURE_AOMask`。
 > ⚠️ §3.3 描述的是 **v7 之前**的阈值偏移设计，§4.3 / §4.4 / §4.5 描述的是 **v6 之前**的 AO 影色层设计，均已删除，只作为决策记录保留（当前语义见 §0 与 §4.7）。§2 / §5 / §6.1 的历史行保留当时的属性名。
 > v4：AO Color 永远单层、直接混入三层；AO Mask 同时门控实时与离线；新属性统一 `_AO` 前缀；删除 `_RealtimeAOColorFromMain`。
 > v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 质量达标，噪声/方向偏置不构成门槛。
 > 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准。
-> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化 / `36d9e40` v7（AO 只作用于 ramp）；v8 为本轮提交。
+> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理 / `44d0d2c` level 符号 + contrast + 宏名 + XR 采样 / `9c3728e` XR 屏幕纹理通道对齐 / `01fd74b` 汉化 / `36d9e40` v7（AO 只作用于 ramp）/ `019b6d1` v8（AO 独立栏、一份输入两个输出）；v9 为本轮提交。
 
 ---
 
-## 0. 结论（v8 实现状态）
+## 0. 结论（v9 实现状态）
 
 1. **接入点成立且已落地**：生产端从设计上就支持材质在 forward 采样本帧 AO —— Ho-GTAO 强制 `BeforeRenderingOpaques(250)`（`HoGTAORendererFeature.cs:615-623`，注释原文 `// AO is sampled by opaque lilToon materials ...`），`_HoAOTexture` 每相机重置为 white（`:147-149`）→ 关闭或输入缺失时自动退化为无操作。
 2. **语义：一份输入，两个输出。** `lilCalcAO()` 每像素合成一次共享可见度 `fd.aoVis`（AO Map × 实时 HoAO，`_AOMask` 同时门控）：
-   - **整体压暗**（新）：`fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength)`，位置在光照结果之后、SSS/Rim/MatCap/Emission 之前。AO Map 的颜色直接作为压暗颜色（乘色），实时遮挡量决定压深 → 可以比最深的 toon 阴影色更暗。
-   - **ramp 偏移**：`lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)`，位置与 legacy AO Map 乘算相同（三层 `lilTooningScale` 与 `lns.w = lns.x` 之前）→ AO 决定像素落在 1st/2nd/3rd 哪一段颜色，最深不超过材质自己定义的最深阴影色。
-   - 两条输出的强度滑块互相独立，但**读的是同一张贴图、同一个遮挡量、同一个 mask**。
-3. **入口**：AO 是**顶层独立的一栏 `AO`**（legacy 与 next 两套 inspector 都有，`DrawAOSettings()` / `DrawNextAO()`），栏内顺序为：共用 AO Map（+LOD）→ 压暗强度 → ramp 偏移强度 → 实时源（`Realtime AO` 开关 + Level + Contrast）→ AO Mask。**不随 `_UseShadow` 灰显**（压暗在没有 toon 阴影时同样生效）。
-4. **8 个属性**（权威清单见 §4.7）：`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AODarkStrength`、`_AOStrength`、`_AOLevel`、`_AOContrast`、`_AOMask`。实时可见度 = `saturate((_HoAOTexture.r − 0.5) * _AOContrast + 0.5 − _AOLevel)`（`_AOContrast` 是轴心 0.5 的增益，`_AOLevel` **正值 = AO 更强**）。
+   - **整体压暗**（输出 1）：`fd.col.rgb *= lerp(1.0, _AOColor.rgb, saturate(1.0 - fd.aoVis) * _AODarkStrength)`，位置在光照结果之后、SSS/Rim/MatCap/Emission 之前。遮挡量来自共用输入，**压向的颜色由 `_AOColor` 给出（默认黑 = 纯压暗）** → 可以比最深的 toon 阴影色更暗。
+   - **ramp 偏移**（输出 2）：`lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)`，位置与 legacy AO Map 乘算相同（三层 `lilTooningScale` 与 `lns.w = lns.x` 之前）→ AO 决定像素落在 1st/2nd/3rd 哪一段颜色，最深不超过材质自己定义的最深阴影色。
+   - 两条输出强度独立；**共用同一张贴图、同一个遮挡量、同一个 mask**，没有第二张贴图。
+3. **入口（v9 归位）**：会隐式影响阴影的那部分放回**阴影栏**，作为栏内 `AO` 折叠子级（`DrawShadowAOGroup()`，两套 inspector 共用）：共用 AO Map（+LOD）、`_AOStrength`（ramp 偏移）、`_AOMask`、实时源（`Realtime AO` / Level / Contrast）。**顶层 `AO` 栏只放整体压暗**（`_AOColor` + `_AODarkStrength`），标题/摘要注明它复用阴影栏的 AO 输入。阴影栏的 AO 子级不随 `_UseShadow` 灰掉（同一份输入也喂压暗），顶层 `AO` 栏始终可编辑。
+4. **9 个属性**（权威清单见 §4.7）：`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOMask`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`（以上在阴影栏的 AO 子级内）、`_AOColor`、`_AODarkStrength`（以上在顶层 AO 栏）。实时可见度 = `saturate((_HoAOTexture.r − 0.5) * _AOContrast + 0.5 − _AOLevel)`（`_AOContrast` 是轴心 0.5 的增益，`_AOLevel` **正值 = AO 更强**）。
 5. **描边**：`_UseShadow && _OutlineShadowStrength > 0` 时，描边**先走一遍与主色相同的光照模型**（`OVERRIDE_SHADOW`，`fd.albedo` = 描边色），按 `_OutlineShadowStrength` 混合进描边色，**再叠加同一个 AO 压暗**（`OVERRIDE_AODARK`）——光照与压暗在同一个门控内，作为一件事生效；`_OutlineShadowStrength = 0` 时两者一起不做。
 
 ---
@@ -91,7 +91,8 @@ aoVis   = lerp(1, AO Map.rgb, aoMask)                     // 离线：共用颜�
 fd.aoVis = aoVis                                          // 1 = 无遮挡
 
 // 输出 1：整体压暗（乘 AO 颜色）
-fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength)
+float3 aoOcc  = saturate(1.0 - fd.aoVis)                  // 遮挡量（逐层）
+fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength)
 
 // 输出 2：toon ramp 偏移（改的是"落在哪一段颜色"）
 lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)
@@ -178,7 +179,8 @@ float3 aoVis = 1.0;
 fd.aoVis = aoVis;
 
 // ---- 2) 输出 1：整体压暗（乘 AO 颜色），光照结果之后 ----
-fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength);
+float3 aoOcc = saturate(1.0 - fd.aoVis);                                       // 遮挡量（逐层）
+fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength);                // 默认黑 = 纯压暗
 
 // ---- 3) 输出 2：ramp 偏移（lilGetShading 内，与 legacy AO Map 乘算同位）----
 lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength);
@@ -248,35 +250,39 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | `_AODarkStrength = 0` | 只剩 ramp 偏移（等价于 v7 行为） |
 | `_AOStrength = 0` | 只剩整体压暗（ramp 不受 AO 影响） |
 | 两者都为 0 | 完全无操作（两个"一键关掉"旋钮） |
+| `_AOColor` = 黑（默认） | 纯压暗：`multiplier = 1 - occ * _AODarkStrength`，与 v8 公式逐像素等价 |
+| `_AOColor` = 有色 | 压暗同时染色：遮挡越强越接近该颜色（如偏蓝的 AO） |
 | `_ShadowMaskType == 2`（SDF） | `aastrencth = 0`，但 ramp 输入同样被压低、压暗也照常 → 两条输出都成立 |
 | `_ShadowStrength == 0` / `_ShadowStrengthMask` 涂黑 | 只削弱 toon 影的混合；ramp 偏移与压暗都照常（与 legacy AO Map 行为一致） |
 | 屏幕 AO 关闭 / feature 关闭 | `_HoAOTexture` 为 white → `aoScreen = 1` → 实时路中性，只剩 AO Map |
-| AO Map 未指定（white）+ 实时有值 | `aoVis = 实时可见度` → 纯实时驱动，压暗退化为"按遮挡量乘灰" |
-| `_UseShadow = 0`（无 toon 阴影） | ramp 偏移无对象，但**整体压暗照常生效** → AO 栏**不随 `_UseShadow` 灰显** |
+| AO Map 未指定（white）+ 实时有值 | `aoVis = 实时可见度` → 纯实时驱动，压暗退化为"按遮挡量乘 `_AOColor`" |
+| `_UseShadow = 0`（无 toon 阴影） | ramp 偏移无对象，但**整体压暗照常生效** → 阴影栏的 AO 子级与顶层 AO 栏都仍可编辑 |
 | 描边（`_OutlineShadowStrength`） | `> 0` 时先跑主色同款光照模型、再叠加同一个 AO 压暗；`= 0` 时两者一起不做 |
 | 描边的实时 AO | 采样点在描边自身（外扩后）的屏幕位置，通常 ≈ 1；离线 AO Map 正常 |
-| 部分材质未重新生成 shader | `_AOContrast` 读作 0 → 代码里按身份处理（`> 0 ? _AOContrast : 1`）；新增的 `_AODarkStrength` 读作 0 会让压暗不生效，**必须重新生成 shader** |
+| 部分材质未重新生成 shader | `_AOContrast` 读作 0 → 代码里按身份处理（`> 0 ? _AOContrast : 1`）；新增的 `_AODarkStrength` / `_AOColor` 读作 0 会让压暗不生效或变黑，**必须重新生成 shader** |
 
-### 4.7 参数清单（v8 权威清单：**8 个属性**，全部归入顶层 `AO` 栏）
+### 4.7 参数清单（v9 权威清单：**9 个属性**）
 
-| 属性 | 角色 | 范围 / 默认 | 状态 |
-|---|---|---|---|
-| `_ShadowBorderMask` | **共用 AO Map**（RGB → 1/2/3 段 ramp 偏移 + 压暗颜色） | white | 沿用 |
-| `_ShadowBorderMaskLOD` | AO Map mip 偏移 | 0..1 / 0 | 沿用 |
-| `_AODarkStrength` | **整体压暗强度**（输出 1） | 0..1 / **1** | v8 新增 |
-| `_AOStrength` | **ramp 偏移强度**（输出 2） | 0..1 / 1 | 沿用（原 `_RealtimeAOStrength`） |
-| `_UseRealtimeAO` | 实时 AO 源开关（显示名 "Realtime AO"） | Int / 1 | 沿用（显示名从 "AO" 改掉，避免与栏名重复） |
-| `_AOLevel` | 实时可见度电平（有符号平移；**正值 = AO 更强**） | -1..1 / 0 | v5 新增 |
-| `_AOContrast` | 实时掩码增益（轴心 0.5，压缩/扩张） | 0..4 / 1 | v5 新增 |
-| `_AOMask` | AO Mask（门控两路来源 → 两个输出） | white | 沿用（原 `_RealtimeAOMask`） |
+| 属性 | 入口 | 角色 | 范围 / 默认 | 状态 |
+|---|---|---|---|---|
+| `_ShadowBorderMask` | 阴影栏 → AO | **共用 AO Map**（RGB → 1/2/3 段 ramp 偏移） | white | 沿用 |
+| `_ShadowBorderMaskLOD` | 阴影栏 → AO | AO Map mip 偏移 | 0..1 / 0 | 沿用 |
+| `_AOStrength` | 阴影栏 → AO | ramp 偏移强度（输出 2） | 0..1 / 1 | 沿用（原 `_RealtimeAOStrength`） |
+| `_AOMask` | 阴影栏 → AO | AO Mask（门控两路来源 → 两个输出） | white | 沿用（原 `_RealtimeAOMask`） |
+| `_UseRealtimeAO` | 阴影栏 → AO | 实时 AO 源开关（显示名 "Realtime AO"） | Int / 1 | 沿用（显示名从 "AO" 改掉，避免与栏名重复） |
+| `_AOLevel` | 阴影栏 → AO | 实时可见度电平（有符号平移；**正值 = AO 更强**） | -1..1 / 0 | v5 新增 |
+| `_AOContrast` | 阴影栏 → AO | 实时掩码增益（轴心 0.5，压缩/扩张） | 0..4 / 1 | v5 新增 |
+| `_AOColor` | 顶层 `AO` | **压暗颜色**（输出 1 乘向的颜色；alpha 不参与） | Color / **(0,0,0,1)** | v9 新增（v6 删掉的 `_AOColor` 以新身份收回） |
+| `_AODarkStrength` | 顶层 `AO` | 整体压暗强度（输出 1） | 0..1 / **1** | v8 新增 |
 
 **v5 删除的 7 个属性**：`_ShadowAOShift`(4 数字)、`_ShadowAOShift2`(2 数字)、`_ShadowPostAO`、`_RealtimeAORemap`(2)、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`。删除安全性：29 个预设里这些存的**全是单位值**（`_ShadowAOShift=(1,0,1,0)`、`_ShadowAOShift2=(1,0,1,0)`、`_ShadowPostAO=0`，其余在预设中根本不出现），所以预设观感不变。
 
-**v6 删除的 3 个属性**：`_AOColor`、`_AOColorTex`、`_AOMainStrength`（AO 影色层）。
+**v6 删除的 3 个属性**：`_AOColor`、`_AOColorTex`、`_AOMainStrength`（AO 影色层）。其中 `_AOColor` 在 v9 以"压暗颜色"的身份收回，`_AOColorTex` **不回来**（贴图输入共用阴影栏的 AO Map）。
 
 **v7 删除的 1 个属性**：`_AOThreshold`（阈值偏移机制取消）。
 
-**v8 新增的 1 个属性**：`_AODarkStrength`。默认 1 → **指定了 AO Map 的材质观感会变**（贴图现在同时压暗），实时源关闭时不受影响。
+**v8 / v9 新增**：`_AODarkStrength`（v8）、`_AOColor`（v9）。
+
 
 命名与归类：AO 相关属性的 `PropertyBlock` 为 **`Shadow`**（沿用，不新增枚举值），预设分类由 `lilPropertyNameChecker.IsShadowProperty` 覆盖（`_AO` 前缀 + `_UseRealtimeAO`）；`IsGIAOProperty` 只保留 GI 自己的 `_HTraceSSGIBackfaceNormalFix`。UI 位置由 inspector 决定（顶层 `AO` 栏），与 `PropertyBlock` 无关。
 
@@ -370,7 +376,18 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 语言表 | 新增 msgid `Realtime AO`、`AO Dark Strength`、`RGB: drives the three toon shadow layers and tints the AO darkening.`；`shadowAOMapContent` 换用新 tooltip；新增 `aoMaskContent`（+ `lilEditorVariables` 代理，漏掉代理会 CS0103） |
 | 文档 | 本文件 v8 头 + §0 / §3 / §4.2 / §4.6 / §4.7 / §6.1 / §7 / §8 / §9 改写；`LILTOON架构总览.md` §10.3、`LILTOON_URP_SSAO设计总览.md`、`LILTON_URP提升渲染质感路径.md` 同步 |
 
-**v8 的 shader 生成**：lilblock 改动后 Unity 会自动重新生成材质 shader（v7 时实测约 1 分钟），需确认 `_AODarkStrength` 进入 Properties 块且编辑器日志无编译错误。
+**v9 追加（本轮）—— 压暗颜色 + 参数归位**：
+
+| 改动 | 内容 |
+|---|---|
+| 压暗颜色 | 新增 `_AOColor`（`AO Dark Color`，Color，默认 (0,0,0,1)）；`lilApplyAODark` 改为 `fd.col.rgb *= lerp(1.0, _AOColor.rgb, saturate(1.0 - fd.aoVis) * _AODarkStrength)`；alpha 不参与（先例：`_ShadowBorderColor` 只用 RGB）。`_AOColor` = 黑时与 v8 公式等价 |
+| 参数归位 | 阴影栏恢复 `AO` 折叠子级（`DrawShadowAOGroup()`，两套 inspector 共用）：AO Map（foldout 头部的贴图槽）+ LOD、`_AOStrength`、`_UseRealtimeAO`（+Level/Contrast）、`_AOMask`。放在 `_UseShadow` 分支之外、并用 `DisabledScope(false)` 摆脱 Next inspector 阴影 section 的灰显 —— 同一份输入也喂压暗，不能在阴影关闭时不可用 |
+| 顶层 AO 栏 | 只留 `_AOColor` + `_AODarkStrength`；legacy 的 foldout 帮助文本与 Next 的 section `summary` 都注明"复用阴影栏的 AO 输入"（`DrawNextAO()` 只剩两行） |
+| 语言表 | 新增 `AO Dark Color`、`Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section.`、`Uses the Shadow section's AO input`、`AO that shapes the toon shadow: ...`；删除失效的 `shadowAOMapContent`（连同 `lilEditorVariables` 代理与 `RGB: drives ...` 词条）与 `isShowShadowBorderMask` |
+| 文档 | 本文件 v9 头 + §0 / §3.1 / §4.2 / §4.6 / §4.7 / §6.1 / §7 / §8 改写；其余三份同步 |
+| 参数 | **8 → 9**（新增 `_AOColor`） |
+
+**v8 的 shader 生成**：lilblock 改动后 Unity 会自动重新生成材质 shader（v7 时实测约 1 分钟），需确认 `_AODarkStrength` / `_AOColor` 进入 Properties 块且编辑器日志无编译错误。
 
 已落地的文件（12 个）：
 
@@ -419,13 +436,15 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 
 - [x] shader 已重新生成（Unity 自动）：v7 批次确认 `_AOThreshold` 从 Properties 块消失；v8 需再确认 `_AODarkStrength` 已进入 Properties 块。
 - [ ] 编辑器日志无 shader 编译错误（重点看 `lilCalcAO` / `lilApplyAODark` / `OVERRIDE_AO` / `OVERRIDE_AODARK` 的所有调用点）。
-- [ ] **压暗生效**：指定一张有黑有白的 AO Map，`_AODarkStrength = 1`，最黑处（贴图 RGB = 0）应明显压暗（可低于最深阴影色）；`_AODarkStrength = 0` 时回到 v7 观感。
-- [ ] **共用输入**：同一张贴图既推 ramp 又压暗；`_AOStrength = 0` 时只剩压暗，`_AODarkStrength = 0` 时只剩 ramp 偏移。
+- [ ] **压暗生效**：指定一张有黑有白的 AO Map，`_AODarkStrength = 1` + `_AOColor` 黑，最黑处应明显压暗（可低于最深阴影色）；`_AODarkStrength = 0` 时回到 v7 观感。
+- [ ] **压暗颜色**：`_AOColor` 设成偏蓝/偏紫，遮挡处应整体向该色偏移，未遮挡处不受影响（`aoOcc = 0` → 恒等）。
+- [ ] **参数归位**：阴影栏的 `AO` 子级里能改 AO Map / ramp 强度 / 实时源 / Mask；`_UseShadow = 0` 时该子级仍可编辑（压暗还在用同一份输入）。
+- [ ] **共用输入**：同一张贴图既推 ramp 又提供压暗的遮挡量；`_AOStrength = 0` 时只剩压暗，`_AODarkStrength = 0` 时只剩 ramp 偏移。
 - [ ] **实时源**：`_UseRealtimeAO = 1` + Ho-GTAO 开启时，`_AOLevel` / `_AOContrast` 只影响实时那一路；`_AOMask` 涂黑区域两路遮蔽与两个输出同时消失。
 - [ ] **默认中性**：AO Map 未指定（white）+ 实时无遮挡时两条输出都是恒等（画面与 AO 关闭一致）。
 - [ ] **描边**：`_OutlineShadowStrength = 0` → 描边完全不受 AO 影响；`= 1` → 描边先按主色光照模型着色，再叠加同一个 AO 压暗；受光区描边与本体着色一致（描边色为白 + 浅阴影色的材质上差异本来就小，验证时把 `_ShadowColor` 调深更直观）。
 - [ ] **描边的实时 AO**：确认描边上的实时 AO 基本不可见（采样点在描边自身像素）——这是已知取舍，不是 bug。
-- [ ] `_UseShadow = 0`：ramp 偏移无效果但压暗正常，AO 栏仍可编辑。
+- [ ] `_UseShadow = 0`：ramp 偏移无效果但压暗正常，阴影栏的 AO 子级与顶层 AO 栏都可编辑。
 - [ ] 极端参数：`_ShadowBlur = 0` 且 `_AAStrength = 0` 下无 NaN/黑块。
 - [ ] `_ShadowMaskType = 2`（SDF）单独验证。
 - [ ] 毛发材质（`lts_fur*`）：压暗与 ramp 偏移都生效。
@@ -449,7 +468,7 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 8 | `_RealtimeAOMask` 改名 | **采纳**（已实现） |
 | 9 | legacy AO Map 乘算 | v5/v6 曾为阈值偏移让路而抑制；**v7 废止** —— 乘算成为唯一路径 |
 | 10 | AO 的归属入口 | v5 曾定为"阴影栏的子级"；**v8 改为顶层独立栏 `AO`**（一份输入两个输出，自成一套系统） |
-| 11 | 参数削减 | v5：**17 → 11**；v6：11 → 8；v7：8 → 7（删 `_AOThreshold`）；**v8：7 → 8**（新增 `_AODarkStrength`，两条输出各自独立强度） |
+| 11 | 参数削减 | v5：**17 → 11**；v6：11 → 8；v7：8 → 7（删 `_AOThreshold`）；v8：7 → 8（新增 `_AODarkStrength`）；**v9：8 → 9**（新增 `_AOColor`） |
 | 12 | 旧值迁移 | **不做**（老资产很少）；改名/删除导致的老材质取值丢失由使用者手工重设 |
 | 13 | `_AOLevel` 符号 | **正值 = AO 更强**（v5.1 翻转） |
 | 14 | 窗口能力 | **补 `_AOContrast`**（0..4 / 1，轴心 0.5 的增益）；旧的绝对 Min/Max 不再回来 |
@@ -461,6 +480,8 @@ lns.w = lilTooningScale(aastrencth, lns.w, _ShadowBorder,    shadowBlur, _Shadow
 | 20 | 描边与 AO（v7） | AO 在 ramp 内 → 删除 v6 的"无条件吃 AO"独立调用；描边回到 `_UseShadow && _OutlineShadowStrength > 0` 单一门控 |
 | 21 | AO 的"边界"（v7） | v7 曾定为"AO 最深只能到最深阴影色"；**v8 修订**：输出 2（ramp 偏移）仍受该边界约束，但新增的输出 1（整体压暗，纯乘算）可以更暗 —— 这是补回压暗的原因 |
 | 22 | AO 的产出结构（v8） | **一份共用输入 + 两个输出**：`fd.aoVis` 合成一次，ramp 偏移与整体压暗各有一个独立强度滑块（`_AOStrength` / `_AODarkStrength`） |
+| 23 | 压暗的颜色来源（v9 修订） | v8 曾用"共用贴图的 RGB"当压暗颜色（贴图未指定时无颜色可言）；**v9 改为 `_AOColor`（默认黑 = 纯压暗）**，遮挡量仍来自共用输入 —— 颜色可控，且默认与 v8 等价 |
+| 24 | AO 参数的归属（v9） | **会隐式影响阴影的放回阴影栏**（AO Map / ramp 强度 / 实时源 / Mask 作为阴影栏内的 `AO` 折叠子级），**顶层 `AO` 栏只放整体压暗**（`_AOColor` + `_AODarkStrength`），并在标题里注明复用关系 |
 | 23 | 压暗的颜色来源（v8） | **复用 ramp 偏移的颜色贴图**（`_ShadowBorderMask` RGB），不新增第二张贴图；实时 AO 只贡献标量遮挡量 |
 | 24 | 压暗的着色位置（v8） | 光照结果之后、**SSS / Rim / MatCap / Emission 之前**（本体与描边都是"先光照模型、再压暗"），附加光 pass 不重复压暗 |
 | 25 | 描边与 AO（v8） | `_OutlineShadowStrength > 0` 时描边**先跑主色同款光照模型、再叠加同一个 AO 压暗**，两者在同一个门控内作为一件事生效；`= 0` 时两者都不做 |

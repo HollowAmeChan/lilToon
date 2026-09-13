@@ -1809,6 +1809,9 @@ msgstr "AO"
 msgid "AO Contrast"
 msgstr "AO 对比度"
 
+msgid "AO Dark Color"
+msgstr "AO 压暗颜色"
+
 msgid "AO Dark Strength"
 msgstr "AO 压暗强度"
 
@@ -1817,6 +1820,9 @@ msgstr "AO 电平"
 
 msgid "AO Strength"
 msgstr "AO 强度"
+
+msgid "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
+msgstr "AO 对 toon 阴影的作用：AO Map 决定各层 ramp 偏移，实时 HoAO 补充屏幕空间遮挡。AO 栏的压暗共用同一份输入。"
 
 msgid "Apply Specular"
 msgstr "应用高光"
@@ -1959,8 +1965,8 @@ msgstr "实时 AO"
 msgid "Ref"
 msgstr "Ref"
 
-msgid "RGB: drives the three toon shadow layers and tints the AO darkening."
-msgstr "RGB：分别驱动 1/2/3 段 toon 阴影，同时作为 AO 压暗的颜色。"
+msgid "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
+msgstr "整体 AO 压暗。共用阴影栏里的 AO Map、实时 AO 与 AO Mask。"
 
 msgid "Right Only"
 msgstr "仅右侧"
@@ -1988,6 +1994,9 @@ msgstr "使用自发光"
 
 msgid "Use Outline"
 msgstr "使用轮廓"
+
+msgid "Uses the Shadow section's AO input"
+msgstr "使用阴影栏的 AO 输入"
 
 msgid "UV0"
 msgstr "UV0"

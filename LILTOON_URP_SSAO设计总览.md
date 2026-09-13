@@ -11,9 +11,9 @@
 
 - Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
 - 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
-- 当前材质侧的 AO 参数组为 **8 个属性**（`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AODarkStrength`、`_AOStrength`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`、`_AOMask`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask`、`_ShadowAOShift`/`_ShadowPostAO`、`_AOColor`/`_AOColorTex`/`_AOMainStrength` 与 `_AOThreshold` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
-- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 把 AO Map（共用颜色贴图）与实时 AO 合成成一份 `fd.aoVis`，然后**两个输出**：光照结果乘 `lerp(1, aoVis, _AODarkStrength)`（整体压暗，AO Map 颜色即压暗颜色），toon ramp 输入乘 `lerp(1, aoVis, _AOStrength)`（三段阴影偏移）。
-- inspector 入口：AO 是**顶层独立栏 `AO`**（一份输入两个输出，不挂在阴影栏下），不随 `_UseShadow` 灰显。
+- 当前材质侧的 AO 参数组为 **9 个属性**（`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOStrength`、`_AOMask`、`_UseRealtimeAO`、`_AOLevel`、`_AOContrast`、`_AOColor`、`_AODarkStrength`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask`、`_ShadowAOShift`/`_ShadowPostAO`、`_AOColorTex`/`_AOMainStrength` 与 `_AOThreshold` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
+- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 把 AO Map 与实时 AO 合成成一份 `fd.aoVis`，然后**两个输出**：光照结果乘 `lerp(1, _AOColor.rgb, saturate(1 - aoVis) * _AODarkStrength)`（整体压暗，颜色由 `_AOColor` 给出），toon ramp 输入乘 `lerp(1, aoVis, _AOStrength)`（三段阴影偏移）。
+- inspector 入口：会隐式影响阴影的那部分在**阴影栏内的 `AO` 折叠子级**（AO Map / ramp 强度 / 实时源 / Mask）；**顶层独立栏 `AO`** 只放整体压暗（`_AOColor` + `_AODarkStrength`）。
 - Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。
 
 ---
@@ -144,7 +144,8 @@ fd.aoVis = aoVis;
 lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength);
 
 // 输出 1：整体压暗（光照结果之后、SSS/Rim/MatCap/Emission 之前）
-fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength);
+float3 aoOcc = saturate(1.0 - fd.aoVis);
+fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength);   // _AOColor 默认黑 = 纯压暗
 ```
 
 当前 AO 接收端的动作：
@@ -152,8 +153,8 @@ fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength);
 1. 通过 `GetNormalizedScreenSpaceUV(fd.positionCS)` 采样 `_HoAOTexture.r`。
 2. 乘 `_AOContrast`（以 0.5 为轴心的增益）、减 `_AOLevel`（有符号电平），得到 0..1 visibility。
 3. 采 `_AOMask.r` 同时门控实时与离线两路。
-4. 与共用颜色贴图（`_ShadowBorderMask.rgb`）相乘，得到 `fd.aoVis`。
-5. 两个输出：整体压暗（乘 AO 颜色，`_AODarkStrength`）与三段 ramp 偏移（`_AOStrength`）。
+4. 与共用 AO Map（`_ShadowBorderMask.rgb`）相乘，得到 `fd.aoVis`。
+5. 两个输出：整体压暗（乘向 `_AOColor`，强度 `_AODarkStrength`）与三段 ramp 偏移（`_AOStrength`）。
 
 这意味着当前模式是 `Ramp Multiply + Overall Darken` 两条并行的输出（同一份输入、两个独立强度）：AO 既改"落在哪一段阴影色"，也能整体压暗（因此可以比最深阴影色更暗）。v5/v6 的阈值偏移与 v6 的旧压暗路径都已删除。
 

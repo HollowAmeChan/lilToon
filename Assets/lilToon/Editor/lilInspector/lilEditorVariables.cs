@@ -28,7 +28,7 @@ namespace lilToon
             public bool isShowMainTone                  = false;
             public bool isShowShadow                    = false;
             public bool isShowShadowAO                  = false;
-            public bool isShowShadowBorderMask          = false;
+            public bool isShowAO                        = false;
             public bool isShowRimShade                  = false;
             public bool isShowBump                      = false;
             public bool isShowReflections               = false;
@@ -204,7 +204,6 @@ namespace lilToon
         protected static GUIContent shadow2ndColorRGBAContent       { get { return lilLanguageManager.shadow2ndColorRGBAContent     ; } private set { lilLanguageManager.shadow2ndColorRGBAContent      = value; } }
         protected static GUIContent shadow3rdColorRGBAContent       { get { return lilLanguageManager.shadow3rdColorRGBAContent     ; } private set { lilLanguageManager.shadow3rdColorRGBAContent      = value; } }
         protected static GUIContent blurMaskRGBContent              { get { return lilLanguageManager.blurMaskRGBContent            ; } private set { lilLanguageManager.blurMaskRGBContent             = value; } }
-        protected static GUIContent shadowAOMapContent              { get { return lilLanguageManager.shadowAOMapContent            ; } private set { lilLanguageManager.shadowAOMapContent             = value; } }
         protected static GUIContent shadowAOContent                 { get { return lilLanguageManager.shadowAOContent               ; } private set { lilLanguageManager.shadowAOContent               = value; } }
         protected static GUIContent aoMaskContent                   { get { return lilLanguageManager.aoMaskContent                 ; } private set { lilLanguageManager.aoMaskContent                 = value; } }
         protected static GUIContent widthMaskContent                { get { return lilLanguageManager.widthMaskContent              ; } private set { lilLanguageManager.widthMaskContent               = value; } }

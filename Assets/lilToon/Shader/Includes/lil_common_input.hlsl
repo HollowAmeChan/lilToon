@@ -406,6 +406,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _AOLevel;
     float   _AOContrast;
     float   _AODarkStrength;
+    float4  _AOColor;
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;
