@@ -119,24 +119,39 @@
 - 实现：每次属性写入前 `Undo.RecordObjects(选中材质, "lilToon 材质管理器: 改 X")` 并按操作合并 Undo group；改动记录只为展示（不用于延迟写入）。
 - 阈值保护：选中材质数超过阈值（如 500）时，改动前给一次确认（"将写入 512 个材质"）。
 
-### 4.5 UI 技术选型（D11：可以新写）
+### 4.5 UI 技术选型（对齐隔壁 lilToon URP Extensions）
 
-建议：**IMGUI + Unity 自带的重型控件**，而不是 UI Toolkit：
+**结论：IMGUI + Rect 手绘行，不用 UI Toolkit。** 依据是隔壁 `D:\Unity_Fork\lilToon-URP-Extensions` 的现有做法（全部是 IMGUI `CustomEditor`，没有任何 uxml/uss / `CreateGUI`）：
 
-| 部件 | 选型 | 理由 |
+| 部件 | 做法 | 依据 |
 | --- | --- | --- |
-| 左栏层级树 | `UnityEditor.IMGUI.Controls.TreeView`（+ 自绘 tri-state 勾选框） | Unity 官方虚拟化树控件，Hierarchy 面板同源；IMGUI 下与其余编辑器一致 |
-| 中栏材质表 | `MultiColumnHeader` + `TreeView`（每行一个材质） | 官方列头/排序/虚拟化，省掉自己写列表 |
-| 右栏属性行 | `MaterialEditor.ShaderProperty` 等原生控件 | 只有 IMGUI 版；换 UI Toolkit 就得手写每种属性类型且行为难对齐 |
-| 窗口骨架 | IMGUI（`OnGUI`） | 与仓库其余 UI 一致，无 UI Toolkit/IMGUI 混用成本 |
+| 窗口骨架 | `EditorWindow` + `OnGUI`，顶部固定度量常量（行高 18、行距 2、图标 22） | 隔壁 `ScreenProcessStackVolumeEditor.cs:13-16` 同款常量命名 |
+| 左栏层级树 | `UnityEditor.IMGUI.Controls.TreeView` 子类，`RowGUI` 自绘 tri-state 勾选 + 名字 + 材质数徽标 | 隔壁没有树；用官方虚拟化控件补这一块（场景树可能上千节点） |
+| 中栏材质表 | `MultiColumnHeader` + `TreeView`（一行一材质，列：勾选 / 材质名 / Shader / ×N / 变体） | 隔壁用 `ReorderableList` 画图层栈，但那个不虚拟化，材质数量级更大 |
+| 行内布局 | **Rect 手绘三段式**：`[勾选 18px][名字 foldout …][右对齐快捷控件]` | 隔壁 `DrawFoldoutLine`（`:213-254`）就是这个结构：`[enabled][foldout label][每行预设按钮][右对齐滑条]` |
+| 行高 | 折叠 = 一行；展开 = 按内容计算（`GetElementLineHeight`） | 隔壁 `GetElementHeight` / `GetElementLineCount`（`:106-121`、`:186`） |
+| 分组标题 | 30px 色块条 + 折叠箭头 + 粗体标题 + 右对齐摘要（悬停高亮、整行可点） | 隔壁 `LilUrpEditorSectionGui.DrawSectionHeader` |
+| 快捷筛选 | 图标开关条（激活=绿色高亮、带 tooltip、`MouseDown + Use()`、`AddCursorRect(Link)`） | 隔壁 `DrawEffectIconToggles` / `DrawEffectIconButton`（`:298-365`） |
+| 右栏属性行 | 原生 `MaterialEditor.ShaderProperty` 等（分组折叠 + 搜索） | 只有 IMGUI 版；且能保证与 Inspector 行为一致 |
 
-若后续确实想上 UI Toolkit，可以只把左栏/中栏换成 UI Toolkit（`TreeView`/`ListView`）而右栏保留 `IMGUIContainer`，但**不建议现在做**（两套 UI 体系的混用成本 > 收益）。
+不选 UI Toolkit 的理由：隔壁整包都是 IMGUI，混用两套体系会让样式与交互不一致；右栏又必须用只有 IMGUI 版的 `MaterialEditor` 控件。
 
 ### 4.6 项目约定
 
-- 文案走 `.po`（`GetLoc`，msgid = 英文原文）；菜单文案例外（`MenuItem` 必须编译期常量，沿用 HoLil 那套中文写死）。
-- 折叠栏默认收起；按住 Alt 显示 shader 属性原名（沿用现有做法）。
+- **文案直接写中文**（与隔壁扩展包一致，例如它的 `BoolSummary` 返回"开"/"关"、参数标签直接是"颜色"/"混合模式"）。理由：新面板文案量大，且隔壁整包都不走本地化；如果你要跟 lilToon 主体一样走 `.po`，说一声我改（见 §12-Q6）。
+- 属性行标签仍用 `lilLanguageManager.GetDisplayName` 取 shader 属性名，按住 Alt 显示原名（沿用主体做法）。
 - 所有写操作都要有 Undo；扫描 / 浏览永不写数据。
+
+### 4.7 可以从隔壁直接抄的结构（不是抄代码，是抄结构）
+
+| 隔壁的做法 | 位置 | 我们用在哪 |
+| --- | --- | --- |
+| `EffectToggleEntry[]` 常量表 + 图标开关条（点了增删图层） | `ScreenProcessStackVolumeEditor.cs:33-42`、`:298-365` | 工具条上的筛选/范围开关（含未激活、含 Prefab 资产、只选变体、只选可见） |
+| 行头三段式：`[勾选][名字 foldout][右对齐控件]` | `DrawFoldoutLine` `:213-254` | 中栏每一行材质（右对齐放使用次数/变体标记）；左栏树行同理 |
+| 折叠行高计算（折叠 1 行 / 展开按内容） | `GetElementHeight` `:106-121` | 材质行展开时显示"使用点列表"或"混合值归属" |
+| 30px 分组标题条（标题 + 右对齐摘要，整行可点） | `LilUrpEditorSectionGui.cs` | 右栏属性分组（摘要显示该组有多少属性被改动过） |
+| 参数行统一用 `DrawPropertyLine(rect, ref y, ...)` 推进 y | `:286-296` | 右栏按分组自绘属性行的骨架 |
+| 拖拽入列（`HandleDrop` / `AddDroppedObjects` / `DrawEmptyDropZone`） | `HoMetadataBufferGroupEditor.cs:238-320` | **从 Hierarchy 拖物体到面板上 → 直接选中该分支**（M3 打磨项） |
 
 ---
 
@@ -267,7 +282,7 @@ class MaterialEntry {                // 中栏一行
   | `lilMaterialManagerList.cs` | 中栏材质表（`MultiColumnHeader`） |
   | `lilMaterialManagerProperties.cs` | 右栏属性分组、搜索、`MaterialEditor` 绑定 |
   | `lilMaterialManagerChanges.cs` | 本次改动记录与 Undo 合并 |
-  | `lilMaterialManagerLocalization.cs`（可选） | 面板专用文案键的集中定义 |
+  | `lilMaterialManagerStyles.cs` | 度量常量（行高/行距/图标）+ 分组标题条 + 行绘制小工具，对标隔壁 `LilUrpEditorSectionGui.cs` |
 
 - 新文件需要配套 `.meta`（仓库跟踪 `.cs.meta`，`Editor/` 下 44/44 都有）。
 
@@ -314,6 +329,8 @@ class MaterialEntry {                // 中栏一行
 | Q2 | 旧窗口删除后，需不需要新面板支持"来源 = Project 选择集"模式（用于改不在场景里的材质）？ | 先不做；真需要时再加一个来源开关 |
 | Q3 | 数值相对运算（×/+）与"广播某材质的值"要不要？ | 建议要，放 M3 |
 | Q4 | 中栏要不要显示材质在磁盘上的重复拷贝（同名多份）？ | 可作为 M3 的排序/着色提示，不做合并 |
+| Q5 | `☐含 Prefab 资产` 是否要默认打开（即默认就扫 Prefab 资产里独有的材质）？ | 建议默认关：一打开就扫全 Project 会明显卡，需要时手动勾 |
+| Q6 | 新面板文案**直接写中文**（与隔壁扩展包一致）还是走 lilToon 的 `.po` 本地化？ | 建议直接写中文：面板文案量大，隔壁整包也不走本地化；要跟主体一致我改走 .po |
 
 ---
 
