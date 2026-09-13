@@ -75,9 +75,7 @@ namespace lilToon
         public static bool IsGIAOProperty(string name)
         {
             bool res = false;
-            res = res || name == "_UseRealtimeAO";
-            res = res || name.Contains("_RealtimeAO");
-            res = res || name.StartsWith("_AO");
+            res = res || name == "_HTraceSSGIBackfaceNormalFix";
             return res;
         }
 
@@ -129,6 +127,9 @@ namespace lilToon
             res = res || name == "_UseShadow";
             res = res || name == "_lilShadowCasterBias";
             res = res || name.Contains("_Shadow");
+            // AO lives under the shadow entry (offline AO Map + realtime AO).
+            res = res || name == "_UseRealtimeAO";
+            res = res || name.StartsWith("_AO");
             return res;
         }
 

@@ -648,7 +648,7 @@ msgid "sShadowSetting"
 msgstr "Shadow"
 
 msgid "sDirectShadow"
-msgstr "Direct Shadow"
+msgstr "Shadow"
 
 msgid "sShadowTips"
 msgstr "You can set the color and range of the shadow."

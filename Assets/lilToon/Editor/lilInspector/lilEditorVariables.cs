@@ -92,7 +92,6 @@ namespace lilToon
             public bool isShowGIAOSettings              = false;
             public bool isShowMetadataBufferSettings             = false;
             public bool isShowPlanarReflectionSettings  = false;
-            public bool isShowRealtimeAOColor                = false;
             public bool isShowRealtimeAOMask                  = false;
             public bool isShowAOColor                        = false;
             public bool isShowShaderSetting             = false;

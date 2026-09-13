@@ -130,9 +130,16 @@ namespace lilToon
         private readonly lilMaterialProperty shadowStrengthMaskLOD      = new lilMaterialProperty("_ShadowStrengthMaskLOD", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBorderMaskLOD        = new lilMaterialProperty("_ShadowBorderMaskLOD", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBlurMaskLOD          = new lilMaterialProperty("_ShadowBlurMaskLOD", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowAOShift              = new lilMaterialProperty("_ShadowAOShift", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowAOShift2             = new lilMaterialProperty("_ShadowAOShift2", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowPostAO               = new lilMaterialProperty("_ShadowPostAO", PropertyBlock.Shadow);
+        // AO lives under the shadow entry (see DrawShadow). Offline AO Map plus the
+        // realtime AO source, one shared parameter set.
+        private readonly lilMaterialProperty useRealtimeAO              = new lilMaterialProperty("_UseRealtimeAO", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoStrength                 = new lilMaterialProperty("_AOStrength", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoLevel                    = new lilMaterialProperty("_AOLevel", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoThreshold                = new lilMaterialProperty("_AOThreshold", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoMask                     = new lilMaterialProperty("_AOMask", true, PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoColor                    = new lilMaterialProperty("_AOColor", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoColorTex                 = new lilMaterialProperty("_AOColorTex", true, PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoMainStrength             = new lilMaterialProperty("_AOMainStrength", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColorType            = new lilMaterialProperty("_ShadowColorType", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColor                = new lilMaterialProperty("_ShadowColor", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColorTex             = new lilMaterialProperty("_ShadowColorTex", true, PropertyBlock.Shadow);
@@ -163,17 +170,6 @@ namespace lilToon
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
         private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty useRealtimeAO           = new lilMaterialProperty("_UseRealtimeAO", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOStrength               = new lilMaterialProperty("_RealtimeAOStrength", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAORemap                  = new lilMaterialProperty("_RealtimeAORemap", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOContrast               = new lilMaterialProperty("_RealtimeAOContrast", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOColor                  = new lilMaterialProperty("_RealtimeAOColor", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOColorTex               = new lilMaterialProperty("_RealtimeAOColorTex", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty aoMask                           = new lilMaterialProperty("_AOMask", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty aoThreshold                      = new lilMaterialProperty("_AOThreshold", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty aoColor                          = new lilMaterialProperty("_AOColor", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty aoColorTex                       = new lilMaterialProperty("_AOColorTex", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty aoMainStrength                   = new lilMaterialProperty("_AOMainStrength", PropertyBlock.GIAO);
         private readonly lilMaterialProperty metadataBufferCustom0Color          = new lilMaterialProperty("_HoMetadataBufferCustom0Color", PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom0Tex            = new lilMaterialProperty("_HoMetadataBufferCustom0Tex", true, PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom1Color          = new lilMaterialProperty("_HoMetadataBufferCustom1Color", PropertyBlock.MetadataBuffer);
@@ -712,9 +708,14 @@ namespace lilToon
                 shadowStrengthMaskLOD,
                 shadowBorderMaskLOD,
                 shadowBlurMaskLOD,
-                shadowAOShift,
-                shadowAOShift2,
-                shadowPostAO,
+                useRealtimeAO,
+                aoStrength,
+                aoLevel,
+                aoThreshold,
+                aoMask,
+                aoColor,
+                aoColorTex,
+                aoMainStrength,
                 shadowColorType,
                 shadowColor,
                 shadowColorTex,
@@ -745,17 +746,6 @@ namespace lilToon
                 lilShadowCasterBias,
                 multiLightIntensity,
                 multiLightCastShadowStrength,
-                useRealtimeAO,
-                realtimeAOStrength,
-                realtimeAORemap,
-                realtimeAOContrast,
-                realtimeAOColor,
-                realtimeAOColorTex,
-                aoMask,
-                aoThreshold,
-                aoColor,
-                aoColorTex,
-                aoMainStrength,
                 metadataBufferCustom0Color,
                 metadataBufferCustom0Tex,
                 metadataBufferCustom1Color,

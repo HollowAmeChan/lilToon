@@ -479,39 +479,17 @@ namespace lilToon
         private void DrawGIAOSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.GIAO)) return;
-            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI / HoAO", edSet.isShowGIAOSettings);
-            lilEditorGUI.DrawHelpButton("GI / AO");
+            edSet.isShowGIAOSettings = lilEditorGUI.Foldout("GI", edSet.isShowGIAOSettings);
+            lilEditorGUI.DrawHelpButton("GI");
             if(edSet.isShowGIAOSettings)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField("Global Illumination / HoAO", customToggleFont);
-                DrawMenuButton("GI / HoAO", PropertyBlock.GIAO);
+                EditorGUILayout.LabelField("Global Illumination", customToggleFont);
+                DrawMenuButton("GI", PropertyBlock.GIAO);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
                 if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
                 {
                     LocalizedProperty(htraceSSGIBackfaceNormalFix);
-                }
-                if(useRealtimeAO.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
-                {
-                    LocalizedProperty(useRealtimeAO.p, "HoAO", false);
-                    if(useRealtimeAO.floatValue == 1)
-                    {
-                        EditorGUI.indentLevel++;
-                        LocalizedProperty(realtimeAOStrength);
-                        DrawHoAORemapGUI();
-                        LocalizedProperty(realtimeAOContrast);
-                        TextureGUI(ref edSet.isShowRealtimeAOColor, new GUIContent("HoAO Color", "RGB: HoAO color multiplier"), realtimeAOColorTex, realtimeAOColor);
-                        EditorGUI.indentLevel--;
-                    }
-                    if(aoMask.p != null)
-                    {
-                        EditorGUI.indentLevel++;
-                        TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
-                        LocalizedProperty(aoThreshold);
-                        TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shade amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
-                        LocalizedProperty(aoMainStrength);
-                        EditorGUI.indentLevel--;
-                    }
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
@@ -563,26 +541,6 @@ namespace lilToon
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
-            }
-        }
-
-        private void DrawHoAORemapGUI()
-        {
-            if(realtimeAORemap.p == null) return;
-            Vector4 remap = realtimeAORemap.vectorValue;
-            float min = remap.x;
-            float max = remap.y;
-            EditorGUI.BeginChangeCheck();
-            EditorGUI.showMixedValue = realtimeAORemap.hasMixedValue;
-            min = lilEditorGUI.Slider(Event.current.alt ? realtimeAORemap.name : "AO Min", min, 0.0f, 1.0f);
-            max = lilEditorGUI.Slider(Event.current.alt ? realtimeAORemap.name : "AO Max", max, 0.0f, 1.0f);
-            EditorGUI.showMixedValue = false;
-
-            if(EditorGUI.EndChangeCheck())
-            {
-                if(min == max) max = Mathf.Min(min + 0.001f, 1.0f);
-                if(min >= max) min = Mathf.Max(max - 0.001f, 0.0f);
-                realtimeAORemap.vectorValue = new Vector4(min, max, remap.z, remap.w);
             }
         }
 

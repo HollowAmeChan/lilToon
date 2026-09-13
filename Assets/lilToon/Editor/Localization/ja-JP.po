@@ -648,7 +648,7 @@ msgid "sShadowSetting"
 msgstr "影設定"
 
 msgid "sDirectShadow"
-msgstr "直接影"
+msgstr "影"
 
 msgid "sShadowTips"
 msgstr "影の色や範囲の設定ができます"

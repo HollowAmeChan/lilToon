@@ -74,10 +74,6 @@ float4  _MainTex_ST;
         float4  _Shadow3rdColor;
     #endif
     float4  _ShadowBorderColor;
-    float4  _ShadowAOShift;
-    #if defined(LIL_FEATURE_SHADOW_3RD)
-        float4  _ShadowAOShift2;
-    #endif
 #endif
 
 // Rim Shade
@@ -276,12 +272,12 @@ float   _LightMaxLimit;
 float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
-#if defined(LIL_FEATURE_REALTIMEAO)
-    float   _RealtimeAOStrength;
-    float4  _RealtimeAORemap;
-    float   _RealtimeAOContrast;
-    float4  _RealtimeAOColor;
-#endif
+// AO: realtime source + offline AO Map (shadow grade + final multiply).
+float   _AOStrength;
+float   _AOLevel;
+float   _AOThreshold;
+float4  _AOColor;
+float   _AOMainStrength;
 float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;
@@ -628,7 +624,6 @@ lilBool _Invisible;
 #endif
 #if defined(LIL_FEATURE_SHADOW)
     lilBool _UseShadow;
-    lilBool _ShadowPostAO;
 #endif
 #if defined(LIL_FEATURE_RIMSHADE)
     lilBool _UseRimShade;

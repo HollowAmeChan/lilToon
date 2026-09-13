@@ -270,8 +270,6 @@ CBUFFER_START(UnityPerMaterial)
         float4  _Shadow2ndColor;
         float4  _Shadow3rdColor;
         float4  _ShadowBorderColor;
-        float4  _ShadowAOShift;
-        float4  _ShadowAOShift2;
     #endif
     #if defined(LIL_MULTI_INPUTS_RIMSHADE)
         float4  _RimShadeColor;
@@ -400,15 +398,12 @@ CBUFFER_START(UnityPerMaterial)
     float   _MonochromeLighting;
     float   _MultiLightIntensity;
     float   _MultiLightCastShadowStrength;
-    #if defined(LIL_FEATURE_REALTIMEAO)
-        float   _RealtimeAOStrength;
-        float4  _RealtimeAORemap;
-        float   _RealtimeAOContrast;
-        float4  _RealtimeAOColor;
-    #endif
-    // AO shadow grade. Declared unconditionally: the offline AO Map path can be
-    // used without realtime AO, so lilGetShading references these outside the
-    // LIL_FEATURE_REALTIMEAO guard.
+    // AO: realtime source + offline AO Map, driving the shadow grade and the
+    // final AO multiply. Declared unconditionally because the offline AO Map
+    // path can be used without realtime AO, so lilGetShading references these
+    // outside the LIL_FEATURE_REALTIMEAO guard.
+    float   _AOStrength;
+    float   _AOLevel;
     float   _AOThreshold;
     float4  _AOColor;
     float   _AOMainStrength;
@@ -717,9 +712,6 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _Main3rdTexShouldFlipMirror;
         lilBool _Main3rdTexShouldFlipCopy;
     #endif
-    #if defined(LIL_MULTI_INPUTS_SHADOW)
-        lilBool _ShadowPostAO;
-    #endif
     #if defined(LIL_MULTI_INPUTS_BACKLIGHT)
         lilBool _BacklightReceiveShadow;
     #endif
@@ -832,7 +824,6 @@ TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_AOMask);
 TEXTURE2D(_AOColorTex);
-TEXTURE2D(_RealtimeAOColorTex);
 TEXTURE2D(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);

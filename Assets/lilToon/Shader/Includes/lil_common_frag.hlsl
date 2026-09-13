@@ -823,18 +823,17 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// HoAO public ambient-occlusion channel
+// AO public channel (realtime visibility)
 // NOTE: lilSampleRealtimeAO must be declared before lilGetShading (the shadow
 // grade stage below samples it), so the sampler function lives here and
 // lilRealtimeAO (further down) reuses it.
 #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
     float lilSampleRealtimeAO(float2 screenUV)
     {
-        float hoAO = LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
-        float aoMin = min(_RealtimeAORemap.x, _RealtimeAORemap.y - 0.001);
-        float aoMax = max(_RealtimeAORemap.y, aoMin + 0.001);
-        float ao = saturate((hoAO - aoMin) / max(aoMax - aoMin, 0.001));
-        return saturate(1.0 - pow(saturate(1.0 - ao), max(_RealtimeAOContrast, 0.001)));
+        // _HoAOTexture.r is 0..1 visibility (1 = unoccluded). _AOLevel shifts the
+        // whole mask so a baked AO range that never reaches white can be lifted
+        // into range in one control.
+        return saturate(LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r + _AOLevel);
     }
 #endif
 
@@ -914,8 +913,8 @@
 
             //------------------------------------------------------------------------------------------------------------------------------
             // AO -> shadow grade
-            // The offline AO Map and the realtime HoAO are one AO system:
-            //   visibility = AO Map * HoAO      occlusion = (1 - visibility) * AO Mask
+            // The offline AO Map and the realtime AO are one AO system:
+            //   visibility = AO Map * realtime AO      occlusion = (1 - visibility) * AO Mask
             // The AO Mask gates both sources. The per-layer occlusion becomes a signed
             // toon border offset, so AO moves the shadow shape instead of only
             // darkening the surface.
@@ -935,7 +934,7 @@
             #endif
 
             // aoUnified == 1 means the grade below owns the offline AO Map, so the
-            // legacy ramp/result multiply in the AO Map block must stay off to avoid
+            // legacy ramp multiply in the AO Map block must stay off to avoid
             // applying the same texture twice.
             float  aoUnified = 0.0;
             float3 aoShift = 0.0;
@@ -945,7 +944,7 @@
                     aoUnified = 1.0;
                     float aoScreen = _UseRealtimeAO ? lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS)) : 1.0;
                     float3 aoOcc = saturate((1.0 - aoBorderMask.rgb * aoScreen) * aoMask);
-                    aoShift = aoOcc * _RealtimeAOStrength * _AOThreshold;
+                    aoShift = aoOcc * _AOStrength * _AOThreshold;
                 }
             #endif
             float3 aoShadeNoAO = 0.0;
@@ -973,17 +972,13 @@
             // AO Map & Toon
             #if defined(LIL_FEATURE_ShadowBorderMask)
                 float4 shadowBorderMask = aoBorderMask;
-                shadowBorderMask.r = saturate(shadowBorderMask.r * _ShadowAOShift.x + _ShadowAOShift.y);
-                shadowBorderMask.g = saturate(shadowBorderMask.g * _ShadowAOShift.z + _ShadowAOShift.w);
-                #if defined(LIL_FEATURE_SHADOW_3RD)
-                    shadowBorderMask.b = saturate(shadowBorderMask.b * _ShadowAOShift2.x + _ShadowAOShift2.y);
-                #endif
                 // The AO Mask gates the offline AO Map as well as the realtime AO.
                 shadowBorderMask.rgb = lerp(1.0, shadowBorderMask.rgb, aoMask);
-                // Legacy ramp/result multiply. Switched off while the AO grade owns the
-                // map, so one AO texture is never consumed twice.
+                // Offline AO Map ramp multiply (the legacy "AO shapes the shadow"
+                // path, which can force shadow anywhere). Switched off while the AO
+                // grade owns the map, so one AO texture is never consumed twice.
                 float aoLegacy = 1.0 - aoUnified;
-                lns.xyz = _ShadowPostAO ? lns.xyz : lns.xyz * lerp(1.0, shadowBorderMask.rgb, aoLegacy);
+                lns.xyz = lns.xyz * lerp(1.0, shadowBorderMask.rgb, aoLegacy);
 
                 lns.w = lns.x;
                 if(_AOColor.a > 0.0)
@@ -1005,7 +1000,6 @@
                 #if defined(LIL_FEATURE_SHADOW_3RD)
                     lns.z = lilTooningNoSaturateScale(aastrencth, lns.z, clamp(_Shadow3rdBorder - aoShift.z, 0.001, 0.999), shadow3rdBlur);
                 #endif
-                lns = _ShadowPostAO ? lns * lerp(1.0, shadowBorderMask.rgbr, aoLegacy) : lns;
                 lns = saturate(lns);
             #else
                 lns.w = lns.x;
@@ -1290,7 +1284,7 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// HoAO public ambient-occlusion channel
+// AO public channel (final multiply)
 // NOTE: lilSampleRealtimeAO is defined above lilGetShading (see the shadow grade).
 #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
     void lilRealtimeAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
@@ -1304,10 +1298,11 @@
                 aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
             #endif
 
-            float4 aoColor = _RealtimeAOColor;
-            aoColor *= LIL_SAMPLE_2D(_RealtimeAOColorTex, samp, fd.uvMain);
-            float aoBlend = saturate((1.0 - ao) * _RealtimeAOStrength * aoMask * aoColor.a);
-            fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * aoColor.rgb, aoBlend);
+            // Contact darkening over the whole surface (including where the toon
+            // boundary did not move). _AOColor.rgb is the colour AO darkens toward;
+            // its alpha only gates the AO shadow colour layer.
+            float aoBlend = saturate((1.0 - ao) * _AOStrength * aoMask);
+            fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * _AOColor.rgb, aoBlend);
         }
     }
 

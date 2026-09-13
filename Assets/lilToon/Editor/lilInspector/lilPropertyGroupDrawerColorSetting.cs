@@ -174,46 +174,21 @@ namespace lilToon
                     LocalizedPropertyTexture(blurMaskRGBContent, shadowBlurMask);
                     LocalizedProperty(shadowBlurMaskLOD, 2);
                     lilEditorGUI.DrawLine();
-                    edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOMapContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
+                    edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
                     if(edSet.isShowShadowAO)
                     {
                         EditorGUI.indentLevel += 1;
-                        LocalizedProperty(shadowBorderMaskLOD);
-                        LocalizedProperty(shadowPostAO);
-                        float min1 = lilEditorGUI.GetRemapMinValue(shadowAOShift.vectorValue.x, shadowAOShift.vectorValue.y);
-                        float max1 = lilEditorGUI.GetRemapMaxValue(shadowAOShift.vectorValue.x, shadowAOShift.vectorValue.y);
-                        float min2 = lilEditorGUI.GetRemapMinValue(shadowAOShift.vectorValue.z, shadowAOShift.vectorValue.w);
-                        float max2 = lilEditorGUI.GetRemapMaxValue(shadowAOShift.vectorValue.z, shadowAOShift.vectorValue.w);
-                        float min3 = lilEditorGUI.GetRemapMinValue(shadowAOShift2.vectorValue.x, shadowAOShift2.vectorValue.y);
-                        float max3 = lilEditorGUI.GetRemapMaxValue(shadowAOShift2.vectorValue.x, shadowAOShift2.vectorValue.y);
-                        EditorGUI.BeginChangeCheck();
-                        EditorGUI.showMixedValue = alphaMaskScale.hasMixedValue || alphaMaskValue.hasMixedValue;
-                        min1 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift.name : "1st Min", min1, -0.01f, 1.01f);
-                        max1 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift.name : "1st Max", max1, -0.01f, 1.01f);
-                        min2 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift.name : "2nd Min", min2, -0.01f, 1.01f);
-                        max2 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift.name : "2nd Max", max2, -0.01f, 1.01f);
-                        min3 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift2.name : "3rd Min", min3, -0.01f, 1.01f);
-                        max3 = lilEditorGUI.Slider(Event.current.alt ? shadowAOShift2.name : "3rd Max", max3, -0.01f, 1.01f);
-                        EditorGUI.showMixedValue = false;
-
-                        if(EditorGUI.EndChangeCheck())
-                        {
-                            if(min1 == max1) max1 += 0.001f;
-                            if(min2 == max2) max2 += 0.001f;
-                            if(min3 == max3) max3 += 0.001f;
-                            shadowAOShift.vectorValue = new Vector4(
-                                lilEditorGUI.GetRemapScaleValue(min1, max1),
-                                lilEditorGUI.GetRemapOffsetValue(min1, max1),
-                                lilEditorGUI.GetRemapScaleValue(min2, max2),
-                                lilEditorGUI.GetRemapOffsetValue(min2, max2)
-                            );
-                            shadowAOShift2.vectorValue = new Vector4(
-                                lilEditorGUI.GetRemapScaleValue(min3, max3),
-                                lilEditorGUI.GetRemapOffsetValue(min3, max3),
-                                0.0f,
-                                0.0f
-                            );
-                        }
+                        LocalizedProperty(useRealtimeAO);
+                        LocalizedProperty(shadowBorderMaskLOD, 2);
+                        lilEditorGUI.DrawLine();
+                        LocalizedProperty(aoThreshold);
+                        LocalizedProperty(aoStrength);
+                        LocalizedProperty(aoLevel);
+                        lilEditorGUI.DrawLine();
+                        if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
+                        lilEditorGUI.DrawLine();
+                        if(aoColorTex.p != null && aoColor.p != null) TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shadow amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
+                        LocalizedProperty(aoMainStrength);
                         EditorGUI.indentLevel -= 1;
                     }
                     EditorGUILayout.EndVertical();

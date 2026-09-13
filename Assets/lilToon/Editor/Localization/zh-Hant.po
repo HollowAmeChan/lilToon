@@ -648,7 +648,7 @@ msgid "sShadowSetting"
 msgstr "陰影設定"
 
 msgid "sDirectShadow"
-msgstr "直接陰影"
+msgstr "陰影"
 
 msgid "sShadowTips"
 msgstr "你可以設定陰影的顏色和範圍。"

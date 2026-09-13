@@ -59,6 +59,7 @@ namespace lilToon
         public static GUIContent shadow3rdColorRGBAContent;
         public static GUIContent blurMaskRGBContent;
         public static GUIContent shadowAOMapContent;
+        public static GUIContent shadowAOContent;
         public static GUIContent widthMaskContent;
         public static GUIContent zBiasMaskContent;
         public static GUIContent lengthMaskContent;
@@ -204,6 +205,7 @@ namespace lilToon
             shadow3rdColorRGBAContent       = new GUIContent(GetLoc("sShadow3rdColor"),                     GetLoc("sTextureRGBA"));
             blurMaskRGBContent              = new GUIContent(GetLoc("sBlurMask"),                           GetLoc("sBlurRGB"));
             shadowAOMapContent              = new GUIContent(GetLoc("AO Map"),                              GetLoc("sBorderRGB"));
+            shadowAOContent                 = new GUIContent("AO",                                          "Ambient occlusion: shapes the toon shadow boundary, adds contact darkening, and can tint the AO-caused shadow");
             widthMaskContent                = new GUIContent(GetLoc("sWidth"),                              GetLoc("sWidthR"));
             zBiasMaskContent                = new GUIContent(GetLoc("sZBiasMask"),                           GetLoc("sZBiasR"));
             lengthMaskContent               = new GUIContent(GetLoc("sLengthMask"),                         GetLoc("sStrengthR"));
