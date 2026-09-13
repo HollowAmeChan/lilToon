@@ -205,6 +205,7 @@ namespace lilToon
         protected static GUIContent shadow3rdColorRGBAContent       { get { return lilLanguageManager.shadow3rdColorRGBAContent     ; } private set { lilLanguageManager.shadow3rdColorRGBAContent      = value; } }
         protected static GUIContent blurMaskRGBContent              { get { return lilLanguageManager.blurMaskRGBContent            ; } private set { lilLanguageManager.blurMaskRGBContent             = value; } }
         protected static GUIContent shadowAOMapContent              { get { return lilLanguageManager.shadowAOMapContent            ; } private set { lilLanguageManager.shadowAOMapContent             = value; } }
+        protected static GUIContent shadowAOContent                 { get { return lilLanguageManager.shadowAOContent               ; } private set { lilLanguageManager.shadowAOContent               = value; } }
         protected static GUIContent widthMaskContent                { get { return lilLanguageManager.widthMaskContent              ; } private set { lilLanguageManager.widthMaskContent               = value; } }
         protected static GUIContent zBiasMaskContent                { get { return lilLanguageManager.zBiasMaskContent              ; } private set { lilLanguageManager.zBiasMaskContent               = value; } }
         protected static GUIContent lengthMaskContent               { get { return lilLanguageManager.lengthMaskContent             ; } private set { lilLanguageManager.lengthMaskContent              = value; } }
