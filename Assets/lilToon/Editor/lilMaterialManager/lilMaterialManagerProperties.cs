@@ -60,6 +60,7 @@ namespace lilToon
         private readonly List<ShaderGroup> groups = new List<ShaderGroup>();
         private readonly List<lilMaterialChangeRecord> changes = new List<lilMaterialChangeRecord>();
         private readonly HashSet<string> expandedBuckets = new HashSet<string>();
+        private readonly Dictionary<string, bool> mixedCache = new Dictionary<string, bool>();
         private int selectionSignature;
 
         public int ChangeCount { get { return changes.Count; } }
@@ -86,6 +87,7 @@ namespace lilToon
             }
             if(signature == selectionSignature) return false;
             selectionSignature = signature;
+            mixedCache.Clear();
 
             Dispose();
             if(entries == null || entries.Count == 0) return true;
@@ -198,7 +200,7 @@ namespace lilToon
             if(property == null) return false;
 
             string label = lilLanguageManager.GetDisplayName(property);
-            bool mixed = property.hasMixedValue;
+            bool mixed = IsMixed(group, property);
             if(mixed) label += "   [混合]";
 
             string oldValue = FormatValue(property);
@@ -219,7 +221,10 @@ namespace lilToon
                 }
 
                 EditorGUI.BeginChangeCheck();
+                bool previousMixed = EditorGUI.showMixedValue;
+                EditorGUI.showMixedValue = mixed;
                 group.editor.ShaderProperty(property, label);
+                EditorGUI.showMixedValue = previousMixed;
                 if(!EditorGUI.EndChangeCheck()) return false;
             }
 
@@ -233,8 +238,88 @@ namespace lilToon
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
+        // 混值判定：不能用 property.hasMixedValue —— 属性实际上只绑到第一个材质上，那个标记永远是 false。
+        // 所以自己按材质比一遍；只对真正画出来的属性算，结果缓存（选择变化时清空，写完的统一值直接标成不混）。
+        private bool IsMixed(ShaderGroup group, MaterialProperty property)
+        {
+            if(group.materials.Length < 2) return false;
+
+            string key = group.shader.GetInstanceID() + "|" + property.name;
+            if(mixedCache.TryGetValue(key, out bool mixed)) return mixed;
+
+            mixed = ComputeMixed(group, property);
+            mixedCache[key] = mixed;
+            return mixed;
+        }
+
+        private static bool ComputeMixed(ShaderGroup group, MaterialProperty property)
+        {
+            string name = property.name;
+            Material first = group.materials[0];
+
+            switch(property.propertyType)
+            {
+                case ShaderPropertyType.Texture:
+                {
+                    Texture reference = first != null ? first.GetTexture(name) : null;
+                    for(int i = 1; i < group.materials.Length; i++)
+                    {
+                        Material material = group.materials[i];
+                        if(material == null) continue;
+                        if(material.GetTexture(name) != reference) return true;
+                    }
+                    return false;
+                }
+                case ShaderPropertyType.Color:
+                {
+                    Color reference = first != null ? first.GetColor(name) : default(Color);
+                    for(int i = 1; i < group.materials.Length; i++)
+                    {
+                        Material material = group.materials[i];
+                        if(material == null) continue;
+                        if(material.GetColor(name) != reference) return true;
+                    }
+                    return false;
+                }
+                case ShaderPropertyType.Vector:
+                {
+                    Vector4 reference = first != null ? first.GetVector(name) : default(Vector4);
+                    for(int i = 1; i < group.materials.Length; i++)
+                    {
+                        Material material = group.materials[i];
+                        if(material == null) continue;
+                        if(material.GetVector(name) != reference) return true;
+                    }
+                    return false;
+                }
+                case ShaderPropertyType.Int:
+                {
+                    int reference = first != null ? first.GetInt(name) : 0;
+                    for(int i = 1; i < group.materials.Length; i++)
+                    {
+                        Material material = group.materials[i];
+                        if(material == null) continue;
+                        if(material.GetInt(name) != reference) return true;
+                    }
+                    return false;
+                }
+                default:
+                {
+                    float reference = first != null ? first.GetFloat(name) : 0.0f;
+                    for(int i = 1; i < group.materials.Length; i++)
+                    {
+                        Material material = group.materials[i];
+                        if(material == null) continue;
+                        if(material.GetFloat(name) != reference) return true;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        //--------------------------------------------------------------------------------------------------------------------------
         // 兜底写入：把"这一帧变了的属性"写到组里每一个材质上
-        private static void SpreadChanges(ShaderGroup group)
+        private void SpreadChanges(ShaderGroup group)
         {
             if(group.allProperties.Count == 0) return;
 
@@ -271,6 +356,8 @@ namespace lilToon
                 if(valueChanged)
                 {
                     WriteToAllMaterials(group, property, textureChanged, scaleOffsetChanged);
+                    // 刚写成了一致的值，这一项不再是混值
+                    mixedCache[group.shader.GetInstanceID() + "|" + property.name] = false;
                 }
             }
 
