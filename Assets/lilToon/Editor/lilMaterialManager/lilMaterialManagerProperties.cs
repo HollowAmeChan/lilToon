@@ -61,6 +61,8 @@ namespace lilToon
         private readonly List<lilMaterialChangeRecord> changes = new List<lilMaterialChangeRecord>();
         private readonly HashSet<string> expandedBuckets = new HashSet<string>();
         private readonly Dictionary<string, bool> mixedCache = new Dictionary<string, bool>();
+        private string lastSpreadLogName;
+        private float lastSpreadLogTime;
         private int selectionSignature;
 
         public int ChangeCount { get { return changes.Count; } }
@@ -139,15 +141,12 @@ namespace lilToon
         //--------------------------------------------------------------------------------------------------------------------------
         // 绘制（用 GUILayout，调用方负责套在 area / scroll view 里）；返回本帧是否有属性被改动
         // filter：按属性名 / 显示名过滤；有过滤词时整组自动展开
-        // paneRect：属性区在窗口里的矩形，用来判断"这一帧的鼠标交互是不是发生在本面板里"
-        public bool Draw(string filter, Rect paneRect)
+        // pointerInPane：这一帧的鼠标 / 键盘交互是否落在属性区里（由窗口在根坐标空间判好传进来，
+        //                这里不能自己判：Area / ScrollView 里的 mousePosition 是相对那个区域的）
+        public bool Draw(string filter, bool pointerInPane)
         {
             bool changed = false;
             bool hasFilter = !string.IsNullOrEmpty(filter);
-
-            // 事件类型和鼠标位置要在画行之前先抓下来：行里的控件可能 evt.Use()，事件类型会变成 Used
-            EventType frameEvent = Event.current.type;
-            Vector2 frameMouse = Event.current.mousePosition;
 
             if(groups.Count == 0)
             {
@@ -196,36 +195,18 @@ namespace lilToon
                     GUILayout.Space(2.0f);
                 }
 
-                // 铺开的触发条件（两条都要）：
+                // 铺开的触发条件（任一成立）：
                 //   1) 这一行自己检出了改动（EditorGUI.EndChangeCheck）——但 lilToon 的自定义 drawer 内部
                 //      可能自己 Begin/EndChangeCheck，把 GUI.changed 吃掉，导致这条不可靠；
                 //   2) 这一帧有鼠标 / 键盘交互落在属性区里 —— 兜底，只要你在面板里动手，就一定 diff 一次。
-                // 不做"无条件下每帧都铺"：那样在 Inspector 里改某个材质也会被静默广播给整批。
-                if(rowChanged || IsPropertyPaneInteraction(frameEvent, frameMouse, paneRect))
+                // 不做"无条件每帧都铺"：那样在 Inspector 里改某个材质也会被静默广播给整批。
+                if(rowChanged || pointerInPane)
                 {
                     if(SpreadChanges(group)) changed = true;
                 }
             }
 
             return changed;
-        }
-
-        private static bool IsPropertyPaneInteraction(EventType frameEvent, Vector2 frameMouse, Rect paneRect)
-        {
-            switch(frameEvent)
-            {
-                case EventType.MouseDown:
-                case EventType.MouseDrag:
-                case EventType.MouseUp:
-                case EventType.ScrollWheel:
-                case EventType.ContextClick:
-                    return paneRect.Contains(frameMouse);
-                case EventType.KeyDown:
-                case EventType.KeyUp:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private bool DrawPropertyRow(ShaderGroup group, MaterialProperty property)
@@ -389,6 +370,16 @@ namespace lilToon
                 // 刚写成了一致的值，这一项不再是混值
                 mixedCache[group.shader.GetInstanceID() + "|" + property.name] = false;
                 RecordChange(property.name, oldValue, FormatValue(property), group.materials.Length);
+
+                // TODO(诊断): 确认"铺开"真的跑起来了就删掉这几行
+                if(lastSpreadLogName != property.name || Time.realtimeSinceStartup - lastSpreadLogTime > 0.5f)
+                {
+                    lastSpreadLogName = property.name;
+                    lastSpreadLogTime = Time.realtimeSinceStartup;
+                    Debug.Log("[材质管理器·诊断] 铺开 " + property.name + " (" + property.propertyType + ") → " +
+                              group.materials.Length + " 个材质 | " + SampleMaterialNames(group) + " | shader: " + group.shader.name);
+                }
+
                 any = true;
             }
 
@@ -428,6 +419,21 @@ namespace lilToon
                         break;
                 }
             }
+        }
+
+        // TODO(诊断): 确认铺开没问题后连这个方法一起删掉
+        private static string SampleMaterialNames(ShaderGroup group)
+        {
+            int count = Mathf.Min(3, group.materials.Length);
+            string text = string.Empty;
+            for(int i = 0; i < count; i++)
+            {
+                if(group.materials[i] == null) continue;
+                if(text.Length > 0) text += ", ";
+                text += group.materials[i].name;
+            }
+            if(group.materials.Length > count) text += ", …";
+            return text;
         }
 
         // 写完回读一遍自检：哪个材质没拿到新值就直接报出来，不静默失败

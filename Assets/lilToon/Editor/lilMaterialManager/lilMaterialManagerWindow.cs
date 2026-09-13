@@ -294,6 +294,11 @@ namespace lilToon
             Rect propsRect = new Rect(rect.x, rect.y, rect.width, propsHeight);
             Rect logRect = new Rect(rect.x, propsRect.yMax + 2.0f, rect.width, Mathf.Max(30.0f, rect.height - propsHeight - 2.0f));
 
+            // "这一帧的鼠标交互是不是落在属性区里"必须在**进入 Area 之前**判断：
+            // Event.mousePosition 在 BeginArea / BeginScrollView 之后是相对那个区域的，
+            // 拿它去和窗口坐标的 rect 比会永远是 false（属性面板的铺开逻辑之前就是这么哑掉的）。
+            bool pointerInPropertyPane = IsPointerInPropertyPane(propsRect);
+
             GUILayout.BeginArea(propsRect);
             GUILayout.Space(2.0f);
 
@@ -318,7 +323,7 @@ namespace lilToon
             }
 
             propertiesScroll = EditorGUILayout.BeginScrollView(propertiesScroll);
-            if(propertiesExpanded) propertyPane.Draw(propertySearch, propsRect);
+            if(propertiesExpanded) propertyPane.Draw(propertySearch, pointerInPropertyPane);
             EditorGUILayout.EndScrollView();
 
             GUILayout.EndArea();
@@ -326,6 +331,26 @@ namespace lilToon
             GUILayout.BeginArea(logRect);
             DrawChangeLog();
             GUILayout.EndArea();
+        }
+
+        // 在窗口（根）坐标空间里判断鼠标交互是否落在属性区内 —— 调用时不能处在任何 Area / ScrollView 里
+        private static bool IsPointerInPropertyPane(Rect propsRect)
+        {
+            Event evt = Event.current;
+            switch(evt.type)
+            {
+                case EventType.MouseDown:
+                case EventType.MouseDrag:
+                case EventType.MouseUp:
+                case EventType.ScrollWheel:
+                case EventType.ContextClick:
+                    return propsRect.Contains(evt.mousePosition);
+                case EventType.KeyDown:
+                case EventType.KeyUp:
+                    return true;    // 键盘改动（数值框回车、Tab）没有可靠的鼠标位置
+                default:
+                    return false;
+            }
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
