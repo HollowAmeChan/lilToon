@@ -80,17 +80,17 @@ namespace lilToon
         // 选择变化时重建（按签名比对，没变就直接返回）
         public bool SetSelection(List<lilMaterialEntry> entries)
         {
-            int signature = 17;
+            int selectionKey = 17;
             if(entries != null)
             {
                 for(int i = 0; i < entries.Count; i++)
                 {
                     Material material = entries[i] != null ? entries[i].material : null;
-                    signature = signature * 31 + (material != null ? material.GetInstanceID() : 0);
+                    selectionKey = selectionKey * 31 + (material != null ? material.GetInstanceID() : 0);
                 }
             }
-            if(signature == selectionSignature) return false;
-            selectionSignature = signature;
+            if(selectionKey == selectionSignature) return false;
+            selectionSignature = selectionKey;
             mixedCache.Clear();
 
             Dispose();
