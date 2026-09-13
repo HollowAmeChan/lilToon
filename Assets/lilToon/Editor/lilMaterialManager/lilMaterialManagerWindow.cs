@@ -146,15 +146,18 @@ namespace lilToon
         {
             using(new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                if(GUILayout.Button("刷新", EditorStyles.toolbarButton, GUILayout.Width(46.0f)))
-                {
-                    needsRescan = true;
-                }
-
-                bool nextIncludeInactive = GUILayout.Toggle(includeInactive, "含未激活", EditorStyles.toolbarButton, GUILayout.Width(72.0f));
+                // 开关放最前面：开 = 绿色高亮（隔壁 lilToon URP Extensions 的开关就是这个惯例：
+                // 激活态靠底色区分，只靠 toolbarButton 的按下态太不明显）
+                bool nextIncludeInactive = ToolbarSwitch(includeInactive, includeInactive ? "含未激活：开" : "含未激活：关",
+                                                         "扫描时是否把未激活物体也算进去（切换会重新扫描）", 100.0f);
                 if(nextIncludeInactive != includeInactive)
                 {
                     includeInactive = nextIncludeInactive;
+                    needsRescan = true;
+                }
+
+                if(GUILayout.Button("刷新", EditorStyles.toolbarButton, GUILayout.Width(46.0f)))
+                {
                     needsRescan = true;
                 }
 
@@ -181,6 +184,21 @@ namespace lilToon
                     needsViewRefresh = true;
                 }
             }
+        }
+
+        // 工具条开关：开的时候底色变绿 + 标签上直接写"开/关"，一眼能看出状态
+        private static bool ToolbarSwitch(bool value, string label, string tooltip, float width)
+        {
+            Color previous = GUI.backgroundColor;
+            if(value)
+            {
+                GUI.backgroundColor = EditorGUIUtility.isProSkin ? new Color(0.28f, 0.62f, 0.34f) : new Color(0.55f, 0.86f, 0.58f);
+            }
+
+            bool next = GUILayout.Toggle(value, new GUIContent(label, tooltip), EditorStyles.toolbarButton, GUILayout.Width(width));
+
+            GUI.backgroundColor = previous;
+            return next;
         }
 
         //--------------------------------------------------------------------------------------------------------------------------
