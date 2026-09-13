@@ -77,6 +77,7 @@ namespace lilToon
             bool res = false;
             res = res || name == "_UseRealtimeAO";
             res = res || name.Contains("_RealtimeAO");
+            res = res || name.StartsWith("_AO");
             return res;
         }
 

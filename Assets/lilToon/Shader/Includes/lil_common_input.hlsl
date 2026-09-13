@@ -407,6 +407,12 @@ CBUFFER_START(UnityPerMaterial)
         float   _RealtimeAOContrast;
         float4  _RealtimeAOColor;
     #endif
+    // AO shadow grade. Declared unconditionally: the offline AO Map path can be
+    // used without realtime AO, so lilGetShading references these outside the
+    // LIL_FEATURE_REALTIMEAO guard.
+    float   _AOThreshold;
+    float4  _AOColor;
+    float   _AOMainStrength;
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;
@@ -725,7 +731,6 @@ CBUFFER_START(UnityPerMaterial)
     #endif
     #if defined(LIL_FEATURE_REALTIMEAO)
         lilBool _UseRealtimeAO;
-        lilBool _RealtimeAOColorFromMain;
     #endif
     lilBool _UsePlanarReflection;
     lilBool _PlanarReflectionFlipY;
@@ -826,7 +831,8 @@ TEXTURE2D(_ShadowColorTex);
 TEXTURE2D(_Shadow2ndColorTex);
 TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
-TEXTURE2D(_RealtimeAOMask);
+TEXTURE2D(_AOMask);
+TEXTURE2D(_AOColorTex);
 TEXTURE2D(_RealtimeAOColorTex);
 TEXTURE2D(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);

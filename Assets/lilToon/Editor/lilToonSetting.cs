@@ -1338,7 +1338,7 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow2ndColorTex         , "_Shadow2ndColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_Shadow3rdColorTex         , "_Shadow3rdColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_ShadowReceiveMask         , "_ShadowReceiveMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_REALTIMEAOMask                , "_RealtimeAOMask", material);
+        CheckTexture(ref shaderSetting.LIL_FEATURE_REALTIMEAOMask                , "_AOMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_RimShadeMask              , "_RimShadeMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_BacklightColorTex         , "_BacklightColorTex", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_SSSThicknessMap           , "_SSSThicknessMap", material);
@@ -1400,7 +1400,7 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_Shadow2ndColorTex          = shaderSetting.LIL_FEATURE_Shadow2ndColorTex        || propname.Contains("_Shadow2ndColorTex");
         shaderSetting.LIL_FEATURE_Shadow3rdColorTex          = shaderSetting.LIL_FEATURE_Shadow3rdColorTex        || propname.Contains("_Shadow3rdColorTex");
         shaderSetting.LIL_FEATURE_ShadowReceiveMask          = shaderSetting.LIL_FEATURE_ShadowReceiveMask        || propname.Contains("_ShadowReceiveMask");
-        shaderSetting.LIL_FEATURE_REALTIMEAOMask                   = shaderSetting.LIL_FEATURE_REALTIMEAOMask                 || propname.Contains("_RealtimeAOMask");
+        shaderSetting.LIL_FEATURE_REALTIMEAOMask                   = shaderSetting.LIL_FEATURE_REALTIMEAOMask                 || propname.Contains("_AOMask");
         shaderSetting.LIL_FEATURE_RimShadeMask               = shaderSetting.LIL_FEATURE_RimShadeMask             || propname.Contains("_RimShadeMask");
         shaderSetting.LIL_FEATURE_BacklightColorTex          = shaderSetting.LIL_FEATURE_BacklightColorTex        || propname.Contains("_BacklightColorTex");
         shaderSetting.LIL_FEATURE_SSSThicknessMap            = shaderSetting.LIL_FEATURE_SSSThicknessMap          || propname.Contains("_SSSThicknessMap");

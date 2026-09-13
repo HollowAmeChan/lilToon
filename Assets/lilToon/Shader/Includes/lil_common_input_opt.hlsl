@@ -645,7 +645,6 @@ lilBool _Invisible;
 #endif
 #if defined(LIL_FEATURE_REALTIMEAO)
     lilBool _UseRealtimeAO;
-    lilBool _RealtimeAOColorFromMain;
 #endif
 lilBool _UsePlanarReflection;
 lilBool _PlanarReflectionFlipY;

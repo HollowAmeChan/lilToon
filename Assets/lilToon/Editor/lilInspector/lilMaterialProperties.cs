@@ -169,8 +169,11 @@ namespace lilToon
         private readonly lilMaterialProperty realtimeAOContrast               = new lilMaterialProperty("_RealtimeAOContrast", PropertyBlock.GIAO);
         private readonly lilMaterialProperty realtimeAOColor                  = new lilMaterialProperty("_RealtimeAOColor", PropertyBlock.GIAO);
         private readonly lilMaterialProperty realtimeAOColorTex               = new lilMaterialProperty("_RealtimeAOColorTex", true, PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOColorFromMain          = new lilMaterialProperty("_RealtimeAOColorFromMain", PropertyBlock.GIAO);
-        private readonly lilMaterialProperty realtimeAOMask                   = new lilMaterialProperty("_RealtimeAOMask", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty aoMask                           = new lilMaterialProperty("_AOMask", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty aoThreshold                      = new lilMaterialProperty("_AOThreshold", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty aoColor                          = new lilMaterialProperty("_AOColor", PropertyBlock.GIAO);
+        private readonly lilMaterialProperty aoColorTex                       = new lilMaterialProperty("_AOColorTex", true, PropertyBlock.GIAO);
+        private readonly lilMaterialProperty aoMainStrength                   = new lilMaterialProperty("_AOMainStrength", PropertyBlock.GIAO);
         private readonly lilMaterialProperty metadataBufferCustom0Color          = new lilMaterialProperty("_HoMetadataBufferCustom0Color", PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom0Tex            = new lilMaterialProperty("_HoMetadataBufferCustom0Tex", true, PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom1Color          = new lilMaterialProperty("_HoMetadataBufferCustom1Color", PropertyBlock.MetadataBuffer);
@@ -749,8 +752,11 @@ namespace lilToon
                 realtimeAOContrast,
                 realtimeAOColor,
                 realtimeAOColorTex,
-                realtimeAOColorFromMain,
-                realtimeAOMask,
+                aoMask,
+                aoThreshold,
+                aoColor,
+                aoColorTex,
+                aoMainStrength,
                 metadataBufferCustom0Color,
                 metadataBufferCustom0Tex,
                 metadataBufferCustom1Color,

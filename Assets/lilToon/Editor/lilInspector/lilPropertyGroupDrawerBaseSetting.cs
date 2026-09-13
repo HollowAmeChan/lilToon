@@ -501,8 +501,15 @@ namespace lilToon
                         DrawHoAORemapGUI();
                         LocalizedProperty(realtimeAOContrast);
                         TextureGUI(ref edSet.isShowRealtimeAOColor, new GUIContent("HoAO Color", "RGB: HoAO color multiplier"), realtimeAOColorTex, realtimeAOColor);
-                        LocalizedProperty(realtimeAOColorFromMain, "HoAO Color From Main", false);
-                        TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("HoAO Mask", "R: HoAO receive area"), realtimeAOMask);
+                        EditorGUI.indentLevel--;
+                    }
+                    if(aoMask.p != null)
+                    {
+                        EditorGUI.indentLevel++;
+                        TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent("AO Mask", "R: 1 = receive AO. Gates both the realtime AO and the AO Map."), aoMask);
+                        LocalizedProperty(aoThreshold);
+                        TextureGUI(ref edSet.isShowAOColor, new GUIContent("AO Color", "RGBA: A = AO shade amount. One layer, mixed over all three shadow layers."), aoColorTex, aoColor);
+                        LocalizedProperty(aoMainStrength);
                         EditorGUI.indentLevel--;
                     }
                 }

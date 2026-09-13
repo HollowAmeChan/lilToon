@@ -282,6 +282,12 @@ float   _MultiLightCastShadowStrength;
     float   _RealtimeAOContrast;
     float4  _RealtimeAOColor;
 #endif
+// AO shadow grade. Declared unconditionally: the offline AO Map path can be
+// used without realtime AO, so lilGetShading references these outside the
+// LIL_FEATURE_REALTIMEAO guard.
+float   _AOThreshold;
+float4  _AOColor;
+float   _AOMainStrength;
 float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;
@@ -645,7 +651,6 @@ lilBool _Invisible;
 #endif
 #if defined(LIL_FEATURE_REALTIMEAO)
     lilBool _UseRealtimeAO;
-    lilBool _RealtimeAOColorFromMain;
 #endif
 lilBool _UsePlanarReflection;
 lilBool _PlanarReflectionFlipY;
