@@ -239,16 +239,24 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             fd.col.rgb = fd.col.rgb * fd.lightColor * _OutlineEnableLighting;
         #else
             fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * min(fd.lightColor + fd.addLightColor, _LightMaxLimit), _OutlineEnableLighting);
-            // Toon shadow is opt-in through _OutlineShadowStrength (it replaces the
-            // outline colour with the body shading ramp, which carries AO as well).
+            // Toon shadow is opt-in through _OutlineShadowStrength. When it is on, the
+            // outline runs the same lighting model as the main colour first and then the
+            // same AO darkening, so the outline is lit and occluded exactly like the body
+            // it borders (the two are one unit).
             #if defined(LIL_FEATURE_SHADOW)
                 if(_UseShadow && _OutlineShadowStrength > 0.0)
                 {
+                    BEFORE_AO
+                    OVERRIDE_AO
+
                     float3 outlineShadowColor = fd.col.rgb;
                     fd.origN = fd.N;
                     fd.ln = dot(fd.L, fd.N);
                     OVERRIDE_SHADOW
                     fd.col.rgb = lerp(outlineShadowColor, fd.col.rgb, _OutlineShadowStrength);
+
+                    BEFORE_AODARK
+                    OVERRIDE_AODARK
                 }
             #endif
         #endif
@@ -421,6 +429,13 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         fd.albedo = fd.col.rgb;
 
         //------------------------------------------------------------------------------------------------------------------------------
+        // AO
+        // Compose the shared AO visibility once: the ramp offset below (inside
+        // OVERRIDE_SHADOW) and the darkening after the lighting both read fd.aoVis.
+        BEFORE_AO
+        OVERRIDE_AO
+
+        //------------------------------------------------------------------------------------------------------------------------------
         // Lighting
         BEFORE_SHADOW
         #if !defined(LIL_PASS_FORWARDADD)
@@ -447,6 +462,11 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             #if defined(LIL_FEATURE_MAIN3RD)
                 if(_UseMain3rdTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color3rd.rgb, color3rd.a - color3rd.a * _Main3rdEnableLighting, _Main3rdTexBlendMode);
             #endif
+
+            //------------------------------------------------------------------------------------------------------------------------------
+            // AO darkening (shares the AO Map colour input with the ramp offset above)
+            BEFORE_AODARK
+            OVERRIDE_AODARK
 
             BEFORE_SSS
             #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)

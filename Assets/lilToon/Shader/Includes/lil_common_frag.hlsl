@@ -819,10 +819,14 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// AO public channel (realtime visibility)
-// NOTE: this must be declared before lilGetShading, because the toon shadow ramp
-// inside lilGetShading is the only AO consumer left (there is no post-lighting AO
-// pass any more).
+// AO public channel
+// One AO system, one shared colour input, two outputs:
+//   input    : the AO Map (_ShadowBorderMask RGB) and the realtime HoAO (_HoAOTexture)
+//   output 1 : overall darkening  fd.col.rgb *= lerp(1, aoVis, _AODarkStrength)
+//   output 2 : toon ramp offset   lns.xyz    *= lerp(1, aoVis, _AOStrength)  (inside lilGetShading)
+// The shared visibility is composed once per fragment by lilCalcAO() and stored in
+// fd.aoVis, so both outputs consume the same value and the same AO Mask gate.
+// NOTE: this has to stay above lilGetShading, which consumes fd.aoVis.
 #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
     float lilSampleRealtimeAO(float2 screenUV)
     {
@@ -837,6 +841,62 @@
         float ao = LIL_SAMPLE_SCREEN(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r;
         return saturate((ao - 0.5) * aoContrast + 0.5 - _AOLevel);
     }
+#endif
+
+#if !defined(LIL_LITE)
+    // Compose the shared AO visibility (1 = unoccluded).
+    void lilCalcAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        float aoMask = 1.0;
+        #if defined(LIL_FEATURE_AOMask)
+            aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
+        #endif
+
+        float3 aoVis = 1.0;
+        #if defined(LIL_FEATURE_ShadowBorderMask)
+            // The AO Map is the shared colour input: its RGB drives the per-layer ramp
+            // offset and, through the same value, tints the overall darkening.
+            float4 aoMap = 1.0;
+            #if defined(_ShadowBorderMaskLOD)
+                aoMap = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);
+                if(_ShadowBorderMaskLOD) aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
+            #else
+                aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
+            #endif
+            aoVis *= lerp(1.0, aoMap.rgb, aoMask);
+        #endif
+        #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP)
+            if(_UseRealtimeAO)
+            {
+                aoVis *= lerp(1.0, lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS)), aoMask);
+            }
+        #endif
+        fd.aoVis = aoVis;
+    }
+
+    // Output 1: overall darkening. The lighting result is multiplied by the AO colour
+    // (the AO Map colour tinted by the realtime occluded amount), so an occluded pixel
+    // can go darker than the deepest shadow colour of the toon ramp.
+    void lilApplyAODark(inout lilFragData fd)
+    {
+        fd.col.rgb *= lerp(1.0, fd.aoVis, _AODarkStrength);
+    }
+#endif
+
+#if !defined(BEFORE_AO)
+    #define BEFORE_AO
+#endif
+
+#if !defined(OVERRIDE_AO)
+    #define OVERRIDE_AO lilCalcAO(fd LIL_SAMP_IN(sampler_MainTex));
+#endif
+
+#if !defined(BEFORE_AODARK)
+    #define BEFORE_AODARK
+#endif
+
+#if !defined(OVERRIDE_AODARK)
+    #define OVERRIDE_AODARK lilApplyAODark(fd);
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -914,36 +974,11 @@
             #endif
 
             //------------------------------------------------------------------------------------------------------------------------------
-            // AO -> toon shadow ramp
-            // AO only ever moves the three toon shadow ramps: it selects a deeper
-            // shadow layer, it never darkens the finished colour. The offline AO Map
-            // and the realtime HoAO are one AO system:
-            //   aoVis = lerp(1, AO Map, mask) * lerp(1, HoAO, mask)    (1 = unoccluded)
-            // The AO Mask gates both sources, and _AOStrength scales the result.
-            float aoMask = 1.0;
-            #if defined(LIL_FEATURE_AOMask)
-                aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
-            #endif
-
-            float3 aoVis = 1.0;
-            #if defined(LIL_FEATURE_ShadowBorderMask)
-                float4 aoBorderMask = 1.0;
-                #if defined(_ShadowBorderMaskLOD)
-                    aoBorderMask = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);
-                    if(_ShadowBorderMaskLOD) aoBorderMask = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
-                #else
-                    aoBorderMask = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
-                #endif
-                aoVis *= lerp(1.0, aoBorderMask.rgb, aoMask);
-            #endif
-            #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
-                if(_UseRealtimeAO)
-                {
-                    float aoScreen = lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS));
-                    aoVis *= lerp(1.0, aoScreen, aoMask);
-                }
-            #endif
-            aoVis = lerp(1.0, aoVis, _AOStrength);
+            // AO -> toon shadow ramp (output 2)
+            // fd.aoVis was composed once by lilCalcAO() (see the AO public channel above):
+            // the AO Map (shared colour input) times the realtime HoAO, gated by the AO
+            // Mask. This output shifts the three toon ramps toward deeper layers; the
+            // overall darkening (output 1) is applied to the lighting result instead.
 
             // Blur Scale
             float shadowBlur = _ShadowBlur;
@@ -965,12 +1000,10 @@
                 #endif
             #endif
 
-            // AO shapes the toon ramp: an occluded pixel feeds a lower value into the
-            // three toon borders, so it lands on the 2nd/3rd shadow colour instead of
-            // the 1st. Applied to the ramp input (before the border gradation) so AO
-            // never darkens the finished colour, and it cannot go darker than the
-            // deepest shadow colour the material defines.
-            lns.xyz *= aoVis;
+            // Output 2: AO pushes the ramp input down (before the border gradation), so an
+            // occluded pixel lands on the 2nd/3rd shadow colour instead of the 1st. It is
+            // bounded by the material's own deepest shadow colour.
+            lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength);
 
             // AO Map & Toon
             // lilTooningScale() is saturate(lilTooningNoSaturateScale()), so the old
@@ -1217,9 +1250,8 @@
     #define OVERRIDE_BACKLIGHT lilBacklight(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
-// NOTE: There is no post-lighting AO pass any more. AO only feeds the toon shadow
-// grade (see lilGetShading above), so it selects among the three shadow colours
-// instead of darkening the finished colour.
+// NOTE: the AO outputs live in the shadow ramp (lilGetShading) and right after the
+// main lighting (lilApplyAODark, called by the passes), see the AO public channel above.
 
 //------------------------------------------------------------------------------------------------------------------------------
 // SSS

@@ -276,6 +276,7 @@ float   _MultiLightCastShadowStrength;
 float   _AOStrength;
 float   _AOLevel;
 float   _AOContrast;
+float   _AODarkStrength;
 float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;

@@ -555,8 +555,34 @@ namespace lilToon
             lilEditorGUI.DrawLine();
             LocalizedPropertyTexture(blurMaskRGBContent, shadowBlurMask);
             LocalizedProperty(shadowBlurMaskLOD, 2);
+        }
+
+        // AO has its own section: one shared colour input, two outputs (the overall
+        // darkening and the toon ramp offset). The darkening also works without toon
+        // shadow, so this is not a child of the shadow section.
+        private void DrawNextAO()
+        {
+            LocalizedPropertyTexture(shadowAOMapContent, shadowBorderMask);
+            LocalizedProperty(shadowBorderMaskLOD, 2);
             lilEditorGUI.DrawLine();
-            DrawShadowAOFoldout();
+
+            // Output 1: overall darkening, output 2: toon ramp offset
+            LocalizedProperty(aoDarkStrength);
+            LocalizedProperty(aoStrength);
+            lilEditorGUI.DrawLine();
+
+            // Realtime AO source
+            LocalizedProperty(useRealtimeAO);
+            if(useRealtimeAO.floatValue == 1)
+            {
+                EditorGUI.indentLevel += 2;
+                LocalizedProperty(aoLevel);
+                LocalizedProperty(aoContrast);
+                EditorGUI.indentLevel -= 2;
+            }
+            lilEditorGUI.DrawLine();
+
+            LocalizedPropertyTexture(aoMaskContent, aoMask);
         }
 
         private void DrawNextEmission(Material material)
@@ -753,6 +779,7 @@ namespace lilToon
                     if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                 }, true);
                 if(!isGem) DrawNextSection("lighting.shadow", GetLoc("sDirectShadow"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
+                if(!isGem && !isLite) DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false);
                 DrawNextSection("lighting.emission", GetLoc("sEmissionSetting"), PropertyBlock.Emission, delegate { DrawNextEmission(material); }, false, null, true, useEmission);
                 if(!isGem) DrawNextSection("lighting.reflection", GetLoc("sReflectionsSetting"), PropertyBlock.Reflection, DrawNextReflection, false, null, true, useReflection);
                 if(!isGem) DrawNextSection("lighting.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, false, null, true, useRimShade);

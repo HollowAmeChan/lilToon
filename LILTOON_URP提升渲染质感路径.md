@@ -197,7 +197,8 @@ lilToon 同步内容：
 - AO Softness
 - Direct / Indirect 分离强度
 - Face / Skin 减弱
-- AO 只影响 shadow ramp ← **已落地（v7）**：`lns.xyz *= aoVis`，AO 只决定像素落在哪一段 toon 阴影色
+- AO 只影响 shadow ramp ← **已落地**：`lns.xyz *= lerp(1, aoVis, _AOStrength)`
+- AO 整体压暗本体与描边 ← **已落地（v8）**：`fd.col.rgb *= lerp(1, aoVis, _AODarkStrength)`，描边先跑主色同款光照模型再叠加同一个压暗
 - AO 只影响 indirect light
 
 实现建议：
@@ -209,7 +210,7 @@ lilToon 同步内容：
 
 待办：
 
-- 旧 `_UseSSAO` / `_UseScreenSpaceAO` 已删除并替换为统一 `_UseRealtimeAO`；调参属性收敛为 **7 个**：`_UseRealtimeAO` / `_ShadowBorderMask` / `_ShadowBorderMaskLOD` / `_AOStrength` / `_AOLevel` / `_AOContrast` / `_AOMask`（旧的 `_RealtimeAO*` 组、`_AOColor` 组与 `_AOThreshold` 已移除或改名，见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）。AO 的作用域也已收敛为**只影响三段 toon 颜色 ramp**（`lns.xyz *= aoVis`），不做光照后的整体压暗。
+- 旧 `_UseSSAO` / `_UseScreenSpaceAO` 已删除并替换为 `_UseRealtimeAO`（实时源开关）；AO 参数组为 **8 个**：`_ShadowBorderMask` / `_ShadowBorderMaskLOD` / `_AODarkStrength` / `_AOStrength` / `_UseRealtimeAO` / `_AOLevel` / `_AOContrast` / `_AOMask`（旧的 `_RealtimeAO*` 组、`_AOColor` 组与 `_AOThreshold` 已移除或改名，见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）。AO 现在**一份共用颜色贴图输入 + 两个输出**：整体压暗（`fd.col.rgb *= lerp(1, aoVis, _AODarkStrength)`，AO Map 颜色即压暗颜色）与三段 ramp 偏移（`_AOStrength`），AO 栏是顶层独立栏且不随 `_UseShadow` 灰显。
 - 如果 HTrace AO 在角色脸部颗粒感仍明显，再评估角色专用 toon AO remap 或 face/skin attenuation。
 - 输出独立 AO 贴图后由 lilToon / lilPBR 接收端统一采样，并继续保留材质侧 remap、contrast、mask。
 

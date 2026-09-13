@@ -550,17 +550,18 @@ lilToon 不直接在 `.lilblock` 里手写所有 URP17 pragma，而是用占位�
 - 当前修复点是 `ReplaceForwardMultiCompiles(...)` / `GetMultiCompileContext(...)`：先收集当前 block 的 skip 信息，再交给 `MultiCompileOptions.FromShaderText(...)`，最后由 `GetMultiCompileForward(...)` 有条件地输出 URP17 forward pragma。
 - 已导出的 `.shader` 文件如果已经存在重复组合，也要同步清掉，否则即使 importer 修了，Unity 当前项目仍会继续编译旧 shader 文本。
 
-### 10.3 AO 链路（2026-09-13 更新，v7）
+### 10.3 AO 链路（v8）
 
-lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl`：
+lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl` 的 `AO public channel` 块：
 
-- `lilSampleRealtimeAO(screenUV)` —— 定义在 `lilGetShading` **之前**，是当前**唯一**的 AO 消费者入口
-- `AO -> toon shadow ramp` 合成块 —— 在 `lilGetShading` 内、toon 分级之前
-- **没有**光照后的 AO pass：`lilRealtimeAO` / `lilRealtimeAOApply` / `OVERRIDE_REALTIMEAO` / `BEFORE_REALTIMEAO` 已随 v7 删除
+- `lilSampleRealtimeAO(screenUV)` —— 实时可见度（1 = 无遮挡），含 `_AOContrast` / `_AOLevel` 整形
+- `lilCalcAO(fd, samp)` —— 合成一次共享可见度，存进 `fd.aoVis`（`lilFragData` 字段）
+- `lilApplyAODark(fd)` —— **整体压暗**（输出 1）
+- 输出 2（ramp 偏移）在 `lilGetShading` 内消费 `fd.aoVis`
 
 它依赖：
 
-- 材质属性 `_UseRealtimeAO`（总开关）与 `_AO*` 参数组（7 个属性，清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）
+- 材质属性 `_UseRealtimeAO`（实时源开关）与 `_AO*` 参数组（8 个属性，清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）
 - shader setting 宏 **`LIL_FEATURE_REALTIMEAO`**（`LIL_FEATURE_SSAO` / `_UseSSAO` / `_ScreenSpaceAOSource` 等旧名**已废弃并移除**，参见 `LILTOON_URP_SSAO设计总览.md` §0）
 - Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`（0..1 visibility，1 = 无遮挡；关闭生产端时每相机重置为 white）
 
@@ -569,11 +570,11 @@ lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/l
 1. `lilToonSetting` 是否启用 `LIL_FEATURE_REALTIMEAO`
 2. Ho-GTAO 是否在 opaque 绘制之前发布 `_HoAOTexture`（GeometryBuffer 与 Ho-GTAO 同在 `BeforeRenderingOpaques`，先后由 Renderer Feature 列表顺序保证）
 3. 材质读 `_HoAOTexture.r`，经 `saturate((r − 0.5) * _AOContrast + 0.5 − _AOLevel)` 得到 visibility（XR 下走 `TEXTURE2D_SCREEN` / `LIL_SAMPLE_SCREEN`）
-4. 与离线 AO Map（`_ShadowBorderMask`）相乘，两路都由 `_AOMask` 统一门控，得到一份 `aoVis`（逐层）
-5. `aoVis = lerp(1, aoVis, _AOStrength)` 后**只做一件事**：`lns.xyz *= aoVis`（三层 toon 分级之前）
-6. **语义边界**：AO 只决定像素落在三段颜色 ramp 的哪一段，最深只能到材质自己定义的最深阴影色，不碰最终颜色
+4. 与共用颜色贴图（`_ShadowBorderMask` RGB）相乘，由 `_AOMask` 统一门控，得到一份 `fd.aoVis`
+5. **两个输出**：光照结果乘 `lerp(1, fd.aoVis, _AODarkStrength)`（整体压暗，AO Map 颜色即压暗颜色）；toon ramp 输入乘 `lerp(1, fd.aoVis, _AOStrength)`（三段阴影偏移）。两个强度互相独立
+6. 描边：`_OutlineShadowStrength > 0` 时先跑主色同款光照模型，再叠加同一个压暗
 
-inspector 入口：AO 参数不在独立的 "GI / HoAO" 栏里，而是**阴影栏**（`sDirectShadow`）内的 `AO` 折叠子级（随 `_UseShadow` 灰显，因为 AO 只通过 toon ramp 生效）。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
+inspector 入口：AO 是**顶层独立栏 `AO`**（不在阴影栏内），栏内为 共用 AO Map → 压暗强度 → ramp 偏移强度 → 实时源（`Realtime AO` / Level / Contrast）→ AO Mask；不随 `_UseShadow` 灰显。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 

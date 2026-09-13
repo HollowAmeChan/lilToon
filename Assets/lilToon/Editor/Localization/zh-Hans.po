@@ -1809,6 +1809,9 @@ msgstr "AO"
 msgid "AO Contrast"
 msgstr "AO 对比度"
 
+msgid "AO Dark Strength"
+msgstr "AO 压暗强度"
+
 msgid "AO Level"
 msgstr "AO 电平"
 
@@ -1950,8 +1953,14 @@ msgstr "Pre Cutoff"
 msgid "ReadMask"
 msgstr "ReadMask"
 
+msgid "Realtime AO"
+msgstr "实时 AO"
+
 msgid "Ref"
 msgstr "Ref"
+
+msgid "RGB: drives the three toon shadow layers and tints the AO darkening."
+msgstr "RGB：分别驱动 1/2/3 段 toon 阴影，同时作为 AO 压暗的颜色。"
 
 msgid "Right Only"
 msgstr "仅右侧"

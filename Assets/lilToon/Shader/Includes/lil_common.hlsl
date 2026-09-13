@@ -124,6 +124,7 @@ struct lilFragData
     float roughness;
     float perceptualRoughness;
     float shadowmix;
+    float3 aoVis;
 
     // HDRP Data
     uint renderingLayers;
@@ -202,6 +203,7 @@ lilFragData lilInitFragData()
     fd.roughness = 1.0;
     fd.perceptualRoughness = 1.0;
     fd.shadowmix = 1.0;
+    fd.aoVis = 1.0;
 
     fd.renderingLayers = 0;
     fd.featureFlags = 0;

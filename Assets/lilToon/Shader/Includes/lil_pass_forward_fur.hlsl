@@ -147,6 +147,11 @@ float4 frag(v2f input) : SV_Target
     fd.N = normalize(input.normalWS);
     fd.ln = dot(fd.L, fd.N);
 
+    //------------------------------------------------------------------------------------------------------------------------------
+    // AO (same shared composition as the normal pass)
+    BEFORE_AO
+    OVERRIDE_AO
+
     BEFORE_SHADOW
     #ifndef LIL_PASS_FORWARDADD
         //------------------------------------------------------------------------------------------------------------------------------
@@ -171,6 +176,13 @@ float4 frag(v2f input) : SV_Target
         #if LIL_RENDER == 2 && !defined(LIL_FUR_PRE)
             fd.col.rgb *= saturate(fd.col.a * _AlphaBoostFA);
         #endif
+    #endif
+
+    #ifndef LIL_PASS_FORWARDADD
+        //------------------------------------------------------------------------------------------------------------------------------
+        // AO darkening
+        BEFORE_AODARK
+        OVERRIDE_AODARK
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------

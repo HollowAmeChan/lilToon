@@ -28,10 +28,11 @@
                         _MonochromeLighting         ("sMonochromeLighting", Range(0,1)) = 0
                         _MultiLightIntensity        ("sMultiLightIntensity", Range(0, 5)) = 0
                         _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
-        [lilToggle]     _UseRealtimeAO              ("AO", Int) = 1
-                        _AOStrength                  ("AO Strength", Range(0, 1)) = 1
+        [lilToggle]     _UseRealtimeAO              ("Realtime AO", Int) = 1
                         _AOLevel                     ("AO Level", Range(-1, 1)) = 0
                         _AOContrast                  ("AO Contrast", Range(0, 4)) = 1
+                        _AODarkStrength              ("AO Dark Strength", Range(0, 1)) = 1
+                        _AOStrength                  ("AO Strength", Range(0, 1)) = 1
         [NoScaleOffset] _AOMask                     ("AO Mask", 2D) = "white" {}
                         _HoMetadataBufferCustom0Color          ("MetadataBuffer Custom 0 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoMetadataBufferCustom0Tex            ("MetadataBuffer Custom 0", 2D) = "white" {}

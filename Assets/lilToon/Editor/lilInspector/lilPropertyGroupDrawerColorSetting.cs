@@ -195,36 +195,56 @@ namespace lilToon
                     LocalizedProperty(shadowBorderRange);
                     EditorGUILayout.EndVertical();
                 }
-                // AO only acts through the toon shadow ramp, so it is gated by
-                // _UseShadow like every other shadow control.
-                if(useShadow.floatValue == 1 && !isLite)
-                {
-                    EditorGUILayout.BeginVertical(boxInnerHalf);
-                    DrawShadowAOFoldout();
-                    EditorGUILayout.EndVertical();
-                }
                 EditorGUILayout.EndVertical();
             }
         }
 
-        // AO entry, shared by the legacy and the next shadow sections.
-        // AO drives nothing but the three toon shadow ramps, so it is only meaningful
-        // with _UseShadow on (both callers already sit inside that gate).
-        private void DrawShadowAOFoldout()
+        // AO is its own section. It is shared by two outputs (the overall darkening and
+        // the toon ramp offset) that both read the same colour input, and the darkening
+        // works with or without toon shadow, so this is not a child of the shadow section.
+        private void DrawAOSettings()
         {
-            edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
+            if(!ShouldDrawBlock(PropertyBlock.Shadow)) return;
+            edSet.isShowShadowAO = lilEditorGUI.Foldout(shadowAOContent.text, shadowAOContent.tooltip, edSet.isShowShadowAO);
+            DrawMenuButton(GetLoc("sAnchorShadow"), PropertyBlock.Shadow);
             if(edSet.isShowShadowAO)
             {
-                EditorGUI.indentLevel += 1;
-                LocalizedProperty(useRealtimeAO);
+                EditorGUILayout.BeginVertical(boxOuter);
+
+                // Shared colour input: the AO Map drives the ramp offset and tints the darkening.
+                EditorGUILayout.BeginVertical(boxInnerHalf);
+                TextureGUI(ref edSet.isShowShadowBorderMask, shadowAOMapContent, shadowBorderMask);
                 LocalizedProperty(shadowBorderMaskLOD, 2);
-                lilEditorGUI.DrawLine();
+                EditorGUILayout.EndVertical();
+
+                // Output 1: overall darkening
+                EditorGUILayout.BeginVertical(boxInnerHalf);
+                LocalizedProperty(aoDarkStrength);
+                EditorGUILayout.EndVertical();
+
+                // Output 2: toon ramp offset
+                EditorGUILayout.BeginVertical(boxInnerHalf);
                 LocalizedProperty(aoStrength);
-                LocalizedProperty(aoLevel);
-                LocalizedProperty(aoContrast);
-                lilEditorGUI.DrawLine();
+                EditorGUILayout.EndVertical();
+
+                // Realtime AO source
+                EditorGUILayout.BeginVertical(boxInnerHalf);
+                LocalizedProperty(useRealtimeAO);
+                if(useRealtimeAO.floatValue == 1)
+                {
+                    EditorGUI.indentLevel += 2;
+                    LocalizedProperty(aoLevel);
+                    LocalizedProperty(aoContrast);
+                    EditorGUI.indentLevel -= 2;
+                }
+                EditorGUILayout.EndVertical();
+
+                // Mask (gates both sources and therefore both outputs)
+                EditorGUILayout.BeginVertical(boxInnerHalf);
                 if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, new GUIContent(GetLoc("AO Mask"), GetLoc("R: 1 = receive AO. Gates both the realtime AO and the AO Map.")), aoMask);
-                EditorGUI.indentLevel -= 1;
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.EndVertical();
             }
         }
     }
