@@ -132,7 +132,7 @@ namespace lilToon
             HandleSplitter(rightSplitterRect, 2);
             HandleLogSplitter(logSplitterRect);
 
-            logView.Draw(logRect);
+            logView.Draw(logRect, propertyPane.BuildGroupsSummary());
             DrawRightPane(rightRect);
 
             // 右键菜单：材质表 / 日志区都弹同一份（选中情况 + 常用动作）。

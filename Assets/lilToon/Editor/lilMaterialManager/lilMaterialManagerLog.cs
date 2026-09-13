@@ -35,6 +35,7 @@ namespace lilToon
 
         private static GUIStyle logStyle;
         private static GUIStyle warningStyle;
+        private static GUIStyle groupSummaryStyle;
 
         public int Count { get { return entries.Count; } }
         public float ScrollY { get { return scroll.y; } }
@@ -106,11 +107,18 @@ namespace lilToon
             return builder.ToString();
         }
 
-        // 永远展开，没有折叠头栏：整块就是列表本身。
+        // 永远展开，没有折叠头栏：顶部一行"分组构成"，下面是列表。
         // 高度由窗口的横向分隔条控制；清空 / 复制在右键菜单里（列表为空时会提示一句）。
-        public void Draw(Rect rect)
+        public void Draw(Rect rect, string groupsSummary)
         {
             GUILayout.BeginArea(rect);
+
+            // 顶行：这批选中材质分了几组、各是什么 shader、各多少材质
+            // （原来是画在右栏顶部的组标题，挪到这里，右栏就只剩属性列表）
+            if(!string.IsNullOrEmpty(groupsSummary))
+            {
+                EditorGUILayout.LabelField(groupsSummary, GroupSummaryStyle);
+            }
 
             scroll = EditorGUILayout.BeginScrollView(scroll);
             if(entries.Count == 0)
@@ -140,6 +148,20 @@ namespace lilToon
             {
                 if(logStyle == null) logStyle = new GUIStyle(EditorStyles.miniLabel) { wordWrap = true };
                 return logStyle;
+            }
+        }
+
+        // 顶部"分组构成"那一行：比日志正文稍微醒目一点，但不要抢
+        private static GUIStyle GroupSummaryStyle
+        {
+            get
+            {
+                if(groupSummaryStyle == null)
+                {
+                    groupSummaryStyle = new GUIStyle(EditorStyles.miniLabel) { wordWrap = true };
+                    groupSummaryStyle.normal.textColor = EditorGUIUtility.isProSkin ? new Color(0.72f, 0.76f, 0.82f) : new Color(0.28f, 0.30f, 0.34f);
+                }
+                return groupSummaryStyle;
             }
         }
 

@@ -167,6 +167,33 @@ namespace lilToon
             return group.materials.Length + " 个材质    (" + group.shaderKindCount + " 种 shader：" + group.shader.name + " 等)";
         }
 
+        // 分组构成的一行摘要（画在日志控制台顶部）：有几组、每组是哪个 shader、各多少材质
+        public string BuildGroupsSummary()
+        {
+            if(groups.Count == 0) return string.Empty;
+
+            var builder = new System.Text.StringBuilder();
+            if(groups.Count > 1) builder.Append("分组 ").Append(groups.Count).Append(" 组：");
+            else                 builder.Append("分组：");
+
+            for(int g = 0; g < groups.Count; g++)
+            {
+                ShaderGroup group = groups[g];
+                if(g > 0) builder.Append("　·　");
+
+                if(group.shaderKindCount <= 1)
+                {
+                    builder.Append(group.shader != null ? group.shader.name : "(无 shader)");
+                    builder.Append(" ×").Append(group.materials.Length);
+                }
+                else
+                {
+                    builder.Append(group.materials.Length).Append(" 个材质（").Append(group.shaderKindCount).Append(" 种 shader）");
+                }
+            }
+            return builder.ToString();
+        }
+
         public void Dispose()
         {
             for(int i = 0; i < groups.Count; i++)
@@ -187,18 +214,18 @@ namespace lilToon
             bool changed = false;
             bool hasFilter = !string.IsNullOrEmpty(filter);
 
-            if(groups.Count == 0)
-            {
-                EditorGUILayout.HelpBox("还没有选中任何材质。\n在左栏勾选分支，或在中栏勾选材质，这里就会出现它们的输入值。", MessageType.Info);
-                return false;
-            }
+            if(groups.Count == 0) return false;      // 没选材质就什么都不画（不做提醒，界面干净）
 
             for(int g = 0; g < groups.Count; g++)
             {
                 ShaderGroup group = groups[g];
 
-                // 批量范围写清楚：这一组属性会写到哪几个材质上（跨 shader 混选时每组一个标题条）
-                EditorGUILayout.LabelField(BuildGroupLabel(group), EditorStyles.miniBoldLabel);
+                // 只有一个组时不画组标题（"shader ×N 个材质"这类信息统一放在日志控制台顶部）；
+                // 跨组时还是要标一下，否则属性列表连着画两遍会分不清
+                if(groups.Count > 1)
+                {
+                    EditorGUILayout.LabelField(BuildGroupLabel(group), EditorStyles.miniBoldLabel);
+                }
 
                 // 本帧绘制前的值快照：这一帧里谁被改了，靠它 diff 出来
                 TakeSnapshot(group);
