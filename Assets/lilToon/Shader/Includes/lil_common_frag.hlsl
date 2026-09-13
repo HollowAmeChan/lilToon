@@ -2081,21 +2081,10 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
 void lilPlanarReflection(inout lilFragData fd)
 {
-    if(_UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0)
-    {
-        return;
-    }
-
-    bool planarSourceAvailable = _LILPBRPlanarReflectionParams.x > 0.5;
-    #if defined(LIL_FEATURE_REFLECTION) || defined(LIL_MULTI)
-        bool environmentAlreadyApplied = _UseReflection != 0;
-    #else
-        bool environmentAlreadyApplied = false;
-    #endif
-    if(!planarSourceAvailable && environmentAlreadyApplied)
+    if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
     {
         return;
     }
@@ -2108,10 +2097,8 @@ void lilPlanarReflection(inout lilFragData fd)
     GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
     smoothness = saturate(smoothness);
 
-    float smoothnessFade = planarSourceAvailable
-        ? saturate((smoothness - _PlanarReflectionMinSmoothness) / max(1.0 - _PlanarReflectionMinSmoothness, 0.0001))
-        : 1.0;
-    if(planarSourceAvailable && smoothnessFade <= 0.0)
+    float smoothnessFade = saturate((smoothness - _PlanarReflectionMinSmoothness) / max(1.0 - _PlanarReflectionMinSmoothness, 0.0001));
+    if(smoothnessFade <= 0.0)
     {
         return;
     }
@@ -2123,23 +2110,19 @@ void lilPlanarReflection(inout lilFragData fd)
     metallic = saturate(metallic);
 
     float2 planarUV = GetNormalizedScreenSpaceUV(fd.positionCS);
-    float edgeFade = 1.0;
-    float distanceFade = 1.0;
-    if(planarSourceAvailable)
+    if(_PlanarReflectionFlipY != 0) planarUV.y = 1.0 - planarUV.y;
+    if(any(planarUV < 0.0) || any(planarUV > 1.0))
     {
-        if(_PlanarReflectionFlipY != 0) planarUV.y = 1.0 - planarUV.y;
-        if(any(planarUV < 0.0) || any(planarUV > 1.0))
-        {
-            return;
-        }
+        return;
+    }
 
-        float planarEdge = min(min(planarUV.x, 1.0 - planarUV.x), min(planarUV.y, 1.0 - planarUV.y));
-        edgeFade = _PlanarReflectionEdgeFade > 0.0 ? saturate(planarEdge * _PlanarReflectionEdgeFade) : 1.0;
-        if(_PlanarReflectionFadeEnd > _PlanarReflectionFadeStart)
-        {
-            float viewDistance = distance(_WorldSpaceCameraPos.xyz, fd.positionWS);
-            distanceFade = 1.0 - smoothstep(_PlanarReflectionFadeStart, _PlanarReflectionFadeEnd, viewDistance);
-        }
+    float planarEdge = min(min(planarUV.x, 1.0 - planarUV.x), min(planarUV.y, 1.0 - planarUV.y));
+    float edgeFade = _PlanarReflectionEdgeFade > 0.0 ? saturate(planarEdge * _PlanarReflectionEdgeFade) : 1.0;
+    float distanceFade = 1.0;
+    if(_PlanarReflectionFadeEnd > _PlanarReflectionFadeStart)
+    {
+        float viewDistance = distance(_WorldSpaceCameraPos.xyz, fd.positionWS);
+        distanceFade = 1.0 - smoothstep(_PlanarReflectionFadeStart, _PlanarReflectionFadeEnd, viewDistance);
     }
 
     float perceptualRoughness = saturate(1.0 - smoothness);
@@ -2154,22 +2137,13 @@ void lilPlanarReflection(inout lilFragData fd)
     #endif
     float nv = saturate(dot(fd.N, fd.V));
     float3 fresnel = lilFresnelLerp(specular, grazingTerm, nv);
-    float reflectionWeight = saturate(_PlanarReflectionStrength * smoothnessFade * edgeFade * distanceFade * (planarSourceAvailable ? _PlanarReflectionTint.a : 1.0));
-    float3 reflectionSource = planarSourceAvailable
-        ? LIL_SAMPLE_2D_LOD(_LILPBRPlanarReflectionTexture, lil_sampler_linear_clamp, planarUV, perceptualRoughness * max(_LILPBRPlanarReflectionParams.w, 0.0)).rgb
-        : LIL_GET_ENVIRONMENT_REFLECTION(fd.V, fd.N, perceptualRoughness, fd.positionWS);
-    float3 contribution = reflectionSource * (planarSourceAvailable ? _PlanarReflectionTint.rgb : 1.0) * surfaceReduction * fresnel;
-
-    // lilReflection already applies the metallic diffuse reduction when enabled.
-    // PLR must own that energy split when it is the only reflection path.
-    #if defined(LIL_FEATURE_REFLECTION) || defined(LIL_MULTI)
-        if(_UseReflection == 0)
-        {
-            fd.col.rgb *= 1.0 - metallic;
-        }
-    #else
-        fd.col.rgb *= 1.0 - metallic;
-    #endif
+    float reflectionWeight = saturate(_PlanarReflectionStrength * smoothnessFade * edgeFade * distanceFade * _PlanarReflectionTint.a);
+    float3 reflectionSource = LIL_SAMPLE_2D_LOD(
+        _LILPBRPlanarReflectionTexture,
+        lil_sampler_linear_clamp,
+        planarUV,
+        perceptualRoughness * max(_LILPBRPlanarReflectionParams.w, 0.0)).rgb;
+    float3 contribution = reflectionSource * _PlanarReflectionTint.rgb * surfaceReduction * fresnel;
 
     // PLR is an additive indirect specular contribution, not a replacement color.
     fd.col.rgb += contribution * reflectionWeight;
@@ -2177,7 +2151,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && !defined(LIL_LITE) && !defined(LIL_GEM)
+    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else

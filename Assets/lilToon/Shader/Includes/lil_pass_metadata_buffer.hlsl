@@ -213,7 +213,11 @@ float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
         metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, sampler_MainTex, fd.uvMain).r;
     #endif
 
-    float planarReflectionEnabled = _UsePlanarReflection != 0 ? 1.0 : 0.0;
+    #if defined(LIL_FEATURE_REFLECTION)
+        float planarReflectionEnabled = (_UseReflection != 0 && _UsePlanarReflection != 0) ? 1.0 : 0.0;
+    #else
+        float planarReflectionEnabled = 0.0;
+    #endif
     return float4(
         saturate(1.0 - smoothness),
         saturate(metallic),
