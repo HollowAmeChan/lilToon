@@ -2156,3 +2156,25 @@ msgstr "Main texture alpha-is-transparency is disabled."
 
 msgid "UV Preset"
 msgstr "UV Preset"
+
+
+msgid "MPB Parameter Overrides"
+msgstr "MPB Parameter Overrides"
+
+msgid "Rescan"
+msgstr "Rescan"
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Material Value"
+msgstr "Material Value"
+
+msgid "No renderer in the loaded scenes overrides this material with a MaterialPropertyBlock."
+msgstr "No renderer in the loaded scenes overrides this material with a MaterialPropertyBlock."
+
+msgid "This MaterialPropertyBlock does not contain any property of the current shader."
+msgstr "This MaterialPropertyBlock does not contain any property of the current shader."
+
+msgid "This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."
+msgstr "This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."

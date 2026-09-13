@@ -2156,3 +2156,25 @@ msgstr "主贴图的 Alpha Is Transparency 未启用。"
 
 msgid "UV Preset"
 msgstr "UV 预设"
+
+
+msgid "MPB Parameter Overrides"
+msgstr "MPB参数覆写情况"
+
+msgid "Rescan"
+msgstr "重新扫描"
+
+msgid "Select"
+msgstr "选中"
+
+msgid "Material Value"
+msgstr "材质值"
+
+msgid "No renderer in the loaded scenes overrides this material with a MaterialPropertyBlock."
+msgstr "当前已加载场景里没有覆盖本材质的 Renderer。"
+
+msgid "This MaterialPropertyBlock does not contain any property of the current shader."
+msgstr "该 MaterialPropertyBlock 不包含本 shader 的任何参数。"
+
+msgid "This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."
+msgstr "当前 Unity 版本不支持 MaterialPropertyBlock.HasProperty，无法列出被覆盖的参数。"

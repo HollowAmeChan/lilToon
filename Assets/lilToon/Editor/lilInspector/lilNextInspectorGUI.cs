@@ -1024,6 +1024,7 @@ namespace lilToon
                     }
                 }, false);
                 DrawNextSection("pipeline.stencil", GetLoc("sStencilSetting"), PropertyBlock.Stencil, delegate { DrawNextStencil(material); }, false);
+                DrawNextSection("pipeline.mpb", GetLoc("MPB Parameter Overrides"), PropertyBlock.Other, delegate { DrawNextMaterialPropertyBlockInfo(material); }, false, null, false);
                 if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
                 {
                     DrawNextSection("pipeline.bake", GetLoc("sLightBakeSetting"), PropertyBlock.Other, delegate
@@ -1700,6 +1701,272 @@ namespace lilToon
             LocalizedProperty(furRimColor);
             LocalizedProperty(furRimFresnelPower);
             LocalizedProperty(furRimAntiLight);
+        }
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // MPB 参数覆写情况
+        // Unity 自带的提示框（"MaterialPropertyBlock is used to modify these values"）只说"有覆盖"，
+        // 不说是谁、覆盖了什么，而且它由 MaterialEditor.PropertiesGUI() 在自定义 ShaderGUI 画完之后才绘制，
+        // lilToon 没有钩子能去掉它（详见 LILTOON_UI入口总览.md §16.14）。这一栏补上这两件事：
+        //   1. 哪些 Renderer 在用 MaterialPropertyBlock 覆盖本材质；
+        //   2. 它实际覆盖了哪些 shader 参数（用 MaterialPropertyBlock.HasProperty 枚举）。
+        // 注意与 Unity 的提示框口径一致：只读 per-renderer 的 MPB（不带 materialIndex 的那个重载）。
+        private sealed class MpbOverrideInfo
+        {
+            public Renderer renderer;
+            public string[] propertyNames = new string[0];
+            public string[] blockValues = new string[0];
+            public string[] materialValues = new string[0];
+        }
+
+        private static int mpbOverrideScanMaterialId = 0;
+        private static bool mpbOverrideScanDone = false;
+        private static MpbOverrideInfo[] mpbOverrideInfos = new MpbOverrideInfo[0];
+        private static Func<MaterialPropertyBlock, int, bool> mpbHasProperty;
+        private static Func<MaterialPropertyBlock, int, bool> mpbHasInteger;
+        private static Func<MaterialPropertyBlock, int, int> mpbGetInteger;
+        private static bool mpbAccessProbed = false;
+
+        // HasProperty / HasInteger / GetInteger 都是较新版本 Unity 才有的 API，统一走反射取委托；
+        // 取不到 HasProperty 就降级成"只列 Renderer，列不出具体参数"。
+        private static bool CanListMpbProperties
+        {
+            get
+            {
+                ProbeMpbAccess();
+                return mpbHasProperty != null;
+            }
+        }
+
+        private static void ProbeMpbAccess()
+        {
+            if(mpbAccessProbed) return;
+            mpbAccessProbed = true;
+            mpbHasProperty = CreateMpbDelegate<Func<MaterialPropertyBlock, int, bool>>("HasProperty", typeof(int));
+            mpbHasInteger  = CreateMpbDelegate<Func<MaterialPropertyBlock, int, bool>>("HasInteger", typeof(int));
+            mpbGetInteger  = CreateMpbDelegate<Func<MaterialPropertyBlock, int, int>>("GetInteger", typeof(int));
+        }
+
+        private static T CreateMpbDelegate<T>(string methodName, params Type[] parameterTypes) where T : class
+        {
+            System.Reflection.MethodInfo method = typeof(MaterialPropertyBlock).GetMethod(
+                methodName,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public,
+                null,
+                parameterTypes,
+                null);
+            if(method == null) return null;
+            try { return (T)(object)Delegate.CreateDelegate(typeof(T), method); }
+            catch(Exception) { return null; }
+        }
+
+        private void DrawNextMaterialPropertyBlockInfo(Material material)
+        {
+            if(material == null) return;
+
+            int materialId = material.GetInstanceID();
+            if(!mpbOverrideScanDone || mpbOverrideScanMaterialId != materialId)
+            {
+                mpbOverrideScanMaterialId = materialId;
+                mpbOverrideScanDone = true;
+                RescanMaterialPropertyBlockOverrides(material);
+            }
+
+            using(new EditorGUILayout.HorizontalScope())
+            {
+                if(GUILayout.Button(GetLoc("Rescan"), GUILayout.Width(90f))) RescanMaterialPropertyBlockOverrides(material);
+                GUILayout.FlexibleSpace();
+            }
+
+            if(!CanListMpbProperties)
+            {
+                EditorGUILayout.HelpBox(GetLoc("This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."), MessageType.Info);
+            }
+
+            if(mpbOverrideInfos.Length == 0)
+            {
+                EditorGUILayout.HelpBox(GetLoc("No renderer in the loaded scenes overrides this material with a MaterialPropertyBlock."), MessageType.Info);
+                return;
+            }
+
+            for(int i = 0; i < mpbOverrideInfos.Length; i++)
+            {
+                MpbOverrideInfo info = mpbOverrideInfos[i];
+                if(info.renderer == null) continue;
+                GameObject go = info.renderer.gameObject;
+                if(go == null) continue;
+
+                using(new EditorGUILayout.HorizontalScope())
+                {
+                    if(GUILayout.Button(GetLoc("Select"), GUILayout.Width(48f)))
+                    {
+                        Selection.activeGameObject = go;
+                        EditorGUIUtility.PingObject(go);
+                    }
+                    GUILayout.Label(new GUIContent(go.name, GetHierarchyPath(info.renderer.transform)), EditorStyles.miniLabel);
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label(info.renderer.GetType().Name + " ×" + CountMaterialSlots(info.renderer, material), EditorStyles.miniLabel, GUILayout.ExpandWidth(false));
+                }
+
+                EditorGUI.indentLevel++;
+                if(info.propertyNames.Length == 0)
+                {
+                    EditorGUILayout.LabelField(GetLoc("This MaterialPropertyBlock does not contain any property of the current shader."), EditorStyles.miniLabel);
+                }
+                else
+                {
+                    for(int p = 0; p < info.propertyNames.Length; p++)
+                    {
+                        using(new EditorGUILayout.HorizontalScope())
+                        {
+                            GUILayout.Label(info.propertyNames[p], EditorStyles.miniLabel, GUILayout.Width(200f));
+                            GUILayout.Label(
+                                new GUIContent("= " + info.blockValues[p], GetLoc("Material Value") + ": " + info.materialValues[p]),
+                                EditorStyles.miniLabel,
+                                GUILayout.ExpandWidth(true));
+                        }
+                    }
+                }
+                EditorGUI.indentLevel--;
+                lilEditorGUI.DrawLine();
+            }
+        }
+
+        private static void RescanMaterialPropertyBlockOverrides(Material material)
+        {
+            mpbOverrideInfos = new MpbOverrideInfo[0];
+            if(material == null) return;
+            Shader shader = material.shader;
+            if(shader == null) return;
+
+            bool canListProperties = CanListMpbProperties;
+            int propertyCount = shader.GetPropertyCount();
+
+            MaterialPropertyBlock block = new MaterialPropertyBlock();
+            Renderer[] allRenderers = Resources.FindObjectsOfTypeAll<Renderer>();
+            for(int i = 0; i < allRenderers.Length; i++)
+            {
+                Renderer renderer = allRenderers[i];
+                if(renderer == null) continue;
+                GameObject go = renderer.gameObject;
+                if(go == null) continue;
+                // 只看已加载场景里的对象，排除 Prefab 资产、预览场景等
+                if(!go.scene.IsValid() || !go.scene.isLoaded) continue;
+                if(!renderer.HasPropertyBlock()) continue;
+
+                block.Clear();
+                renderer.GetPropertyBlock(block);
+                if(block.isEmpty) continue;
+                if(CountMaterialSlots(renderer, material) == 0) continue;
+
+                MpbOverrideInfo info = new MpbOverrideInfo();
+                info.renderer = renderer;
+                if(canListProperties)
+                {
+                    for(int p = 0; p < propertyCount; p++)
+                    {
+                        string propertyName = shader.GetPropertyName(p);
+                        int nameID = Shader.PropertyToID(propertyName);
+                        if(!mpbHasProperty(block, nameID)) continue;
+                        ShaderPropertyType propertyType = shader.GetPropertyType(p);
+                        AddMpbOverride(
+                            info,
+                            propertyName,
+                            FormatMpbValue(block, nameID, propertyType),
+                            FormatMpbValue(material, nameID, propertyType));
+                    }
+                }
+
+                System.Array.Resize(ref mpbOverrideInfos, mpbOverrideInfos.Length + 1);
+                mpbOverrideInfos[mpbOverrideInfos.Length - 1] = info;
+            }
+        }
+
+        private static void AddMpbOverride(MpbOverrideInfo info, string propertyName, string blockValue, string materialValue)
+        {
+            int index = info.propertyNames.Length;
+            System.Array.Resize(ref info.propertyNames, index + 1);
+            System.Array.Resize(ref info.blockValues, index + 1);
+            System.Array.Resize(ref info.materialValues, index + 1);
+            info.propertyNames[index] = propertyName;
+            info.blockValues[index] = blockValue;
+            info.materialValues[index] = materialValue;
+        }
+
+        private static string FormatMpbValue(MaterialPropertyBlock block, int nameID, ShaderPropertyType type)
+        {
+            if(type == ShaderPropertyType.Color)   return FormatMpbColor(block.GetColor(nameID));
+            if(type == ShaderPropertyType.Vector)  return FormatMpbVector(block.GetVector(nameID));
+            if(type == ShaderPropertyType.Texture)
+            {
+                Texture texture = block.GetTexture(nameID);
+                return texture == null ? GetLoc("sNone") : texture.name;
+            }
+            return FormatMpbNumericValue(block, nameID);
+        }
+
+        // Float / Range / Int 统一按数值处理：旧版本 Unity 没有 ShaderPropertyType.Int 这个枚举值，
+        // 所以这里不判断类型，只在"GetFloat 读出来是 0、但确实存在整数项"时改用 GetInteger。
+        private static string FormatMpbNumericValue(MaterialPropertyBlock block, int nameID)
+        {
+            float floatValue = block.GetFloat(nameID);
+            if(floatValue == 0f && mpbHasInteger != null && mpbGetInteger != null && mpbHasInteger(block, nameID))
+            {
+                return mpbGetInteger(block, nameID).ToString();
+            }
+            return FormatMpbFloat(floatValue);
+        }
+
+        private static string FormatMpbValue(Material material, int nameID, ShaderPropertyType type)
+        {
+            if(type == ShaderPropertyType.Color)   return FormatMpbColor(material.GetColor(nameID));
+            if(type == ShaderPropertyType.Vector)  return FormatMpbVector(material.GetVector(nameID));
+            if(type == ShaderPropertyType.Texture)
+            {
+                Texture texture = material.GetTexture(nameID);
+                return texture == null ? GetLoc("sNone") : texture.name;
+            }
+            return FormatMpbFloat(material.GetFloat(nameID));
+        }
+
+        private static string FormatMpbColor(Color c)
+        {
+            return "RGBA(" + FormatMpbFloat(c.r) + ", " + FormatMpbFloat(c.g) + ", " + FormatMpbFloat(c.b) + ", " + FormatMpbFloat(c.a) + ")";
+        }
+
+        private static string FormatMpbVector(Vector4 v)
+        {
+            return "(" + FormatMpbFloat(v.x) + ", " + FormatMpbFloat(v.y) + ", " + FormatMpbFloat(v.z) + ", " + FormatMpbFloat(v.w) + ")";
+        }
+
+        private static string FormatMpbFloat(float value)
+        {
+            return value.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture);
+        }
+        private static int CountMaterialSlots(Renderer renderer, Material material)
+        {
+            if(renderer == null || material == null) return 0;
+            Material[] materials = renderer.sharedMaterials;
+            if(materials == null) return 0;
+            int count = 0;
+            for(int i = 0; i < materials.Length; i++)
+            {
+                if(materials[i] == material) count++;
+            }
+            return count;
+        }
+
+        private static string GetHierarchyPath(Transform transform)
+        {
+            if(transform == null) return "";
+            string path = transform.name;
+            Transform parent = transform.parent;
+            while(parent != null)
+            {
+                path = parent.name + "/" + path;
+                parent = parent.parent;
+            }
+            return path;
         }
     }
 }
