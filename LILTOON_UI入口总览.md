@@ -513,6 +513,7 @@ CustomEditor "lilToon.lilToonInspector"
 | 菜单项 | 优先级 | 出现条件 | 行为 |
 | --- | --- | --- | --- |
 | `HoLil/[着色器] 刷新着色器` | 1100 | 始终 | 重建 shader 变体与设置（等价于重新生成） |
+| `HoLil/[材质] 材质管理器` | 未指定（Unity 默认 1000，排在 `刷新着色器` 1100 之前） | 始终 | 打开场景级批量材质面板（窗口标题 `[测试版] lilToon 材质管理器`） |
 | `HoLil/[材质] 移除未使用的属性` | 1120 | 选中的是 `.mat` | 清理材质上无用贴图槽 |
 | `HoLil/[材质] 运行迁移` | 1121 | 始终 | 迁移旧版本材质并弹完成提示 |
 | `HoLil/[贴图] 转换法线贴图 (DirectX <-> OpenGL)` | 1122 | 选中的是图片 | 法线贴图 DX/GL 互转，输出 `*_conv.png` |
@@ -545,7 +546,8 @@ CustomEditor "lilToon.lilToonInspector"
 
 | 窗口 | 标题 | 打开方式 | 内容 | 代码 |
 | --- | --- | --- | --- | --- |
-| lilToon Multi-Editor | `[测试版] lilToon 多材质编辑器` | `Window/_lil/[测试版] lilToon 多材质编辑器` | 对 Project 里选中的**所有** lilToon 材质统一编辑（`SelectionMode.DeepAssets`），顶部显示选中材质名，下面是完整 Inspector | `lilInspector.cs:156-204` |
+| 材质管理器 | `[测试版] lilToon 材质管理器` | `HoLil/[材质] 材质管理器` | 场景级批量材质面板：左栏物体层级树（tri-state 批量选择）、中栏材质表 + 日志控制台、右栏输入值批量编辑（只写你碰过的属性、改动即时生效、逐材质铺开、跳过谁会在日志里点名） | `lilMaterialManager/*.cs`（设计见 `LILTOON_材质管理器设计.md`） |
+| lilToon Multi-Editor | `[测试版] lilToon 多材质编辑器` | `Window/_lil/[测试版] lilToon 多材质编辑器` | 对 Project 里选中的**所有** lilToon 材质统一编辑（`SelectionMode.DeepAssets`），顶部显示选中材质名，下面是完整 Inspector。**已被材质管理器取代，待删除**（见 `LILTOON_材质管理器设计.md` D5） | `lilInspector.cs:156-204` |
 | Preset Window | `[lilToon] 预设窗口` | 材质预设页 → `保存预设` | 见下表 | `lilToonPreset.cs:127` |
 | lilToon 容器导出 | `.lilcontainer` 的 Inspector | 选中 `.lilcontainer` 资源 | **[导出 Shader / `Export Shader`]** 按钮：把容器解包成 `.shader` 另存 | `lilShaderContainerImporter.cs:43-57` |
 
