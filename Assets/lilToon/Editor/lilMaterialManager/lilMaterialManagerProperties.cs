@@ -53,7 +53,7 @@ namespace lilToon
 
         private readonly List<ShaderGroup> groups = new List<ShaderGroup>();
         private readonly List<lilMaterialChangeRecord> changes = new List<lilMaterialChangeRecord>();
-        private readonly HashSet<string> collapsedBuckets = new HashSet<string>();
+        private readonly HashSet<string> expandedBuckets = new HashSet<string>();
         private int selectionSignature;
 
         public int ChangeCount { get { return changes.Count; } }
@@ -158,12 +158,15 @@ namespace lilToon
                     int matchCount = hasFilter ? CountMatches(bucket, filter) : bucket.properties.Count;
                     if(matchCount == 0) continue;                       // 过滤时整组没命中就不显示
 
-                    bool expanded = hasFilter || !collapsedBuckets.Contains(bucketKey);
+                    bool expanded = hasFilter || expandedBuckets.Contains(bucketKey);
                     lilMaterialManagerStyles.DrawSectionHeader(ref expanded, bucket.name, matchCount + " 项", new Color(0.18f, 0.20f, 0.24f));
 
-                    if(hasFilter) collapsedBuckets.Remove(bucketKey);    // 过滤不污染折叠状态
-                    else if(expanded) collapsedBuckets.Remove(bucketKey);
-                    else collapsedBuckets.Add(bucketKey);
+                    // 过滤时的展开是临时状态，不写回，免得清掉搜索框后组还开着
+                    if(!hasFilter)
+                    {
+                        if(expanded) expandedBuckets.Add(bucketKey);
+                        else         expandedBuckets.Remove(bucketKey);
+                    }
                     if(!expanded) continue;
 
                     EditorGUI.indentLevel++;

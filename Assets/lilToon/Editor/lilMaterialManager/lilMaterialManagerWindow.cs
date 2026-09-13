@@ -40,8 +40,8 @@ namespace lilToon
         private bool includeInactive = true;
         private bool needsRescan = true;
         private bool needsViewRefresh = true;
-        private bool propertiesExpanded = true;
-        private bool changeLogExpanded = true;
+        private bool propertiesExpanded;
+        private bool changeLogExpanded;
         private Vector2 propertiesScroll;
         private Vector2 changeLogScroll;
 
