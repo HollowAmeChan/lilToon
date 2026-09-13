@@ -824,7 +824,9 @@ TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_AOMask);
 TEXTURE2D(_AOColorTex);
-TEXTURE2D(_HoAOTexture);
+// _HoAOTexture is a screen-space texture published by Ho-GTAO, so it follows the
+// same XR convention as _CameraOpaqueTexture (a texture array in stereo).
+TEXTURE2D_SCREEN(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);
 TEXTURE2D(_BacklightColorTex);

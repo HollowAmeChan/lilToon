@@ -1,20 +1,23 @@
 # HoAO 接入阴影阈值（Shadow Grade）技术方案
 
-> 状态：设计稿 v4，**未落地**。本文只描述方案与验证步骤，不改动任何代码。
-> v4 修订：按裁决收敛 —— ① AO Color **永远单层**，直接混入全部三层；② AO Mask **同时门控实时与离线两路**；③ 新属性统一 `_AO` 前缀；④ **删除 `_RealtimeAOColorFromMain`**（连功能一起不要）。
-> v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 当前质量达标，噪声/方向偏置不构成门槛。
-> 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准，引用文档处均标注。
-> 基线：`lilToon` @ `f001b2d`（工作区有未提交改动，位于 `lil_common_frag.hlsl` planar reflection 段 2041 行之后，不影响本文引用的 827-1055 行）；`lilToon-URP-Extensions` @ 2026-09-13 工作区。
+> 状态：**已落地（v5）**。阶段 0-3 与"入口 + 参数收敛"都已实现，52 个 shader 已在 Unity 内重新生成并编译通过。
+> v5 修订（入口与参数收敛）：AO 归入**阴影栏**下的单一折叠子级；参数 **17 → 10**。删除 `_ShadowAOShift`、`_ShadowAOShift2`、`_ShadowPostAO`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`；`_RealtimeAOStrength` → `_AOStrength`、`_RealtimeAOMask` → `_AOMask`；新增 `_AOLevel`（取代 remap + contrast）。
+> ⚠️ **§2 / §3 / §4.1-4.6 / §5 是 v3-v4 时期的推理记录，正文里的旧属性名已被 v5 取代；属性的当前名称一律以 §4.7 为准。**
+> v4：AO Color 永远单层、直接混入三层；AO Mask 同时门控实时与离线；新属性统一 `_AO` 前缀；删除 `_RealtimeAOColorFromMain`。
+> v3 已锁定：AO 恒定在 opaque 之前；GI 侧用 AO 做 RT 光线参考、不直接叠暗；Ho-GTAO 质量达标，噪声/方向偏置不构成门槛。
+> 代码事实优先：两侧文档都偏旧，凡与代码冲突以代码为准。
+> 实现提交：`c2737cf` 文档 / `3461566` 阈值偏移 + 单层色层 / `bc80e4b` Multi CBUFFER 缺声明 / `2665059` 入口与参数收敛 / `f0f7943` inspector 代理；`_HoAOTexture` 改走 XR 屏幕纹理通道与 v5 同期。
 
 ---
 
-## 0. 结论
+## 0. 结论（v5 实现状态）
 
-1. **阈值偏移方案成立**，生产端从设计上就支持材质在 forward 采样本帧 AO：Ho-GTAO 强制 `BeforeRenderingOpaques(250)`（`HoGTAORendererFeature.cs:615-623`，注释原文 `// AO is sampled by opaque lilToon materials ...`），`_HoAOTexture` 每相机重置为 white（`:147-149`）→ 关闭或输入缺失时自动退化为无操作。
-2. **实现方式**：有符号阈值偏移（不用 `lns *= ssao`），**三层同时偏移**；偏移量本身即作用带宽，不需要额外门控。
-3. **四路输入**：AO Map（离线贴图）× 屏幕 AO（实时）合成驱动量，AO Mask 统一门控两路，单层 AO Color 作为可选补充色。
-4. **关键设计决定**：AO Color 的驱动量必须是「**AO 真正造成的额外遮蔽量**」（`shadeNoAO - shadeAO`，三层取最大并按层存在量加权），而不是 `occ` 或 AO visibility。理由见 §4.3。附带收益：`_AOThreshold = 0` → 驱动量为 0 → **色层自动完全不生效**，整条新链路只有一个开关。
-5. **新增 4 个属性、删除 1 个，全部默认中性** → 默认逐像素等价于今天。
+1. **阈值偏移方案成立且已落地**：生产端从设计上就支持材质在 forward 采样本帧 AO —— Ho-GTAO 强制 `BeforeRenderingOpaques(250)`（`HoGTAORendererFeature.cs:615-623`，注释原文 `// AO is sampled by opaque lilToon materials ...`），`_HoAOTexture` 每相机重置为 white（`:147-149`）→ 关闭或输入缺失时自动退化为无操作。
+2. **实现方式**：有符号阈值偏移（不用 `lns *= ssao`），**三层同时偏移**；偏移量本身即作用带宽，不需要额外门控。默认 `_AOThreshold = 0` → 新的阈值链路不生效，行为等价于 legacy 的"AO Map 乘 ramp"路径。
+3. **入口**：AO 全部参数收进**阴影栏**（原"直接阴影"）末尾的 `AO` 折叠子级；GI 栏只剩自己的控制。两套 inspector（legacy + next）都已改。
+4. **10 个属性**（权威清单见 §4.7）：`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOThreshold`、`_AOStrength`、`_AOLevel`、`_AOMask`、`_AOColor`、`_AOColorTex`、`_AOMainStrength`。
+5. **关键设计决定（v4 起未变）**：AO Color 的驱动量是「**AO 真正造成的额外遮蔽量**」（`shadeNoAO - shadeAO`，三层取最大并按层存在量加权），而不是 `occ` 或 AO visibility。理由见 §4.3。附带收益：`_AOThreshold = 0` → 驱动量为 0 → **色层自动完全不生效**，整条新链路只有一个开关。
+6. **已知取舍**（见 §8）：`_AOLevel` 只做电平平移，**丢掉了旧 Min/Max 窗口 + contrast 的压缩能力**；改名使老材质的 `_RealtimeAO*` 值丢失（**按裁决不做迁移**，资产很少）。
 
 ---
 
@@ -204,25 +207,30 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | AO Map 为 white + 屏幕 AO 有值 | `aoTotal = aoScreen` → 纯实时驱动（最常见用法） |
 | AO Map 有值 + 屏幕 AO 关闭 | `aoTotal = aoMap` → 由 `_AOThreshold` 语义驱动（legacy 的 Min/Max 语义仍归 legacy 路径） |
 
-### 4.7 参数清单
+### 4.7 参数清单（v5 已落地的权威清单）
 
 | 属性 | 角色 | 范围 / 默认 | 状态 |
 |---|---|---|---|
+| `_UseRealtimeAO` | AO 总开关（显示名 "AO"） | Int / 1 | 沿用 |
 | `_ShadowBorderMask` | AO Map（R/G/B → 1/2/3 层驱动） | white | 沿用 |
-| `_AOMask` | AO Mask（门控实时 + 离线） | white | **改名**（原 `_RealtimeAOMask`，见 §4.8） |
-| `_RealtimeAOStrength` | AO 总强度 | 0..1 / 1 | 沿用（语义扩展为"总强度"） |
-| `_AOThreshold` | 每层阈值偏移上限 + 作用带宽（有符号） | -0.5..0.5 / **0** | **新增** |
-| `_AOColor` | AO 补充色，A = 存在量 | RGBA / **(0,0,0,0)** | **新增** |
-| `_AOColorTex` | AO 补充色贴图，A = mask | RGBA / white | **新增** |
-| `_AOMainStrength` | 与主色对比（平行 `_ShadowMainStrength`） | 0..1 / 0 | **新增** |
-| `_RealtimeAOColorFromMain` | — | — | **删除**（§5） |
-| `_ShadowPostAO` / `_RealtimeAOColor` / `_RealtimeAOColorTex` / `_RealtimeAORemap` / `_RealtimeAOContrast` | legacy 路径 | 不变 | 保留 |
+| `_ShadowBorderMaskLOD` | AO Map mip 偏移 | 0..1 / 0 | 沿用 |
+| `_AOThreshold` | 每层阈值偏移上限 + 作用带宽（有符号） | -0.5..0.5 / **0** | 新增 |
+| `_AOStrength` | AO 总强度（同时缩放阈值偏移与最终乘算） | 0..1 / 1 | 改名（原 `_RealtimeAOStrength`） |
+| `_AOLevel` | AO 可见度电平（有符号平移） | -1..1 / 0 | 新增（取代 `_RealtimeAORemap` + `_RealtimeAOContrast`） |
+| `_AOMask` | AO Mask（门控实时 + 离线两路） | white | 改名（原 `_RealtimeAOMask`） |
+| `_AOColor` | AO 颜色。rgb = 最终乘算的染色方向；A = AO 影色层的存在量 | RGBA / **(0,0,0,0)** | 新增（取代 `_RealtimeAOColor`） |
+| `_AOColorTex` | AO 影色层贴图，A = mask | RGBA / white | 新增（取代 `_RealtimeAOColorTex`） |
+| `_AOMainStrength` | 与主色对比（平行 `_ShadowMainStrength`） | 0..1 / 0 | 新增 |
 
-命名规则：**新属性一律 `_AO` 前缀**。已核实全仓库**无任何既有 `_AO*` 属性**（lilblock 与 52 个生成 shader 均为 0 命中），因此前缀无歧义。需同步扩 `lilPropertyNameChecker.IsGIAOProperty`（`:75-81`，当前只匹配 `_UseRealtimeAO` / `Contains("_RealtimeAO")`），否则新属性不会随 GI/AO 预设存取（`lilToonPreset.cs:403`）；建议一并纳入 `_ShadowBorderMask`。
+**v5 删除的 7 个属性**：`_ShadowAOShift`(4 数字)、`_ShadowAOShift2`(2 数字)、`_ShadowPostAO`、`_RealtimeAORemap`(2)、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`。删除安全性：29 个预设里这些存的**全是单位值**（`_ShadowAOShift=(1,0,1,0)`、`_ShadowAOShift2=(1,0,1,0)`、`_ShadowPostAO=0`，其余在预设中根本不出现），所以预设观感不变。
 
-### 4.8 待确认的一个改名
+命名与归类：AO 相关属性的 `PropertyBlock` 为 **`Shadow`**（跟随入口），预设分类由 `lilPropertyNameChecker.IsShadowProperty` 覆盖（`_AO` 前缀 + `_UseRealtimeAO`）；`IsGIAOProperty` 只保留 GI 自己的 `_HTraceSSGIBackfaceNormalFix`。
 
-`_RealtimeAOMask` → `_AOMask`：语义上必须改（它现在同时门控离线 AO Map，不再只是"realtime"），且**预设 0 影响**（§2.3），代价只在用户材质的序列化值。内部特性宏 `LIL_FEATURE_REALTIMEAOMask`（`lilToonSetting.cs:629,1341,1403`、`lil_replace_keywords.hlsl:260`）建议保持不变以免扩散。**若不想动既有属性名，可保留 `_RealtimeAOMask`，仅语义扩大** —— 这一条留给你定。
+### 4.8 改名（已在 v5 执行）
+
+`_RealtimeAOMask` → `_AOMask`：语义上必须改（它现在同时门控离线 AO Map，不再只是 "realtime"），且**预设 0 影响**（§2.3），代价只在用户材质的序列化值。**已执行**；内部特性宏 `LIL_FEATURE_REALTIMEAOMask`（`lilToonSetting.cs`、`lil_replace_keywords.hlsl:260`）**保留不变**以免扩散到 `lilToonSetting` 的序列化字段与生成器 —— 因此属性名与宏名不一致，采样处已留注释。
+
+同时改名的还有 `_RealtimeAOStrength` → `_AOStrength`、`_RealtimeAOColor` → `_AOColor`。**按裁决不做旧值迁移**（老资产很少）。
 
 ---
 
@@ -252,9 +260,20 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 
 ---
 
-## 6.1 实现记录（阶段 0-3 已落地，commit `3461566`）
+## 6.1 实现记录（阶段 0-3 = `3461566`；入口与参数收敛 = `2665059`）
 
 阶段 0-3 已一次性实现（它们共享同一个 `occ`/`shift` 计算，拆开提交只会增加 churn；`_RealtimeAOColorFromMain` 的删除按阶段 0 独立描述，但按你的要求与实现同批入库）。
+
+**v5 追加（`2665059`）—— 入口与参数收敛**：
+
+| 改动 | 内容 |
+|---|---|
+| 入口 | 阴影栏标题 `sDirectShadow` 由"直接阴影"改为"阴影"（5 种语言）；栏内末尾的折叠子级换成 **AO**，装全部 AO 参数 |
+| GI 栏 | 只保留 `_HTraceSSGIBackfaceNormalFix`，标题 "GI / HoAO" → "GI" |
+| 参数 | 17 → 10：删 7 个（见 §4.7），`_RealtimeAOStrength` → `_AOStrength`，新增 `_AOLevel` |
+| 分类 | AO 属性 `PropertyBlock` → `Shadow`；`IsShadowProperty` 覆盖 `_AO` 前缀 + `_UseRealtimeAO`；`IsGIAOProperty` 只留 GI |
+| 语言表 | `lilLanguageManager` 新增 `shadowAOContent`（"AO" + tooltip），并在 `lilEditorVariables` 补 `lilToonInspector` 的代理属性（漏掉代理会 CS0103） |
+| 清理 | 删除失效的 `DrawHoAORemapGUI()`、`isShowRealtimeAOColor`，以及 3 个头文件里的 `_ShadowAOShift`/`_ShadowAOShift2`/`_ShadowPostAO` 声明 |
 
 已落地的文件（12 个）：
 
@@ -279,10 +298,12 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
    三个新标量无条件声明（否则 `LIL_FEATURE_ShadowBorderMask` 分支在未启用 REALTIMEAO 时会引用不到符号）；`_AOColorTex` 也没有特性宏，改为在 `if(_AOColor.a > 0.0)` 的一致分支内采样。代价：每个材质多一个纹理槽绑定（不采样时不产生取指）。若日后要做严格剥离，可补 `LIL_FEATURE_AOColorTex`。
 3. **`_RealtimeAOMask` 已改名 `_AOMask`，内部宏 `LIL_FEATURE_REALTIMEAOMask` 保留不变**（避免扩散到 `lilToonSetting` 的序列化字段与生成器）。因此属性名与宏名不再一致，已在 `lil_common_frag.hlsl` 的采样处留注释。
 
-**尚未完成 / 未验证**：
+**已完成**：
 
-- 生成 shader（`Assets/lilToon/Shader/*.shader`，52 个）**未重新生成**（需要 Unity 内执行 `[Shader] Refresh shaders`）。在重新生成之前，新属性不在材质上，`_AOThreshold` 读作 0 → 整条新链路不生效，即当前工作区行为与改动前等价。
-- §7 的验证清单全部**未执行**（无 Unity 环境）。
+- 52 个 shader 已在 Unity 内重新生成：`_AOStrength` / `_AOLevel` / `_AOThreshold` / `_AOMask` / `_AOColor` / `_AOColorTex` / `_AOMainStrength` 全部进入 Properties 块，旧的 `_RealtimeAO*` 与 `_ShadowAOShift`/`_ShadowPostAO` 已消失；编译通过（另修了 `bc80e4b` 的 Multi CBUFFER 缺声明与 `f0f7943` 的 inspector 代理）。
+- `_HoAOTexture` 改走 lilToon 自带的 XR 屏幕纹理通道（`TEXTURE2D_SCREEN` + `LIL_SAMPLE_SCREEN`，与 `_CameraOpaqueTexture` 一致）；非 XR 下二者分别展开为 `TEXTURE2D` / `LIL_SAMPLE_2D`，行为不变。
+
+**尚未执行**：§7 的实机视觉清单（需要在场景里逐项看效果）。
 
 ---
 
@@ -294,7 +315,7 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | 1 | §3 阈值偏移：三层同时偏移 + `_AOThreshold`（默认 0） | 低，可一键回退 |
 | 2 | §4.2 的 `occ` 合成 + `_AOMask` 统一门控 | 低，默认 white |
 | 3 | `_AOColor` / `_AOColorTex` / `_AOMainStrength` 单层色层 | 低，默认 alpha 0 |
-| 4 | 参数收敛（合并 legacy：`_RealtimeAORemap`+`Contrast` → 带符号 Level；删 `_RealtimeAOColorTex`；`_ShadowPostAO` 枚举化） | **推迟**：`LILTOON_FORMAL_PIPELINE_DRAFT.md:16,128`「先做 7 个系统，后收敛 lilToon 暴露面」「AO…会决定材质接口的正确数量…避免裁了又开」。等 AO 系统接口定稿再做，且必须保留 `RampMultiply_Legacy` 兼容值 |
+| 4 | 参数收敛（合并 legacy：`_RealtimeAORemap`+`Contrast` → 带符号 Level；删 `_RealtimeAOColorTex`；移除 `_ShadowPostAO`） | **已执行**（v5，`2665059`）。原按 `LILTOON_FORMAL_PIPELINE_DRAFT.md:16,128` 的"先定系统接口、后收敛"推迟，后被明确要求提前做。`RampMultiply_Legacy` 没有保留为枚举值 —— legacy 路径改由 `_AOThreshold == 0` 隐式选择 |
 
 ---
 
@@ -332,13 +353,16 @@ fd.col.rgb        = lerp(fd.col.rgb, aoCol, aoAmount * shadowStrength * _AOColor
 | 6 | 消费模型 | 材质采样（非 ScreenProcess 施加） |
 | 7 | GI 与 AO | GI 用 AO 做 RT 光线参考，不直接叠暗 → 无重复叠暗 |
 | 8 | `_RealtimeAOMask` 改名 | **采纳**（已实现；内部宏保留） |
-| 9 | legacy AO Map 乘算 | 实现期决定：统一模式启用时抑制（§6.1 决定 1）——**需评审** |
+| 9 | legacy AO Map 乘算 | 实现期决定：统一模式启用时抑制（§6.1 决定 1） |
+| 10 | AO 的归属入口 | **AO 是阴影栏的子级**：阴影栏标题改"阴影"，AO 做成栏内折叠子级；不单独占一个顶层入口 |
+| 11 | 参数削减 | **17 → 10**（§4.7）。6 个 Min/Max 滑块随 `_ShadowAOShift` 一起删除，不再有"电平窗口"控件 |
+| 12 | 旧值迁移 | **不做**（老资产很少）；改名导致的老材质取值丢失由使用者手工重设 |
 
 ---
 
 ## 9. 独立事项（与本方案解耦，建议单独处理）
 
-1. **XR 采样不匹配**：生产端 XR-aware（`HoGTAO.shader:73,89,217,401,459,659,667,736,742` 全程 stereo 宏；输出 desc 继承 cameraColor；SSGI 用 `SAMPLE_TEXTURE2D_X`，`HoSSGI.shader:64`），而 lilToon 的 `_HoAOTexture` 是普通 `TEXTURE2D`（`lil_common_input.hlsl:831`）+ `LIL_SAMPLE_2D`（`lil_common_frag.hlsl:1191`），**没走 lilToon 自带的 XR 屏幕纹理通道** `TEXTURE2D_SCREEN`/`LIL_SAMPLE_SCREEN`（`lil_common_macro.hlsl:428-439`；`_CameraOpaqueTexture` 走的就是这条，`lil_common_input.hlsl:38-42`）。修法 = 照抄 `_CameraOpaqueTexture`（2 行）。**同时影响现有颜色乘算路径。**
+1. ~~**XR 采样不匹配**~~ → **已修**：`_HoAOTexture` 现在声明为 `TEXTURE2D_SCREEN(_HoAOTexture)`（`lil_common_input.hlsl:829`）、采样用 `LIL_SAMPLE_SCREEN`（`lil_common_frag.hlsl:836`），与 `_CameraOpaqueTexture` 一致。非 XR 下这两个宏分别展开为 `TEXTURE2D` / `LIL_SAMPLE_2D`，行为逐位不变；XR 下按 `unity_StereoEyeIndex` 取对应眼的切片。**这条同时修好了原先就存在的颜色乘算路径。** 前提是生产端在 XR 下发布的确实是纹理数组（`GetTextureDesc(cameraColor)` 继承相机颜色描述符 → XR 下为数组；SSGI 侧也用 `SAMPLE_TEXTURE2D_X` 采样），实机建议用 GTAO debug 视图左右眼各看一次确认。
 2. **AO 图 sampler 不一致**：`_ShadowBorderMask` 用 `lil_sampler_linear_repeat`，`_AOMask` 用材质 `samp`。UV 边界需要 clamp 时应统一。
 3. **契约 vs 实现**：`LILTOON_CHANNEL_CONTRACT_V1.md:92` 冻结 `ao = R8f(0..1)`，而 `HoGTAORendererFeature.cs:1272-1274` 用 `GetTextureDesc(cameraColor)` 建全屏相机颜色格式 RT（非 HDR 下可能 `R8G8B8A8_SRGB` → AO 值走 sRGB 往返，材质 `.r` 未必线性 0..1）。建议生产端固定 `R8_UNorm`。
 4. **文档过期清单**：`LILTOON_FORMAL_PIPELINE_DRAFT.md:114,155` 与 `LILTOON架构总览.md` §10.3 仍用 `_UseScreenSpaceAO`/`_SSAO*`/`lilScreenSpaceAO`/`LIL_FEATURE_SSAO`；`LILTOON_GI_PLAN.md:50` 的 `GI*albedo*(1-metallic)*AO`；`LILTOON_GTAO_PLAN.md:56,62,80` 说 GeometryBuffer 在 300 需改 250，而 `HoGeometryBufferSettings.cs:24` 默认已是 `BeforeRenderingOpaques`。

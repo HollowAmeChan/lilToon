@@ -209,7 +209,7 @@ lilToon 同步内容：
 
 待办：
 
-- 旧 `_UseSSAO` / `_UseScreenSpaceAO` 已删除并替换为统一 `_UseRealtimeAO`；`_RealtimeAOStrength`、`_RealtimeAORemap`、颜色和颜色贴图等调参属性继续复用。
+- 旧 `_UseSSAO` / `_UseScreenSpaceAO` 已删除并替换为统一 `_UseRealtimeAO`；调参属性已进一步收敛为 `_AOThreshold` / `_AOStrength` / `_AOLevel` / `_AOMask` / `_AOColor` / `_AOColorTex` / `_AOMainStrength`（旧的 `_RealtimeAO*` 组已移除或改名，见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7）。
 - 如果 HTrace AO 在角色脸部颗粒感仍明显，再评估角色专用 toon AO remap 或 face/skin attenuation。
 - 输出独立 AO 贴图后由 lilToon / lilPBR 接收端统一采样，并继续保留材质侧 remap、contrast、mask。
 

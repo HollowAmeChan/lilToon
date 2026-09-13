@@ -833,7 +833,7 @@
         // _HoAOTexture.r is 0..1 visibility (1 = unoccluded). _AOLevel shifts the
         // whole mask so a baked AO range that never reaches white can be lifted
         // into range in one control.
-        return saturate(LIL_SAMPLE_2D(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r + _AOLevel);
+        return saturate(LIL_SAMPLE_SCREEN(_HoAOTexture, lil_sampler_linear_clamp, screenUV).r + _AOLevel);
     }
 #endif
 

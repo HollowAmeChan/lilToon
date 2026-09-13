@@ -11,8 +11,9 @@
 
 - Ho-GTAO 是当前 AO 生产端，lilToon 只消费公共语义纹理 `_HoAOTexture`，不暴露 SSAO/GTAO/RTAO 算法选择。
 - 旧 `_UseSSAO`、`_ScreenSpaceAOSource`、`_HTraceBufferAO` 和 URP `_ScreenSpaceOcclusionTexture` 接收分支已移除。
-- 当前材质侧保留 `_UseRealtimeAO`、`_RealtimeAOStrength`、`_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOColor`、`_RealtimeAOColorTex`、`_RealtimeAOColorFromMain`、`_RealtimeAOMask`。
-- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 forward 光照完成后、SSS 前做一次材质侧乘法。
+- 当前材质侧的 AO 参数组已收敛为 10 个属性（`_UseRealtimeAO`、`_ShadowBorderMask`、`_ShadowBorderMaskLOD`、`_AOThreshold`、`_AOStrength`、`_AOLevel`、`_AOMask`、`_AOColor`、`_AOColorTex`、`_AOMainStrength`）；`_RealtimeAOStrength`/`_RealtimeAORemap`/`_RealtimeAOContrast`/`_RealtimeAOColor`/`_RealtimeAOColorTex`/`_RealtimeAOColorFromMain`/`_RealtimeAOMask` 与 `_ShadowAOShift`/`_ShadowPostAO` **已移除或改名**。**权威清单见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7**；下文 §4/§6 里的旧名字是收敛前的记录。
+- Ho-GTAO 在 opaque 绘制前发布 AO；lilToon 在 forward 光照完成后、SSS 前做一次材质侧乘法，并额外用同一份遮挡量偏移三层 toon 阴影边界（`_AOThreshold`，默认 0 = 不启用）。
+- inspector 入口：AO 参数在**阴影栏**内的 `AO` 折叠子级，不在独立的 "GI / HoAO" 栏。
 - Ho-SSGI 是全屏间接光注入，不属于本文的材质 AO 接收链路。
 
 ---

@@ -550,27 +550,29 @@ lilToon 不直接在 `.lilblock` 里手写所有 URP17 pragma，而是用占位�
 - 当前修复点是 `ReplaceForwardMultiCompiles(...)` / `GetMultiCompileContext(...)`：先收集当前 block 的 skip 信息，再交给 `MultiCompileOptions.FromShaderText(...)`，最后由 `GetMultiCompileForward(...)` 有条件地输出 URP17 forward pragma。
 - 已导出的 `.shader` 文件如果已经存在重复组合，也要同步清掉，否则即使 importer 修了，Unity 当前项目仍会继续编译旧 shader 文本。
 
-### 10.3 SSAO 链路
+### 10.3 AO 链路（2026-09-13 更新）
 
-lilToon 的屏幕空间 AO shader 侧逻辑在：
+lilToon 的屏幕空间 AO shader 侧逻辑在 `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl`：
 
-- `Assets/lilToon/Shader/Includes/lil_common_frag.hlsl`
-- `lilScreenSpaceAO(...)`
+- `lilSampleRealtimeAO(screenUV)` —— 定义在 `lilGetShading` **之前**，供阴影阈值阶段复用
+- `lilRealtimeAO(...)` / `lilRealtimeAOApply` —— 光照完成后的最终乘算
 
 它依赖：
 
-- 材质属性 `_UseRealtimeAO`
-- shader setting 宏 `LIL_FEATURE_SSAO`
-- Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`
+- 材质属性 `_UseRealtimeAO`（总开关）与 `_AO*` 参数组
+- shader setting 宏 **`LIL_FEATURE_REALTIMEAO`**（`LIL_FEATURE_SSAO` / `_UseSSAO` / `_ScreenSpaceAOSource` 等旧名**已废弃并移除**，参见 `LILTOON_URP_SSAO设计总览.md` §0）
+- Ho-GTAO 在不透明物体前发布的全局纹理 `_HoAOTexture`（0..1 visibility，1 = 无遮挡；关闭生产端时每相机重置为 white）
 
-当前消费顺序是：
+当前消费顺序：
 
-1. `lilToonSetting` 是否启用了 `LIL_FEATURE_SSAO`
-2. Ho-GTAO 是否在 GeometryBuffer 之后、opaque 绘制之前发布 `_HoAOTexture`
-3. `_UseRealtimeAO` 是否开启
-4. 采样后是否依次经过 `_RealtimeAORemap`、`_RealtimeAOContrast`、`_RealtimeAOMask`
-5. `_RealtimeAOColor` 与 `_RealtimeAOColorTex` 相乘，可选从主色取色
-6. 最终因子是否按 `_RealtimeAOStrength` 混合到 `fd.col.rgb`
+1. `lilToonSetting` 是否启用 `LIL_FEATURE_REALTIMEAO`
+2. Ho-GTAO 是否在 opaque 绘制之前发布 `_HoAOTexture`（GeometryBuffer 与 Ho-GTAO 同在 `BeforeRenderingOpaques`，先后由 Renderer Feature 列表顺序保证）
+3. 材质读 `_HoAOTexture.r`，经 `saturate(r + _AOLevel)` 得到 visibility（XR 下走 `TEXTURE2D_SCREEN` / `LIL_SAMPLE_SCREEN`）
+4. 与离线 AO Map（`_ShadowBorderMask`）相乘，再由 `_AOMask` 统一门控，得到逐层遮挡量
+5. 该遮挡量驱动两件事：**三层 toon 阴影边界的阈值偏移**（`_AOThreshold`，默认 0 = 不启用，此时走 legacy 的"AO Map 乘 ramp"路径）与**光照后的最终乘算**（`_AOColor.rgb` × `_AOStrength`）
+6. 可选：被 AO 推进阴影的那部分再叠一层 AO 影色（`_AOColor.a` / `_AOColorTex` / `_AOMainStrength`）
+
+inspector 入口：AO 参数不在独立的 "GI / HoAO" 栏里，而是**阴影栏**（`sDirectShadow`）内的 `AO` 折叠子级。参数清单与设计理由见 `LILTOON_HOAO阴影阈值接入方案.md` §4.7 / §6.1。
 
 ### 10.4 DepthNormals 与 URP17 Rendering Layers
 
