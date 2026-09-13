@@ -38,9 +38,9 @@ namespace lilToon
             }
 
             EditorGUI.BeginChangeCheck();
-            ToggleGUI("Optimize in NDMF (Apply on Play)", ref shaderSetting.isOptimizeInNDMF);
+            ToggleGUI(GetLoc("Optimize in NDMF (Apply on Play)"), ref shaderSetting.isOptimizeInNDMF);
             ToggleGUI(GetLoc("sShaderSettingOptimizeInEditor"), ref shaderSetting.isDebugOptimize);
-            ToggleGUI("Migrate materials in startup", ref shaderSetting.isMigrateInStartUp);
+            ToggleGUI(GetLoc("Migrate materials in startup"), ref shaderSetting.isMigrateInStartUp);
             edSet.isShowShaderSetting = lilEditorGUI.Foldout(GetLoc("sShaderSetting"), edSet.isShowShaderSetting);
             lilEditorGUI.DrawHelpButton(GetLoc("sAnchorShaderSetting"));
             if(edSet.isShowShaderSetting)
@@ -111,21 +111,21 @@ namespace lilToon
             EditorGUI.indentLevel--;
             EditorGUILayout.LabelField(GetLoc("[Model] Setup from FBX"), EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            shaderSetting.presetFace = (lilToonPreset)EditorGUILayout.ObjectField("Face", shaderSetting.presetFace, typeof(lilToonPreset), false);
-            shaderSetting.presetSkin = (lilToonPreset)EditorGUILayout.ObjectField("Skin", shaderSetting.presetSkin, typeof(lilToonPreset), false);
-            shaderSetting.presetHair = (lilToonPreset)EditorGUILayout.ObjectField("Hair", shaderSetting.presetHair, typeof(lilToonPreset), false);
-            shaderSetting.presetCloth = (lilToonPreset)EditorGUILayout.ObjectField("Cloth", shaderSetting.presetCloth, typeof(lilToonPreset), false);
+            shaderSetting.presetFace = (lilToonPreset)EditorGUILayout.ObjectField(GetLoc("Face"), shaderSetting.presetFace, typeof(lilToonPreset), false);
+            shaderSetting.presetSkin = (lilToonPreset)EditorGUILayout.ObjectField(GetLoc("Skin"), shaderSetting.presetSkin, typeof(lilToonPreset), false);
+            shaderSetting.presetHair = (lilToonPreset)EditorGUILayout.ObjectField(GetLoc("Hair"), shaderSetting.presetHair, typeof(lilToonPreset), false);
+            shaderSetting.presetCloth = (lilToonPreset)EditorGUILayout.ObjectField(GetLoc("Cloth"), shaderSetting.presetCloth, typeof(lilToonPreset), false);
             EditorGUI.indentLevel--;
             EditorGUILayout.LabelField(GetLoc("[Shader] LightMode Override"), EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             GUI.enabled = !File.Exists(lilDirectoryManager.GetSettingLockPath());
-            shaderSetting.mainLightModeName = EditorGUILayout.TextField("Main", shaderSetting.mainLightModeName);
-            shaderSetting.outlineLightModeName = EditorGUILayout.TextField("Outline", shaderSetting.outlineLightModeName);
-            shaderSetting.preLightModeName = EditorGUILayout.TextField("Transparent backface", shaderSetting.preLightModeName);
-            shaderSetting.furLightModeName = EditorGUILayout.TextField("Fur", shaderSetting.furLightModeName);
-            shaderSetting.furPreLightModeName = EditorGUILayout.TextField("Fur Pre", shaderSetting.furPreLightModeName);
-            shaderSetting.gemPreLightModeName = EditorGUILayout.TextField("Gem Pre", shaderSetting.gemPreLightModeName);
-            if(lilEditorGUI.EditorButton("Apply")) lilToonSetting.ApplyShaderSetting(shaderSetting);
+            shaderSetting.mainLightModeName = EditorGUILayout.TextField(GetLoc("Main"), shaderSetting.mainLightModeName);
+            shaderSetting.outlineLightModeName = EditorGUILayout.TextField(GetLoc("sOutline"), shaderSetting.outlineLightModeName);
+            shaderSetting.preLightModeName = EditorGUILayout.TextField(GetLoc("Transparent backface"), shaderSetting.preLightModeName);
+            shaderSetting.furLightModeName = EditorGUILayout.TextField(GetLoc("sFur"), shaderSetting.furLightModeName);
+            shaderSetting.furPreLightModeName = EditorGUILayout.TextField(GetLoc("Fur Pre"), shaderSetting.furPreLightModeName);
+            shaderSetting.gemPreLightModeName = EditorGUILayout.TextField(GetLoc("Gem Pre"), shaderSetting.gemPreLightModeName);
+            if(lilEditorGUI.EditorButton(GetLoc("Apply"))) lilToonSetting.ApplyShaderSetting(shaderSetting);
             GUI.enabled = true;
             EditorGUI.indentLevel--;
         }
@@ -142,7 +142,7 @@ namespace lilToon
             EditorGUILayout.Space();
             GUILayout.BeginHorizontal();
             if(lilEditorGUI.EditorButton(GetLoc("sPresetRefresh"))) presets = lilToonPreset.LoadPresets();
-            if(lilEditorGUI.EditorButton(GetLoc("sPresetSave"))) EditorWindow.GetWindow<lilToonPreset.lilPresetWindow>("[lilToon] Preset Window");
+            if(lilEditorGUI.EditorButton(GetLoc("sPresetSave"))) EditorWindow.GetWindow<lilToonPreset.lilPresetWindow>("[lilToon] 预设窗口");
             GUILayout.EndHorizontal();
         }
 
@@ -160,7 +160,7 @@ namespace lilToon
                                     GetLoc("sPresetCategoryInorganic"),
                                     GetLoc("sPresetCategoryEffect"),
                                     GetLoc("sPresetCategoryOther"),
-                                    "Ho Presets" };
+                                    GetLoc("Ho Presets") };
             for(int i=0; i<(int)lilPresetCategory.Ho+1; i++)
             {
                 edSet.isShowCategorys[i] = lilEditorGUI.Foldout(sCategorys[i], edSet.isShowCategorys[i]);

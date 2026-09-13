@@ -34,11 +34,11 @@ namespace lilToon
             #endif
             GUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 16);
-            if(GUILayout.Button("Test"))
+            if(GUILayout.Button(lilLanguageManager.GetLoc("Test")))
             {
                 texprop.textureValue = GradientToTexture(ingrad, setLinear);
             }
-            if(GUILayout.Button("Save"))
+            if(GUILayout.Button(lilLanguageManager.GetLoc("Save")))
             {
                 var tex = GradientToTexture(ingrad, setLinear);
                 tex = SaveTextureToPng(material, tex, texprop.name);
@@ -67,11 +67,11 @@ namespace lilToon
             GradientToMaterial(material, emissionName, ingrad);
             GUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 16);
-            if(GUILayout.Button("Test"))
+            if(GUILayout.Button(lilLanguageManager.GetLoc("Test")))
             {
                 texprop.textureValue = GradientToTexture(ingrad, setLinear);
             }
-            if(GUILayout.Button("Save"))
+            if(GUILayout.Button(lilLanguageManager.GetLoc("Save")))
             {
                 var tex = GradientToTexture(ingrad, setLinear);
                 tex = SaveTextureToPng(material, tex, texprop.name);

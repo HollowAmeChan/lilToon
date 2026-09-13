@@ -31,8 +31,8 @@ namespace lilToon
                         EditorGUI.BeginDisabledGroup(true);
                         EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl, customToggleFont);
                         EditorGUI.EndDisabledGroup();
-                        EditorGUILayout.HelpBox("Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline.", MessageType.Info);
-                        if(lilEditorGUI.Button("Select Parent Material"))
+                        EditorGUILayout.HelpBox(GetLoc("Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."), MessageType.Info);
+                        if(lilEditorGUI.Button(GetLoc("Select Parent Material")))
                         {
                             Selection.activeObject = material.parent;
                         }
@@ -70,8 +70,8 @@ namespace lilToon
                         float max = lilEditorGUI.GetRemapMaxValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
                         EditorGUI.BeginChangeCheck();
                         EditorGUI.showMixedValue = alphaMaskScale.hasMixedValue || alphaMaskValue.hasMixedValue;
-                        min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : "Min", min, -0.01f, 1.01f);
-                        max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : "Max", max, -0.01f, 1.01f);
+                        min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Min"), min, -0.01f, 1.01f);
+                        max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Max"), max, -0.01f, 1.01f);
                         EditorGUI.showMixedValue = false;
                         if(EditorGUI.EndChangeCheck())
                         {
@@ -184,7 +184,7 @@ namespace lilToon
             DrawMenuButton(GetLoc("sAnchorStencil"), PropertyBlock.Stencil);
             if(edSet.isShowStencil)
             {
-                if(lilEditorGUI.Button("Reset"))
+                if(lilEditorGUI.Button(GetLoc("sReset")))
                 {
                     isStWr = false;
                     stencilRef.floatValue = 0;

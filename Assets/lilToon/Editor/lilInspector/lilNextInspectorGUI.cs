@@ -319,8 +319,8 @@ namespace lilToon
                     float max = lilEditorGUI.GetRemapMaxValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
                     EditorGUI.BeginChangeCheck();
                     EditorGUI.showMixedValue = outlineLitScale.hasMixedValue || outlineLitOffset.hasMixedValue;
-                    min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : "Min", min, -0.01f, 1.01f);
-                    max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : "Max", max, -0.01f, 1.01f);
+                    min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Min"), min, -0.01f, 1.01f);
+                    max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Max"), max, -0.01f, 1.01f);
                     EditorGUI.showMixedValue = false;
                     if(EditorGUI.EndChangeCheck())
                     {
@@ -724,8 +724,8 @@ namespace lilToon
                 float transparency = alphaMaskValue.floatValue - (invertAlphaMask ? 1f : 0f);
                 EditorGUI.BeginChangeCheck();
                 EditorGUI.showMixedValue = alphaMaskScale.hasMixedValue || alphaMaskValue.hasMixedValue;
-                invertAlphaMask = lilEditorGUI.Toggle(Event.current.alt ? alphaMaskScale.name : "Invert", invertAlphaMask);
-                transparency = lilEditorGUI.Slider(Event.current.alt ? alphaMaskScale.name + ", " + alphaMaskValue.name : "Transparency", transparency, -1f, 1f);
+                invertAlphaMask = lilEditorGUI.Toggle(Event.current.alt ? alphaMaskScale.name : GetLoc("Invert"), invertAlphaMask);
+                transparency = lilEditorGUI.Slider(Event.current.alt ? alphaMaskScale.name + ", " + alphaMaskValue.name : GetLoc("Transparency"), transparency, -1f, 1f);
                 EditorGUI.showMixedValue = false;
                 if(EditorGUI.EndChangeCheck())
                 {
@@ -733,7 +733,7 @@ namespace lilToon
                     alphaMaskValue.floatValue = transparency + (invertAlphaMask ? 1f : 0f);
                 }
                 LocalizedProperty(cutoff);
-                edSet.isAlphaMaskModeAdvanced = EditorGUILayout.Toggle("Show advanced editor", edSet.isAlphaMaskModeAdvanced);
+                edSet.isAlphaMaskModeAdvanced = EditorGUILayout.Toggle(GetLoc("Show advanced editor"), edSet.isAlphaMaskModeAdvanced);
                 if(edSet.isAlphaMaskModeAdvanced)
                 {
                     EditorGUI.indentLevel++;
@@ -1415,15 +1415,15 @@ namespace lilToon
 
             int outlineStencilMode = -1;
             EditorGUI.BeginChangeCheck();
-            if(transparentModeBuf == TransparentMode.TwoPass)   stencilMode = lilEditorGUI.Popup("Mode", stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert"), GetLoc("sStencilModeReaderFade")});
-            else                                                stencilMode = lilEditorGUI.Popup("Mode", stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
+            if(transparentModeBuf == TransparentMode.TwoPass)   stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert"), GetLoc("sStencilModeReaderFade")});
+            else                                                stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
             if(isOutl)
             {
                 if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 0; // Normal
                 if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Replace) outlineStencilMode = 1; // Writer
                 if(outlineStencilComp.floatValue == (float)CompareFunction.NotEqual   && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 2; // Reader
                 if(outlineStencilComp.floatValue == (float)CompareFunction.Equal      && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 3; // Reader (Invert)
-                outlineStencilMode = lilEditorGUI.Popup("Mode (" + GetLoc("sOutline") + ")", outlineStencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
+                outlineStencilMode = lilEditorGUI.Popup(GetLoc("Mode") + " (" + GetLoc("sOutline") + ")", outlineStencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
             }
             if(EditorGUI.EndChangeCheck())
             {
@@ -1530,7 +1530,7 @@ namespace lilToon
             lilEditorGUI.DrawLine();
             if(isFakeShadow)
             {
-                if(lilEditorGUI.Button("Set Writer"))
+                if(lilEditorGUI.Button(GetLoc("Set Writer")))
                 {
                     isStWr = true;
                     stencilRef.floatValue = 51;
@@ -1543,7 +1543,7 @@ namespace lilToon
                     material.renderQueue = material.shader.renderQueue - 1;
                     if(renderingModeBuf == RenderingMode.Opaque) material.renderQueue += 450;
                 }
-                if(lilEditorGUI.Button("Set Reader"))
+                if(lilEditorGUI.Button(GetLoc("Set Reader")))
                 {
                     isStWr = false;
                     stencilRef.floatValue = 51;
@@ -1557,7 +1557,7 @@ namespace lilToon
                     if(renderingModeBuf == RenderingMode.Opaque) material.renderQueue += 450;
                 }
             }
-            if(lilEditorGUI.Button("Reset"))
+            if(lilEditorGUI.Button(GetLoc("sReset")))
             {
                 isStWr = false;
                 stencilRef.floatValue = 0f;

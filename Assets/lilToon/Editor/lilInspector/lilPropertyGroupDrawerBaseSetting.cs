@@ -24,7 +24,7 @@ namespace lilToon
                 if(isLite)  lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeListLite);
                 else        lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeList);
                 EditorGUI.EndDisabledGroup();
-                EditorGUILayout.HelpBox("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders.", MessageType.Info);
+                EditorGUILayout.HelpBox(GetLoc("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."), MessageType.Info);
             }
             else if(isMultiVariants)
             {
@@ -323,15 +323,15 @@ namespace lilToon
                     int outlineStencilMode = -1;
 
                     EditorGUI.BeginChangeCheck();
-                    if(transparentModeBuf == TransparentMode.TwoPass)   stencilMode = lilEditorGUI.Popup("Mode", stencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert"),GetLoc("sStencilModeReaderFade")});
-                    else                                                stencilMode = lilEditorGUI.Popup("Mode", stencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert")});
+                    if(transparentModeBuf == TransparentMode.TwoPass)   stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert"),GetLoc("sStencilModeReaderFade")});
+                    else                                                stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert")});
                     if(isOutl)
                     {
                         if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 0; // Normal
                         if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Replace) outlineStencilMode = 1; // Writer
                         if(outlineStencilComp.floatValue == (float)CompareFunction.NotEqual   && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 2; // Reader
                         if(outlineStencilComp.floatValue == (float)CompareFunction.Equal      && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 3; // Reader (Invert)
-                        outlineStencilMode = lilEditorGUI.Popup("Mode (" + GetLoc("sOutline") + ")", outlineStencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert")});
+                        outlineStencilMode = lilEditorGUI.Popup(GetLoc("Mode") + " (" + GetLoc("sOutline") + ")", outlineStencilMode, new[]{GetLoc("sStencilModeNormal"),GetLoc("sStencilModeWriter"),GetLoc("sStencilModeReader"),GetLoc("sStencilModeReaderInvert")});
                     }
                     if(EditorGUI.EndChangeCheck())
                     {

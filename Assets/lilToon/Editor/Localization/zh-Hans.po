@@ -2057,3 +2057,102 @@ msgstr "MetadataBuffer 自定义 3"
 
 msgid "MetadataBuffer Custom 3 Color"
 msgstr "MetadataBuffer 自定义 3 颜色"
+
+msgid "Test"
+msgstr "测试"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Set Writer"
+msgstr "设为写入端"
+
+msgid "Set Reader"
+msgstr "设为读取端"
+
+msgid "Invert"
+msgstr "反转"
+
+msgid "Transparency"
+msgstr "透明度"
+
+msgid "Show advanced editor"
+msgstr "显示高级编辑器"
+
+msgid "Min"
+msgstr "最小"
+
+msgid "Max"
+msgstr "最大"
+
+msgid "Parent"
+msgstr "父材质"
+
+msgid "Select Parent Material"
+msgstr "选择父材质"
+
+msgid "This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant."
+msgstr "该材质从父材质继承着色器和着色器切换模式。在此处编辑贴图、颜色和数值属性，会在本变体上创建覆盖值。"
+
+msgid "Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."
+msgstr "材质变体从父材质继承渲染模式，因为 lilToon 是通过切换着色器来改变渲染模式的。"
+
+msgid "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
+msgstr "材质变体从父材质继承着色器。要开启或关闭轮廓，请修改父材质。"
+
+msgid "Optimize in NDMF (Apply on Play)"
+msgstr "在 NDMF 中优化 (播放时应用)"
+
+msgid "Migrate materials in startup"
+msgstr "启动时迁移材质"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "Face"
+msgstr "脸"
+
+msgid "Skin"
+msgstr "皮肤"
+
+msgid "Hair"
+msgstr "头发"
+
+msgid "Cloth"
+msgstr "布料"
+
+msgid "Main"
+msgstr "主 Pass"
+
+msgid "Transparent backface"
+msgstr "透明背面"
+
+msgid "Fur Pre"
+msgstr "毛发 PrePass"
+
+msgid "Gem Pre"
+msgstr "宝石 PrePass"
+
+msgid "Select All"
+msgstr "全选"
+
+msgid "Deselect All"
+msgstr "取消全选"
+
+msgid "Render Queue"
+msgstr "渲染队列"
+
+msgid "Ho Presets"
+msgstr "Ho 预设"
+
+msgid "Export Shader"
+msgstr "导出 Shader"
+
+msgid "Normal map import type is not Normal Map."
+msgstr "法线贴图的导入类型不是 Normal Map。"
+
+msgid "Main texture alpha-is-transparency is disabled."
+msgstr "主贴图的 Alpha Is Transparency 未启用。"
+
+msgid "UV Preset"
+msgstr "UV 预设"

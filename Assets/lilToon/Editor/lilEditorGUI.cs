@@ -824,7 +824,7 @@ namespace lilToon
                 LocalizedProperty(m_MaterialEditor, perspective);
                 LocalizedProperty(m_MaterialEditor, vrParallaxStrength);
 
-                var buttons = Buttons("UV Preset", "MatCap", "AngelRing");
+                var buttons = Buttons(GetLoc("UV Preset"), "MatCap", "AngelRing");
                 if(buttons[0]) ApplyMatCapUVPreset(false, blendUV1, zRotCancel, perspective, vrParallaxStrength);
                 if(buttons[1]) ApplyMatCapUVPreset(true, blendUV1, zRotCancel, perspective, vrParallaxStrength);
                 EditorGUI.indentLevel--;

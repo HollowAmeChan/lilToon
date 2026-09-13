@@ -193,7 +193,7 @@ public class lilToonPreset : ScriptableObject
                                     GetLoc("sPresetCategoryInorganic"),
                                     GetLoc("sPresetCategoryEffect"),
                                     GetLoc("sPresetCategoryOther"),
-                                    "Ho Presets" };
+                                    GetLoc("Ho Presets") };
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             var material = (Material)Selection.activeObject;
@@ -245,20 +245,20 @@ public class lilToonPreset : ScriptableObject
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 shouldSaveRenderingMode             = EditorGUILayout.ToggleLeft(GetLoc("sRenderingMode"), shouldSaveRenderingMode);
-                shouldSaveQueue                     = EditorGUILayout.ToggleLeft("Render Queue", shouldSaveQueue);
+                shouldSaveQueue                     = EditorGUILayout.ToggleLeft(GetLoc("Render Queue"), shouldSaveQueue);
                 shouldSaveMainTex2Outline           = EditorGUILayout.ToggleLeft(GetLoc("sPresetMainTex2Outline"), shouldSaveMainTex2Outline);
 
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
-                if(GUILayout.Button("Select All")) ToggleAllFeatures(true);
-                if(GUILayout.Button("Deselect All")) ToggleAllFeatures(false);
+                if(GUILayout.Button(GetLoc("Select All"))) ToggleAllFeatures(true);
+                if(GUILayout.Button(GetLoc("Deselect All"))) ToggleAllFeatures(false);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.LabelField(GetLoc("sBaseSetting"), EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
                 shouldSaveBase                      = EditorGUILayout.ToggleLeft(GetLoc("sBaseSetting"), shouldSaveBase);
                 shouldSaveLighting                  = EditorGUILayout.ToggleLeft(GetLoc("sLightingSettings"), shouldSaveLighting);
-                shouldSaveGIAO                      = EditorGUILayout.ToggleLeft("GI / AO", shouldSaveGIAO);
+                shouldSaveGIAO                      = EditorGUILayout.ToggleLeft(GetLoc("GI / AO"), shouldSaveGIAO);
                 shouldSaveUV                        = EditorGUILayout.ToggleLeft(GetLoc("sMainUV"), shouldSaveUV);
                 EditorGUI.indentLevel--;
 
@@ -278,7 +278,7 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveNormalMap                 = EditorGUILayout.ToggleLeft(GetLoc("sNormalMap"), shouldSaveNormalMap);
                 shouldSaveNormalMap2nd              = EditorGUILayout.ToggleLeft(GetLoc("sNormalMap2nd"), shouldSaveNormalMap2nd);
                 shouldSaveAnisotropy                = EditorGUILayout.ToggleLeft(GetLoc("sAnisotropy"), shouldSaveAnisotropy);
-                shouldSaveRimShade                  = EditorGUILayout.ToggleLeft(GetLoc("sRimShade"), shouldSaveRimShade);
+                shouldSaveRimShade                  = EditorGUILayout.ToggleLeft(GetLoc("sRimShadeSetting"), shouldSaveRimShade);
                 shouldSaveBacklight                 = EditorGUILayout.ToggleLeft(GetLoc("sBacklight"), shouldSaveBacklight);
                 shouldSaveSSS                       = EditorGUILayout.ToggleLeft(GetLoc("SSS"), shouldSaveSSS);
                 shouldSaveReflection                = EditorGUILayout.ToggleLeft(GetLoc("sReflection"), shouldSaveReflection);
@@ -324,8 +324,8 @@ public class lilToonPreset : ScriptableObject
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.BeginHorizontal();
-                if(GUILayout.Button("Select All")) ToggleAllTextures(material, true);
-                if(GUILayout.Button("Deselect All")) ToggleAllTextures(material, false);
+                if(GUILayout.Button(GetLoc("Select All"))) ToggleAllTextures(material, true);
+                if(GUILayout.Button(GetLoc("Deselect All"))) ToggleAllTextures(material, false);
                 EditorGUILayout.EndHorizontal();
 
                 int propCount = material.shader.GetPropertyCount();
@@ -348,7 +348,7 @@ public class lilToonPreset : ScriptableObject
             }
 
             EditorGUILayout.Space();
-            if(GUILayout.Button("Save"))
+            if(GUILayout.Button(GetLoc("Save")))
             {
                 // Preset Name
                 for(int i = 0; i < langName.Length; i++)

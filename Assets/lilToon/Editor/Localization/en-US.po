@@ -2057,3 +2057,102 @@ msgstr "MetadataBuffer Custom 3"
 
 msgid "MetadataBuffer Custom 3 Color"
 msgstr "MetadataBuffer Custom 3 Color"
+
+msgid "Test"
+msgstr "Test"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Set Writer"
+msgstr "Set Writer"
+
+msgid "Set Reader"
+msgstr "Set Reader"
+
+msgid "Invert"
+msgstr "Invert"
+
+msgid "Transparency"
+msgstr "Transparency"
+
+msgid "Show advanced editor"
+msgstr "Show advanced editor"
+
+msgid "Min"
+msgstr "Min"
+
+msgid "Max"
+msgstr "Max"
+
+msgid "Parent"
+msgstr "Parent"
+
+msgid "Select Parent Material"
+msgstr "Select Parent Material"
+
+msgid "This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant."
+msgstr "This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant."
+
+msgid "Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."
+msgstr "Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."
+
+msgid "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
+msgstr "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
+
+msgid "Optimize in NDMF (Apply on Play)"
+msgstr "Optimize in NDMF (Apply on Play)"
+
+msgid "Migrate materials in startup"
+msgstr "Migrate materials in startup"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Face"
+msgstr "Face"
+
+msgid "Skin"
+msgstr "Skin"
+
+msgid "Hair"
+msgstr "Hair"
+
+msgid "Cloth"
+msgstr "Cloth"
+
+msgid "Main"
+msgstr "Main"
+
+msgid "Transparent backface"
+msgstr "Transparent backface"
+
+msgid "Fur Pre"
+msgstr "Fur Pre"
+
+msgid "Gem Pre"
+msgstr "Gem Pre"
+
+msgid "Select All"
+msgstr "Select All"
+
+msgid "Deselect All"
+msgstr "Deselect All"
+
+msgid "Render Queue"
+msgstr "Render Queue"
+
+msgid "Ho Presets"
+msgstr "Ho Presets"
+
+msgid "Export Shader"
+msgstr "Export Shader"
+
+msgid "Normal map import type is not Normal Map."
+msgstr "Normal map import type is not Normal Map."
+
+msgid "Main texture alpha-is-transparency is disabled."
+msgstr "Main texture alpha-is-transparency is disabled."
+
+msgid "UV Preset"
+msgstr "UV Preset"

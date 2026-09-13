@@ -399,7 +399,7 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxInner);
                         //------------------------------------------------------------------------------------------------------------------------------
                         // Auto Setting
-                        if(lilEditorGUI.Button("Set Writer"))
+                        if(lilEditorGUI.Button(GetLoc("Set Writer")))
                         {
                             isStWr = true;
                             stencilRef.floatValue = 51;
@@ -412,7 +412,7 @@ namespace lilToon
                             material.renderQueue = material.shader.renderQueue - 1;
                             if(renderingModeBuf == RenderingMode.Opaque) material.renderQueue += 450;
                         }
-                        if(lilEditorGUI.Button("Set Reader"))
+                        if(lilEditorGUI.Button(GetLoc("Set Reader")))
                         {
                             isStWr = false;
                             stencilRef.floatValue = 51;
@@ -425,7 +425,7 @@ namespace lilToon
                             material.renderQueue = -1;
                             if(renderingModeBuf == RenderingMode.Opaque) material.renderQueue += 450;
                         }
-                        if(lilEditorGUI.Button("Reset"))
+                        if(lilEditorGUI.Button(GetLoc("sReset")))
                         {
                             isStWr = false;
                             stencilRef.floatValue = 51;

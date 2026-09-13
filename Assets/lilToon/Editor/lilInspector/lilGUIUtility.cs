@@ -92,10 +92,10 @@ namespace lilToon
             EditorGUILayout.BeginVertical(boxOuter);
             EditorGUILayout.LabelField(GetLoc("Material Variant"), EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.ObjectField("Parent", material.parent, typeof(Material), false);
+            EditorGUILayout.ObjectField(GetLoc("Parent"), material.parent, typeof(Material), false);
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.HelpBox("This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant.", MessageType.Info);
-            if(lilEditorGUI.Button("Select Parent Material"))
+            EditorGUILayout.HelpBox(GetLoc("This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant."), MessageType.Info);
+            if(lilEditorGUI.Button(GetLoc("Select Parent Material")))
             {
                 Selection.activeObject = material.parent;
             }

@@ -45,7 +45,7 @@ namespace lilToon
         {
             public override void OnInspectorGUI()
             {
-                if(GUILayout.Button("Export Shader"))
+                if(GUILayout.Button(lilLanguageManager.GetLoc("Export Shader")))
                 {
                     string assetPath = AssetDatabase.GetAssetPath(target);
                     string shaderText = lilShaderContainer.UnpackContainer(assetPath);

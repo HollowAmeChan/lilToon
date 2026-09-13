@@ -257,7 +257,6 @@ namespace lilToon
                 if(importer != null && importer.textureType != TextureImporterType.NormalMap)
                 {
                     DrawTextureImportFixRow(
-                        "法线贴图导入类型不是 Normal Map。",
                         "Normal map import type is not Normal Map.",
                         importer,
                         delegate
@@ -275,7 +274,6 @@ namespace lilToon
                 if(importer != null && !importer.alphaIsTransparency)
                 {
                     DrawTextureImportFixRow(
-                        "主贴图透明度导入设置未启用。",
                         "Main texture alpha-is-transparency is disabled.",
                         importer,
                         delegate
@@ -293,14 +291,14 @@ namespace lilToon
             return AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(texture)) as TextureImporter;
         }
 
-        private static void DrawTextureImportFixRow(string chineseMessage, string englishMessage, TextureImporter importer, Action fix)
+        private static void DrawTextureImportFixRow(string messageKey, TextureImporter importer, Action fix)
         {
-            bool chinese = lilLanguageManager.langSet.languageName.StartsWith("zh", StringComparison.OrdinalIgnoreCase);
             using(new EditorGUILayout.HorizontalScope())
             {
-                GUILayout.Label(chinese ? chineseMessage : englishMessage, EditorStyles.miniLabel, GUILayout.ExpandWidth(true));
-                GUIContent fixContent = EditorGUIUtility.IconContent("Refresh", chinese ? chineseMessage : englishMessage);
-                if(fixContent == null || fixContent.image == null) fixContent = new GUIContent(GetLoc("Fix"), chinese ? chineseMessage : englishMessage);
+                string message = GetLoc(messageKey);
+                GUILayout.Label(message, EditorStyles.miniLabel, GUILayout.ExpandWidth(true));
+                GUIContent fixContent = EditorGUIUtility.IconContent("Refresh", message);
+                if(fixContent == null || fixContent.image == null) fixContent = new GUIContent(GetLoc("Fix"), message);
                 if(GUILayout.Button(fixContent, textureSearchNextActionStyle, GUILayout.Width(24f), GUILayout.Height(EditorGUIUtility.singleLineHeight + 2f)))
                 {
                     fix();

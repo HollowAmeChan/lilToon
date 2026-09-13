@@ -65,8 +65,8 @@ namespace lilToon
 
                     EditorGUI.BeginChangeCheck();
                     EditorGUI.showMixedValue = alphaMaskScale.hasMixedValue || alphaMaskValue.hasMixedValue;
-                    invertAlphaMask = lilEditorGUI.Toggle(Event.current.alt ? alphaMaskScale.name : "Invert", invertAlphaMask);
-                    transparency = lilEditorGUI.Slider(Event.current.alt ? alphaMaskScale.name + ", " + alphaMaskValue.name : "Transparency", transparency, -1.0f, 1.0f);
+                    invertAlphaMask = lilEditorGUI.Toggle(Event.current.alt ? alphaMaskScale.name : GetLoc("Invert"), invertAlphaMask);
+                    transparency = lilEditorGUI.Slider(Event.current.alt ? alphaMaskScale.name + ", " + alphaMaskValue.name : GetLoc("Transparency"), transparency, -1.0f, 1.0f);
                     EditorGUI.showMixedValue = false;
 
                     if(EditorGUI.EndChangeCheck())
@@ -76,7 +76,7 @@ namespace lilToon
                     }
                     LocalizedProperty(cutoff);
 
-                    edSet.isAlphaMaskModeAdvanced = EditorGUILayout.Toggle("Show advanced editor", edSet.isAlphaMaskModeAdvanced);
+                    edSet.isAlphaMaskModeAdvanced = EditorGUILayout.Toggle(GetLoc("Show advanced editor"), edSet.isAlphaMaskModeAdvanced);
                     if(edSet.isAlphaMaskModeAdvanced)
                     {
                         EditorGUI.indentLevel++;
