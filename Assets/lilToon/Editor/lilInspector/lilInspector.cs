@@ -160,10 +160,10 @@ namespace lilToon
             private Material material;
             private MaterialProperty[] props;
 
-            [MenuItem("Window/_lil/[Beta] lilToon Multi-Editor")]
+            [MenuItem("Window/_lil/[测试版] lilToon 多材质编辑器")]
             static void Init()
             {
-                var window = (lilMaterialEditor)GetWindow(typeof(lilMaterialEditor), false, "[Beta] lilToon Multi-Editor");
+                var window = (lilMaterialEditor)GetWindow(typeof(lilMaterialEditor), false, "[测试版] lilToon 多材质编辑器");
                 window.Show();
             }
 

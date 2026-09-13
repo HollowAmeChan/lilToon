@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Rendering;
@@ -20,36 +20,41 @@ namespace lilToon
         #pragma warning disable CS0612
         //------------------------------------------------------------------------------------------------------------------------------
         // Constant
-        private const string menuPathAssets                 = "Assets/lilToon/";
+        // lilToon 的编辑器功能统一挂在与 Assets 平级的顶层菜单 HoLil 下（原先挂在 Assets/lilToon/ 内）。
+        // MenuItem 的路径必须是编译期常量，走不了 L10n/.po，所以这里的中文文案只能写死；
+        // 折叠栏、属性、面板文案仍然走本地化表（见 Editor/Localization/*.po）。
+        private const string menuPathRoot                   = "HoLil/";
         private const string menuPathGameObject             = "GameObject/lilToon/";
-        private const string menuPathRefreshShaders         = menuPathAssets + "[Shader] Refresh shaders";
-        private const string menuPathRemoveUnusedProperties = menuPathAssets + "[Material] Remove unused properties";
-        private const string menuPathRunMigration           = menuPathAssets + "[Material] Run migration";
-        private const string menuPathConvertNormal          = menuPathAssets + "[Texture] Convert normal map (DirectX <-> OpenGL)";
-        private const string menuPathPixelArtReduction      = menuPathAssets + "[Texture] Pixel art reduction";
-        private const string menuPathConvertGifToAtlas      = menuPathAssets + "[Texture] Convert Gif to Atlas";
-        private const string menuPathConvertLUTToPNG        = menuPathAssets + "[Texture] Convert LUT to PNG";
-        private const string menuPathGenerateRamp           = menuPathAssets + "[Texture] Generate Ramp";
-        private const string menuPathSetupFromFBX           = menuPathAssets + "[Model] Setup from FBX";
-        private const string menuPathFixLighting            = menuPathGameObject + "[GameObject] Fix lighting";
+        private const string menuPathRefreshShaders         = menuPathRoot + "[着色器] 刷新着色器";
+        private const string menuPathRemoveUnusedProperties = menuPathRoot + "[材质] 移除未使用的属性";
+        private const string menuPathRunMigration           = menuPathRoot + "[材质] 运行迁移";
+        private const string menuPathConvertNormal          = menuPathRoot + "[贴图] 转换法线贴图 (DirectX <-> OpenGL)";
+        private const string menuPathPixelArtReduction      = menuPathRoot + "[贴图] 像素画降采样";
+        private const string menuPathConvertGifToAtlas      = menuPathRoot + "[贴图] GIF 转图集";
+        private const string menuPathConvertLUTToPNG        = menuPathRoot + "[贴图] LUT 转 PNG";
+        private const string menuPathGenerateRamp           = menuPathRoot + "[贴图] 生成 Ramp";
+        private const string menuPathSetupFromFBX           = menuPathRoot + "[模型] 从 FBX 初始化材质";
+        private const string menuPathFixLighting            = menuPathGameObject + "[GameObject] 修正光照";
+        private const string menuPathGenerateBugReport      = menuPathGameObject + "[调试] 生成问题报告";
 
-        private const int menuPriorityAssets = 1100;
+        private const int menuPriorityRoot = 1100;
         private const int menuPriorityGameObject = 21; // This must be 21 or less
-        private const int menuPriorityRefreshShaders            = menuPriorityAssets + 0;
-        private const int menuPriorityRemoveUnusedProperties    = menuPriorityAssets + 20;
-        private const int menuPriorityRunMigration              = menuPriorityAssets + 21;
-        private const int menuPriorityConvertNormal             = menuPriorityAssets + 22;
-        private const int menuPriorityPixelArtReduction         = menuPriorityAssets + 23;
-        private const int menuPriorityConvertGifToAtlas         = menuPriorityAssets + 24;
-        private const int menuPriorityConvertLUTToPNG           = menuPriorityAssets + 25;
-        private const int menuPriorityGenerateRamp              = menuPriorityAssets + 26;
-        private const int menuPrioritySetupFromFBX              = menuPriorityAssets + 27;
+        private const int menuPriorityRefreshShaders            = menuPriorityRoot + 0;
+        private const int menuPriorityRemoveUnusedProperties    = menuPriorityRoot + 20;
+        private const int menuPriorityRunMigration              = menuPriorityRoot + 21;
+        private const int menuPriorityConvertNormal             = menuPriorityRoot + 22;
+        private const int menuPriorityPixelArtReduction         = menuPriorityRoot + 23;
+        private const int menuPriorityConvertGifToAtlas         = menuPriorityRoot + 24;
+        private const int menuPriorityConvertLUTToPNG           = menuPriorityRoot + 25;
+        private const int menuPriorityGenerateRamp              = menuPriorityRoot + 26;
+        private const int menuPrioritySetupFromFBX              = menuPriorityRoot + 27;
         private const int menuPriorityFixLighting               = menuPriorityGameObject;
+        private const int menuPriorityGenerateBugReport         = menuPriorityGameObject + 1;
 
         private const string anchorName = "AutoAnchorObject";
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Refresh shaders
+        // HoLil/[着色器] 刷新着色器
         [MenuItem(menuPathRefreshShaders, false, menuPriorityRefreshShaders)]
         private static void RefreshShaders()
         {
@@ -74,7 +79,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Remove unused properties
+        // HoLil/[材质] 移除未使用的属性
         [MenuItem(menuPathRemoveUnusedProperties, false, menuPriorityRemoveUnusedProperties)]
         private static void RemoveUnusedProperties()
         {
@@ -93,7 +98,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Run migration
+        // HoLil/[材质] 运行迁移
         [MenuItem(menuPathRunMigration, false, menuPriorityRunMigration)]
         private static void RunMigration()
         {
@@ -102,7 +107,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Convert normal map (DirectX <-> OpenGL)
+        // HoLil/[贴图] 转换法线贴图 (DirectX <-> OpenGL)
         [MenuItem(menuPathConvertNormal, false, menuPriorityConvertNormal)]
         private static void ConvertNormal()
         {
@@ -131,7 +136,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Convert Gif to Atlas
+        // HoLil/[贴图] GIF 转图集
         #if SYSTEM_DRAWING
             // Gif to Atlas
             [MenuItem(menuPathConvertGifToAtlas, false, menuPriorityConvertGifToAtlas)]
@@ -148,7 +153,7 @@ namespace lilToon
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Convert LUT to PNG
+        // HoLil/[贴图] LUT 转 PNG
         [MenuItem(menuPathConvertLUTToPNG, false, menuPriorityConvertLUTToPNG)]
         private static void ConvertLUTToPNG()
         {
@@ -165,7 +170,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Generate Ramp
+        // HoLil/[贴图] 生成 Ramp
         [MenuItem(menuPathGenerateRamp, false, menuPriorityGenerateRamp)]
         private static void GenerateRamp()
         {
@@ -183,7 +188,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Dot texture reduction
+        // HoLil/[贴图] 像素画降采样
         [MenuItem(menuPathPixelArtReduction, false, menuPriorityPixelArtReduction)]
         private static void PixelArtReduction()
         {
@@ -232,7 +237,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Assets/lilToon/Setup from FBX
+        // HoLil/[模型] 从 FBX 初始化材质
         [MenuItem(menuPathSetupFromFBX, false, menuPrioritySetupFromFBX)]
         private static void SetupFromFBX()
         {
@@ -407,7 +412,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // GameObject/[lilToon] Fix lighting
+        // GameObject/lilToon/[GameObject] 修正光照
         [MenuItem(menuPathFixLighting, false, menuPriorityFixLighting)]
         private static void FixLighting()
         {
@@ -549,8 +554,8 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // Debug
-        [MenuItem("GameObject/lilToon/[Debug] Generate bug report", false, 22)]
+        // GameObject/lilToon/[调试] 生成问题报告
+        [MenuItem(menuPathGenerateBugReport, false, menuPriorityGenerateBugReport)]
         public static void GenerateBugReport()
         {
             GenerateBugReport(null, null, null);
