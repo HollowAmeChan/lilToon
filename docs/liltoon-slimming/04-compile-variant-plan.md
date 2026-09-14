@@ -234,6 +234,25 @@ P7：清 `lilShaderContainerImporter` 中老 URP / LWRP LightMode 兼容、Forwa
 
 P8：清 shared HLSL include 中的 `LIL_BRP` / `LIL_HDRP` / `LIL_LWRP` 条件分支。
 
+P8（已执行）：15 个 include 共 89 处命中清理完毕，`Assets/lilToon` 全仓库残留归零。
+
+- `lil_common_macro.hlsl`：删除 Lighting 段的 BRP / HDRP / URP 三路分支里的前两路
+  （859 行），只保留原 `#else`（URP）内容并反缩进；另清理 Transform 段的 BRP 实现
+  （107 行）、Stereo、`lilIsPerspective`、`lilViewDirectionOS`、`LIL_TRANSFER_METAPASS`
+  条件、`LIL_INDLIGHTCOLOR_COORDS`、`LIL_CALC_MAINLIGHT`、`LIL_GET_MAINLIGHT`、
+  `LIL_GET_ADDITIONALLIGHT`、`LIL_CALC_VERTEXLIGHT`、`LIL_GET_LIGHTING_DATA` 等分支
+- 一并拆除只服务于这两条死路径的辅助宏：`LIL_HDRP_DEEXPOSURE` /
+  `LIL_HDRP_INVDEEXPOSURE` / `LIL_HDRP_IGNORE_LIGHTDIMMER` /
+  `LIL_HDRP_POSITION_INPUT_VAR` / `LIL_HDRP_POSITION_INPUT_ARGS`，及其在
+  `lil_pass_forward_{fur,gem,lite,normal,fakeshadow}.hlsl` 的调用点
+- 其余 14 个 include（`lil_common_input*`、`lil_common_vert*`、`lil_pass_*`）按同规则清理
+- 验证：全仓库 `rg "LIL_BRP|LIL_HDRP|LIL_LWRP" Assets/lilToon` 命中 **0**；
+  30 个 include 的 `#if / #endif` 配平检查全部通过（final = 0，min ≥ 0）
+
+注意：P8 **只删死代码，对编译时间没有影响** —— 死 `#if` 在预处理阶段就被丢弃。
+变体数量的真实收益来自 Lite / Multi 的 lightmap skip，属于独立改动，不记在此计划内。
+
+
 ## 度量指标
 
 每轮改动都记录：

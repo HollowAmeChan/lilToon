@@ -5,18 +5,6 @@
 #include "lil_common.hlsl"
 #include "lil_common_appdata.hlsl"
 
-#if defined(LIL_HDRP)
-    CBUFFER_START(UnityMetaPass)
-        bool4 unity_MetaVertexControl;
-        bool4 unity_MetaFragmentControl;
-        int unity_VisualizationMode;
-    CBUFFER_END
-
-    float unity_OneOverOutputBoost;
-    float unity_MaxOutputValue;
-    float unity_UseLinearSpace;
-#endif
-
 //------------------------------------------------------------------------------------------------------------------------------
 // Structure
 #if !defined(LIL_CUSTOM_V2F_MEMBER)
@@ -34,7 +22,7 @@ struct v2f
     float4 positionCS   : SV_POSITION;
     float4 uv01         : TEXCOORD0;
     float4 uv23         : TEXCOORD1;
-    #if defined(EDITOR_VISUALIZATION) && !defined(LIL_HDRP)
+    #if defined(EDITOR_VISUALIZATION)
         float2 vizUV        : TEXCOORD2;
         float4 lightCoord   : TEXCOORD3;
     #endif
@@ -84,21 +72,16 @@ float4 frag(v2f input) : SV_Target
     BEFORE_BLEND_EMISSION
     OVERRIDE_BLEND_EMISSION
 
-    #if defined(LIL_HDRP)
-        if(!unity_MetaFragmentControl.y) fd.col.rgb = clamp(pow(abs(fd.albedo), saturate(unity_OneOverOutputBoost)), 0, unity_MaxOutputValue);
-        return fd.col;
-    #else
-        MetaInput metaInput;
-        LIL_INITIALIZE_STRUCT(MetaInput, metaInput);
-        metaInput.Albedo = abs(fd.albedo);
-        metaInput.Emission = fd.col.rgb;
-        #ifdef EDITOR_VISUALIZATION
-            metaInput.VizUV = input.vizUV;
-            metaInput.LightCoord = input.lightCoord;
-        #endif
-
-        return MetaFragment(metaInput);
+    MetaInput metaInput;
+    LIL_INITIALIZE_STRUCT(MetaInput, metaInput);
+    metaInput.Albedo = abs(fd.albedo);
+    metaInput.Emission = fd.col.rgb;
+    #ifdef EDITOR_VISUALIZATION
+        metaInput.VizUV = input.vizUV;
+        metaInput.LightCoord = input.lightCoord;
     #endif
+
+    return MetaFragment(metaInput);
 }
 
 #endif

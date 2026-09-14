@@ -197,19 +197,13 @@
 #endif
 
 #if defined(LIL_V2F_POSITION_CS)
-    #if defined(UNITY_SINGLE_PASS_STEREO) && !(defined(LIL_BRP) && !defined(LIL_LWTEX) && defined(LIL_REFRACTION))
+    #if defined(UNITY_SINGLE_PASS_STEREO)
         #define LIL_SCREEN_UV_STEREO_FIX(i,o) o.uvScn.x *= 0.5;
     #else
         #define LIL_SCREEN_UV_STEREO_FIX(i,o)
     #endif
 
-    #if defined(LIL_BRP) && !defined(LIL_LWTEX) && defined(LIL_REFRACTION) && defined(LIL_REFRACTION_BLUR2)
-        #define LIL_RES_XY lilGetWidthAndHeight(_GrabTexture)
-    #elif defined(LIL_BRP) && !defined(LIL_LWTEX) && defined(LIL_REFRACTION)
-        #define LIL_RES_XY lilGetWidthAndHeight(_lilBackgroundTexture)
-    #else
-        #define LIL_RES_XY (LIL_SCREENPARAMS.xy)
-    #endif
+    #define LIL_RES_XY (LIL_SCREENPARAMS.xy)
 
     #define LIL_UNPACK_POSITION_CS(i,o) \
         o.positionCS = i.positionCS; \
@@ -220,14 +214,10 @@
     #define LIL_UNPACK_POSITION_CS(i,o)
 #endif
 
-#if defined(LIL_V2F_LIGHTDIRECTION) && !defined(LIL_HDRP)
+#if defined(LIL_V2F_LIGHTDIRECTION)
     #define LIL_UNPACK_LIGHT_DIRECTION(i,o) \
         fd.L = input.lightDirection; \
         fd.origL = LIL_MAINLIGHT_DIRECTION;
-#elif defined(LIL_V2F_LIGHTDIRECTION)
-    #define LIL_UNPACK_LIGHT_DIRECTION(i,o) \
-        fd.L = input.lightDirection; \
-        fd.origL = input.lightDirection;
 #else
     #define LIL_UNPACK_LIGHT_DIRECTION(i,o)
 #endif
@@ -1313,21 +1303,8 @@
     {
         float2 refractUV = fd.uvScn + (pow(1.0 - fd.nv, _RefractionFresnelPower) * _RefractionStrength) * mul((float3x3)LIL_MATRIX_V, fd.N).xy;
         #if defined(LIL_REFRACTION_BLUR2)
-            #if defined(LIL_BRP)
-                float3 refractCol = 0;
-                float sum = 0;
-                float blurOffset = fd.perceptualRoughness / sqrt(fd.positionSS.w) * (0.03 / LIL_REFRACTION_SAMPNUM) * LIL_MATRIX_P._m11;
-                for(int j = -16; j <= 16; j++)
-                {
-                    refractCol += LIL_GET_GRAB_TEX(refractUV + float2(0,j*blurOffset), 0).rgb * LIL_REFRACTION_GAUSDIST(j);
-                    sum += LIL_REFRACTION_GAUSDIST(j);
-                }
-                refractCol /= sum;
-                refractCol *= _RefractionColor.rgb;
-            #else
-                float refractLod = min(sqrt(fd.perceptualRoughness / sqrt(fd.positionSS.w) * 5.0), 10);
-                float3 refractCol = LIL_GET_GRAB_TEX(refractUV, refractLod).rgb * _RefractionColor.rgb;
-            #endif
+            float refractLod = min(sqrt(fd.perceptualRoughness / sqrt(fd.positionSS.w) * 5.0), 10);
+            float3 refractCol = LIL_GET_GRAB_TEX(refractUV, refractLod).rgb * _RefractionColor.rgb;
         #else
             float3 refractCol = LIL_GET_BG_TEX(refractUV,0).rgb * _RefractionColor.rgb;
         #endif
@@ -1343,13 +1320,6 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Reflection
-#if defined(LIL_HDRP)
-    #define LIL_HDRP_POSITION_INPUT_VAR , posInput
-    #define LIL_HDRP_POSITION_INPUT_ARGS , PositionInputs posInput
-#else
-    #define LIL_HDRP_POSITION_INPUT_VAR
-    #define LIL_HDRP_POSITION_INPUT_ARGS
-#endif
 #if defined(LIL_FEATURE_REFLECTION) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && !defined(LIL_LITE)
     float3 lilCalcSpecular(inout lilFragData fd, float3 L, float3 specular, float attenuation LIL_SAMP_IN_FUNC(samp))
     {
@@ -1457,7 +1427,7 @@
         return specularTerm * lilFresnelTerm(specular, lh);
     }
 
-    void lilReflection(inout lilFragData fd LIL_SAMP_IN_FUNC(samp) LIL_HDRP_POSITION_INPUT_ARGS)
+    void lilReflection(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         #if defined(LIL_PASS_FORWARDADD)
             if(_UseReflection && _ApplySpecular && _ApplySpecularFA)
@@ -1547,7 +1517,7 @@
 
 #if !defined(OVERRIDE_REFLECTION)
     #define OVERRIDE_REFLECTION \
-        lilReflection(fd LIL_SAMP_IN(sampler_MainTex) LIL_HDRP_POSITION_INPUT_VAR);
+        lilReflection(fd LIL_SAMP_IN(sampler_MainTex));
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

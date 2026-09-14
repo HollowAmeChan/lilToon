@@ -165,24 +165,6 @@ v2g vert(appdata input)
         output.furVector = lilTransformDirOStoWS(output.furVector, false);
         float furLength = length(output.furVector);
         output.furVector.y -= _FurGravity * furLength;
-
-        #if defined(LIL_FEATURE_FUR_COLLISION) && defined(LIL_BRP) && defined(VERTEXLIGHT_ON)
-            // Touch
-            float3 positionWS2 = output.positionWS + output.furVector;
-            float4 toLightX = unity_4LightPosX0 - positionWS2.x;
-            float4 toLightY = unity_4LightPosY0 - positionWS2.y;
-            float4 toLightZ = unity_4LightPosZ0 - positionWS2.z;
-            float4 lengthSq = toLightX * toLightX + 0.000001;
-            lengthSq += toLightY * toLightY;
-            lengthSq += toLightZ * toLightZ;
-            float4 atten = saturate(1.0 - lengthSq * unity_4LightAtten0 / 25.0) * _FurTouchStrength * furLength;
-            //float4 rangeToggle = abs(frac(sqrt(25.0 / unity_4LightAtten0) * 100.0) - 0.22);
-            float4 rangeToggle = abs(frac(sqrt(250000 / unity_4LightAtten0)) - 0.22);
-            output.furVector = rangeToggle[0] < 0.001 - unity_LightColor[0].r - unity_LightColor[0].g - unity_LightColor[0].b ? output.furVector - float3(toLightX[0], toLightY[0], toLightZ[0]) * rsqrt(lengthSq[0]) * atten[0] : output.furVector;
-            output.furVector = rangeToggle[1] < 0.001 - unity_LightColor[1].r - unity_LightColor[1].g - unity_LightColor[1].b ? output.furVector - float3(toLightX[1], toLightY[1], toLightZ[1]) * rsqrt(lengthSq[1]) * atten[1] : output.furVector;
-            output.furVector = rangeToggle[2] < 0.001 - unity_LightColor[2].r - unity_LightColor[2].g - unity_LightColor[2].b ? output.furVector - float3(toLightX[2], toLightY[2], toLightZ[2]) * rsqrt(lengthSq[2]) * atten[2] : output.furVector;
-            output.furVector = rangeToggle[3] < 0.001 - unity_LightColor[3].r - unity_LightColor[3].g - unity_LightColor[3].b ? output.furVector - float3(toLightX[3], toLightY[3], toLightZ[3]) * rsqrt(lengthSq[3]) * atten[3] : output.furVector;
-        #endif
     #endif
 
     return output;
@@ -222,7 +204,7 @@ void AppendFur(inout TriangleStream<v2f> outStream, inout v2f output, v2g input[
     #if defined(LIL_V2F_NORMAL_WS)
         output.normalWS = lilLerp3(input[0].normalWS, input[1].normalWS, input[2].normalWS, factor);
     #endif
-    #if defined(LIL_V2F_VERTEXLIGHT_FOG) && !(!defined(LIL_USE_ADDITIONALLIGHT_VS) && defined(LIL_HDRP))
+    #if defined(LIL_V2F_VERTEXLIGHT_FOG)
         output.vlf = lilLerp3(input[0].vlf, input[1].vlf, input[2].vlf, factor);
     #endif
 
@@ -317,10 +299,8 @@ void AppendFur(inout TriangleStream<v2f> outStream, inout v2f output, v2g input[
 // Geometry shader
 #if defined(LIL_ONEPASS_FUR)
     [maxvertexcount(46)]
-#elif (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)) && (defined(LIL_USE_LIGHTMAP) || defined(LIL_USE_DYNAMICLIGHTMAP) || defined(LIL_LIGHTMODE_SHADOWMASK)) || defined(LIL_FEATURE_DISTANCE_FADE) || !defined(LIL_BRP)
-    [maxvertexcount(32)]
 #else
-    [maxvertexcount(40)]
+    [maxvertexcount(32)]
 #endif
 void geom(triangle v2g input[3], inout TriangleStream<v2f> outStream)
 {

@@ -233,7 +233,7 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Meta
-    #if defined(LIL_PASS_META_INCLUDED) && !defined(LIL_HDRP)
+    #if defined(LIL_PASS_META_INCLUDED)
         LIL_TRANSFER_METAPASS(input,LIL_V2F_OUT_BASE);
         #if defined(EDITOR_VISUALIZATION)
             if (unity_VisualizationMode == EDITORVIZ_TEXTURE)

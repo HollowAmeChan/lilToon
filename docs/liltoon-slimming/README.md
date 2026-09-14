@@ -41,3 +41,6 @@
 - P6a 已执行：删除 `ID Mask` 和 `UV Tile Discard / UDIM Discard` 高级遮罩功能，已清理 property 模板、Inspector、`lilToonSetting` 自动扫描、HLSL appdata / input / function / call site、URP multi 模板和本地化文案。
 - 已同步生成后的 `Assets/lilToon/Shader/*.shader` 中对应 property / define 残留；这些文件当前仍有 `skip-worktree` 标记，默认不会显示在 `git status` 中。
 - P6b 已执行：删除 Tessellation / 表面细分功能。已清理独立 `lts_tess*` / `ltspass_tess*` shader 家族、URP tessellation subshader 模板、`lil_tessellation.hlsl`、`_Tess*` property、Inspector 切换、preset 保存项和 editor shader 引用。
+- P7 已执行（未单独补记录）：`lilShaderContainerImporter` 与 Editor 侧的老 URP / LWRP LightMode 兼容、ForwardAdd rewrite 和多管线分支已清理；当前 Editor 代码中 `BRP|LWRP|HDRP` 命中为 0。
+- P8 已执行：清 shared HLSL include 中的 `LIL_BRP` / `LIL_HDRP` / `LIL_LWRP` 条件分支。15 个 include 共 89 处命中清理完毕，全仓库残留归零，30 个 include 的 `#if/#endif` 配平检查通过。详见 `04-compile-variant-plan.md`。
+

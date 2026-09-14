@@ -281,13 +281,6 @@ float4  _AOColor;
 float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;
-#if defined(LIL_BRP)
-    float   _AlphaBoostFA;
-#endif
-#if defined(LIL_HDRP)
-    float   _BeforeExposureLimit;
-    float   _lilDirectionalLightStrength;
-#endif
 #if defined(LIL_FEATURE_MAIN_GRADATION_MAP)
     float   _MainGradationStrength;
 #endif

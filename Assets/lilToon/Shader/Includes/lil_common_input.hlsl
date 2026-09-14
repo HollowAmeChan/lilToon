@@ -17,31 +17,13 @@ SAMPLER(lil_sampler_linear_clamp);
 #define lil_sampler_trilinear_clamp     lil_sampler_linear_clamp
 #define lil_sampler_linear_repeat       lil_sampler_trilinear_repeat
 
-#if defined(LIL_BRP)
-    TEXTURE2D_SCREEN(_CameraDepthTexture);
-    TEXTURE2D_SCREEN(_lilBackgroundTexture);
-    TEXTURE2D_SCREEN(_GrabTexture);
-    float4 _lilBackgroundTexture_TexelSize;
-    #define LIL_GET_DEPTH_TEX_CS(uv) LIL_SAMPLE_SCREEN_CS(_CameraDepthTexture, lilCameraDepthTexel(uv))
-    #define LIL_TO_LINEARDEPTH(z,uv) lilLinearEyeDepth(z, uv)
-    #define LIL_GET_BG_TEX(uv,lod) max(LIL_SAMPLE_SCREEN(_lilBackgroundTexture, lil_sampler_linear_clamp, uv),0)
-    #define LIL_GET_GRAB_TEX(uv,lod) max(LIL_SAMPLE_SCREEN(_GrabTexture, lil_sampler_linear_clamp, uv),0)
-    #define LIL_ENABLED_DEPTH_TEX IsScreenTex(_CameraDepthTexture)
-#elif defined(LIL_HDRP)
-    #define LIL_GET_DEPTH_TEX_CS(uv) SampleCameraDepth(uv/LIL_SCREENPARAMS.xy)
-    #define LIL_TO_LINEARDEPTH(z,uv) LinearEyeDepth(z, _ZBufferParams)
-    #define LIL_GET_BG_TEX(uv,lod) SampleCameraColor(uv,lod)
-    #define LIL_GET_GRAB_TEX(uv,lod) SampleCameraColor(uv,lod)
-    #define LIL_ENABLED_DEPTH_TEX IsScreenTex(_CameraDepthTexture)
-#else
-    TEXTURE2D_SCREEN(_CameraDepthTexture);
-    TEXTURE2D_SCREEN(_CameraOpaqueTexture);
-    #define LIL_GET_DEPTH_TEX_CS(uv) LIL_SAMPLE_SCREEN_CS(_CameraDepthTexture, uv)
-    #define LIL_TO_LINEARDEPTH(z,uv) LinearEyeDepth(z, _ZBufferParams)
-    #define LIL_GET_BG_TEX(uv,lod) LIL_SAMPLE_SCREEN_LOD(_CameraOpaqueTexture, lil_sampler_linear_clamp, uv, lod)
-    #define LIL_GET_GRAB_TEX(uv,lod) LIL_SAMPLE_SCREEN_LOD(_CameraOpaqueTexture, lil_sampler_linear_clamp, uv, lod)
-    #define LIL_ENABLED_DEPTH_TEX IsScreenTex(_CameraDepthTexture)
-#endif
+TEXTURE2D_SCREEN(_CameraDepthTexture);
+TEXTURE2D_SCREEN(_CameraOpaqueTexture);
+#define LIL_GET_DEPTH_TEX_CS(uv) LIL_SAMPLE_SCREEN_CS(_CameraDepthTexture, uv)
+#define LIL_TO_LINEARDEPTH(z,uv) LinearEyeDepth(z, _ZBufferParams)
+#define LIL_GET_BG_TEX(uv,lod) LIL_SAMPLE_SCREEN_LOD(_CameraOpaqueTexture, lil_sampler_linear_clamp, uv, lod)
+#define LIL_GET_GRAB_TEX(uv,lod) LIL_SAMPLE_SCREEN_LOD(_CameraOpaqueTexture, lil_sampler_linear_clamp, uv, lod)
+#define LIL_ENABLED_DEPTH_TEX IsScreenTex(_CameraDepthTexture)
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Texture Exists
@@ -103,9 +85,7 @@ SAMPLER(lil_sampler_linear_clamp);
 
 #ifndef LIL_INPUT_BASE_INCLUDED
 
-#if !defined(LIL_BRP)
 CBUFFER_START(UnityPerMaterial)
-#endif
 #if defined(LIL_LITE)
     float4  _LightDirectionOverride;
     float4  _Color;
@@ -136,13 +116,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _MultiLightIntensity;
     float   _MultiLightCastShadowStrength;
     float   _AAStrength;
-    #if defined(LIL_BRP)
-        float   _AlphaBoostFA;
-    #endif
-    #if defined(LIL_HDRP)
-        float   _BeforeExposureLimit;
-        float   _lilDirectionalLightStrength;
-    #endif
     float   _BackfaceForceShadow;
     float   _ShadowBorder;
     float   _ShadowBlur;
@@ -410,13 +383,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _AAStrength;
     float   _EnvRimBorder;
     float   _EnvRimBlur;
-    #if defined(LIL_BRP)
-        float   _AlphaBoostFA;
-    #endif
-    #if defined(LIL_HDRP)
-        float   _BeforeExposureLimit;
-        float   _lilDirectionalLightStrength;
-    #endif
     #if defined(LIL_MULTI_INPUTS_MAIN_TONECORRECTION)
         float   _MainGradationStrength;
     #endif
@@ -789,9 +755,7 @@ CBUFFER_START(UnityPerMaterial)
     LIL_CUSTOM_PROPERTIES
 #endif
 
-#if !defined(LIL_BRP)
 CBUFFER_END
-#endif
 
 #endif // LIL_INPUT_BASE_INCLUDED
 

@@ -12,7 +12,7 @@
 
 #if defined(LIL_GEM_PRE)
     #define LIL_V2F_POSITION_CS
-    #if defined(LIL_V2F_FORCE_POSITION_WS) || defined(LIL_HDRP)
+    #if defined(LIL_V2F_FORCE_POSITION_WS)
         #define LIL_V2F_POSITION_WS
     #endif
     #define LIL_V2F_VERTEXLIGHT_FOG
@@ -83,9 +83,6 @@
         BEFORE_UNPACK_V2F
         OVERRIDE_UNPACK_V2F
         LIL_GET_HDRPDATA(input,fd);
-        #if defined(LIL_HDRP)
-            fd.V = normalize(lilViewDirection(input.positionWS));
-        #endif
         fd.col = 0;
         OVERRIDE_FOG
         return fd.col;
@@ -285,10 +282,6 @@
 
         BEFORE_BLEND_EMISSION
         OVERRIDE_BLEND_EMISSION
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Fix Color
-        LIL_HDRP_DEEXPOSURE(fd.col);
 
         float4 fogColor = float4(0,0,0,0);
         BEFORE_FOG

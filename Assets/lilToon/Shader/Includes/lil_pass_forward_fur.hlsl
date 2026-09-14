@@ -21,9 +21,6 @@
 #if !defined(LIL_PASS_FORWARDADD)
     #define LIL_V2G_LIGHTCOLOR
     #define LIL_V2G_LIGHTDIRECTION
-    #if defined(LIL_FEATURE_SHADOW) && (defined(LIL_BRP) || defined(LIL_HDRP))
-        #define LIL_V2G_INDLIGHTCOLOR
-    #endif
 #endif
 #define LIL_V2G_VERTEXLIGHT_FOG
 #define LIL_V2G_FURVECTOR
@@ -38,9 +35,6 @@
 #if !defined(LIL_PASS_FORWARDADD)
     #define LIL_V2F_LIGHTCOLOR
     #define LIL_V2F_LIGHTDIRECTION
-    #if defined(LIL_BRP) || defined(LIL_HDRP)
-        #define LIL_V2F_INDLIGHTCOLOR
-    #endif
 #endif
 #define LIL_V2F_VERTEXLIGHT_FOG
 #define LIL_V2F_FURLAYER
@@ -200,10 +194,6 @@ float4 frag(v2f input) : SV_Target
     #if defined(LIL_FEATURE_DISTANCE_FADE)
         OVERRIDE_DISTANCE_FADE
     #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
-    // Fix Color
-    LIL_HDRP_DEEXPOSURE(fd.col);
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Fog

@@ -14,10 +14,8 @@
     #define LIL_V2F_POSITION_CS
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
-    #if defined(LIL_V2F_FORCE_POSITION_WS) || defined(LIL_PASS_FORWARDADD) || !defined(LIL_BRP) || defined(LIL_USE_LPPV)
-        #define LIL_V2F_POSITION_WS
-    #endif
-    #if defined(LIL_V2F_FORCE_NORMAL) || defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE) || defined(LIL_HDRP)
+    #define LIL_V2F_POSITION_WS
+    #if defined(LIL_V2F_FORCE_NORMAL) || defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)
         #define LIL_V2F_NORMAL_WS
     #endif
     #if !defined(LIL_PASS_FORWARDADD)
@@ -52,9 +50,6 @@
     #if !defined(LIL_PASS_FORWARDADD)
         #define LIL_V2F_LIGHTCOLOR
         #define LIL_V2F_LIGHTDIRECTION
-        #if defined(LIL_BRP) || defined(LIL_HDRP)
-            #define LIL_V2F_INDLIGHTCOLOR
-        #endif
     #endif
     #define LIL_V2F_VERTEXLIGHT_FOG
 
@@ -265,10 +260,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     #ifndef LIL_PASS_FORWARDADD
         OVERRIDE_PLANAR_REFLECTION
     #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
-    // Fix Color
-    LIL_HDRP_DEEXPOSURE(fd.col);
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Fog

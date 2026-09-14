@@ -61,28 +61,7 @@ struct v2f
     LIL_VERTEX_OUTPUT_STEREO
 };
 
-#if defined(LIL_FUR) && defined(LIL_HDRP)
-    #define LIL_V2G_TEXCOORD0
-    #define LIL_V2G_POSITION_WS
-    #if defined(LIL_V2G_FORCE_NORMAL_WS) || defined(WRITE_NORMAL_BUFFER)
-        #define LIL_V2G_NORMAL_WS
-    #endif
-    #define LIL_V2G_FURVECTOR
-    #define LIL_V2G_VERTEXID
-
-    struct v2g
-    {
-        float3 positionWS   : TEXCOORD0;
-        float2 uv0          : TEXCOORD1;
-        float3 furVector    : TEXCOORD2;
-        uint vertexID       : TEXCOORD3;
-        #if defined(LIL_V2G_NORMAL_WS)
-            float3 normalWS     : TEXCOORD4;
-        #endif
-        LIL_VERTEX_INPUT_INSTANCE_ID
-        LIL_VERTEX_OUTPUT_STEREO
-    };
-#elif defined(LIL_ONEPASS_OUTLINE)
+#if defined(LIL_ONEPASS_OUTLINE)
     struct v2g
     {
         v2f base;
@@ -92,29 +71,12 @@ struct v2f
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Shader
-#if defined(LIL_FUR) && defined(LIL_HDRP)
-    #include "lil_common_vert_fur.hlsl"
-#else
-    #include "lil_common_vert.hlsl"
-#endif
+#include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
 
 void frag(v2f input
     LIL_VFACE(facing)
-    #if defined(SCENESELECTIONPASS) || defined(SCENEPICKINGPASS) || !defined(LIL_HDRP)
     , out float4 outColor : SV_Target0
-    #else
-        #ifdef WRITE_MSAA_DEPTH
-        , out float4 depthColor : SV_Target0
-            #ifdef WRITE_NORMAL_BUFFER
-            , out float4 outNormalBuffer : SV_Target1
-            #endif
-        #else
-            #ifdef WRITE_NORMAL_BUFFER
-            , out float4 outNormalBuffer : SV_Target0
-            #endif
-        #endif
-    #endif
 )
 {
     LIL_SETUP_INSTANCE_ID(input);
@@ -127,35 +89,7 @@ void frag(v2f input
 
     #include "lil_common_frag_alpha.hlsl"
 
-    #if !defined(LIL_HDRP)
-        outColor = 0;
-    #elif defined(SCENESELECTIONPASS)
-        outColor = float4(_ObjectId, _PassValue, 1.0, 1.0);
-    #elif defined(SCENEPICKINGPASS)
-        outColor = _SelectionID;
-    #else
-        #ifdef WRITE_MSAA_DEPTH
-            depthColor = input.positionCS.z;
-            #ifdef _ALPHATOMASK_ON
-                #if LIL_RENDER > 0
-                    depthColor.a = saturate((alpha - _Cutoff) / max(fwidth(alpha), 0.0001) + 0.5);
-                #else
-                    depthColor.a = 1.0;
-                #endif
-            #endif
-        #endif
-
-        #if defined(WRITE_NORMAL_BUFFER)
-            float3 normalDirection = normalize(input.normalWS);
-            normalDirection = fd.facing < (_FlipNormal-1.0) ? -normalDirection : normalDirection;
-
-            const float seamThreshold = 1.0 / 1024.0;
-            normalDirection.z = CopySign(max(seamThreshold, abs(normalDirection.z)), normalDirection.z);
-            float2 octNormalWS = PackNormalOctQuadEncode(normalDirection);
-            float3 packNormalWS = PackFloat2To888(saturate(octNormalWS * 0.5 + 0.5));
-            outNormalBuffer = float4(packNormalWS, 1.0);
-        #endif
-    #endif
+    outColor = 0;
 }
 
 #endif
