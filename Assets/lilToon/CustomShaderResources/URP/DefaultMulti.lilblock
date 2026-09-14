@@ -35,6 +35,7 @@
             #pragma lil_skip_variants_addlightshadows
             #pragma lil_skip_variants_probevolumes
             #pragma lil_skip_variants_ao
+            #pragma lil_skip_variants_lightmaps
         ENDHLSL
 
         *LIL_INSERT_PASS_PRE*
