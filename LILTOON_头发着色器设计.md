@@ -851,17 +851,21 @@ float3 lilHairLobe(lilHairLobeData d, float3 T, float3 B, float3 N, float3 L, fl
 L0 做完后回填的**可复用步骤**。假设新家族叫 `Xxx`（眼睛就是 `Eye`），
 把下面的 `Hair` / `hair` 换成 `Eye` / `eye` 即可。
 
-### 10.1 新建文件（7 个，全部是复制 + 改名）
+### 10.1 新建文件（6 个，全部是复制 + 改名）
+
+> 完整版流程见 `LILTOON魔改流程案例2-独立Shader类型.md`；这里是速查表。
 
 | # | 文件 | 从哪抄 | 必须改什么 |
 |---|---|---|---|
-| 1 | `BaseShaderResources/lts_xxx.lilinternal` | `lts_gem.lilinternal` | `Shader "Hidden/lilToonXxx"`、`lilProperties "Default"` + `"DefaultXxx"`、`LIL_RENDER`、tags、`lilSubShaderURP "DefaultXxx"` |
+| 1 | `BaseShaderResources/lts_xxx.lilinternal` | `lts_gem.lilinternal` | `Shader "Hidden/lilToonXxx"`、`lilProperties "Default"` + `"DefaultXxx"`（两行）、`LIL_RENDER`、tags、`lilSubShaderURP "DefaultXxx"`；**不写 `lilPassShaderName`**（→ 没有 outline pass） |
 | 2 | `CustomShaderResources/URP/DefaultXxx.lilblock` | `DefaultDirect.lilblock` | 加 `#define LIL_XXX`（放文件最上方）、把 `#include "Includes/lil_pass_forward.hlsl"` 换成自己的 `lil_pass_forward_xxx.hlsl`；**其余全不动** |
 | 3 | `CustomShaderResources/Properties/DefaultXxx.lilblock` | `DefaultOpaque.lilblock`（不是 `Default`！） | 保留前 30 行 Advanced，**删掉 Outline Advanced 段**，末尾追加家族段 |
 | 4 | `Shader/Includes/lil_pass_forward_xxx.hlsl` | `lil_pass_forward_normal.hlsl` | 改 guard 名；`#include "lil_xxx.hlsl"`；在 frag 里插入家族调用 |
-| 5 | `Shader/Includes/lil_xxx.hlsl` | 新写 | 入口函数（CPU 端参数解包、遮罩采样） |
+| 5 | `Shader/Includes/lil_xxx.hlsl` | 新写 | 入口函数（CPU 端参数解包、切线来源、遮罩采样） |
 | 6 | `Shader/Includes/lil_xxx_specular.hlsl` | 新写 | **实验游乐场**：算法分派 + 各算法实现 |
-| 7 | `.po` × 5 | gem 那一组之后 | 所有 `sXxx*` key，CRLF 保持 |
+
+`.meta` 由 Unity 生成，不要手写。另外还要改 5 个 `.po`（见 10.3）。
+所有新文件在工作区应为 **CRLF**（`.meta` 除外，它本来就是 LF）。
 
 ### 10.2 一次性共享文件改动（每加一个家族只改这些，之后不再动）
 
@@ -876,20 +880,25 @@ L0 做完后回填的**可复用步骤**。假设新家族叫 `Xxx`（眼睛就�
 **判据**：`grep -n "LIL_GEM" Shader/Includes/*.hlsl` 的每一处，都要问一句"Xxx 要不要也这样"。
 共享文件里对 gem 的每一处特判，都是新家族的一个候选接入点——漏了就是"某些功能在 Xxx 上莫名失效"。
 
-### 10.3 Editor 侧（8 个文件）
+### 10.3 Editor 侧（12 个 `.cs` + 5 个 `.po`）
+
+> 完整版流程见 `LILTOON魔改流程案例2-独立Shader类型.md`；这里是速查表。
 
 | 文件 | 改什么 |
 |---|---|
-| `lilEnumeration.cs` | `RenderingMode` 与 `PropertyBlock` 各加一个成员（**枚举按语义插，PropertyBlock 是集合语义，插入安全**） |
+| `lilEnumeration.cs` | `RenderingMode` 加成员（**索引语义，只在末尾追加**）；`PropertyBlock` 加成员（**集合语义，插入安全**） |
 | `lilShaderManager.cs` | 加 `ltsxxx` 字段 + `InitializeShaders()` 条目 |
 | `lilShaderUtils.cs` | `IsXxxShaderName()` |
-| `lilInspector/lilEditorVariables.cs` | `protected static bool isXxx = false;` |
+| `lilInspector/lilEditorVariables.cs` | `protected static bool isXxx = false;` + **新 `GUIContent` 的转发属性** |
 | `lilInspector/lilGUIUtility.cs` | `CheckShaderType` 里认名字 + `renderingModeBuf` |
 | `lilMaterialUtils.cs` | `SetupMaterialWithRenderingMode` 里加 `case` |
 | `lilInspector/lilMaterialProperties.cs` | 属性声明 **+ 全部注册进 `AllProperties()`**（漏了 → `ShouldDrawBlock` 抛 `KeyNotFoundException`） |
 | `lilInspector/lilNextInspectorGUI.cs` | 面板段；并检查 `isGem` 的早退条件里哪些该加上 `isXxx` |
 | `lilLanguageManager.cs` | `sRenderingModeList` 加一项；需要新 `GUIContent` 时见下面的三处联动 |
-| `lilInspector/lilEditorVariables.cs` | **新 `GUIContent` 必须在这里加转发属性** |
+| `lilPropertyNameChecker.cs` | `IsXxxProperty()` |
+| `lilMaterialManager/lilMaterialManagerProperties.cs` | `ClassifyProperty` 里加分组（若新属性的名字会命中更靠前的分类器，必须插到它**之前**——`_HairSpecularAA` 命中 `IsReflectionProperty` 就是这么处理的） |
+| `lilToonPreset.cs` | `shouldSaveXxx`（4 处：字段 / 勾选框 / 过滤链 / `SetAll`） |
+| `Editor/Localization/*.po` ×5 | 所有 `sXxx*` key（**条目间必须留空行**） |
 
 **`GUIContent` 三处联动**（hair 实际踩过：漏了第三处 → inspector 报 `CS0103: The name 'hairMaskContent' does not exist`）：
 `lilNextInspectorGUI.cs` 等文件里直接写 `maskBlendRGBAContent` 能用，**不是**因为 `using static`，
