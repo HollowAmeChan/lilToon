@@ -9,6 +9,16 @@
 
             // (family) copied from DefaultDirect -- keep in sync
             #define LIL_HAIR
+
+            // 实验开关：试验期直接在这里手改，不走 lilToonSetting。
+            // 只有在这里打开的算法才会被编进 shader；下拉里选到一个没打开的算法
+            // 会静默输出 0（lilHairLobe 末尾 return 0），表现为"勾了没反应"。
+            // 加新算法 = 在 lil_hair_specular.hlsl 里加一个 if + 一个函数，然后在这里补一个开关。
+            #define LIL_HAIR_KAJIYA
+            #define LIL_HAIR_SCHEUERMANN
+            // #define LIL_HAIR_MARSCHNER    // 未实现：lil_hair_specular.hlsl 里还没有对应分支
+            // #define LIL_HAIR_ANISO_GGX    // 未实现
+
             #pragma lil_skip_variants_decals
             #pragma lil_skip_variants_probevolumes
             #pragma lil_skip_variants_ao
