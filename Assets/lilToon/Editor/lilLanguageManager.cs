@@ -66,6 +66,9 @@ namespace lilToon
         public static GUIContent triMaskContent;
         public static GUIContent cubemapContent;
         public static GUIContent gradationMapContent;
+        public static GUIContent hairMaskContent;
+        public static GUIContent hairShiftMapContent;
+        public static GUIContent hairTangentMapContent;
         public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
         public class LanguageSettings : ScriptableSingleton<LanguageSettings>
@@ -107,7 +110,7 @@ namespace lilToon
             InitializeLanguage();
             var langs = L10n.GetLanguages();
             EditorGUI.BeginChangeCheck();
-            var index = EditorGUILayout.Popup("Language", Array.IndexOf(langs, Settings.instance.language), L10n.GetLanguageNames());
+            var index = EditorGUILayout.Popup("Language", Array.IndexOf(langs, L10n.ResolveLanguage(Settings.instance.language)), L10n.GetLanguageNames());
             if (EditorGUI.EndChangeCheck())
             {
                 Settings.instance.language = langs[index];
@@ -175,7 +178,7 @@ namespace lilToon
             sGlitterParams1                 = BuildParams("Tiling", GetLoc("sParticleSize"), GetLoc("sContrast"));
             sGlitterParams2                 = BuildParams(GetLoc("sBlinkSpeed"), GetLoc("sAngleLimit"), GetLoc("sRimLightDirection"), GetLoc("sColorRandomness"));
             sTransparentMode                = BuildParams(GetLoc("sRenderingMode"), GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeGem"));
-            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem")};
+            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem"), GetLoc("sRenderingModeHair")};
             sRenderingModeListLite          = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent")};
             sTransparentModeList            = new[]{GetLoc("sTransparentModeNormal"), GetLoc("sTransparentModeOnePass"), GetLoc("sTransparentModeTwoPass")};
             sBlendModeList                  = new[]{GetLoc("sBlendModeNormal"), GetLoc("sBlendModeAdd"), GetLoc("sBlendModeScreen"), GetLoc("sBlendModeMul")};
@@ -212,6 +215,9 @@ namespace lilToon
             triMaskContent                  = new GUIContent(GetLoc("sTriMask"),                            GetLoc("sTriMaskRGB"));
             cubemapContent                  = new GUIContent(GetLoc("Cubemap Fallback"));
             gradationMapContent             = new GUIContent(GetLoc("sGradationMap"));
+            hairMaskContent                 = new GUIContent(GetLoc("sHairMask"),                           GetLoc("sTextureRGBA"));
+            hairShiftMapContent             = new GUIContent(GetLoc("sHairShiftMap"),                       GetLoc("sTextureRGBA"));
+            hairTangentMapContent           = new GUIContent(GetLoc("sHairTangentMap"),                     GetLoc("sNormalRGB"));
 
         }
 
