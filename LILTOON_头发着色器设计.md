@@ -531,8 +531,8 @@ HLSLINCLUDE
     // 实验开关：试验期直接在这里手改，不走 lilToonSetting
     #define LIL_HAIR_KAJIYA
     #define LIL_HAIR_SCHEUERMANN
-    #define LIL_HAIR_MARSCHNER
-    // #define LIL_HAIR_ANISO_GGX
+    // #define LIL_HAIR_MARSCHNER       // 未实现：lil_hair_specular.hlsl 里还没有对应分支
+    // #define LIL_HAIR_ANISO_GGX       // 未实现
 
     #pragma lil_skip_variants_decals
     #pragma lil_skip_variants_probevolumes
@@ -710,7 +710,7 @@ float4 frag(v2f input LIL_VFACE(facing)) : SV_Target
 因为 pass 的固定管线状态要引用它们：`Cull [_Cull]`、`Blend [_SrcBlend] [_DstBlend]`、`ZWrite [_ZWrite]`。
 少了这一段，22 个 pass 全部拿到 0 值（`Blend Zero Zero` + `Cull Off`），Unity 不会报编译错误，只是什么都不显示。
 
-实测（检查脚本见 9.8）：
+实测（检查脚本见 10.4）：
 
 | shader | Properties 声明数 | 被 `[_Xxx]` 引用 | 引用但未声明 |
 |---|---|---|---|
@@ -839,12 +839,47 @@ float3 lilHairLobe(lilHairLobeData d, float3 T, float3 B, float3 N, float3 L, fl
 | Rendering Mode | 下拉里出现**中文**的「头发」（不是 `sRenderingModeHair`）；`.po` 条目间空行自检为 0 violation |
 | 面板 | 头发槽位面板正常显示，无 `NullReferenceException` |
 | **隔离性** | 首次 L0 一次性改了 6 个共享 include（`lil_common_input{,_base,_opt}.hlsl`、`lil_common_macro.hlsl`、`lil_common_appdata.hlsl`、`lil_common_frag.hlsl`）；**此后**改 `lil_hair*.hlsl` 只有 `lts_hair.shader` 重编 |
-| **属性完整性** | 9.8 脚本对 `lts_hair.shader` 报 `MISSING=0`（Advanced 段补齐后） |
-| **本地化** | 面板与属性名全中文；9.8 脚本对 `DefaultHair.lilblock` 里所有 display key 在 5 个 `.po` 中都能命中 |
+| **属性完整性** | 10.4(a) 脚本对 `lts_hair.shader` 报 `MISSING=0`（Advanced 段补齐后） |
+| **本地化** | 面板与属性名全中文；10.4(b) 脚本对 `DefaultHair.lilblock` 里所有 display key 在 5 个 `.po` 中都能命中 |
 | **无 outline 段** | `isHair` 已加入 `DrawNextOutline` 的早退条件（hair 没有 outline pass，和 gem 一样） |
 | **可复制性** | 眼睛 shader 照同一模式：`DefaultEye.lilblock` → `lil_pass_forward_eye.hlsl`，不碰分发器、不碰 hair |
-| 空转 | 每个槽位属性都有对应实现（不允许"勾了没反应"） |
+| 空转 | 每个槽位属性都有对应实现（不允许"勾了没反应"）—— **部分未达成，见 9.7.1** |
 | 切线 | 三级来源都能出正确的发丝条带 |
+
+#### 9.7.1 验证结果（2026-09-15）
+
+已实测通过：
+
+| 项 | 证据 |
+|---|---|
+| 属性完整性 | `lts_hair.shader`：`declared=507 / referenced=21 / MISSING=0`，`_Cull` 已声明（补 Advanced 段之前是 21 个缺失） |
+| 本地化（渲染模式下拉） | 下拉显示中文「头发」；`sRenderingModeHair` 修复前出现在 **0** 个导入产物里，补上空行后在 **5** 个里（5 个语言各一份）。同批 `sHairSetting` 10 个、`sHairLobeModel` 11 个 |
+| 面板 | 头发槽位面板正常显示，无异常 |
+| 隔离性 / 变体 | 其余 52 个 `.shader` 仍为本地 `skip-worktree`，未受影响 |
+
+**仍未达成：空转项。** `lil_hair_specular.hlsl` 的分派只实现了 2 个算法：
+
+```hlsl
+if(d.model == 0) return 0;                                   // Off
+#if defined(LIL_HAIR_KAJIYA)
+    if(d.model == 1) return lilHairKajiya(d, T, N, L, V);
+#endif
+#if defined(LIL_HAIR_SCHEUERMANN)
+    if(d.model == 2) return lilHairScheuermann(d, T, N, L, V);
+#endif
+return 0;
+```
+
+而属性下拉给了 6 个选项（Off / Kajiya / Scheuermann / Marschner R / Marschner TRT / Aniso GGX）。
+所以 **Marschner R、Marschner TRT、Aniso GGX 这三个选了什么都不会发生**。
+它们对应 L3 / L5，属于后续要做的内容；在此之前这三个选项是"占位"状态。
+要么尽快补上实现，要么先把它们从 `sHairLobeModel` 的选项里去掉。
+
+**另一个坑（已修）**：`LIL_HAIR_KAJIYA` / `LIL_HAIR_SCHEUERMANN` 这两个编译开关
+一开始只写在本文档 9.3 里，**没有真的写进 `URP/DefaultHair.lilblock`**，
+而 `lilHairLobe` 末尾是 `return 0` —— 于是整个头发高光是个空操作，下拉里选什么都是 0。
+现在两个开关默认为打开。注意：改 lilblock 后必须回 Settings 页点 `Apply` 重新生成
+`lts_hair.shader` 才会生效。
 
 ## 10. 新家族落地检查清单（眼睛 shader 直接照抄）
 
