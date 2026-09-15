@@ -347,6 +347,9 @@ msgstr "[高負荷] 毛髮 (2 pass)"
 msgid "sRenderingModeGem"
 msgstr "[高負荷] 寶石"
 
+msgid "sRenderingModeHair"
+msgstr "頭髮"
+
 msgid "sTransparentMode"
 msgstr "透明模式"
 
@@ -1063,6 +1066,54 @@ msgstr "環境光色"
 
 msgid "sParticleLoop"
 msgstr "粒子循環數"
+
+msgid "sHairSetting"
+msgstr "頭髮設定"
+
+msgid "sHair"
+msgstr "頭髮"
+
+msgid "sHairLobe"
+msgstr "髮束"
+
+msgid "sHairLobeCount"
+msgstr "髮束數量"
+
+msgid "sHairMask"
+msgstr "髮束遮罩"
+
+msgid "sHairShiftMap"
+msgstr "髮束偏移貼圖"
+
+msgid "sHairTangentMode"
+msgstr "切線模式|網格|切線貼圖|UV"
+
+msgid "sHairTangentMap"
+msgstr "切線貼圖"
+
+msgid "sHairTangentStrength"
+msgstr "切線強度"
+
+msgid "sHairSpecularAA"
+msgstr "高光抗鋸齒"
+
+msgid "sHairLobeModel"
+msgstr "模型|關閉|Kajiya|Scheuermann|Marschner R|Marschner TRT|各向異性 GGX"
+
+msgid "sHairShift"
+msgstr "偏移"
+
+msgid "sHairShiftScale"
+msgstr "偏移強度"
+
+msgid "sHairWidthT"
+msgstr "橫向寬度"
+
+msgid "sHairWidthB"
+msgstr "縱向寬度"
+
+msgid "sHairPower"
+msgstr "高光指數"
 
 msgid "sStencilSetting"
 msgstr "Stencil 設定"

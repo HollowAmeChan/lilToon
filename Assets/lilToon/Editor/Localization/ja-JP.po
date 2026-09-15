@@ -347,6 +347,9 @@ msgstr "[高負荷] ファー (2パス)"
 msgid "sRenderingModeGem"
 msgstr "[高負荷] 宝石"
 
+msgid "sRenderingModeHair"
+msgstr "髪"
+
 msgid "sTransparentMode"
 msgstr "透過モード"
 
@@ -1063,6 +1066,54 @@ msgstr "環境光の色"
 
 msgid "sParticleLoop"
 msgstr "パーティクルループ数"
+
+msgid "sHairSetting"
+msgstr "髪設定"
+
+msgid "sHair"
+msgstr "髪"
+
+msgid "sHairLobe"
+msgstr "ローブ"
+
+msgid "sHairLobeCount"
+msgstr "ローブ数"
+
+msgid "sHairMask"
+msgstr "髪マスク"
+
+msgid "sHairShiftMap"
+msgstr "髪シフトマップ"
+
+msgid "sHairTangentMode"
+msgstr "タンジェントモード|メッシュ|タンジェントマップ|UV"
+
+msgid "sHairTangentMap"
+msgstr "タンジェントマップ"
+
+msgid "sHairTangentStrength"
+msgstr "タンジェント強度"
+
+msgid "sHairSpecularAA"
+msgstr "スペキュラAA"
+
+msgid "sHairLobeModel"
+msgstr "モデル|オフ|Kajiya|Scheuermann|Marschner R|Marschner TRT|異方性 GGX"
+
+msgid "sHairShift"
+msgstr "シフト"
+
+msgid "sHairShiftScale"
+msgstr "シフトスケール"
+
+msgid "sHairWidthT"
+msgstr "横方向の幅"
+
+msgid "sHairWidthB"
+msgstr "縦方向の幅"
+
+msgid "sHairPower"
+msgstr "スペキュラ指数"
 
 msgid "sStencilSetting"
 msgstr "ステンシル設定"

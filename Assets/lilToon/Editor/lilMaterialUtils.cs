@@ -230,6 +230,12 @@ namespace lilToon
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_AlphaToMask", 0);
                     break;
+                case RenderingMode.Hair:
+                    material.shader = lilShaderManager.ltshair;
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    material.SetInt("_AlphaToMask", 0);
+                    break;
             }
             if(!ismulti) material.renderQueue = renderQueue;
             if(rend == RenderingMode.Gem)

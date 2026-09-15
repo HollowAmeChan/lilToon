@@ -347,6 +347,9 @@ msgstr "[과부하] 퍼 (2 pass)"
 msgid "sRenderingModeGem"
 msgstr "[과부하] 보석"
 
+msgid "sRenderingModeHair"
+msgstr "머리카락"
+
 msgid "sTransparentMode"
 msgstr "투명 모드"
 
@@ -1063,6 +1066,54 @@ msgstr "환경광 색상"
 
 msgid "sParticleLoop"
 msgstr "파티클 루프 수"
+
+msgid "sHairSetting"
+msgstr "머리카락 설정"
+
+msgid "sHair"
+msgstr "머리카락"
+
+msgid "sHairLobe"
+msgstr "로브"
+
+msgid "sHairLobeCount"
+msgstr "로브 수"
+
+msgid "sHairMask"
+msgstr "머리카락 마스크"
+
+msgid "sHairShiftMap"
+msgstr "머리카락 시프트 맵"
+
+msgid "sHairTangentMode"
+msgstr "탄젠트 모드|메시|탄젠트 맵|UV"
+
+msgid "sHairTangentMap"
+msgstr "탄젠트 맵"
+
+msgid "sHairTangentStrength"
+msgstr "탄젠트 강도"
+
+msgid "sHairSpecularAA"
+msgstr "스페큘러 AA"
+
+msgid "sHairLobeModel"
+msgstr "모델|끄기|Kajiya|Scheuermann|Marschner R|Marschner TRT|이방성 GGX"
+
+msgid "sHairShift"
+msgstr "시프트"
+
+msgid "sHairShiftScale"
+msgstr "시프트 스케일"
+
+msgid "sHairWidthT"
+msgstr "가로 너비"
+
+msgid "sHairWidthB"
+msgstr "세로 너비"
+
+msgid "sHairPower"
+msgstr "스페큘러 지수"
 
 msgid "sStencilSetting"
 msgstr "Stencil 설정"

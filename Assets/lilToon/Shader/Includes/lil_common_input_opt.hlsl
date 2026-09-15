@@ -254,6 +254,16 @@ float4  _PlanarReflectionTint;
     float4  _GemParticleColor;
     float4  _GemEnvColor;
 #endif
+// Hair
+#if defined(LIL_HAIR)
+    float4  _HairLobe1Color;
+    float4  _HairLobe2Color;
+    float4  _HairLobe3Color;
+    float4  _HairLobe4Color;
+    float4  _HairMask_ST;
+    float4  _HairShiftMap_ST;
+    float4  _HairTangentMap_ST;
+#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Float
@@ -518,6 +528,41 @@ float   _lilOITEnabled;
     float   _RefractionFresnelPower;
     float   _GemEnvContrast;
     float   _GemVRParallaxStrength;
+#endif
+#if defined(LIL_HAIR)
+    float   _HairLobeCount;
+    float   _HairTangentStrength;
+    float   _HairSpecularAA;
+    uint    _HairTangentMode;
+    uint    _HairLobe1Model;
+    float   _HairLobe1Strength;
+    float   _HairLobe1Shift;
+    float   _HairLobe1ShiftScale;
+    float   _HairLobe1WidthT;
+    float   _HairLobe1WidthB;
+    float   _HairLobe1Power;
+    uint    _HairLobe2Model;
+    float   _HairLobe2Strength;
+    float   _HairLobe2Shift;
+    float   _HairLobe2ShiftScale;
+    float   _HairLobe2WidthT;
+    float   _HairLobe2WidthB;
+    float   _HairLobe2Power;
+    uint    _HairLobe3Model;
+    float   _HairLobe3Strength;
+    float   _HairLobe3Shift;
+    float   _HairLobe3ShiftScale;
+    float   _HairLobe3WidthT;
+    float   _HairLobe3WidthB;
+    float   _HairLobe3Power;
+    uint    _HairLobe4Model;
+    float   _HairLobe4Strength;
+    float   _HairLobe4Shift;
+    float   _HairLobe4ShiftScale;
+    float   _HairLobe4WidthT;
+    float   _HairLobe4WidthB;
+    float   _HairLobe4Power;
+    lilBool _UseHair;
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

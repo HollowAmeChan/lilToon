@@ -347,6 +347,9 @@ msgstr "[high-load] Fur (2 pass)"
 msgid "sRenderingModeGem"
 msgstr "[high-load] Gem"
 
+msgid "sRenderingModeHair"
+msgstr "Hair"
+
 msgid "sTransparentMode"
 msgstr "Transparent Mode"
 
@@ -1063,6 +1066,54 @@ msgstr "Environment Color"
 
 msgid "sParticleLoop"
 msgstr "Particle Loop"
+
+msgid "sHairSetting"
+msgstr "Hair Settings"
+
+msgid "sHair"
+msgstr "Hair"
+
+msgid "sHairLobe"
+msgstr "Lobe"
+
+msgid "sHairLobeCount"
+msgstr "Lobe Count"
+
+msgid "sHairMask"
+msgstr "Hair Mask"
+
+msgid "sHairShiftMap"
+msgstr "Hair Shift Map"
+
+msgid "sHairTangentMode"
+msgstr "Tangent Mode|Mesh|Tangent Map|UV"
+
+msgid "sHairTangentMap"
+msgstr "Tangent Map"
+
+msgid "sHairTangentStrength"
+msgstr "Tangent Strength"
+
+msgid "sHairSpecularAA"
+msgstr "Specular AA"
+
+msgid "sHairLobeModel"
+msgstr "Model|Off|Kajiya|Scheuermann|Marschner R|Marschner TRT|Aniso GGX"
+
+msgid "sHairShift"
+msgstr "Shift"
+
+msgid "sHairShiftScale"
+msgstr "Shift Scale"
+
+msgid "sHairWidthT"
+msgstr "Width T"
+
+msgid "sHairWidthB"
+msgstr "Width B"
+
+msgid "sHairPower"
+msgstr "Power"
 
 msgid "sStencilSetting"
 msgstr "Stencil"

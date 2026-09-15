@@ -175,7 +175,7 @@
 // Optimization Macro
 
 // tangentWS / bitangentWS / normalWS
-#if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_FEATURE_ANISOTROPY) || defined(LIL_FEATURE_MatCapBumpMap) || defined(LIL_FEATURE_MatCap2ndBumpMap) || defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_FEATURE_EMISSION_2ND) || defined(LIL_FEATURE_PARALLAX)
+#if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_FEATURE_ANISOTROPY) || defined(LIL_FEATURE_MatCapBumpMap) || defined(LIL_FEATURE_MatCap2ndBumpMap) || defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_FEATURE_EMISSION_2ND) || defined(LIL_FEATURE_PARALLAX) || defined(LIL_HAIR)
     #define LIL_SHOULD_TBN
 #endif
 

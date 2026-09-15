@@ -128,7 +128,9 @@ namespace lilToon
         {
             string[] languages = L10n.GetLanguages();
             string[] languageNames = L10n.GetLanguageNames();
-            int current = Mathf.Max(0, Array.IndexOf(languages, lilLanguageManager.langSet.languageName));
+            // Settings.language 可能是区域名（中文系统默认 "zh-CN"），要按实际存在的
+            // .po 归一化后再查下标，否则 IndexOf 返回 -1、下拉会错误地显示成 English。
+            int current = Mathf.Max(0, Array.IndexOf(languages, L10n.ResolveLanguage(lilLanguageManager.langSet.languageName)));
             EditorGUI.BeginChangeCheck();
             int next = EditorGUI.Popup(rect, current, languageNames);
             if(!EditorGUI.EndChangeCheck() || next == current || next < 0 || next >= languages.Length) return;
@@ -285,7 +287,7 @@ namespace lilToon
 
         private void DrawNextOutline(Material material)
         {
-            if(isMultiVariants || isRefr || isFur || isGem || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || isRefr || isFur || isGem || isHair || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
             if(isShowRenderMode && material.parent == null && !isMultiVariants)
             {
                 bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);
@@ -867,6 +869,55 @@ namespace lilToon
                     LocalizedPropertyTexture(cubemapContent, reflectionCubeTex, reflectionCubeColor);
                     LocalizedProperty(reflectionCubeOverride);
                     LocalizedProperty(reflectionCubeEnableLighting);
+                }, false);
+                if(isHair) DrawNextSection("hair.main", GetLoc("sHairSetting"), PropertyBlock.Hair, delegate
+                {
+                    LocalizedProperty(useHair, false);
+                    if(useHair.floatValue == 1f)
+                    {
+                        EditorGUI.indentLevel++;
+                        LocalizedProperty(hairLobeCount);
+                        if(hairMask.p != null)     LocalizedPropertyTexture(hairMaskContent, hairMask.p);
+                        if(hairShiftMap.p != null) LocalizedPropertyTexture(hairShiftMapContent, hairShiftMap.p);
+                        lilEditorGUI.DrawLine();
+
+                        LocalizedProperty(hairTangentMode);
+                        if(hairTangentMode.floatValue == 1f && hairTangentMap.p != null)
+                            LocalizedPropertyTexture(hairTangentMapContent, hairTangentMap.p);
+                        LocalizedProperty(hairTangentStrength);
+                        LocalizedProperty(hairSpecularAA);
+                        lilEditorGUI.DrawLine();
+
+                        var lobeModels = new[]{ hairLobe1Model,      hairLobe2Model,      hairLobe3Model,      hairLobe4Model      };
+                        var lobeColors = new[]{ hairLobe1Color,      hairLobe2Color,      hairLobe3Color,      hairLobe4Color      };
+                        var lobeStr    = new[]{ hairLobe1Strength,   hairLobe2Strength,   hairLobe3Strength,   hairLobe4Strength   };
+                        var lobeShift  = new[]{ hairLobe1Shift,      hairLobe2Shift,      hairLobe3Shift,      hairLobe4Shift      };
+                        var lobeScale  = new[]{ hairLobe1ShiftScale, hairLobe2ShiftScale, hairLobe3ShiftScale, hairLobe4ShiftScale };
+                        var lobeWT     = new[]{ hairLobe1WidthT,     hairLobe2WidthT,     hairLobe3WidthT,     hairLobe4WidthT     };
+                        var lobeWB     = new[]{ hairLobe1WidthB,     hairLobe2WidthB,     hairLobe3WidthB,     hairLobe4WidthB     };
+                        var lobePow    = new[]{ hairLobe1Power,      hairLobe2Power,      hairLobe3Power,      hairLobe4Power      };
+
+                        int hairLobes = Mathf.Clamp((int)hairLobeCount.floatValue, 1, 4);
+                        for(int i = 0; i < hairLobes; i++)
+                        {
+                            GUILayout.Label(GetLoc("sHairLobe") + " " + (i + 1), boldLabel);
+                            EditorGUI.indentLevel++;
+                            LocalizedProperty(lobeModels[i]);
+                            if(lobeModels[i].floatValue != 0f)
+                            {
+                                LocalizedProperty(lobeColors[i]);
+                                LocalizedProperty(lobeStr[i]);
+                                LocalizedProperty(lobeShift[i]);
+                                LocalizedProperty(lobeScale[i]);
+                                LocalizedProperty(lobeWT[i]);
+                                LocalizedProperty(lobeWB[i]);
+                                LocalizedProperty(lobePow[i]);
+                            }
+                            EditorGUI.indentLevel--;
+                            if(i + 1 < hairLobes) lilEditorGUI.DrawLine();
+                        }
+                        EditorGUI.indentLevel--;
+                    }
                 }, false);
                 DrawNextSection("effects.parallax", GetLoc("sParallax"), PropertyBlock.Parallax, delegate
                 {

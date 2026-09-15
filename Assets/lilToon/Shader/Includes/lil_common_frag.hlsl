@@ -297,7 +297,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Main Texture
-#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED)
+#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)
     #define LIL_GET_MAIN_TEX \
         fd.col = LIL_SAMPLE_2D_POM(_MainTex, sampler_MainTex, fd.uvMain, fd.ddxMain, fd.ddyMain);
 
@@ -847,11 +847,14 @@
             // The AO Map is the shared colour input: its RGB drives the per-layer ramp
             // offset and, through the same value, tints the overall darkening.
             float4 aoMap = 1.0;
-            #if defined(_ShadowBorderMaskLOD)
-                aoMap = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);
-                if(_ShadowBorderMaskLOD) aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
-            #else
+            // _ShadowBorderMaskLOD is a material property, not a macro -- the old
+            // "#if defined(_ShadowBorderMaskLOD)" was always false and its #else branch
+            // referenced the undeclared variable. It is declared by LIL_MULTI_INPUTS_SHADOW
+            // on the LIL_MULTI path and by LIL_FEATURE_SHADOW otherwise, so guard on those.
+            #if defined(LIL_MULTI_INPUTS_SHADOW) || (!defined(LIL_MULTI) && defined(LIL_FEATURE_SHADOW))
                 aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
+            #else
+                aoMap = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);
             #endif
             aoVis *= lerp(1.0, aoMap.rgb, aoMask);
         #endif
@@ -1320,7 +1323,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Reflection
-#if defined(LIL_FEATURE_REFLECTION) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_REFLECTION) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && !defined(LIL_LITE)
     float3 lilCalcSpecular(inout lilFragData fd, float3 L, float3 specular, float attenuation LIL_SAMP_IN_FUNC(samp))
     {
         // Normal
@@ -2051,7 +2054,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
 void lilPlanarReflection(inout lilFragData fd)
 {
     if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
@@ -2121,7 +2124,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else

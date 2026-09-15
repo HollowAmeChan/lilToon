@@ -44,6 +44,8 @@ namespace lilToon
 
         public static Shader ltsgem      = Shader.Find("Hidden/lilToonGem");
 
+        public static Shader ltshair     = Shader.Find("Hidden/lilToonHair");
+
         public static Shader ltsfs       = Shader.Find("_lil/[Optional] lilToonFakeShadow");
 
         public static Shader ltsover     = Shader.Find("_lil/[Optional] lilToonOverlay");
@@ -102,6 +104,8 @@ namespace lilToon
             ltsfurotwo  = Shader.Find("_lil/[Optional] lilToonFurOnlyTwoPass");
 
             ltsgem      = Shader.Find("Hidden/lilToonGem");
+
+            ltshair     = Shader.Find("Hidden/lilToonHair");
 
             ltsfs       = Shader.Find("_lil/[Optional] lilToonFakeShadow");
 

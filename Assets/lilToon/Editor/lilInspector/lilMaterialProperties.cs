@@ -403,6 +403,47 @@ namespace lilToon
         private readonly lilMaterialProperty gemParticleColor       = new lilMaterialProperty("_GemParticleColor", PropertyBlock.Gem);
         private readonly lilMaterialProperty gemVRParallaxStrength  = new lilMaterialProperty("_GemVRParallaxStrength", PropertyBlock.Gem);
 
+        private readonly lilMaterialProperty useHair                = new lilMaterialProperty("_UseHair", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobeCount          = new lilMaterialProperty("_HairLobeCount", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairMask               = new lilMaterialProperty("_HairMask", true, PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairShiftMap           = new lilMaterialProperty("_HairShiftMap", true, PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairTangentMode        = new lilMaterialProperty("_HairTangentMode", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairTangentMap         = new lilMaterialProperty("_HairTangentMap", true, PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairTangentStrength    = new lilMaterialProperty("_HairTangentStrength", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairSpecularAA         = new lilMaterialProperty("_HairSpecularAA", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1Model         = new lilMaterialProperty("_HairLobe1Model", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1Color         = new lilMaterialProperty("_HairLobe1Color", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1Strength      = new lilMaterialProperty("_HairLobe1Strength", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1Shift         = new lilMaterialProperty("_HairLobe1Shift", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1ShiftScale    = new lilMaterialProperty("_HairLobe1ShiftScale", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1WidthT        = new lilMaterialProperty("_HairLobe1WidthT", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1WidthB        = new lilMaterialProperty("_HairLobe1WidthB", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe1Power         = new lilMaterialProperty("_HairLobe1Power", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2Model         = new lilMaterialProperty("_HairLobe2Model", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2Color         = new lilMaterialProperty("_HairLobe2Color", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2Strength      = new lilMaterialProperty("_HairLobe2Strength", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2Shift         = new lilMaterialProperty("_HairLobe2Shift", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2ShiftScale    = new lilMaterialProperty("_HairLobe2ShiftScale", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2WidthT        = new lilMaterialProperty("_HairLobe2WidthT", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2WidthB        = new lilMaterialProperty("_HairLobe2WidthB", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe2Power         = new lilMaterialProperty("_HairLobe2Power", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3Model         = new lilMaterialProperty("_HairLobe3Model", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3Color         = new lilMaterialProperty("_HairLobe3Color", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3Strength      = new lilMaterialProperty("_HairLobe3Strength", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3Shift         = new lilMaterialProperty("_HairLobe3Shift", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3ShiftScale    = new lilMaterialProperty("_HairLobe3ShiftScale", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3WidthT        = new lilMaterialProperty("_HairLobe3WidthT", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3WidthB        = new lilMaterialProperty("_HairLobe3WidthB", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe3Power         = new lilMaterialProperty("_HairLobe3Power", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4Model         = new lilMaterialProperty("_HairLobe4Model", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4Color         = new lilMaterialProperty("_HairLobe4Color", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4Strength      = new lilMaterialProperty("_HairLobe4Strength", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4Shift         = new lilMaterialProperty("_HairLobe4Shift", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4ShiftScale    = new lilMaterialProperty("_HairLobe4ShiftScale", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4WidthT        = new lilMaterialProperty("_HairLobe4WidthT", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4WidthB        = new lilMaterialProperty("_HairLobe4WidthB", PropertyBlock.Hair);
+        private readonly lilMaterialProperty hairLobe4Power         = new lilMaterialProperty("_HairLobe4Power", PropertyBlock.Hair);
+
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex                 = new lilMaterialProperty("_OutlineTex", true, PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex_ScrollRotate    = new lilMaterialProperty("_OutlineTex_ScrollRotate", PropertyBlock.Outline);
@@ -977,6 +1018,47 @@ namespace lilToon
                 gemParticleLoop,
                 gemParticleColor,
                 gemVRParallaxStrength,
+
+                useHair,
+                hairLobeCount,
+                hairMask,
+                hairShiftMap,
+                hairTangentMode,
+                hairTangentMap,
+                hairTangentStrength,
+                hairSpecularAA,
+                hairLobe1Model,
+                hairLobe1Color,
+                hairLobe1Strength,
+                hairLobe1Shift,
+                hairLobe1ShiftScale,
+                hairLobe1WidthT,
+                hairLobe1WidthB,
+                hairLobe1Power,
+                hairLobe2Model,
+                hairLobe2Color,
+                hairLobe2Strength,
+                hairLobe2Shift,
+                hairLobe2ShiftScale,
+                hairLobe2WidthT,
+                hairLobe2WidthB,
+                hairLobe2Power,
+                hairLobe3Model,
+                hairLobe3Color,
+                hairLobe3Strength,
+                hairLobe3Shift,
+                hairLobe3ShiftScale,
+                hairLobe3WidthT,
+                hairLobe3WidthB,
+                hairLobe3Power,
+                hairLobe4Model,
+                hairLobe4Color,
+                hairLobe4Strength,
+                hairLobe4Shift,
+                hairLobe4ShiftScale,
+                hairLobe4WidthT,
+                hairLobe4WidthB,
+                hairLobe4Power,
 
                 outlineColor,
                 outlineTex,

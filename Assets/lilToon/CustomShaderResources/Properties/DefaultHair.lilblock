@@ -1,0 +1,88 @@
+        //----------------------------------------------------------------------------------------------------------------------
+        // Advanced
+        [lilEnum]                                       _Cull               ("sCullModes", Int) = 2
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlend           ("sSrcBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlend           ("sDstBlendRGB", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendAlpha      ("sSrcBlendAlpha", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlpha      ("sDstBlendAlpha", Int) = 10
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOp            ("sBlendOpRGB", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlpha       ("sBlendOpAlpha", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendFA         ("sSrcBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendFA         ("sDstBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendAlphaFA    ("sSrcBlendAlpha", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlphaFA    ("sDstBlendAlpha", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpFA          ("sBlendOpRGB", Int) = 4
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlphaFA     ("sBlendOpAlpha", Int) = 4
+        [lilToggle]                                     _ZClip              ("sZClip", Int) = 1
+        [lilToggle]                                     _ZWrite             ("sZWrite", Int) = 1
+        [Enum(UnityEngine.Rendering.CompareFunction)]   _ZTest              ("sZTest", Int) = 4
+        [IntRange]                                      _StencilRef         ("Ref", Range(0, 255)) = 0
+        [IntRange]                                      _StencilReadMask    ("ReadMask", Range(0, 255)) = 255
+        [IntRange]                                      _StencilWriteMask   ("WriteMask", Range(0, 255)) = 255
+        [Enum(UnityEngine.Rendering.CompareFunction)]   _StencilComp        ("Comp", Float) = 8
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilPass        ("Pass", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilFail        ("Fail", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilZFail       ("ZFail", Float) = 0
+                                                        _OffsetFactor       ("sOffsetFactor", Float) = 0
+                                                        _OffsetUnits        ("sOffsetUnits", Float) = 0
+        [lilColorMask]                                  _ColorMask          ("sColorMask", Int) = 15
+        [lilToggle]                                     _AlphaToMask        ("sAlphaToMask", Int) = 0
+                                                        _lilShadowCasterBias ("Shadow Caster Bias", Float) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair
+        [lilToggleLeft] _UseHair                 ("sHair", Int) = 1
+                        _HairLobeCount           ("sHairLobeCount", Range(1,4)) = 2
+        [NoScaleOffset] _HairMask                ("sHairMask", 2D) = "white" {}
+        [NoScaleOffset] _HairShiftMap            ("sHairShiftMap", 2D) = "white" {}
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair - Tangent
+        [lilEnum]       _HairTangentMode         ("sHairTangentMode", Int) = 0
+        [Normal]        _HairTangentMap          ("sHairTangentMap", 2D) = "bump" {}
+                        _HairTangentStrength     ("sHairTangentStrength", Range(0, 1)) = 1
+                        _HairSpecularAA          ("sHairSpecularAA", Range(0, 1)) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair - Lobe 1
+        [lilEnum]       _HairLobe1Model          ("sHairLobeModel", Int) = 1
+        [lilHDR]        _HairLobe1Color          ("sColor", Color) = (1,1,1,1)
+                        _HairLobe1Strength       ("sStrength", Range(0, 10)) = 1
+                        _HairLobe1Shift          ("sHairShift", Range(-1, 1)) = 0.1
+                        _HairLobe1ShiftScale     ("sHairShiftScale", Range(-2, 2)) = 1
+                        _HairLobe1WidthT         ("sHairWidthT", Range(0, 10)) = 1
+                        _HairLobe1WidthB         ("sHairWidthB", Range(0, 10)) = 1
+                        _HairLobe1Power          ("sHairPower", Range(1, 256)) = 64
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair - Lobe 2
+        [lilEnum]       _HairLobe2Model          ("sHairLobeModel", Int) = 0
+        [lilHDR]        _HairLobe2Color          ("sColor", Color) = (1,1,1,1)
+                        _HairLobe2Strength       ("sStrength", Range(0, 10)) = 1
+                        _HairLobe2Shift          ("sHairShift", Range(-1, 1)) = -0.1
+                        _HairLobe2ShiftScale     ("sHairShiftScale", Range(-2, 2)) = 1
+                        _HairLobe2WidthT         ("sHairWidthT", Range(0, 10)) = 1
+                        _HairLobe2WidthB         ("sHairWidthB", Range(0, 10)) = 1
+                        _HairLobe2Power          ("sHairPower", Range(1, 256)) = 16
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair - Lobe 3
+        [lilEnum]       _HairLobe3Model          ("sHairLobeModel", Int) = 0
+        [lilHDR]        _HairLobe3Color          ("sColor", Color) = (1,1,1,1)
+                        _HairLobe3Strength       ("sStrength", Range(0, 10)) = 1
+                        _HairLobe3Shift          ("sHairShift", Range(-1, 1)) = 0.0
+                        _HairLobe3ShiftScale     ("sHairShiftScale", Range(-2, 2)) = 1
+                        _HairLobe3WidthT         ("sHairWidthT", Range(0, 10)) = 1
+                        _HairLobe3WidthB         ("sHairWidthB", Range(0, 10)) = 1
+                        _HairLobe3Power          ("sHairPower", Range(1, 256)) = 32
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Hair - Lobe 4
+        [lilEnum]       _HairLobe4Model          ("sHairLobeModel", Int) = 0
+        [lilHDR]        _HairLobe4Color          ("sColor", Color) = (1,1,1,1)
+                        _HairLobe4Strength       ("sStrength", Range(0, 10)) = 1
+                        _HairLobe4Shift          ("sHairShift", Range(-1, 1)) = 0.0
+                        _HairLobe4ShiftScale     ("sHairShiftScale", Range(-2, 2)) = 1
+                        _HairLobe4WidthT         ("sHairWidthT", Range(0, 10)) = 1
+                        _HairLobe4WidthB         ("sHairWidthB", Range(0, 10)) = 1
+                        _HairLobe4Power          ("sHairPower", Range(1, 256)) = 32

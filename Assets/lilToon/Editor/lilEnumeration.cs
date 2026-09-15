@@ -20,7 +20,8 @@ namespace lilToon
         Fur,
         FurCutout,
         FurTwoPass,
-        Gem
+        Gem,
+        Hair
     }
 
     public enum TransparentMode
@@ -66,6 +67,7 @@ namespace lilToon
         Backlight,
         SSS,
         Gem,
+        Hair,
         Outline,
         Parallax,
         DistanceFade,

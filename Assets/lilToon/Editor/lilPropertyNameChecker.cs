@@ -293,6 +293,14 @@ namespace lilToon
             return res;
         }
 
+        public static bool IsHairProperty(string name)
+        {
+            bool res = false;
+            res = res || name == "_UseHair";
+            res = res || name.Contains("_Hair");
+            return res;
+        }
+
         public static bool IsOutlineProperty(string name)
         {
             bool res = false;

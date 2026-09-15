@@ -160,6 +160,7 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveDissolve = true;
         private bool shouldSaveRefraction = true;
         private bool shouldSaveGem = true;
+        private bool shouldSaveHair = true;
         private bool shouldSaveOutline = true;
         private bool shouldSaveFur = true;
         private bool shouldSaveStencil = true;
@@ -287,6 +288,7 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveRim                       = EditorGUILayout.ToggleLeft(GetLoc("sRimLight"), shouldSaveRim);
                 shouldSaveGlitter                   = EditorGUILayout.ToggleLeft(GetLoc("sGlitter"), shouldSaveGlitter);
                 shouldSaveGem                       = EditorGUILayout.ToggleLeft(GetLoc("sGem"), shouldSaveGem);
+                shouldSaveHair                      = EditorGUILayout.ToggleLeft(GetLoc("sHair"), shouldSaveHair);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.LabelField(GetLoc("sAdvanced"), EditorStyles.boldLabel);
@@ -425,6 +427,7 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||
                     shouldSaveRefraction && lilPropertyNameChecker.IsRefractionProperty(propName) ||
                     shouldSaveGem && lilPropertyNameChecker.IsGemProperty(propName) ||
+                    shouldSaveHair && lilPropertyNameChecker.IsHairProperty(propName) ||
                     shouldSaveOutline && lilPropertyNameChecker.IsOutlineProperty(propName) ||
                     shouldSaveFur && lilPropertyNameChecker.IsFurProperty(propName) ||
                     shouldSaveStencil && lilPropertyNameChecker.IsStencilProperty(propName) ||
@@ -505,6 +508,7 @@ public class lilToonPreset : ScriptableObject
             shouldSaveDissolve = val;
             shouldSaveRefraction = val;
             shouldSaveGem = val;
+            shouldSaveHair = val;
             shouldSaveOutline = val;
             shouldSaveFur = val;
             shouldSaveStencil = val;

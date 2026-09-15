@@ -133,6 +133,11 @@ namespace lilToon
             return ContainsAfterLastSeparator(shaderName, "Gem");
         }
 
+        public static bool IsHairShaderName(string shaderName)
+        {
+            return ContainsAfterLastSeparator(shaderName, "Hair");
+        }
+
         public static bool IsFakeShadowShaderName(string shaderName)
         {
             return ContainsAfterLastSeparator(shaderName, "FakeShadow");

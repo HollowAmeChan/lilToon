@@ -644,6 +644,8 @@ namespace lilToon
             if(lilPropertyNameChecker.IsAnisotropyProperty(name)) return "各向异性";
             if(lilPropertyNameChecker.IsBacklightProperty(name)) return "背光";
             if(lilPropertyNameChecker.IsSSSProperty(name)) return "SSS";
+            // _HairSpecularAA 等含 "_Specular"，必须比 IsReflectionProperty / IsGemProperty 先判定
+            if(lilPropertyNameChecker.IsHairProperty(name)) return "头发";
             if(lilPropertyNameChecker.IsReflectionProperty(name)) return "反射";
             if(lilPropertyNameChecker.IsMatCapProperty(name)) return "MatCap";
             if(lilPropertyNameChecker.IsMatCap2ndProperty(name)) return "MatCap 2";
