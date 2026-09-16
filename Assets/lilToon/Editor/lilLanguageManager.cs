@@ -72,6 +72,7 @@ namespace lilToon
         public static GUIContent hairMaskContent;
         public static GUIContent hairShiftMapContent;
         public static GUIContent hairTangentMapContent;
+        public static GUIContent liquidUnderlayContent;
         public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
         public class LanguageSettings : ScriptableSingleton<LanguageSettings>
@@ -227,6 +228,7 @@ namespace lilToon
             hairMaskContent                 = new GUIContent(GetLoc("sHairMask"),                           GetLoc("sTextureRGBA"));
             hairShiftMapContent             = new GUIContent(GetLoc("sHairShiftMap"),                       GetLoc("sTextureRGBA"));
             hairTangentMapContent           = new GUIContent(GetLoc("sHairTangentMap"),                     GetLoc("sNormalRGB"));
+            liquidUnderlayContent           = new GUIContent(GetLoc("sLiquidUnderlayTex"),                   GetLoc("sTextureRGBA"));
 
         }
 

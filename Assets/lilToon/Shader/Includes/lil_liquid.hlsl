@@ -16,7 +16,9 @@
 //       用成「物体的 up 在世界」（第 1 列）会让液面在 45° 就提前倒转。
 // rev6：移除临时的 _LiquidWaveAmp 探针（会占用波纹幅度参数），
 //       调试视图改为编译期开关 LIL_LIQUID_DEBUG + lilLiquidDebugColor()。
-#define LIL_LIQUID_REV 6
+// rev7：新增液面下层的常态流动贴图层（LIL_LIQUID_UNDERLAY，只作用于模式 1 的背面），
+//       以及液面高光（_LiquidSpecularStrength，改反射/MatCap 专用法线）。
+#define LIL_LIQUID_REV 7
 
 //------------------------------------------------------------------------------------------------------------------------------
 // 液面切面基础量
@@ -29,6 +31,20 @@ float lilLiquidSurfaceDistance(lilFragData fd)
 float lilLiquidSurfaceMask(lilFragData fd, float d)
 {
     return lilLiquidSurfaceAlpha(d, fd.facing, fd.N);
+}
+
+// 液面**下层**：正面是液体表面，背面就是液体内部的那一层。
+// 参考实现在背面用 tex2D(_B, 滚动UV) + _TopColor —— 一层持续滚动的贴图，
+// 与液面波纹无关，所以容器静止时那片下层依然在流动。
+// 这里只在 facing < 0（背面）且该像素最终会被保留时才叠上去。
+float3 lilLiquidUnderlayApply(lilFragData fd, float alpha LIL_SAMP_IN_FUNC(samp))
+{
+    // 只在「模式 1 的背面」= 液面下层 上生效；
+    // 正面是液体表面本体，不该盖这层内部纹理。
+    if(_LiquidSurfaceMode != 1 || fd.facing >= 0.0) return fd.col.rgb;
+    // 被切掉的像素不用管（alpha 已经低于阈值）
+    if(alpha < 0.5) return fd.col.rgb;
+    return lilLiquidUnderlay(fd, fd.col.rgb LIL_SAMP_IN(samp));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +61,7 @@ float lilLiquidSurfaceMask(lilFragData fd, float d)
 // 但 LIL_LIQUID 会让 LIL_SHOULD_TBN 成立 → 家族 pass 定义 LIL_V2F_TANGENT_WS →
 // lil_common_vert.hlsl 要输出切线分量，所以 LIL_LIQUID 必须同时列进
 // lil_common_appdata.hlsl 的 LIL_APP_TANGENT（否则 invalid subscript 'tangentOS'）。
-void lilLiquid(inout lilFragData fd)
+void lilLiquid(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
 {
     if(!_UseLiquid) return;
 
@@ -55,6 +71,7 @@ void lilLiquid(inout lilFragData fd)
     lilLiquidApplySpecular(fd);
 
     float d = lilLiquidSurfaceDistance(fd);
+    float alpha = lilLiquidSurfaceMask(fd, d);
 
     #if defined(LIL_LIQUID_DEBUG)
         // 调试视图：蓝(液面以上) -> 红(液体内部)，红蓝交界就是液面。
@@ -66,7 +83,10 @@ void lilLiquid(inout lilFragData fd)
         fd.col.rgb = lilLiquidDebugColor(d);
     #endif
 
-    fd.col.a = min(fd.col.a, lilLiquidSurfaceMask(fd, d));
+    fd.col.a = min(fd.col.a, alpha);
+
+    // 下层常态流动层（只作用于模式 1 的背面）
+    fd.col.rgb = lilLiquidUnderlayApply(fd, alpha LIL_SAMP_IN(samp));
 }
 
 #endif

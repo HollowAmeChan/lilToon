@@ -358,7 +358,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         // 之所以放在 Normal 段之后：液面软切宽度要用 fd.N（朝上程度）加权。
         // 注：hair 家族把 lilHairSpecular 放在 frag 很靠后的位置是**对的**，
         //     因为它改的是 fd.col.rgb（叠高光）；液体改 alpha，位置完全不同。
-        lilLiquid(fd);
+        lilLiquid(fd LIL_SAMP_IN(sampler_MainTex));
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Layer Color

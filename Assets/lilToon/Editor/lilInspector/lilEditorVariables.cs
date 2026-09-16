@@ -220,6 +220,7 @@ namespace lilToon
         protected static GUIContent hairMaskContent                 { get { return lilLanguageManager.hairMaskContent               ; } private set { lilLanguageManager.hairMaskContent                = value; } }
         protected static GUIContent hairShiftMapContent             { get { return lilLanguageManager.hairShiftMapContent           ; } private set { lilLanguageManager.hairShiftMapContent            = value; } }
         protected static GUIContent hairTangentMapContent           { get { return lilLanguageManager.hairTangentMapContent         ; } private set { lilLanguageManager.hairTangentMapContent          = value; } }
+        protected static GUIContent liquidUnderlayContent            { get { return lilLanguageManager.liquidUnderlayContent          ; } private set { lilLanguageManager.liquidUnderlayContent           = value; } }
     }
 }
 #endif

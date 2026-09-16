@@ -80,6 +80,42 @@ float lilLiquidWave(float3 p)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+// 液面**下层**（正面是液体表面，背面就是液体内部的那一层）
+//
+// 参考实现（41水瓶 Liquid.shader:505）在背面用的是：
+//     float2 panner = _Time.y * _TopUVSpeed.zw + screenPosNorm.xy * _TopUVSpeed.xy;
+//     float4 Back    = tex2D(_B, panner) + _TopColor;
+// 也就是给背面**单独一层持续滚动的贴图** —— 与液面波纹无关，所以容器静止时
+// 那片下层依然在流动。这正是"液体内部还活着"的观感来源。
+//
+// 本实现保留这个思路，但把 UV 从**屏幕空间**换成**物体空间**：
+//   参考实现用屏幕空间，转视角时花纹会"贴着屏幕"漂，VR 里尤其明显；
+//   物体空间 UV 跟着容器走，观感更像液体内部，也不会飘。
+//
+// 与纹波（lilLiquidWave）完全解耦：
+//   纹波 = 被驱动的高度场（容器静止 → 幅度给 0 → 液面变平），
+//   下层 = 常态流动的贴图层（永远在动）。
+//   两者叠在一起就是"平的水面上，底下还有东西在缓慢翻涌"。
+float3 lilLiquidUnderlay(lilFragData fd, float3 baseColor LIL_SAMP_IN_FUNC(samp))
+{
+    #if defined(LIL_LIQUID_UNDERLAY)
+        // 物体空间 UV：uv0 直接加随时间滚动的偏移（不依赖屏幕，不与视角耦合）。
+        // 刻意**不走** _LiquidUnderlayTex 的 _ST 平铺/偏移 —— lilblock 里它标了
+        // [NoScaleOffset]，没有面板可调；要调平铺就改贴图自己的 Tiling，或者调制服端
+        // 传进来的 _LiquidUnderlayScroll。
+        float2 uv = fd.uv0 + _TimeParameters.x * _LiquidUnderlayScroll.xy;
+
+        // 只采样一次：rgb 是图案，a 当遮罩（美术可用一张 RGBA 图控制"哪里看得到下层"）
+        float4 tex = LIL_SAMPLE_2D(_LiquidUnderlayTex, samp, uv);
+
+        float3 col = tex.rgb * _LiquidUnderlayColor.rgb;
+        return lerp(baseColor, col, saturate(_LiquidUnderlayColor.a * tex.a));
+    #else
+        return baseColor;
+    #endif
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // 位置通道自检
 // 液体完全依赖 fd.positionOS 才能切液面。如果 LIL_V2F_POSITION_OS 没被定义
 // （历史上就漏过一次），fd.positionOS 恒为 0，液面距离变成常量，
@@ -174,6 +210,9 @@ float lilLiquidLevelOS(float3 p)
     // 它们的语义是"液面在世界里往上/往下走"，与容器朝向无关。倒置时物体空间的上下与世界相反，
     // 放进括号里会让同一个参数把液面推向世界的另一边（晃动方向整个反过来）。
     // 放在外面等价于内部按 sign 缩放这两项，但参数语义对任何朝向都一致，驱动端不必再判断朝向。
+    //
+    // 下层波纹不在这里加：它只影响模式 1 的背面，由 lilLiquidUnderWaveOffset() 单独提供，
+    // 并在 lilLiquidSurfaceAlpha() 里与 width 同步偏移（否则背面的切面会漂）。
     return d + lilLiquidWave(p) + lilLiquidOffsetValue();
 }
 
@@ -208,7 +247,7 @@ float lilLiquidCalcSoft(float3 N)
 //      d =  0     -> 0.5 (液面，正好等于 _Cutoff)
 //      d = +width -> 1   (液体内部，保留)
 //
-// _LiquidSurfaceMode: 0 = Liquid（宽过渡，默认）/ 1 = LiquidCap（窄过渡 + 背面盖子）/ 2 = Off（硬切）
+// _LiquidSurfaceMode: 0 = Liquid（宽过渡，默认）/ 1 = LiquidCap（窄过渡 + 背面下层）/ 2 = Off（硬切）
 float lilLiquidSurfaceAlpha(float d, float facing, float3 N)
 {
     float soft = lilLiquidCalcSoft(N);   // _LiquidSurfaceWidth * (1 - 朝上程度)
@@ -225,8 +264,8 @@ float lilLiquidSurfaceAlpha(float d, float facing, float3 N)
     float width = (_LiquidSurfaceMode == 1) ? soft * 0.5 : soft;
 
     #if defined(LIL_LIQUID_CAP)
-        // 背面切面抬高一整个 width，露出的一圈背面就是"液面盖子"
-        // （会被 lil_pass_forward_* 末尾的 _BackfaceColor 染色）
+        // 背面切面抬高一整个 width，露出的一圈背面就是"液面下层"
+        // （会被 lil_pass_forward_* 末尾的 _BackfaceColor 染色，再叠 lilLiquidUnderlay 的流动层）
         if(_LiquidSurfaceMode == 1 && facing < 0.0) d -= width;
     #endif
 

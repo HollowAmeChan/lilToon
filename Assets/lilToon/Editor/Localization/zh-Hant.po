@@ -1178,6 +1178,12 @@ msgstr "偏移模式|絕對值|量程%"
 msgid "sLiquidWaveAmp"
 msgstr "波紋振幅"
 
+msgid "sLiquidUnderlayTex"
+msgstr "下層貼圖"
+
+msgid "sLiquidUnderlayScroll"
+msgstr "下層滾動"
+
 msgid "sLiquidWaveFreq"
 msgstr "波紋密度"
 

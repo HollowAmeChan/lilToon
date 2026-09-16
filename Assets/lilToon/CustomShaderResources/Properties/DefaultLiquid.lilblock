@@ -73,7 +73,26 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         // Liquid - Wave（液面波纹；不影响 _LiquidFill 的中位高度）
+        // 正面的波纹是"被驱动"的：容器不动时 _LiquidWaveAmp 给 0 就没有波纹。
                         _LiquidWaveAmp           ("sLiquidWaveAmp", Range(0, 0.2)) = 0
                         _LiquidWaveFreq          ("sLiquidWaveFreq", Range(0.1, 40)) = 8
                         _LiquidWaveSpeed         ("sLiquidWaveSpeed", Range(-5, 5)) = 1
         [lilEnum]       _LiquidWaveSpace         ("sLiquidWaveSpaces", Int) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Liquid - Underlay（液面**下层**的常态流动层）
+        //
+        // 只在 _LiquidSurfaceMode = 1 时可见：那时背面会被推出去一圈，那一圈就是"液面下层"。
+        // 参考实现（41水瓶 Liquid.shader）在背面用的是 tex2D(_B, 滚动UV) + _TopColor，
+        // 也就是**一层持续滚动的贴图** —— 与液面波纹无关，所以容器静止时下层依然在流动。
+        // 本实现照这个思路，但 UV 从屏幕空间换成**物体空间**（屏幕空间转视角会飘，VR 里更明显）。
+        //
+        // 与纹波的分工：
+        //   _LiquidWave*  = 被驱动的高度场（容器静止 → 幅度给 0 → 液面变平）
+        //   _LiquidUnderlay* = 常态流动的贴图层（永远在动）
+        //   两者叠起来就是"平的水面底下还有东西在缓慢翻涌"。
+        //
+        // 贴图的 alpha 当遮罩（0 = 不显示下层），所以可以拿一张 RGBA 图控制"哪里看得见下层"。
+        [NoScaleOffset] _LiquidUnderlayTex      ("sLiquidUnderlayTex", 2D) = "black" {}
+        [lilHDR]        _LiquidUnderlayColor    ("sColor", Color) = (0.35,0.55,0.65,0.5)
+                        _LiquidUnderlayScroll   ("sLiquidUnderlayScroll", Vector) = (0.08,0.03,0,0)

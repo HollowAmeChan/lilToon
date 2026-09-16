@@ -460,6 +460,9 @@ namespace lilToon
         private readonly lilMaterialProperty liquidWaveFreq            = new lilMaterialProperty("_LiquidWaveFreq", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveSpeed           = new lilMaterialProperty("_LiquidWaveSpeed", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveSpace           = new lilMaterialProperty("_LiquidWaveSpace", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidUnderlayTex         = new lilMaterialProperty("_LiquidUnderlayTex", true, PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidUnderlayColor       = new lilMaterialProperty("_LiquidUnderlayColor", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidUnderlayScroll      = new lilMaterialProperty("_LiquidUnderlayScroll", PropertyBlock.Liquid);
 
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex                 = new lilMaterialProperty("_OutlineTex", true, PropertyBlock.Outline);
@@ -1093,6 +1096,9 @@ namespace lilToon
                 liquidWaveFreq,
                 liquidWaveSpeed,
                 liquidWaveSpace,
+                liquidUnderlayTex,
+                liquidUnderlayColor,
+                liquidUnderlayScroll,
 
                 outlineColor,
                 outlineTex,

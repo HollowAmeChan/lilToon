@@ -580,6 +580,9 @@ float   _lilOITEnabled;
         float   _LiquidSpecularStrength;
         uint    _LiquidSurfaceMode;
         uint    _LiquidWaveSpace;
+        float4  _LiquidUnderlayTex_ST;
+        float4  _LiquidUnderlayColor;
+        float4  _LiquidUnderlayScroll;
         lilBool _UseLiquid;
     #endif
 //------------------------------------------------------------------------------------------------------------------------------

@@ -14,6 +14,7 @@
             // 加新液面算法 = 在 lil_liquid_level.hlsl 里加一个分支 + 在这里补一个开关。
             #define LIL_LIQUID_WAVE         // 液面波纹
             #define LIL_LIQUID_CAP          // 液面模式 1 的背面盖子
+            #define LIL_LIQUID_UNDERLAY     // 液面下层的常态流动贴图层（模式 1 的背面）
             // #define LIL_LIQUID_CAP_WAVE  // 未实现：波纹版背面层需要顶点位移，见设计文档 L2
 
             // 调试：把「到液面的有符号距离」画成蓝->红渐变。
