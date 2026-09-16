@@ -457,7 +457,7 @@ namespace lilToon
         private readonly lilMaterialProperty liquidOffset              = new lilMaterialProperty("_LiquidOffset", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidOffsetMode          = new lilMaterialProperty("_LiquidOffsetMode", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveAmp             = new lilMaterialProperty("_LiquidWaveAmp", PropertyBlock.Liquid);
-        private readonly lilMaterialProperty liquidWaveAmpScript       = new lilMaterialProperty("_LiquidWaveAmpScript", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidWaveAmpMul          = new lilMaterialProperty("_LiquidWaveAmpMul", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveFreq            = new lilMaterialProperty("_LiquidWaveFreq", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveSpeed           = new lilMaterialProperty("_LiquidWaveSpeed", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidWaveSpace           = new lilMaterialProperty("_LiquidWaveSpace", PropertyBlock.Liquid);
@@ -1094,7 +1094,7 @@ namespace lilToon
                 liquidOffset,
                 liquidOffsetMode,
                 liquidWaveAmp,
-                liquidWaveAmpScript,
+                liquidWaveAmpMul,
                 liquidWaveFreq,
                 liquidWaveSpeed,
                 liquidWaveSpace,

@@ -648,7 +648,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _LiquidOffset;
         uint    _LiquidOffsetMode;
         float   _LiquidWaveAmp;
-        float   _LiquidWaveAmpScript;
+        float   _LiquidWaveAmpMul;
         float   _LiquidWaveFreq;
         float   _LiquidWaveSpeed;
         float   _LiquidSurfaceWidth;

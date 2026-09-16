@@ -945,10 +945,10 @@ namespace lilToon
                         lilEditorGUI.DrawLine();
 
                         LocalizedProperty(liquidWaveAmp);
-                        LocalizedProperty(liquidWaveAmpScript);
+                        LocalizedProperty(liquidWaveAmpMul);
                         // 最终振幅 = 两者相乘，所以任意一路为 0 时波纹都是 0（闸门语义），
                         // 那时频率/速度/空间收起不显示。判据用 && 而不是 ||。
-                        if(liquidWaveAmp.floatValue != 0f && liquidWaveAmpScript.floatValue != 0f)
+                        if(liquidWaveAmp.floatValue != 0f && liquidWaveAmpMul.floatValue != 0f)
                         {
                             LocalizedProperty(liquidWaveFreq);
                             LocalizedProperty(liquidWaveSpeed);

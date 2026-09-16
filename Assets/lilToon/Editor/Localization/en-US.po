@@ -1178,8 +1178,8 @@ msgstr "Offset Mode|Absolute|Range %"
 msgid "sLiquidWaveAmp"
 msgstr "Wave Amplitude"
 
-msgid "sLiquidWaveAmpScript"
-msgstr "Wave Amp (script)"
+msgid "sLiquidWaveAmpMul"
+msgstr "Wave Amp Multiplier"
 
 msgid "sLiquidUnderlayTex"
 msgstr "Underlay"

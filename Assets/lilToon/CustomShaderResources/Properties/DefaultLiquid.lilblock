@@ -75,12 +75,12 @@
         // Liquid - Wave（液面波纹；不影响 _LiquidFill 的中位高度）
         // 最终振幅 = 手动 × 脚本（乘法，不是相加）
         //   _LiquidWaveAmp        手动/美术的基准幅度
-        //   _LiquidWaveAmpScript  脚本的驱动强度，外部每帧写（静止时给 0）
+        //   _LiquidWaveAmpMul     乘数，脚本每帧写（静止给 0）—— 手动那一路是它的闸门
         // 乘法自带"闸门"语义：手动给 0 就等于关掉这条通道，脚本写多大都没波纹 ——
         // 加法做不到"关断"（0 + script 照样有波纹），而关掉波纹是美术真会做的操作。
         // 默认 1 = 恒等元，只用手动参数的现有材质行为完全不变。
                         _LiquidWaveAmp           ("sLiquidWaveAmp", Range(0, 0.2)) = 0
-                        _LiquidWaveAmpScript     ("sLiquidWaveAmpScript", Range(0, 4)) = 1
+                        _LiquidWaveAmpMul        ("sLiquidWaveAmpMul", Range(0, 4)) = 1
                         _LiquidWaveFreq          ("sLiquidWaveFreq", Range(0.1, 40)) = 8
                         _LiquidWaveSpeed         ("sLiquidWaveSpeed", Range(-5, 5)) = 1
         [lilEnum]       _LiquidWaveSpace         ("sLiquidWaveSpaces", Int) = 0

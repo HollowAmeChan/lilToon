@@ -1178,8 +1178,8 @@ msgstr "오프셋 모드|절대값|범위%"
 msgid "sLiquidWaveAmp"
 msgstr "파동 진폭"
 
-msgid "sLiquidWaveAmpScript"
-msgstr "파동 진폭 (스크립트)"
+msgid "sLiquidWaveAmpMul"
+msgstr "파동 진폭 배수"
 
 msgid "sLiquidUnderlayTex"
 msgstr "하면 레이어"
