@@ -1149,7 +1149,7 @@ msgid "sLiquidSurfaceWidth"
 msgstr "液面宽度"
 
 msgid "sLiquidSpecularStrength"
-msgstr ""
+msgstr "液面高光"
 
 msgid "sLiquidFill"
 msgstr "液面高度"

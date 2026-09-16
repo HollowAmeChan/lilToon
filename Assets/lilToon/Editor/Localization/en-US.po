@@ -1149,7 +1149,7 @@ msgid "sLiquidSurfaceWidth"
 msgstr "Surface Width"
 
 msgid "sLiquidSpecularStrength"
-msgstr ""
+msgstr "Surface Specular"
 
 msgid "sLiquidFill"
 msgstr "Fill Amount"
