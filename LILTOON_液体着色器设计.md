@@ -229,8 +229,9 @@ forward pass 的 include 换成：
                         _LiquidOffset            ("sLiquidOffset", Float) = 0
         [lilEnum]       _LiquidOffsetMode        ("sLiquidOffsetModes", Int) = 0
 
-        // Liquid - Wave
+        // Liquid - Wave（最终振幅 = 手动基准 × 脚本乘数，见 §4.5）
                         _LiquidWaveAmp           ("sLiquidWaveAmp", Range(0, 0.2)) = 0
+                        _LiquidWaveAmpMul        ("sLiquidWaveAmpMul", Range(0, 4)) = 1
                         _LiquidWaveFreq          ("sLiquidWaveFreq", Range(0.1, 40)) = 8
                         _LiquidWaveSpeed         ("sLiquidWaveSpeed", Range(-5, 5)) = 1
         [lilEnum]       _LiquidWaveSpace         ("sLiquidWaveSpaces", Int) = 0
@@ -331,7 +332,7 @@ float lilLiquidWave(float3 p)
     if(_LiquidWaveSpace == 1) q = p.xz * lilLiquidObjectScale().xz;   // 世界空间等波长
     float t  = _TimeParameters.x * _LiquidWaveSpeed;
     float2 s = sin(q * _LiquidWaveFreq + t);
-    return (s.x * s.y - 0.5) * _LiquidWaveAmp;    // 沿用参考实现的 (sin-0.5)*Swing 形状
+    return (s.x * s.y - 0.5) * lilLiquidWaveAmplitude();   // 沿用参考实现的 (sin-0.5)*Swing 形状
 }
 ```
 
@@ -408,7 +409,9 @@ mat.SetFloat("_LiquidTiltX", tiltXDeg);
 | `_LiquidTiltX` / `_LiquidTiltZ` | **约束绳**（每帧） | **度**，面板范围 ±90。**按坡度方向命名**：TiltX = +x 侧液面抬高，TiltZ = +z 侧液面抬高。两轴可同时给，合成出来是同一个刚体平面 |
 | `_LiquidOffset` | **约束绳**（每帧） | 垂直偏移，语义是"液面在**世界空间**里往上走多少"，容器倒置也是同一个方向（见 §4.6 的符号表）。`_LiquidOffsetMode=0` 时是网格本地单位，`=1` 时是液面量程的百分比 |
 | `_LiquidFill` | 倒水 / 消耗逻辑 | 0..1，在 `_LiquidLevelY`~`_LiquidLevelH` 之间插值。**倒置时驱动端要取反**（见 §4.6） |
-| `_LiquidWaveAmp` / `_LiquidWaveSpeed` | 可随运动剧烈程度调制 | 停住给 0，晃动给值 → 自然的"静→动"过渡 |
+| `_LiquidWaveAmp` | **美术**（面板） | 0~0.2，是波纹的**基准**幅度。给 0 等于关掉整条波纹通道（最终振幅是乘法，见下） |
+| `_LiquidWaveAmpMul` | **约束绳**（每帧） | 0~4 的**乘数**，静止给 0。最终振幅 = `_LiquidWaveAmp * _LiquidWaveAmpMul`，所以脚本只负责"这一刻多强"，"要不要波纹"仍归美术 |
+| `_LiquidWaveSpeed` | 可随运动剧烈程度调制 | 波纹流动速度；也可以固定不动，只让乘数去调制强度 |
 | `_LiquidLevelY` / `_LiquidLevelH` | 美术一次性设定 | 网格竖直方向的本地 Y 上下界（**差值 = 液面满量程**） |
 
 **从"容器旋转"到参数**（这张表早期版本两个轴的符号都写反了，以 `Atan2` 反解式为准）：
@@ -443,7 +446,7 @@ float tiltZ = Mathf.Atan2(-n.z, n.y) * Mathf.Rad2Deg;              // = +euler.x
 
 **新摆锤系统要给的量**：容器相对世界竖直的倾斜（→ 拆成 X/Z 两个角度）、
 液面目标高度（→ `_LiquidFill`）、摆动惯性造成的垂直浮动（→ `_LiquidOffset`）、
-以及一个"运动剧烈程度"标量（→ 波纹幅度）。
+以及一个"运动剧烈程度"标量（→ 波纹**乘数** `_LiquidWaveAmpMul`）。
 
 ### 4.6 容器倒过来（翻转 180°）怎么给参数
 
