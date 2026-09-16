@@ -235,4 +235,13 @@ float lilLiquidSurfaceAlpha(float d, float facing, float3 N)
     return saturate(d / max(width, 1e-4) * 0.5 + 0.5);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+// 调试视图：把「到液面的有符号距离」画成颜色（蓝 = 液面以上，红 = 液体内部），
+// 红蓝交界就是液面。配合 URP/DefaultLiquid.lilblock 里取消注释 LIL_LIQUID_DEBUG 使用。
+// 只改 rgb，不动 alpha —— 切面在调试模式下也照常工作，能同时看到"切在哪"和"d 是多少"。
+float3 lilLiquidDebugColor(float d)
+{
+    return lerp(float3(0.05, 0.10, 1.0), float3(1.0, 0.10, 0.05), saturate(d * 2.0 + 0.5));
+}
+
 #endif
