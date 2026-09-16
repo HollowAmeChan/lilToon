@@ -1178,6 +1178,9 @@ msgstr "オフセットモード|絶対値|範囲%"
 msgid "sLiquidWaveAmp"
 msgstr "波の振幅"
 
+msgid "sLiquidWaveAmpScript"
+msgstr "波の振幅 (スクリプト)"
+
 msgid "sLiquidUnderlayTex"
 msgstr "下面レイヤー"
 

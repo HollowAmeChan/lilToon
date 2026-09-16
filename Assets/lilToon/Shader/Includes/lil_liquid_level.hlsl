@@ -63,6 +63,26 @@ float3 lilLiquidObjectScale()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+// 液面波纹的最终振幅 = 手动 × 脚本
+//
+//   _LiquidWaveAmp        手动/美术的**基准**幅度（面板可调）
+//   _LiquidWaveAmpScript  脚本的**驱动**强度（外部每帧写，静止时给 0）
+//   最终 = _LiquidWaveAmp * _LiquidWaveAmpScript
+//
+// 为什么用乘法而不是加法：
+//   乘法天然带"闸门"语义 —— 手动那一路给 0 就等于把这条通道整个关掉，
+//   脚本写多大都不会有波纹。加法做不到这件事（0 + script 照样有波纹），
+//   而"关掉某个容器的液面波纹"是美术真会做的操作。
+//   反过来，脚本给 0 时最终也是 0，与手动的值无关 —— 静止就是静止。
+//
+// 默认 _LiquidWaveAmpScript = 1：对只用手动参数的现有材质**完全等价于原来的行为**
+// （乘 1 是恒等）。脚本一旦开始写它，就接管了"这一帧波纹该多强"的话语权。
+float lilLiquidWaveAmplitude()
+{
+    return _LiquidWaveAmp * _LiquidWaveAmpScript;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // 液面波纹
 // 只由水平位置 + 时间决定，不含 p.y —— 这一点很重要：
 // 液面是"高度场"，同一个 (x,z) 只有一个液面高度，正背面的切面才会落在同一处。
@@ -73,7 +93,7 @@ float lilLiquidWave(float3 p)
         if(_LiquidWaveSpace == (uint)1) q = p.xz * lilLiquidObjectScale().xz;
         float t = _TimeParameters.x * _LiquidWaveSpeed;
         float2 s = sin(q * _LiquidWaveFreq + t);
-        return (s.x * s.y - 0.5) * _LiquidWaveAmp;
+        return (s.x * s.y - 0.5) * lilLiquidWaveAmplitude();
     #else
         return 0.0;
     #endif
