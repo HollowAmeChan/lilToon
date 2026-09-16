@@ -350,6 +350,9 @@ msgstr "[高负载] 宝石"
 msgid "sRenderingModeHair"
 msgstr "头发"
 
+msgid "sRenderingModeLiquid"
+msgstr "[高负载] 液体"
+
 msgid "sTransparentMode"
 msgstr "透明模式"
 
@@ -1114,6 +1117,69 @@ msgstr "纵向宽度"
 
 msgid "sHairPower"
 msgstr "高光指数"
+
+msgid "sLiquidSetting"
+msgstr "液体设置"
+
+msgid "sLiquid"
+msgstr "液体"
+
+msgid "sLiquidSurfaceMode"
+msgstr "液面模式"
+
+msgid "sLiquidSurfaceModeLiquid"
+msgstr "液体"
+
+msgid "sLiquidSurfaceModeCap"
+msgstr "盖子"
+
+msgid "sLiquidSurfaceModeOff"
+msgstr "关闭"
+
+msgid "sSpace"
+msgstr "空间"
+
+msgid "sSpaceObject"
+msgstr "物体"
+
+msgid "sSpaceWorld"
+msgstr "世界"
+
+msgid "sLiquidSurfaceWidth"
+msgstr "液面宽度"
+
+msgid "sLiquidFill"
+msgstr "液面高度"
+
+msgid "sLiquidLevelBottom"
+msgstr "液面底部(本地Y)"
+
+msgid "sLiquidLevelTop"
+msgstr "液面顶部(本地Y)"
+
+msgid "sLiquidTiltX"
+msgstr "倾斜 X(度)"
+
+msgid "sLiquidTiltZ"
+msgstr "倾斜 Z(度)"
+
+msgid "sLiquidTiltScale"
+msgstr "倾斜强度"
+
+msgid "sLiquidOffset"
+msgstr "液面偏移"
+
+msgid "sLiquidOffsetModes"
+msgstr "偏移模式|绝对值|量程%"
+
+msgid "sLiquidWaveAmp"
+msgstr "波纹振幅"
+
+msgid "sLiquidWaveFreq"
+msgstr "波纹密度"
+
+msgid "sLiquidWaveSpeed"
+msgstr "波纹速度"
 
 msgid "sStencilSetting"
 msgstr "Stencil 设置"

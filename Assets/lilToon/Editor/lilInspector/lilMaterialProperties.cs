@@ -444,6 +444,22 @@ namespace lilToon
         private readonly lilMaterialProperty hairLobe4WidthB        = new lilMaterialProperty("_HairLobe4WidthB", PropertyBlock.Hair);
         private readonly lilMaterialProperty hairLobe4Power         = new lilMaterialProperty("_HairLobe4Power", PropertyBlock.Hair);
 
+        private readonly lilMaterialProperty useLiquid                 = new lilMaterialProperty("_UseLiquid", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidSurfaceMode         = new lilMaterialProperty("_LiquidSurfaceMode", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidSurfaceWidth        = new lilMaterialProperty("_LiquidSurfaceWidth", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidFill                = new lilMaterialProperty("_LiquidFill", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidLevelY              = new lilMaterialProperty("_LiquidLevelY", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidLevelH              = new lilMaterialProperty("_LiquidLevelH", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidTiltX               = new lilMaterialProperty("_LiquidTiltX", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidTiltZ               = new lilMaterialProperty("_LiquidTiltZ", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidTiltScale           = new lilMaterialProperty("_LiquidTiltScale", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidOffset              = new lilMaterialProperty("_LiquidOffset", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidOffsetMode          = new lilMaterialProperty("_LiquidOffsetMode", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidWaveAmp             = new lilMaterialProperty("_LiquidWaveAmp", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidWaveFreq            = new lilMaterialProperty("_LiquidWaveFreq", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidWaveSpeed           = new lilMaterialProperty("_LiquidWaveSpeed", PropertyBlock.Liquid);
+        private readonly lilMaterialProperty liquidWaveSpace           = new lilMaterialProperty("_LiquidWaveSpace", PropertyBlock.Liquid);
+
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex                 = new lilMaterialProperty("_OutlineTex", true, PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex_ScrollRotate    = new lilMaterialProperty("_OutlineTex_ScrollRotate", PropertyBlock.Outline);
@@ -1059,6 +1075,22 @@ namespace lilToon
                 hairLobe4WidthT,
                 hairLobe4WidthB,
                 hairLobe4Power,
+
+                useLiquid,
+                liquidSurfaceMode,
+                liquidSurfaceWidth,
+                liquidFill,
+                liquidLevelY,
+                liquidLevelH,
+                liquidTiltX,
+                liquidTiltZ,
+                liquidTiltScale,
+                liquidOffset,
+                liquidOffsetMode,
+                liquidWaveAmp,
+                liquidWaveFreq,
+                liquidWaveSpeed,
+                liquidWaveSpace,
 
                 outlineColor,
                 outlineTex,

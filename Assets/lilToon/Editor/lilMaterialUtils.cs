@@ -236,6 +236,20 @@ namespace lilToon
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                     material.SetInt("_AlphaToMask", 0);
                     break;
+                case RenderingMode.Liquid:
+                    material.shader = lilShaderManager.ltsliquid;
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    material.SetInt("_AlphaToMask", 0);
+                    material.SetInt("_ZWrite", 1);
+                    // 液体必须双面：正面=液体本体，背面=液面下层
+                    material.SetInt("_Cull", 0);
+                    // 液面量程必须是「网格竖直方向的本地 Y 上下界」，否则 _LiquidFill 会几乎调不动。
+                    // 默认给 Unity 默认正方体的 -0.5 / 0.5；换模型时在面板上改这两个值。
+                    // 注意：必须重新切一次 Rendering Mode 才会重置，材质里已保存的旧值不会被自动覆盖。
+                    if(material.HasProperty("_LiquidLevelY")) material.SetFloat("_LiquidLevelY", -0.5f);
+                    if(material.HasProperty("_LiquidLevelH")) material.SetFloat("_LiquidLevelH", 0.5f);
+                    break;
             }
             if(!ismulti) material.renderQueue = renderQueue;
             if(rend == RenderingMode.Gem)

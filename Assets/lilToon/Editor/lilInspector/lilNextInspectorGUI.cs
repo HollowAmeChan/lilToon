@@ -287,7 +287,7 @@ namespace lilToon
 
         private void DrawNextOutline(Material material)
         {
-            if(isMultiVariants || isRefr || isFur || isGem || isHair || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || isRefr || isFur || isGem || isHair || isLiquid || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
             if(isShowRenderMode && material.parent == null && !isMultiVariants)
             {
                 bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);
@@ -915,6 +915,40 @@ namespace lilToon
                             }
                             EditorGUI.indentLevel--;
                             if(i + 1 < hairLobes) lilEditorGUI.DrawLine();
+                        }
+                        EditorGUI.indentLevel--;
+                    }
+                }, false);
+                if(isLiquid) DrawNextSection("liquid.main", GetLoc("sLiquidSetting"), PropertyBlock.Liquid, delegate
+                {
+                    LocalizedProperty(useLiquid, false);
+                    if(useLiquid.floatValue == 1f)
+                    {
+                        EditorGUI.indentLevel++;
+                        LocalizedProperty(liquidSurfaceMode);
+                        if(liquidSurfaceMode.floatValue != 2f) LocalizedProperty(liquidSurfaceWidth);
+                        lilEditorGUI.DrawLine();
+
+                        LocalizedProperty(liquidFill);
+                        LocalizedProperty(liquidLevelY);
+                        LocalizedProperty(liquidLevelH);
+                        lilEditorGUI.DrawLine();
+
+                        LocalizedProperty(liquidTiltX);
+                        LocalizedProperty(liquidTiltZ);
+                        LocalizedProperty(liquidTiltScale);
+                        lilEditorGUI.DrawLine();
+
+                        LocalizedProperty(liquidOffset);
+                        if(liquidOffset.floatValue != 0f) LocalizedProperty(liquidOffsetMode);
+                        lilEditorGUI.DrawLine();
+
+                        LocalizedProperty(liquidWaveAmp);
+                        if(liquidWaveAmp.floatValue > 0f)
+                        {
+                            LocalizedProperty(liquidWaveFreq);
+                            LocalizedProperty(liquidWaveSpeed);
+                            LocalizedProperty(liquidWaveSpace);
                         }
                         EditorGUI.indentLevel--;
                     }

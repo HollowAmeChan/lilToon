@@ -301,6 +301,14 @@ namespace lilToon
             return res;
         }
 
+        public static bool IsLiquidProperty(string name)
+        {
+            bool res = false;
+            res = res || name == "_UseLiquid";
+            res = res || name.Contains("_Liquid");
+            return res;
+        }
+
         public static bool IsOutlineProperty(string name)
         {
             bool res = false;

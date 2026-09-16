@@ -30,6 +30,9 @@ namespace lilToon
         public static string sOutlineVertexColorUsages;
         public static string sShadowColorTypes;
         public static string sShadowMaskTypes;
+        public static string sLiquidSurfaceModes;
+        public static string sLiquidWaveSpaces;
+        public static string sLiquidOffsetModes;
         public static string[] sRenderingModeList;
         public static string[] sRenderingModeListLite;
         public static string[] sTransparentModeList;
@@ -156,6 +159,9 @@ namespace lilToon
             loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
             loc["sShadowColorTypes"]         = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             loc["sShadowMaskTypes"]          = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
+            loc["sLiquidSurfaceModes"]       = BuildParams(GetLoc("sLiquidSurfaceMode"), GetLoc("sLiquidSurfaceModeLiquid"), GetLoc("sLiquidSurfaceModeCap"), GetLoc("sLiquidSurfaceModeOff"));
+            loc["sLiquidWaveSpaces"]         = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
+            loc["sLiquidOffsetModes"]        = GetLoc("sLiquidOffsetModes");
             loc["sHSVGs"]                    = BuildParams(GetLoc("sHue"), GetLoc("sSaturation"), GetLoc("sValue"), GetLoc("sGamma"));
             loc["sScrollRotates"]            = BuildParams(GetLoc("sAngle"), GetLoc("sUVAnimation"), GetLoc("sScroll"), GetLoc("sRotate"));
             loc["sDecalAnimations"]          = BuildParams(GetLoc("sAnimation"), GetLoc("sXFrames"), GetLoc("sYFrames"), GetLoc("sFrames"), GetLoc("sFPS"));
@@ -178,13 +184,16 @@ namespace lilToon
             sGlitterParams1                 = BuildParams("Tiling", GetLoc("sParticleSize"), GetLoc("sContrast"));
             sGlitterParams2                 = BuildParams(GetLoc("sBlinkSpeed"), GetLoc("sAngleLimit"), GetLoc("sRimLightDirection"), GetLoc("sColorRandomness"));
             sTransparentMode                = BuildParams(GetLoc("sRenderingMode"), GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeGem"));
-            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem"), GetLoc("sRenderingModeHair")};
+            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem"), GetLoc("sRenderingModeHair"), GetLoc("sRenderingModeLiquid")};
             sRenderingModeListLite          = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent")};
             sTransparentModeList            = new[]{GetLoc("sTransparentModeNormal"), GetLoc("sTransparentModeOnePass"), GetLoc("sTransparentModeTwoPass")};
             sBlendModeList                  = new[]{GetLoc("sBlendModeNormal"), GetLoc("sBlendModeAdd"), GetLoc("sBlendModeScreen"), GetLoc("sBlendModeMul")};
             sOutlineVertexColorUsages       = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
             sShadowColorTypes               = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             sShadowMaskTypes                = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
+            sLiquidSurfaceModes             = BuildParams(GetLoc("sLiquidSurfaceMode"), GetLoc("sLiquidSurfaceModeLiquid"), GetLoc("sLiquidSurfaceModeCap"), GetLoc("sLiquidSurfaceModeOff"));
+            sLiquidWaveSpaces               = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
+            sLiquidOffsetModes              = GetLoc("sLiquidOffsetModes");
             colorRGBAContent                = new GUIContent(GetLoc("sColor"),                              GetLoc("sTextureRGBA"));
             colorAlphaRGBAContent           = new GUIContent(GetLoc("sColorAlpha"),                         GetLoc("sTextureRGBA"));
             maskBlendContent                = new GUIContent(GetLoc("sMask"),                               GetLoc("sBlendR"));

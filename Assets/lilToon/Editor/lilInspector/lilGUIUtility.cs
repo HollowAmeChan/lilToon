@@ -174,6 +174,7 @@ namespace lilToon
             isFur           = !isMultiVariants && lilShaderUtils.IsFurShaderName(shaderName);
             isGem           = !isMultiVariants && lilShaderUtils.IsGemShaderName(shaderName);
             isHair          = !isMultiVariants && lilShaderUtils.IsHairShaderName(shaderName);
+            isLiquid        = !isMultiVariants && lilShaderUtils.IsLiquidShaderName(shaderName);
             isFakeShadow    = !isMultiVariants && lilShaderUtils.IsFakeShadowShaderName(shaderName);
             isOnePass       = lilShaderUtils.IsOnePassShaderName(shaderName);
             isTwoPass       = lilShaderUtils.IsTwoPassShaderName(shaderName);
@@ -192,6 +193,7 @@ namespace lilToon
             if(isFur && isTwoPass)  renderingModeBuf = RenderingMode.FurTwoPass;
             if(isGem)               renderingModeBuf = RenderingMode.Gem;
             if(isHair)              renderingModeBuf = RenderingMode.Hair;
+            if(isLiquid)            renderingModeBuf = RenderingMode.Liquid;
 
                                     transparentModeBuf = TransparentMode.Normal;
             if(isOnePass)           transparentModeBuf = TransparentMode.OnePass;

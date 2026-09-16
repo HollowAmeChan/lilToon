@@ -350,6 +350,9 @@ msgstr "[과부하] 보석"
 msgid "sRenderingModeHair"
 msgstr "머리카락"
 
+msgid "sRenderingModeLiquid"
+msgstr "[고부하] 액체"
+
 msgid "sTransparentMode"
 msgstr "투명 모드"
 
@@ -1114,6 +1117,69 @@ msgstr "세로 너비"
 
 msgid "sHairPower"
 msgstr "스페큘러 지수"
+
+msgid "sLiquidSetting"
+msgstr "액체 설정"
+
+msgid "sLiquid"
+msgstr "액체"
+
+msgid "sLiquidSurfaceMode"
+msgstr "액면 모드"
+
+msgid "sLiquidSurfaceModeLiquid"
+msgstr "액체"
+
+msgid "sLiquidSurfaceModeCap"
+msgstr "뚜껑"
+
+msgid "sLiquidSurfaceModeOff"
+msgstr "끄기"
+
+msgid "sSpace"
+msgstr "공간"
+
+msgid "sSpaceObject"
+msgstr "오브젝트"
+
+msgid "sSpaceWorld"
+msgstr "월드"
+
+msgid "sLiquidSurfaceWidth"
+msgstr "액면 폭"
+
+msgid "sLiquidFill"
+msgstr "액면 높이"
+
+msgid "sLiquidLevelBottom"
+msgstr "액면 하단 (로컬 Y)"
+
+msgid "sLiquidLevelTop"
+msgstr "액면 상단 (로컬 Y)"
+
+msgid "sLiquidTiltX"
+msgstr "기울기 X (도)"
+
+msgid "sLiquidTiltZ"
+msgstr "기울기 Z (도)"
+
+msgid "sLiquidTiltScale"
+msgstr "기울기 강도"
+
+msgid "sLiquidOffset"
+msgstr "액면 오프셋"
+
+msgid "sLiquidOffsetModes"
+msgstr "오프셋 모드|절대값|범위%"
+
+msgid "sLiquidWaveAmp"
+msgstr "파동 진폭"
+
+msgid "sLiquidWaveFreq"
+msgstr "파동 밀도"
+
+msgid "sLiquidWaveSpeed"
+msgstr "파동 속도"
 
 msgid "sStencilSetting"
 msgstr "Stencil 설정"

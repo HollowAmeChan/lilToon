@@ -350,6 +350,9 @@ msgstr "[高負荷] 宝石"
 msgid "sRenderingModeHair"
 msgstr "髪"
 
+msgid "sRenderingModeLiquid"
+msgstr "[高負荷] 液体"
+
 msgid "sTransparentMode"
 msgstr "透過モード"
 
@@ -1114,6 +1117,69 @@ msgstr "縦方向の幅"
 
 msgid "sHairPower"
 msgstr "スペキュラ指数"
+
+msgid "sLiquidSetting"
+msgstr "液体設定"
+
+msgid "sLiquid"
+msgstr "液体"
+
+msgid "sLiquidSurfaceMode"
+msgstr "液面モード"
+
+msgid "sLiquidSurfaceModeLiquid"
+msgstr "液体"
+
+msgid "sLiquidSurfaceModeCap"
+msgstr "フタ"
+
+msgid "sLiquidSurfaceModeOff"
+msgstr "オフ"
+
+msgid "sSpace"
+msgstr "空間"
+
+msgid "sSpaceObject"
+msgstr "オブジェクト"
+
+msgid "sSpaceWorld"
+msgstr "ワールド"
+
+msgid "sLiquidSurfaceWidth"
+msgstr "液面の幅"
+
+msgid "sLiquidFill"
+msgstr "液面の高さ"
+
+msgid "sLiquidLevelBottom"
+msgstr "液面の下端 (ローカルY)"
+
+msgid "sLiquidLevelTop"
+msgstr "液面の上端 (ローカルY)"
+
+msgid "sLiquidTiltX"
+msgstr "傾き X (度)"
+
+msgid "sLiquidTiltZ"
+msgstr "傾き Z (度)"
+
+msgid "sLiquidTiltScale"
+msgstr "傾きの強さ"
+
+msgid "sLiquidOffset"
+msgstr "液面オフセット"
+
+msgid "sLiquidOffsetModes"
+msgstr "オフセットモード|絶対値|範囲%"
+
+msgid "sLiquidWaveAmp"
+msgstr "波の振幅"
+
+msgid "sLiquidWaveFreq"
+msgstr "波の密度"
+
+msgid "sLiquidWaveSpeed"
+msgstr "波の速度"
 
 msgid "sStencilSetting"
 msgstr "ステンシル設定"

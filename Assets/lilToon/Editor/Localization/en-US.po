@@ -350,6 +350,9 @@ msgstr "[high-load] Gem"
 msgid "sRenderingModeHair"
 msgstr "Hair"
 
+msgid "sRenderingModeLiquid"
+msgstr "[Heavy] Liquid"
+
 msgid "sTransparentMode"
 msgstr "Transparent Mode"
 
@@ -1114,6 +1117,69 @@ msgstr "Width B"
 
 msgid "sHairPower"
 msgstr "Power"
+
+msgid "sLiquidSetting"
+msgstr "Liquid Settings"
+
+msgid "sLiquid"
+msgstr "Liquid"
+
+msgid "sLiquidSurfaceMode"
+msgstr "Surface Mode"
+
+msgid "sLiquidSurfaceModeLiquid"
+msgstr "Liquid"
+
+msgid "sLiquidSurfaceModeCap"
+msgstr "Cap"
+
+msgid "sLiquidSurfaceModeOff"
+msgstr "Off"
+
+msgid "sSpace"
+msgstr "Space"
+
+msgid "sSpaceObject"
+msgstr "Object"
+
+msgid "sSpaceWorld"
+msgstr "World"
+
+msgid "sLiquidSurfaceWidth"
+msgstr "Surface Width"
+
+msgid "sLiquidFill"
+msgstr "Fill Amount"
+
+msgid "sLiquidLevelBottom"
+msgstr "Level Bottom (Local Y)"
+
+msgid "sLiquidLevelTop"
+msgstr "Level Top (Local Y)"
+
+msgid "sLiquidTiltX"
+msgstr "Tilt X (deg)"
+
+msgid "sLiquidTiltZ"
+msgstr "Tilt Z (deg)"
+
+msgid "sLiquidTiltScale"
+msgstr "Tilt Scale"
+
+msgid "sLiquidOffset"
+msgstr "Level Offset"
+
+msgid "sLiquidOffsetModes"
+msgstr "Offset Mode|Absolute|Range %"
+
+msgid "sLiquidWaveAmp"
+msgstr "Wave Amplitude"
+
+msgid "sLiquidWaveFreq"
+msgstr "Wave Frequency"
+
+msgid "sLiquidWaveSpeed"
+msgstr "Wave Speed"
 
 msgid "sStencilSetting"
 msgstr "Stencil"
