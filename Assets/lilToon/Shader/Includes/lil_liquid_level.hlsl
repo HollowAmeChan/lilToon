@@ -231,8 +231,8 @@ float lilLiquidLevelOS(float3 p)
     // 放进括号里会让同一个参数把液面推向世界的另一边（晃动方向整个反过来）。
     // 放在外面等价于内部按 sign 缩放这两项，但参数语义对任何朝向都一致，驱动端不必再判断朝向。
     //
-    // 下层波纹不在这里加：它只影响模式 1 的背面，由 lilLiquidUnderWaveOffset() 单独提供，
-    // 并在 lilLiquidSurfaceAlpha() 里与 width 同步偏移（否则背面的切面会漂）。
+    // 下层波纹不在这里加：它只影响液体内部那一层，由 lilLiquidUnderlay 的 UV 滚动表达，
+    // 不参与液面的几何位置（参与的话切面会跟着波纹漂，反而看得见"切面在动"）。
     return d + lilLiquidWave(p) + lilLiquidOffsetValue();
 }
 

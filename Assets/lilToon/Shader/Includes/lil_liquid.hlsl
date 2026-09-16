@@ -10,7 +10,8 @@
 
 // 让生成的 shader 文本带上唯一标记，用于确认"Unity 跑的是不是刚改的那版"：
 //   Shader Inspector 右上角 ⋮ -> Show generated code -> 搜 LIL_LIQUID_REV
-// 每次改本文件或 lil_liquid_level.hlsl 都应该把这个数字 +1。
+// 每次改本文件或 lil_liquid_level.hlsl 的**行为**都应该把这个数字 +1。
+// 纯注释/改名不用动它（生成的文本会变，但跑出来的像素不会变，加号只用来区分行为版本）。
 // rev4：液面内部按物体朝向自动换边（倒置修正）+ 垂直位移量移到符号外面。
 // rev5：修正 rev4 的坐标系混用 —— 内部判定要用物体空间的「世界 up」（矩阵第 1 行），
 //       用成「物体的 up 在世界」（第 1 列）会让液面在 45° 就提前倒转。
@@ -88,7 +89,7 @@ void lilLiquid(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
 
     fd.col.a = min(fd.col.a, alpha);
 
-    // 下层常态流动层（只作用于模式 1 的背面）
+    // 液体内部的常态流动层（只作用于背面 = 透过切面的洞看到的那片内部）
     fd.col.rgb = lilLiquidUnderlayApply(fd, alpha LIL_SAMP_IN(samp));
 }
 
