@@ -927,6 +927,7 @@ namespace lilToon
                         EditorGUI.indentLevel++;
                         LocalizedProperty(liquidSurfaceMode);
                         if(liquidSurfaceMode.floatValue != 2f) LocalizedProperty(liquidSurfaceWidth);
+                        LocalizedProperty(liquidSpecularStrength);
                         lilEditorGUI.DrawLine();
 
                         LocalizedProperty(liquidFill);

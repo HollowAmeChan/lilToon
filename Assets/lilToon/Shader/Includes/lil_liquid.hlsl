@@ -49,6 +49,11 @@ void lilLiquid(inout lilFragData fd)
 {
     if(!_UseLiquid) return;
 
+    // 液面高光：把反射 / MatCap 专用法线换成液面平面法线。
+    // 容器壁的多边形法线是水平的，直接拿它算高光会在液面边缘出现一圈错高光。
+    // 调用点已经保证这一句在 frag 的 Reflection 段之前。
+    lilLiquidApplySpecular(fd);
+
     float d = lilLiquidSurfaceDistance(fd);
 
     #if defined(LIL_LIQUID_DEBUG)

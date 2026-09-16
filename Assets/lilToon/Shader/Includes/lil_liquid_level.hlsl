@@ -236,6 +236,51 @@ float lilLiquidSurfaceAlpha(float d, float facing, float3 N)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+// 液面平面的法线（世界空间）
+//   高度场 h = level + tx·x + tz·z 的法线 ∝ (-tx, 1, -tz)（物体空间），转到世界空间。
+//   用途：把反射模块专用法线 fd.reflectionN 换成它 —— 容器壁的多边形法线是**水平**的，
+//   直接拿它算反射/高光会在液面边缘出现一圈"贴着容器壁"的错高光。
+//   法线变换用 mul(M, n)（不是乘转置）：纯旋转下两者相同，这里的 M 含缩放，
+//   用 M 会按各轴缩放拉伸法线，之后 normalize 即可回到正确方向（非均匀缩放时略有偏差，
+//   但液面法线接近竖直，实际观感无碍）。
+float3 lilLiquidPlaneNormalWS()
+{
+    float tx = clamp(tan(radians(_LiquidTiltX * _LiquidTiltScale)), -1e3, 1e3);
+    float tz = clamp(tan(radians(_LiquidTiltZ * _LiquidTiltScale)), -1e3, 1e3);
+
+    float3 nOS = float3(-tx, 1.0, -tz);
+
+    // 容器倒置时液面法线朝物体 -Y，此时反射法线也要跟着翻，否则高光会落在"水面背面"
+    nOS *= lilLiquidInteriorSign(tx, tz);
+
+    return normalize(mul((float3x3)LIL_MATRIX_M, nOS));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+// 液面高光：把反射 / MatCap 专用法线混向"液面平面法线"
+//
+// 为什么只改这两个：
+//   fd.reflectionN / fd.matcapN 是**反射与 MatCap 专用**的法线
+//   （lil_common_frag.hlsl 的 lilReflection():1495 / lilGetMatCap():1537），
+//   改它们不影响阴影分级、软切权重、正背面判定。
+//   而 fd.N（着色 + 软切）和 fd.origN（阴影/边缘光/背光/SSS/闪粉/距离淡化都在用）
+//   都**不能**动 —— 改 fd.origN 会把整套 toon 光照带偏。
+//
+// ⚠️ 配套设置（否则看不到效果）：
+//   lilCalcSpecular():1335 与 lilReflection():1497 都是
+//       N = lerp(fd.origN, <专用法线>, _XxxNormalStrength)
+//   所以只有当 **_SpecularNormalStrength = 0**（和 **_ReflectionNormalStrength = 0**）时，
+//   高光才会完全跟着液面平面法线走。默认值是 1，会把网格原法线混进来 ——
+//   液面上就会出现"贴着容器壁"的错高光。面板上把这两个 Normal Strength 拉到 0 即可。
+void lilLiquidApplySpecular(inout lilFragData fd)
+{
+    if(_LiquidSpecularStrength <= 0.0) return;
+    float3 n = normalize(lerp(fd.reflectionN, lilLiquidPlaneNormalWS(), saturate(_LiquidSpecularStrength)));
+    fd.reflectionN = n;
+    fd.matcapN     = n;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 // 调试视图：把「到液面的有符号距离」画成颜色（蓝 = 液面以上，红 = 液体内部），
 // 红蓝交界就是液面。配合 URP/DefaultLiquid.lilblock 里取消注释 LIL_LIQUID_DEBUG 使用。
 // 只改 rgb，不动 alpha —— 切面在调试模式下也照常工作，能同时看到"切在哪"和"d 是多少"。

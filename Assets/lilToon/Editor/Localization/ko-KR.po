@@ -1148,6 +1148,9 @@ msgstr "월드"
 msgid "sLiquidSurfaceWidth"
 msgstr "액면 폭"
 
+msgid "sLiquidSpecularStrength"
+msgstr ""
+
 msgid "sLiquidFill"
 msgstr "액면 높이"
 

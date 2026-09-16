@@ -39,6 +39,15 @@
                         _LiquidSurfaceWidth      ("sLiquidSurfaceWidth", Range(0, 0.5)) = 0.06
 
         //----------------------------------------------------------------------------------------------------------------------
+        // Liquid - Specular（液面高光）
+        // 为什么需要单独一项：容器壁的多边形法线是**水平指向外**的，用它算反射/高光，
+        // 液面上会出现一圈"贴着容器壁"的错高光。这里把反射模块专用的法线
+        // （fd.reflectionN，只影响反射/高光，不影响阴影与软切）换成液面平面法线，
+        // 高光才会像一块平静的水面。强度 0 = 关闭，用网格原法线。
+        // 注意：还要在 Reflection 段里开 _UseReflection + 提高 _Smoothness 才看得到效果。
+                        _LiquidSpecularStrength  ("sLiquidSpecularStrength", Range(0, 1)) = 1
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Liquid - Level
         // _LiquidFill(0..1) 在 _LiquidLevelY 与 _LiquidLevelH 两个「网格本地 Y」之间线性插值出液面。
         // （uniform 名字保持 _LiquidLevelY / _LiquidLevelH；面板显示名走 sLiquidLevelBottom / sLiquidLevelTop）
@@ -51,13 +60,9 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         // Liquid - Tilt
-        // 两轴倾斜：绕本地 X 轴的俯仰 + 绕本地 Z 轴的翻滚，单位是「度」。
-        // 驱动接口（摆锤约束绳可直接写这两个）：
-        //   _LiquidTiltX  = 容器绕 X 轴的倾角（+/- 90 度以内，超了液面会翻过来）
-        //   _LiquidTiltZ  = 容器绕 Z 轴的倾角
-        //   _LiquidOffset = 液面的垂直偏移（晃动惯性的上下浮动），与倾斜正交，单独一路
-        // 归一化用 sin/cos 做，所以两轴可同时用、且倾角再大液面也是同一个平面（不会像
-        // 参考实现那样用斜率相加导致"倾斜越大液面整体越高"）。
+        // 两轴倾斜（度）。语义按「坡度方向」命名：_LiquidTiltX = +x 侧液面抬高，_LiquidTiltZ = +z 侧液面抬高。
+        // 不要直接喂 transform.eulerAngles —— 反解式见设计文档 §4.5。
+        // 「容器倒过来」由 shader 里的 lilLiquidInteriorSign() 自动换内部，见 §4.6。
                         _LiquidTiltX            ("sLiquidTiltX", Range(-90, 90)) = 0
                         _LiquidTiltZ            ("sLiquidTiltZ", Range(-90, 90)) = 0
                         _LiquidTiltScale        ("sLiquidTiltScale", Range(0, 4)) = 1

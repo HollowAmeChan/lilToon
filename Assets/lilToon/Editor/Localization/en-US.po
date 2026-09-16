@@ -1148,6 +1148,9 @@ msgstr "World"
 msgid "sLiquidSurfaceWidth"
 msgstr "Surface Width"
 
+msgid "sLiquidSpecularStrength"
+msgstr ""
+
 msgid "sLiquidFill"
 msgstr "Fill Amount"
 

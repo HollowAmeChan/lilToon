@@ -1148,6 +1148,9 @@ msgstr "ワールド"
 msgid "sLiquidSurfaceWidth"
 msgstr "液面の幅"
 
+msgid "sLiquidSpecularStrength"
+msgstr ""
+
 msgid "sLiquidFill"
 msgstr "液面の高さ"
 

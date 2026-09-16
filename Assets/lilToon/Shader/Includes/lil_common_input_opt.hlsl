@@ -577,6 +577,7 @@ float   _lilOITEnabled;
         float   _LiquidWaveFreq;
         float   _LiquidWaveSpeed;
         float   _LiquidSurfaceWidth;
+        float   _LiquidSpecularStrength;
         uint    _LiquidSurfaceMode;
         uint    _LiquidWaveSpace;
         lilBool _UseLiquid;
