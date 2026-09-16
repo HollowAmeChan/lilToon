@@ -58,7 +58,12 @@
     #define LIL_APP_NORMAL
 #endif
 
-#if defined(LIL_REQUIRE_APP_TANGENT) || ((defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_GEM) || defined(LIL_HAIR)) && defined(LIL_SHOULD_TANGENT)) || defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || (!defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FUR)) || defined(LIL_BAKER)
+// LIL_LIQUID 虽然只用世界法线算液面权重，但它会让 LIL_SHOULD_TBN 成立
+// （lil_common_macro.hlsl），于是家族 pass 会定义 LIL_V2F_TANGENT_WS 并在
+// lil_common_vert.hlsl:229 输出 vertexNormalInput.tangentWS ——
+// 而那个值要求 appdata 里真的有 tangentOS。所以这里必须列上家族，
+// 否则 FORWARD pass 直接 invalid subscript 'tangentOS'。
+#if defined(LIL_REQUIRE_APP_TANGENT) || ((defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_GEM) || defined(LIL_HAIR) || defined(LIL_LIQUID)) && defined(LIL_SHOULD_TANGENT)) || defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || (!defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FUR)) || defined(LIL_BAKER)
     #define LIL_APP_TANGENT
 #endif
 

@@ -1,0 +1,659 @@
+//------------------------------------------------------------------------------------------------------------------------------
+// (family) copied from lil_pass_forward_normal.hlsl -- keep in sync
+// 上游改动 normal 的 frag 时，需要人工镜像到这里
+// liquid: frag 的非 outline 分支里多调用一次 lilLiquid(fd)，位置在主色之后、Alpha(cutout) 之前。
+//         其余与 hair 版逐字相同。
+//------------------------------------------------------------------------------------------------------------------------------
+#ifndef LIL_PASS_FORWARD_LIQUID_INCLUDED
+#define LIL_PASS_FORWARD_LIQUID_INCLUDED
+
+#include "lil_common.hlsl"
+#include "lil_common_appdata.hlsl"
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Structure
+#if !defined(LIL_CUSTOM_V2F_MEMBER)
+    #define LIL_CUSTOM_V2F_MEMBER(id0,id1,id2,id3,id4,id5,id6,id7)
+#endif
+
+#if defined(LIL_OUTLINE)
+    #define LIL_V2F_POSITION_CS
+    #define LIL_V2F_PACKED_TEXCOORD01
+    #define LIL_V2F_PACKED_TEXCOORD23
+    // LIL_LIQUID: 液体必须有物体空间位置才能切液面，所以额外列上家族守卫。
+    // ⚠️ 这个守卫必须**同时**产出一份 LIL_V2F_POSITION_OS，因为
+    //    lil_common_vert.hlsl:209 的赋值语句只认 LIL_V2F_POSITION_OS：
+    //        #if defined(LIL_V2F_POSITION_OS)
+    //            LIL_V2F_OUT_BASE.positionOSdissolve.xyz = input.positionOS.xyz;
+    //        #endif
+    //    只声明成员、不产出这个宏，就会变成「结构体里有、但从不赋值」
+    //    => fd.positionOS 恒为 0 => 液面切成常量 => "怎么调都是满的"，且不报错。
+    //    （实测踩过两次：第一次是两处守卫都漏，第二次是只补了声明侧。）
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_V2F_LIQUID_POSITION)
+        #ifndef LIL_V2F_POSITION_OS
+            #define LIL_V2F_POSITION_OS
+        #endif
+    #endif
+    #define LIL_V2F_POSITION_WS
+    #define LIL_V2F_NORMAL_WS
+    #if !defined(LIL_PASS_FORWARDADD)
+        #define LIL_V2F_LIGHTCOLOR
+        #if defined(LIL_FEATURE_OUTLINE_RECEIVE_SHADOW)
+            #define LIL_V2F_SHADOW
+        #endif
+    #endif
+    #define LIL_V2F_VERTEXLIGHT_FOG
+
+    struct v2f
+    {
+        float4 positionCS   : SV_POSITION;
+        float4 uv01         : TEXCOORD0;
+        float4 uv23         : TEXCOORD1;
+        #if defined(LIL_V2F_POSITION_OS)
+            float4 positionOSdissolve   : TEXCOORD2;
+        #endif
+        #if defined(LIL_V2F_POSITION_WS)
+            float3 positionWS   : TEXCOORD3;
+        #endif
+        #if defined(LIL_V2F_NORMAL_WS)
+            LIL_VECTOR_INTERPOLATION float3 normalWS     : TEXCOORD4;
+        #endif
+        LIL_LIGHTCOLOR_COORDS(5)
+        LIL_VERTEXLIGHT_FOG_COORDS(6)
+        #if defined(LIL_V2F_SHADOW)
+            LIL_SHADOW_COORDS(7)
+        #endif
+        LIL_CUSTOM_V2F_MEMBER(8,9,10,11,12,13,14,15)
+        LIL_VERTEX_INPUT_INSTANCE_ID
+        LIL_VERTEX_OUTPUT_STEREO
+    };
+#else
+    #define LIL_V2F_POSITION_CS
+    #define LIL_V2F_PACKED_TEXCOORD01
+    #define LIL_V2F_PACKED_TEXCOORD23
+    // LIL_LIQUID: 液体必须有物体空间位置才能切液面，所以额外列上家族守卫。
+    // ⚠️ 这个守卫必须**同时**产出一份 LIL_V2F_POSITION_OS，因为
+    //    lil_common_vert.hlsl:209 的赋值语句只认 LIL_V2F_POSITION_OS：
+    //        #if defined(LIL_V2F_POSITION_OS)
+    //            LIL_V2F_OUT_BASE.positionOSdissolve.xyz = input.positionOS.xyz;
+    //        #endif
+    //    只声明成员、不产出这个宏，就会变成「结构体里有、但从不赋值」
+    //    => fd.positionOS 恒为 0 => 液面切成常量 => "怎么调都是满的"，且不报错。
+    //    （实测踩过两次：第一次是两处守卫都漏，第二次是只补了声明侧。）
+    #if defined(LIL_V2F_FORCE_POSITION_OS) || defined(LIL_SHOULD_POSITION_OS) || defined(LIL_V2F_LIQUID_POSITION)
+        #ifndef LIL_V2F_POSITION_OS
+            #define LIL_V2F_POSITION_OS
+        #endif
+    #endif
+    #define LIL_V2F_POSITION_WS
+    #define LIL_V2F_NORMAL_WS
+    #if defined(LIL_V2F_FORCE_TANGENT) || defined(LIL_SHOULD_TBN)
+        #define LIL_V2F_TANGENT_WS
+    #endif
+    #if !defined(LIL_PASS_FORWARDADD)
+        #define LIL_V2F_LIGHTCOLOR
+        #define LIL_V2F_LIGHTDIRECTION
+        #if defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_BACKLIGHT)
+            #define LIL_V2F_SHADOW
+        #endif
+    #endif
+    #define LIL_V2F_VERTEXLIGHT_FOG
+
+    struct v2f
+    {
+        float4 positionCS   : SV_POSITION;
+        float4 uv01         : TEXCOORD0;
+        float4 uv23         : TEXCOORD1;
+        #if defined(LIL_V2F_POSITION_OS)
+            float4 positionOSdissolve   : TEXCOORD2;
+        #endif
+        #if defined(LIL_V2F_POSITION_WS)
+            float3 positionWS   : TEXCOORD3;
+        #endif
+        #if defined(LIL_V2F_NORMAL_WS)
+            LIL_VECTOR_INTERPOLATION float3 normalWS     : TEXCOORD4;
+        #endif
+        #if defined(LIL_V2F_TANGENT_WS)
+            LIL_VECTOR_INTERPOLATION float4 tangentWS    : TEXCOORD5;
+        #endif
+        LIL_LIGHTCOLOR_COORDS(6)
+        LIL_LIGHTDIRECTION_COORDS(7)
+        LIL_INDLIGHTCOLOR_COORDS(8)
+        LIL_VERTEXLIGHT_FOG_COORDS(9)
+        #if defined(LIL_V2F_SHADOW)
+            LIL_SHADOW_COORDS(10)
+        #endif
+        LIL_CUSTOM_V2F_MEMBER(11,12,13,14,15,16,17,18)
+        LIL_VERTEX_INPUT_INSTANCE_ID
+        LIL_VERTEX_OUTPUT_STEREO
+    };
+#endif
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Shader
+#include "lil_common_vert.hlsl"
+#include "lil_common_frag.hlsl"
+#include "lil_liquid.hlsl"
+
+#if defined(LIL_OIT_PASS)
+    #include "lil_oit.hlsl"
+    #define LIL_FORWARD_FRAGMENT_RETURN_TYPE LIL_OIT_FRAGMENT_RETURN_TYPE
+    #define LIL_FORWARD_FRAGMENT_TARGET LIL_OIT_FRAGMENT_TARGET
+#else
+    float _lilOITActive;
+    #define LIL_FORWARD_FRAGMENT_RETURN_TYPE float4
+    #define LIL_FORWARD_FRAGMENT_TARGET : SV_Target
+#endif
+
+LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_FRAGMENT_TARGET
+{
+    //------------------------------------------------------------------------------------------------------------------------------
+    // Initialize
+    LIL_SETUP_INSTANCE_ID(input);
+    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    lilFragData fd = lilInitFragData();
+
+    BEFORE_UNPACK_V2F
+    OVERRIDE_UNPACK_V2F
+    LIL_COPY_VFACE(fd.facing);
+    LIL_GET_HDRPDATA(input,fd);
+    #if defined(LIL_OIT_PASS)
+        clip(_lilOITEnabled - 0.5);
+    #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION) && !defined(LIL_OUTLINE)
+        clip(0.5 - _lilOITEnabled * _lilOITActive);
+    #endif
+    #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD)
+        LIL_LIGHT_ATTENUATION(fd.attenuation, input);
+    #endif
+
+    LIL_GET_LIGHTING_DATA(input,fd);
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    // View Direction
+    #if defined(LIL_V2F_POSITION_WS)
+        LIL_GET_POSITION_WS_DATA(input,fd);
+    #endif
+    #if defined(LIL_V2F_NORMAL_WS) && defined(LIL_V2F_TANGENT_WS)
+        LIL_GET_TBN_DATA(input,fd);
+    #endif
+    #if defined(LIL_V2F_NORMAL_WS) && defined(LIL_V2F_TANGENT_WS) && defined(LIL_V2F_POSITION_WS)
+        LIL_GET_PARALLAX_DATA(input,fd);
+    #endif
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    // Apply Matelial & Lighting
+    #if defined(LIL_OUTLINE)
+        //------------------------------------------------------------------------------------------------------------------------------
+        // UV
+        BEFORE_ANIMATE_OUTLINE_UV
+        OVERRIDE_ANIMATE_OUTLINE_UV
+        BEFORE_CALC_DDX_DDY
+        OVERRIDE_CALC_DDX_DDY
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Normal
+        #if defined(LIL_V2F_NORMAL_WS)
+            fd.N = normalize(input.normalWS);
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Main Color
+        BEFORE_OUTLINE_COLOR
+        OVERRIDE_OUTLINE_COLOR
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Alpha Mask
+        BEFORE_ALPHAMASK
+        #if defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
+            OVERRIDE_ALPHAMASK
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Dissolve
+        BEFORE_DISSOLVE
+        #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
+            float dissolveAlpha = 0.0;
+            if (fd.dissolveActive)
+            {
+                float priorAlpha = fd.col.a;
+                fd.col.a = 1.0f;
+                OVERRIDE_DISSOLVE
+                if (fd.dissolveInvert)
+                {
+                    fd.col.a = 1.0f - fd.col.a;
+                }
+                
+                fd.col.a *= priorAlpha;
+            }
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Dither
+        BEFORE_DITHER
+        #if defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
+            OVERRIDE_DITHER
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Alpha
+        #if LIL_RENDER == 0
+            // Opaque
+            fd.col.a = 1.0;
+        #elif LIL_RENDER == 1
+            // Cutout
+            fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
+            if(fd.col.a == 0) discard;
+        #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+            // Transparent
+            clip(fd.col.a - _Cutoff);
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Depth Fade
+        BEFORE_DEPTH_FADE
+        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+            OVERRIDE_DEPTH_FADE
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Copy
+        fd.albedo = fd.col.rgb;
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Lighting
+        #if defined(LIL_PASS_FORWARDADD)
+            fd.col.rgb = fd.col.rgb * fd.lightColor * _OutlineEnableLighting;
+        #else
+            fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * min(fd.lightColor + fd.addLightColor, _LightMaxLimit), _OutlineEnableLighting);
+            // Toon shadow is opt-in through _OutlineShadowStrength. When it is on, the
+            // outline runs the same lighting model as the main colour first and then the
+            // same AO darkening, so the outline is lit and occluded exactly like the body
+            // it borders (the two are one unit).
+            #if defined(LIL_FEATURE_SHADOW)
+                if(_UseShadow && _OutlineShadowStrength > 0.0)
+                {
+                    BEFORE_AO
+                    OVERRIDE_AO
+
+                    float3 outlineShadowColor = fd.col.rgb;
+                    fd.origN = fd.N;
+                    fd.ln = dot(fd.L, fd.N);
+                    OVERRIDE_SHADOW
+                    fd.col.rgb = lerp(outlineShadowColor, fd.col.rgb, _OutlineShadowStrength);
+
+                    BEFORE_AODARK
+                    OVERRIDE_AODARK
+                }
+            #endif
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Premultiply
+        LIL_PREMULTIPLY
+    #else
+        //------------------------------------------------------------------------------------------------------------------------------
+        // UV
+        BEFORE_ANIMATE_MAIN_UV
+        OVERRIDE_ANIMATE_MAIN_UV
+        BEFORE_CALC_DDX_DDY
+        OVERRIDE_CALC_DDX_DDY
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Parallax
+        BEFORE_PARALLAX
+        #if defined(LIL_FEATURE_PARALLAX)
+            OVERRIDE_PARALLAX
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Main Color
+        BEFORE_MAIN
+        OVERRIDE_MAIN
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Normal
+        #if defined(LIL_V2F_NORMAL_WS)
+            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                float3 normalmap = float3(0.0,0.0,1.0);
+
+                // 1st
+                BEFORE_NORMAL_1ST
+                #if defined(LIL_FEATURE_NORMAL_1ST)
+                    OVERRIDE_NORMAL_1ST
+                #endif
+
+                // 2nd
+                BEFORE_NORMAL_2ND
+                #if defined(LIL_FEATURE_NORMAL_2ND)
+                    OVERRIDE_NORMAL_2ND
+                #endif
+
+                fd.N = normalize(mul(normalmap, fd.TBN));
+                fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
+            #else
+                fd.N = normalize(input.normalWS);
+                fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
+            #endif
+            fd.ln = dot(fd.L, fd.N);
+            #if defined(LIL_V2F_POSITION_WS)
+                fd.nv = saturate(dot(fd.N, fd.V));
+                fd.nvabs = abs(dot(fd.N, fd.V));
+                fd.uvRim = float2(fd.nvabs,fd.nvabs);
+            #endif
+            fd.origN = normalize(input.normalWS);
+            fd.uvMat = mul(fd.cameraMatrix, fd.N).xy * 0.5 + 0.5;
+        #endif
+        fd.reflectionN = fd.N;
+        fd.matcapN = fd.N;
+        fd.matcap2ndN = fd.N;
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Liquid
+        // ⚠️ 位置至关重要：必须落在下面 "Alpha" 段的 cutout 判定**之前**。
+        // 非 outline 分支的 cutout 是：
+        //     fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
+        //     if(fd.col.a == 0) discard;
+        // 液体是通过写 fd.col.a 来切液面的，一旦晚于这段，改的就是"过期"的 alpha，
+        // 表现为「液面高度怎么调都不 cutoff」，且不报错。（实测在这里绕了很久）
+        // 之所以放在 Normal 段之后：液面软切宽度要用 fd.N（朝上程度）加权。
+        // 注：hair 家族把 lilHairSpecular 放在 frag 很靠后的位置是**对的**，
+        //     因为它改的是 fd.col.rgb（叠高光）；液体改 alpha，位置完全不同。
+        lilLiquid(fd);
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Layer Color
+        #if defined(LIL_V2F_TANGENT_WS)
+            fd.isRightHand = input.tangentWS.w > 0.0;
+        #endif
+        // 2nd
+        BEFORE_MAIN2ND
+        #if defined(LIL_FEATURE_MAIN2ND)
+            float main2ndDissolveAlpha = 0.0;
+            float4 color2nd = 1.0;
+            OVERRIDE_MAIN2ND
+        #endif
+
+        // 3rd
+        BEFORE_MAIN3RD
+        #if defined(LIL_FEATURE_MAIN3RD)
+            float main3rdDissolveAlpha = 0.0;
+            float4 color3rd = 1.0;
+            OVERRIDE_MAIN3RD
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Alpha Mask
+        BEFORE_ALPHAMASK
+        #if defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
+            OVERRIDE_ALPHAMASK
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Dissolve
+        BEFORE_DISSOLVE
+        #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
+            float dissolveAlpha = 0.0;
+            if (fd.dissolveActive)
+            {
+                float priorAlpha = fd.col.a;
+                fd.col.a = 1.0f;
+                OVERRIDE_DISSOLVE
+                if (fd.dissolveInvert)
+                {
+                    fd.col.a = 1.0f - fd.col.a;
+                }
+                        
+                fd.col.a *= priorAlpha;
+            }
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Dither
+        BEFORE_DITHER
+        #if defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
+            OVERRIDE_DITHER
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Alpha
+        #if LIL_RENDER == 0
+            // Opaque
+            fd.col.a = 1.0;
+        #elif LIL_RENDER == 1
+            // Cutout
+            #if defined(LIL_FEATURE_DITHER)
+                if(!_UseDither)
+            #endif
+            fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
+            if(fd.col.a == 0) discard;
+        #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+            // Transparent
+            #if defined(LIL_TRANSPARENT_PRE)
+                fd.col *= _PreColor;
+                clip(fd.col.a - _PreCutoff);
+                if(_PreOutType) return _PreOutType == 2 ? _PreColor : fd.col;
+            #else
+                clip(fd.col.a - _Cutoff);
+            #endif
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Depth Fade
+        BEFORE_DEPTH_FADE
+        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+            OVERRIDE_DEPTH_FADE
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Fur AO
+        #if defined(LIL_FUR) && LIL_RENDER == 1
+            #if defined(LIL_FEATURE_FurMask)
+                float furMask = LIL_SAMPLE_2D(_FurMask, sampler_MainTex, fd.uvMain).r;
+                float furAO = _FurAO * furMask;
+            #else
+                float furAO = _FurAO;
+            #endif
+            fd.col.rgb *= 1.0-furAO;
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Anisotropy
+        BEFORE_ANISOTROPY
+        #if defined(LIL_FEATURE_ANISOTROPY)
+            OVERRIDE_ANISOTROPY
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Copy
+        fd.albedo = fd.col.rgb;
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // AO
+        // Compose the shared AO visibility once: the ramp offset below (inside
+        // OVERRIDE_SHADOW) and the darkening after the lighting both read fd.aoVis.
+        BEFORE_AO
+        OVERRIDE_AO
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Lighting
+        BEFORE_SHADOW
+        #if !defined(LIL_PASS_FORWARDADD)
+            #if defined(LIL_FEATURE_SHADOW)
+                OVERRIDE_SHADOW
+            #else
+                fd.col.rgb *= fd.lightColor;
+            #endif
+
+            fd.lightColor += fd.addLightColor;
+            fd.shadowmix += lilLuminance(fd.addLightColor);
+
+            fd.lightColor = min(fd.lightColor, _LightMaxLimit);
+            fd.shadowmix = saturate(fd.shadowmix);
+
+            fd.col.rgb += fd.albedo * fd.addLightColor;
+            fd.col.rgb = min(fd.col.rgb, fd.albedo * _LightMaxLimit);
+
+            LIL_APPLY_ADDITIONAL_LIGHT_HDR(input, fd)
+
+            #if defined(LIL_FEATURE_MAIN2ND)
+                if(_UseMain2ndTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color2nd.rgb, color2nd.a - color2nd.a * _Main2ndEnableLighting, _Main2ndTexBlendMode);
+            #endif
+            #if defined(LIL_FEATURE_MAIN3RD)
+                if(_UseMain3rdTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color3rd.rgb, color3rd.a - color3rd.a * _Main3rdEnableLighting, _Main3rdTexBlendMode);
+            #endif
+
+            //------------------------------------------------------------------------------------------------------------------------------
+            // AO darkening (shares the AO Map colour input with the ramp offset above)
+            BEFORE_AODARK
+            OVERRIDE_AODARK
+
+            BEFORE_SSS
+            #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+                OVERRIDE_SSS
+            #endif
+        #else
+            #if defined(LIL_FEATURE_SHADOW) && defined(LIL_OPTIMIZE_APPLY_SHADOW_FA)
+                OVERRIDE_SHADOW
+            #else
+                fd.col.rgb *= fd.lightColor;
+            #endif
+
+            #if defined(LIL_FEATURE_MAIN2ND)
+                if(_UseMain2ndTex) fd.col.rgb = lerp(fd.col.rgb, 0, color2nd.a - color2nd.a * _Main2ndEnableLighting);
+            #endif
+            #if defined(LIL_FEATURE_MAIN3RD)
+                if(_UseMain3rdTex) fd.col.rgb = lerp(fd.col.rgb, 0, color3rd.a - color3rd.a * _Main3rdEnableLighting);
+            #endif
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Rim Shade
+        BEFORE_RIMSHADE
+        #if defined(LIL_FEATURE_RIMSHADE)
+            OVERRIDE_RIMSHADE
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Backlight
+        BEFORE_BACKLIGHT
+        #if !defined(LIL_PASS_FORWARDADD)
+            #if defined(LIL_FEATURE_BACKLIGHT)
+                OVERRIDE_BACKLIGHT
+            #endif
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Premultiply
+        LIL_PREMULTIPLY
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Refraction
+        BEFORE_REFRACTION
+        #if defined(LIL_REFRACTION) && !defined(LIL_PASS_FORWARDADD)
+            #if defined(LIL_REFRACTION_BLUR2)
+                fd.smoothness = _Smoothness;
+                #if defined(LIL_FEATURE_SmoothnessTex)
+                    fd.smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
+                #endif
+                fd.perceptualRoughness = fd.perceptualRoughness - fd.smoothness * fd.perceptualRoughness;
+                fd.roughness = fd.perceptualRoughness * fd.perceptualRoughness;
+            #endif
+            OVERRIDE_REFRACTION
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Reflection
+        BEFORE_REFLECTION
+        #if defined(LIL_FEATURE_REFLECTION)
+            OVERRIDE_REFLECTION
+        #endif
+
+        #ifndef LIL_PASS_FORWARDADD
+            OVERRIDE_PLANAR_REFLECTION
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // MatCap
+        BEFORE_MATCAP
+        #if defined(LIL_FEATURE_MATCAP)
+            OVERRIDE_MATCAP
+        #endif
+
+        BEFORE_MATCAP_2ND
+        #if defined(LIL_FEATURE_MATCAP_2ND)
+            OVERRIDE_MATCAP_2ND
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Rim light
+        BEFORE_RIMLIGHT
+        #if defined(LIL_FEATURE_RIMLIGHT)
+            OVERRIDE_RIMLIGHT
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Glitter
+        BEFORE_GLITTER
+        #if defined(LIL_FEATURE_GLITTER)
+            OVERRIDE_GLITTER
+        #endif
+
+        #ifndef LIL_PASS_FORWARDADD
+            //------------------------------------------------------------------------------------------------------------------------------
+            // Emission
+            BEFORE_EMISSION_1ST
+            #if defined(LIL_FEATURE_EMISSION_1ST)
+                OVERRIDE_EMISSION_1ST
+            #endif
+
+            // Emission2nd
+            BEFORE_EMISSION_2ND
+            #if defined(LIL_FEATURE_EMISSION_2ND)
+                OVERRIDE_EMISSION_2ND
+            #endif
+
+            //------------------------------------------------------------------------------------------------------------------------------
+            // Dissolve
+            #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
+                OVERRIDE_DISSOLVE_ADD
+            #endif
+
+            #if defined(LIL_FEATURE_LAYER_DISSOLVE)
+                #if defined(LIL_FEATURE_MAIN2ND)
+                    fd.emissionColor += _Main2ndDissolveColor.rgb * main2ndDissolveAlpha;
+                #endif
+                #if defined(LIL_FEATURE_MAIN3RD)
+                    fd.emissionColor += _Main3rdDissolveColor.rgb * main3rdDissolveAlpha;
+                #endif
+            #endif
+
+            BEFORE_BLEND_EMISSION
+            OVERRIDE_BLEND_EMISSION
+        #endif
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        // Backface Color
+        fd.col.rgb = (fd.facing < 0.0) ? lerp(fd.col.rgb, _BackfaceColor.rgb * fd.lightColor, _BackfaceColor.a) : fd.col.rgb;
+    #endif
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    // Distance Fade
+    BEFORE_DISTANCE_FADE
+    #if defined(LIL_FEATURE_DISTANCE_FADE)
+        OVERRIDE_DISTANCE_FADE
+    #endif
+
+    //------------------------------------------------------------------------------------------------------------------------------
+    // Fog
+    BEFORE_FOG
+    OVERRIDE_FOG
+
+    BEFORE_OUTPUT
+    #if defined(LIL_OIT_PASS)
+        LIL_OIT_RETURN(fd.col, input.positionCS);
+    #else
+        OVERRIDE_OUTPUT
+    #endif
+}
+
+#endif

@@ -1,0 +1,510 @@
+    SubShader
+    {
+        Tags {*LIL_SUBSHADER_TAGS**LIL_DOTS_SM_TAGS* "RenderPipeline" = "UniversalPipeline"}
+        HLSLINCLUDE
+            *LIL_SHADER_SETTING*
+            *LIL_SRP_VERSION*
+            *LIL_DOTS_SM_4_5_OR_3_5*
+            #pragma fragmentoption ARB_precision_hint_fastest
+
+            // (family) copied from DefaultDirect -- keep in sync
+            #define LIL_LIQUID
+
+            // 家族级技术开关：只有在这里打开的代码才会被编进 shader。
+            // 加新液面算法 = 在 lil_liquid_level.hlsl 里加一个分支 + 在这里补一个开关。
+            #define LIL_LIQUID_WAVE         // 液面波纹
+            #define LIL_LIQUID_CAP          // 液面模式 1 的背面盖子
+            // #define LIL_LIQUID_CAP_WAVE  // 未实现：波纹版背面层需要顶点位移，见设计文档 L2
+
+            // 调试：把「到液面的有符号距离」画成蓝->红渐变。
+            // 液面本身是 d=0，红=液体内部(d>0)，蓝=液面以上(d<0)。
+            // 打不开/调不动液面时打开它：
+            //   整块是单一纯色  -> fd.positionOS 没被填上（位置通道断了）
+            //   有正常渐变但切不动 -> _LiquidLevelY / _LiquidLevelH 的量程不对（见属性块默认值 -0.5 / 0.5）
+            // #define LIL_LIQUID_DEBUG
+
+            #pragma lil_skip_variants_decals
+            #pragma lil_skip_variants_probevolumes
+            #pragma lil_skip_variants_ao
+        ENDHLSL
+
+        *LIL_INSERT_PASS_PRE*
+
+        // Forward
+        // Forward
+        Pass
+        {
+            Name "FORWARD"
+            Tags {"LightMode" = "*LIL_LIGHTMODE_FORWARD_0*"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+            ColorMask [_ColorMask]
+            Offset [_OffsetFactor], [_OffsetUnits]
+            BlendOp [_BlendOp], [_BlendOpAlpha]
+            Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
+            AlphaToMask [_AlphaToMask]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_forward
+            #pragma lil_skip_variants_base_shadows
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_forward_liquid.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // SHADOW_CASTER pass: 液体不投硬阴影，这里刻意不生成（见 LILTOON_液体着色器设计.md §9）
+
+        // DepthOnly
+        Pass
+        {
+            Name "DEPTHONLY"
+            Tags {"LightMode" = "DepthOnly"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_depthonly
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_depthonly.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // DepthNormals
+        Pass
+        {
+            Name "DEPTHNORMALS"
+            Tags {"LightMode" = "DepthNormals"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_depthnormals
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_depthnormals.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // MetadataBuffer
+        Pass
+        {
+            Name "HO_METADATA_BUFFER"
+            Tags {"LightMode" = "HoMetadataBuffer"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment fragMetadataBuffer
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_metadata_buffer.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // GeometryBuffer
+        Pass
+        {
+            Name "HO_GEOMETRY_BUFFER"
+            Tags {"LightMode" = "HoGeometryBuffer"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment fragGeometryBuffer
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_metadata_buffer.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // MetadataBuffer SurfaceColor
+        Pass
+        {
+            Name "HO_METADATA_BUFFER_SURFACE_COLOR"
+            Tags {"LightMode" = "HoMetadataBufferSurfaceColor"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha, One OneMinusSrcAlpha
+            ZTest LEqual
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment fragMetadataBufferSurfaceColor
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_metadata_buffer.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // Ho Character Capture
+        Pass
+        {
+            Name "HO_CHARACTER_CAPTURE"
+            Tags {"LightMode" = "HoCharacterCapture"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite On
+            ZTest LEqual
+            Blend One OneMinusSrcAlpha
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma target 4.5
+            #pragma lil_multi_compile_depthnormals
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_hocharacter_capture.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // GBuffer
+        Pass
+        {
+            Name "GBUFFER"
+            Tags {"LightMode" = "UniversalGBuffer"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_depthnormals
+            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_gbuffer.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // MotionVectors
+        Pass
+        {
+            Name "MOTIONVECTORS"
+            Tags {"LightMode" = "MotionVectors"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_motionvectors
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_motionvectors.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // Universal2D
+        Pass
+        {
+            Name "UNIVERSAL2D"
+            Tags {"LightMode" = "Universal2D"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite [_ZWrite]
+            ZTest [_ZTest]
+            ColorMask [_ColorMask]
+            Offset [_OffsetFactor], [_OffsetUnits]
+            BlendOp [_BlendOp], [_BlendOpAlpha]
+            Blend [_SrcBlend] [_DstBlend], [_SrcBlendAlpha] [_DstBlendAlpha]
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_universal2d.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        // Meta
+        Pass
+        {
+            Name "META"
+            Tags {"LightMode" = "Meta"}
+            Cull Off
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma lil_multi_compile_meta
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            // Insert functions and includes that depend on Unity here
+            *LIL_SUBSHADER_INSERT*
+
+            #include "Includes/lil_pass_meta.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
+
+        *LIL_INSERT_PASS_POST*
+    }
+    Fallback "Universal Render Pipeline/Unlit"

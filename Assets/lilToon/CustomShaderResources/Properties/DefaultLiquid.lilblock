@@ -1,0 +1,74 @@
+        //----------------------------------------------------------------------------------------------------------------------
+        // Advanced
+        // 逐字复制 DefaultOpaque.lilblock 的前 30 行，唯一区别：_Cull 默认值 2 -> 0
+        // 液体必须双面渲染（正面=液体本体，背面=液面下层），漏掉这一段或不改默认值
+        // 会表现为「材质一片空白」或「只剩一面」，且 Unity 不报任何错。
+        [lilEnum]                                       _Cull               ("sCullModes", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlend           ("sSrcBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlend           ("sDstBlendRGB", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendAlpha      ("sSrcBlendAlpha", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlpha      ("sDstBlendAlpha", Int) = 10
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOp            ("sBlendOpRGB", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlpha       ("sBlendOpAlpha", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendFA         ("sSrcBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendFA         ("sDstBlendRGB", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendAlphaFA    ("sSrcBlendAlpha", Int) = 0
+        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlphaFA    ("sDstBlendAlpha", Int) = 1
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpFA          ("sBlendOpRGB", Int) = 4
+        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlphaFA     ("sBlendOpAlpha", Int) = 4
+        [lilToggle]                                     _ZClip              ("sZClip", Int) = 1
+        [lilToggle]                                     _ZWrite             ("sZWrite", Int) = 1
+        [Enum(UnityEngine.Rendering.CompareFunction)]   _ZTest              ("sZTest", Int) = 4
+        [IntRange]                                      _StencilRef         ("Ref", Range(0, 255)) = 0
+        [IntRange]                                      _StencilReadMask    ("ReadMask", Range(0, 255)) = 255
+        [IntRange]                                      _StencilWriteMask   ("WriteMask", Range(0, 255)) = 255
+        [Enum(UnityEngine.Rendering.CompareFunction)]   _StencilComp        ("Comp", Float) = 8
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilPass        ("Pass", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilFail        ("Fail", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)]         _StencilZFail       ("ZFail", Float) = 0
+                                                        _OffsetFactor       ("sOffsetFactor", Float) = 0
+                                                        _OffsetUnits        ("sOffsetUnits", Float) = 0
+        [lilColorMask]                                  _ColorMask          ("sColorMask", Int) = 15
+        [lilToggle]                                     _AlphaToMask        ("sAlphaToMask", Int) = 0
+                                                        _lilShadowCasterBias ("Shadow Caster Bias", Float) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Liquid
+        [lilToggleLeft] _UseLiquid               ("sLiquid", Int) = 1
+        [lilEnum]       _LiquidSurfaceMode       ("sLiquidSurfaceModes", Int) = 0
+                        _LiquidSurfaceWidth      ("sLiquidSurfaceWidth", Range(0, 0.5)) = 0.06
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Liquid - Level
+        // _LiquidFill(0..1) 在 _LiquidLevelY 与 _LiquidLevelH 两个「网格本地 Y」之间线性插值出液面。
+        // （uniform 名字保持 _LiquidLevelY / _LiquidLevelH；面板显示名走 sLiquidLevelBottom / sLiquidLevelTop）
+        // 默认 -0.5 / 0.5 = Unity 默认正方体的本地 Y 上下界，所以开箱即用是满量程。
+        // 换成其它模型时把这两个值改成该网格竖直方向的本地 Y 上下界（模型从 Blender 导入时很容易是 0..2 之类）。
+        // 关键：这两个值的差值就是「液面能走的整个范围」。差得太小，滑条就几乎调不动。
+                        _LiquidFill              ("sLiquidFill", Range(0, 1)) = 0.5
+                        _LiquidLevelY            ("sLiquidLevelBottom", Float) = -0.5
+                        _LiquidLevelH            ("sLiquidLevelTop", Float) = 0.5
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Liquid - Tilt
+        // 两轴倾斜：绕本地 X 轴的俯仰 + 绕本地 Z 轴的翻滚，单位是「度」。
+        // 驱动接口（摆锤约束绳可直接写这两个）：
+        //   _LiquidTiltX  = 容器绕 X 轴的倾角（+/- 90 度以内，超了液面会翻过来）
+        //   _LiquidTiltZ  = 容器绕 Z 轴的倾角
+        //   _LiquidOffset = 液面的垂直偏移（晃动惯性的上下浮动），与倾斜正交，单独一路
+        // 归一化用 sin/cos 做，所以两轴可同时用、且倾角再大液面也是同一个平面（不会像
+        // 参考实现那样用斜率相加导致"倾斜越大液面整体越高"）。
+                        _LiquidTiltX            ("sLiquidTiltX", Range(-90, 90)) = 0
+                        _LiquidTiltZ            ("sLiquidTiltZ", Range(-90, 90)) = 0
+                        _LiquidTiltScale        ("sLiquidTiltScale", Range(0, 4)) = 1
+                        // 脚本输入量：液面垂直偏移，范围 ±1（与倾斜正交，单独一路）
+                        // 模式 0 `Absolute` = 网格本地单位；模式 1 `Range %` = 液面量程的百分比
+                        _LiquidOffset           ("sLiquidOffset", Range(-1, 1)) = 0
+        [lilEnum]       _LiquidOffsetMode       ("sLiquidOffsetModes", Int) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
+        // Liquid - Wave（液面波纹；不影响 _LiquidFill 的中位高度）
+                        _LiquidWaveAmp           ("sLiquidWaveAmp", Range(0, 0.2)) = 0
+                        _LiquidWaveFreq          ("sLiquidWaveFreq", Range(0.1, 40)) = 8
+                        _LiquidWaveSpeed         ("sLiquidWaveSpeed", Range(-5, 5)) = 1
+        [lilEnum]       _LiquidWaveSpace         ("sLiquidWaveSpaces", Int) = 0

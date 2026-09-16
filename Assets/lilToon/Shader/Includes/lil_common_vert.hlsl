@@ -353,8 +353,11 @@ LIL_V2F_TYPE vert(appdata input)
         if(width > -0.000001 && width < 0.000001 && _OutlineDeleteMesh) LIL_V2F_OUT_BASE.positionCS = 0.0/0.0;
     #endif
 
-    #if defined(LIL_V2F_POSITION_OS)
-    LIL_V2F_OUT_BASE.positionOSdissolve.w = (dissolveActive | (dissolveInvert << 1));
+    #if defined(LIL_V2F_POSITION_OS_ACTIVE)
+        // LIL_LIQUID 只借用 .xyz，不写 .w（dissolve 的 active / invert 标记）
+        #if defined(LIL_V2F_POSITION_OS)
+            LIL_V2F_OUT_BASE.positionOSdissolve.w = (dissolveActive | (dissolveInvert << 1));
+        #endif
     #endif
     
     #if !defined(SHADER_STAGE_VERTEX) || defined(LIL_CUSTOM_SAFEVERT)

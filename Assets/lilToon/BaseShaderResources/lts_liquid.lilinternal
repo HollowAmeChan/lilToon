@@ -1,0 +1,17 @@
+Shader "Hidden/lilToonLiquid"
+{
+    Properties
+    {
+        lilProperties "Default"
+        lilProperties "DefaultLiquid"
+    }
+
+    HLSLINCLUDE
+        #define LIL_RENDER 1
+    ENDHLSL
+
+    lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
+    lilSubShaderURP "DefaultLiquid"
+
+    CustomEditor "*LIL_EDITOR_NAME*"
+}

@@ -185,13 +185,38 @@
 #endif
 
 // normalOS (vertex input)
-#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE))
+// LIL_LIQUID 需要世界法线：液面软切宽度按「面朝上程度」加权（lilLiquidSurfaceAlpha）。
+// 没有这一项时，材质若没开阴影/反射/法线图，LIL_SHOULD_NORMAL 就为假，
+// 顶点不写 normalWS，fd.N 会退化成 0 —— 液面过渡宽度全错，且不报错。
+#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || defined(LIL_REFRACTION) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE)) || defined(LIL_LIQUID)
     #define LIL_SHOULD_NORMAL
 #endif
 
 // positionOS
+// 注意：LIL_LIQUID 不在这里 —— 液体只是复用 positionOSdissolve 通道，
+// 不能借这个宏去强制各 pass（Meta / Universal2D）声明该成员，
+// 否则那些 pass 的 frag 会去解一个不存在的 v2f 成员。
 #if (defined(LIL_FEATURE_MAIN2ND) || defined(LIL_FEATURE_MAIN3RD)) && defined(LIL_FEATURE_LAYER_DISSOLVE) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_DISSOLVE)
     #define LIL_SHOULD_POSITION_OS
+#endif
+
+// LIL_LIQUID 需要物体空间位置来切液面（见 lil_liquid_level.hlsl）。
+// 但**不能**并进 LIL_SHOULD_POSITION_OS：那个宏会让 Meta / Universal2D 这类
+// 根本不声明 positionOSdissolve 的 pass 也去解包它，直接编译报错（实测踩过）。
+// 所以单独定义成家族自己的守卫因子 —— 它不参与那套 pass 级联，只被
+// lil_pass_forward_liquid.hlsl 的 v2f 守卫使用（write / read 两侧都是家族自己的文件）。
+// 漏掉它的后果：positionOSdissolve 不被声明也不被写入，fd.positionOS 恒为 0，
+// 液面距离变成常量，整块网格吃同一个 alpha —— "怎么调都是满的"，且不报任何错。
+#if defined(LIL_LIQUID)
+    #define LIL_V2F_LIQUID_POSITION
+#endif
+
+// positionOSdissolve 通道是否被启用（含「只用 .xyz」的液体）。
+// 必须定义在这里而不是 lil_common_frag.hlsl：
+// 顶点阶段先 include lil_common_vert.hlsl（末尾要写 .w），后 include lil_common_frag.hlsl。
+// 只有 LIL_V2F_POSITION_OS 的 pass 才真的有这个成员，所以 guard 保持只看它。
+#if defined(LIL_V2F_POSITION_OS) || defined(LIL_LIQUID)
+    #define LIL_V2F_POSITION_OS_ACTIVE
 #endif
 
 // uv1
