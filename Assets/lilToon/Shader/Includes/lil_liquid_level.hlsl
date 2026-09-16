@@ -99,11 +99,11 @@ float lilLiquidWave(float3 p)
 float3 lilLiquidUnderlay(lilFragData fd, float3 baseColor LIL_SAMP_IN_FUNC(samp))
 {
     #if defined(LIL_LIQUID_UNDERLAY)
-        // 物体空间 UV：uv0 直接加随时间滚动的偏移（不依赖屏幕，不与视角耦合）。
-        // 刻意**不走** _LiquidUnderlayTex 的 _ST 平铺/偏移 —— lilblock 里它标了
-        // [NoScaleOffset]，没有面板可调；要调平铺就改贴图自己的 Tiling，或者调制服端
-        // 传进来的 _LiquidUnderlayScroll。
-        float2 uv = fd.uv0 + _TimeParameters.x * _LiquidUnderlayScroll.xy;
+        // 物体空间 UV：uv0 走贴图自己的 Tiling/Offset，再叠加随时间滚动的偏移。
+        // 不依赖屏幕 —— 参考实现用屏幕空间 UV，转视角时花纹会贴着屏幕飘（VR 里更明显）。
+        // 滚动速度 _LiquidUnderlayScroll 由脚本或面板给，单位是 UV/秒。
+        float2 uv = fd.uv0 * _LiquidUnderlayTex_ST.xy + _LiquidUnderlayTex_ST.zw;
+        uv += _TimeParameters.x * _LiquidUnderlayScroll.xy;
 
         // 只采样一次：rgb 是图案，a 当遮罩（美术可用一张 RGBA 图控制"哪里看得到下层"）
         float4 tex = LIL_SAMPLE_2D(_LiquidUnderlayTex, samp, uv);

@@ -93,6 +93,7 @@
         //   两者叠起来就是"平的水面底下还有东西在缓慢翻涌"。
         //
         // 贴图的 alpha 当遮罩（0 = 不显示下层），所以可以拿一张 RGBA 图控制"哪里看得见下层"。
-        [NoScaleOffset] _LiquidUnderlayTex      ("sLiquidUnderlayTex", 2D) = "black" {}
+        // 不加 [NoScaleOffset]：着色器要读 _LiquidUnderlayTex_ST 做平铺/偏移。
+                        _LiquidUnderlayTex      ("sLiquidUnderlayTex", 2D) = "black" {}
         [lilHDR]        _LiquidUnderlayColor    ("sColor", Color) = (0.35,0.55,0.65,0.5)
                         _LiquidUnderlayScroll   ("sLiquidUnderlayScroll", Vector) = (0.08,0.03,0,0)

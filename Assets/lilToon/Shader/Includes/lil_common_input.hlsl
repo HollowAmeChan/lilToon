@@ -845,6 +845,9 @@ TEXTURE2D(_AnisotropyShiftNoiseMask);
 TEXTURE2D(_HairMask);
 TEXTURE2D(_HairShiftMap);
 TEXTURE2D(_HairTangentMap);
+#if defined(LIL_LIQUID)
+    TEXTURE2D(_LiquidUnderlayTex);
+#endif
 TEXTURE2D(_ShadowBorderMask);
 TEXTURE2D(_ShadowBlurMask);
 TEXTURE2D(_ShadowStrengthMask);
