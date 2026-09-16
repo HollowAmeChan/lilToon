@@ -1124,18 +1124,6 @@ msgstr "液体設定"
 msgid "sLiquid"
 msgstr "液体"
 
-msgid "sLiquidSurfaceMode"
-msgstr "液面モード"
-
-msgid "sLiquidSurfaceModeLiquid"
-msgstr "液体"
-
-msgid "sLiquidSurfaceModeCap"
-msgstr "フタ"
-
-msgid "sLiquidSurfaceModeOff"
-msgstr "オフ"
-
 msgid "sSpace"
 msgstr "空間"
 

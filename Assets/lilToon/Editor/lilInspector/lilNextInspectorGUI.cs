@@ -925,8 +925,7 @@ namespace lilToon
                     if(useLiquid.floatValue == 1f)
                     {
                         EditorGUI.indentLevel++;
-                        LocalizedProperty(liquidSurfaceMode);
-                        if(liquidSurfaceMode.floatValue != 2f) LocalizedProperty(liquidSurfaceWidth);
+                        LocalizedProperty(liquidSurfaceWidth);
                         LocalizedProperty(liquidSpecularStrength);
                         lilEditorGUI.DrawLine();
 
@@ -954,16 +953,13 @@ namespace lilToon
                             LocalizedProperty(liquidWaveSpeed);
                             LocalizedProperty(liquidWaveSpace);
                         }
-                        // 液面下层的常态流动层：只在模式 1（盖子）下有那圈背面
-                        if(liquidSurfaceMode.floatValue == 1f)
+                        // 液体内部的常态流动层（只作用于背面 = 透过洞看到的那片内部）
+                        lilEditorGUI.DrawLine();
+                        LocalizedProperty(liquidUnderlayColor);
+                        if(liquidUnderlayColor.colorValue.a > 0f)
                         {
-                            lilEditorGUI.DrawLine();
-                            LocalizedProperty(liquidUnderlayColor);
-                            if(liquidUnderlayColor.colorValue.a > 0f)
-                            {
-                                LocalizedPropertyTexture(liquidUnderlayContent, liquidUnderlayTex);
-                                LocalizedProperty(liquidUnderlayScroll);
-                            }
+                            LocalizedPropertyTexture(liquidUnderlayContent, liquidUnderlayTex);
+                            LocalizedProperty(liquidUnderlayScroll);
                         }
                         EditorGUI.indentLevel--;
                     }

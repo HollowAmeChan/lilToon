@@ -579,7 +579,6 @@ float   _lilOITEnabled;
         float   _LiquidWaveSpeed;
         float   _LiquidSurfaceWidth;
         float   _LiquidSpecularStrength;
-        uint    _LiquidSurfaceMode;
         uint    _LiquidWaveSpace;
         float4  _LiquidUnderlayTex_ST;
         float4  _LiquidUnderlayColor;

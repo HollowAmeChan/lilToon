@@ -179,7 +179,6 @@ namespace lilToon
         protected static string     sOutlineVertexColorUsages       { get { return lilLanguageManager.sOutlineVertexColorUsages     ; } private set { lilLanguageManager.sOutlineVertexColorUsages      = value; } }
         protected static string     sShadowColorTypes               { get { return lilLanguageManager.sShadowColorTypes             ; } private set { lilLanguageManager.sShadowColorTypes               = value; } }
         protected static string     sShadowMaskTypes                { get { return lilLanguageManager.sShadowMaskTypes              ; } private set { lilLanguageManager.sShadowMaskTypes               = value; } }
-        protected static string     sLiquidSurfaceModes             { get { return lilLanguageManager.sLiquidSurfaceModes           ; } private set { lilLanguageManager.sLiquidSurfaceModes            = value; } }
         protected static string     sLiquidWaveSpaces               { get { return lilLanguageManager.sLiquidWaveSpaces             ; } private set { lilLanguageManager.sLiquidWaveSpaces              = value; } }
         protected static string     sLiquidOffsetModes              { get { return lilLanguageManager.sLiquidOffsetModes            ; } private set { lilLanguageManager.sLiquidOffsetModes             = value; } }
         protected static string[]   sRenderingModeList              { get { return lilLanguageManager.sRenderingModeList            ; } private set { lilLanguageManager.sRenderingModeList             = value; } }

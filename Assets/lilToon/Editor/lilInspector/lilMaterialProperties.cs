@@ -445,7 +445,6 @@ namespace lilToon
         private readonly lilMaterialProperty hairLobe4Power         = new lilMaterialProperty("_HairLobe4Power", PropertyBlock.Hair);
 
         private readonly lilMaterialProperty useLiquid                 = new lilMaterialProperty("_UseLiquid", PropertyBlock.Liquid);
-        private readonly lilMaterialProperty liquidSurfaceMode         = new lilMaterialProperty("_LiquidSurfaceMode", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidSurfaceWidth        = new lilMaterialProperty("_LiquidSurfaceWidth", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidSpecularStrength    = new lilMaterialProperty("_LiquidSpecularStrength", PropertyBlock.Liquid);
         private readonly lilMaterialProperty liquidFill                = new lilMaterialProperty("_LiquidFill", PropertyBlock.Liquid);
@@ -1082,7 +1081,6 @@ namespace lilToon
                 hairLobe4Power,
 
                 useLiquid,
-                liquidSurfaceMode,
                 liquidSurfaceWidth,
                 liquidSpecularStrength,
                 liquidFill,

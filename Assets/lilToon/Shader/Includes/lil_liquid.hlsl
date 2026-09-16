@@ -16,9 +16,13 @@
 //       用成「物体的 up 在世界」（第 1 列）会让液面在 45° 就提前倒转。
 // rev6：移除临时的 _LiquidWaveAmp 探针（会占用波纹幅度参数），
 //       调试视图改为编译期开关 LIL_LIQUID_DEBUG + lilLiquidDebugColor()。
-// rev7：新增液面下层的常态流动贴图层（LIL_LIQUID_UNDERLAY，只作用于模式 1 的背面），
+// rev7：新增液面下层的常态流动贴图层（LIL_LIQUID_UNDERLAY，只作用于背面），
 //       以及液面高光（_LiquidSpecularStrength，改反射/MatCap 专用法线）。
-#define LIL_LIQUID_REV 7
+// rev8：删除 _LiquidSurfaceMode 三档与 LIL_LIQUID_CAP 封顶层。
+//       封顶不做了（几何/模板/全屏三条路都放弃），切面留下的洞直接用背面层顶替：
+//       洞 = fd.facing < 0 的内部，由 _BackfaceColor 染色 + 可选 _LiquidUnderlayTex 滚动贴图。
+//       于是液面只剩一条通路：软过渡 + clip，参数也只剩 _LiquidSurfaceWidth。
+#define LIL_LIQUID_REV 8
 
 //------------------------------------------------------------------------------------------------------------------------------
 // 液面切面基础量
@@ -33,15 +37,14 @@ float lilLiquidSurfaceMask(lilFragData fd, float d)
     return lilLiquidSurfaceAlpha(d, fd.facing, fd.N);
 }
 
-// 液面**下层**：正面是液体表面，背面就是液体内部的那一层。
+// 液面**下层**：正面是液体表面，背面就是"透过切面的洞看到的液体内部"。
 // 参考实现在背面用 tex2D(_B, 滚动UV) + _TopColor —— 一层持续滚动的贴图，
-// 与液面波纹无关，所以容器静止时那片下层依然在流动。
+// 与液面波纹无关，所以容器静止时那片内部依然在流动。
 // 这里只在 facing < 0（背面）且该像素最终会被保留时才叠上去。
 float3 lilLiquidUnderlayApply(lilFragData fd, float alpha LIL_SAMP_IN_FUNC(samp))
 {
-    // 只在「模式 1 的背面」= 液面下层 上生效；
-    // 正面是液体表面本体，不该盖这层内部纹理。
-    if(_LiquidSurfaceMode != 1 || fd.facing >= 0.0) return fd.col.rgb;
+    // 只作用于背面 = 透过洞看到的那片内部；正面是液体表面本体，不该盖内部纹理。
+    if(fd.facing >= 0.0) return fd.col.rgb;
     // 被切掉的像素不用管（alpha 已经低于阈值）
     if(alpha < 0.5) return fd.col.rgb;
     return lilLiquidUnderlay(fd, fd.col.rgb LIL_SAMP_IN(samp));

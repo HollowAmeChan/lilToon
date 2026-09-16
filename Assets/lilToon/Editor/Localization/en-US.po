@@ -1124,18 +1124,6 @@ msgstr "Liquid Settings"
 msgid "sLiquid"
 msgstr "Liquid"
 
-msgid "sLiquidSurfaceMode"
-msgstr "Surface Mode"
-
-msgid "sLiquidSurfaceModeLiquid"
-msgstr "Liquid"
-
-msgid "sLiquidSurfaceModeCap"
-msgstr "Cap"
-
-msgid "sLiquidSurfaceModeOff"
-msgstr "Off"
-
 msgid "sSpace"
 msgstr "Space"
 

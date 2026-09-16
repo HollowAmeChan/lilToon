@@ -30,7 +30,6 @@ namespace lilToon
         public static string sOutlineVertexColorUsages;
         public static string sShadowColorTypes;
         public static string sShadowMaskTypes;
-        public static string sLiquidSurfaceModes;
         public static string sLiquidWaveSpaces;
         public static string sLiquidOffsetModes;
         public static string[] sRenderingModeList;
@@ -160,7 +159,6 @@ namespace lilToon
             loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
             loc["sShadowColorTypes"]         = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             loc["sShadowMaskTypes"]          = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
-            loc["sLiquidSurfaceModes"]       = BuildParams(GetLoc("sLiquidSurfaceMode"), GetLoc("sLiquidSurfaceModeLiquid"), GetLoc("sLiquidSurfaceModeCap"), GetLoc("sLiquidSurfaceModeOff"));
             loc["sLiquidWaveSpaces"]         = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
             loc["sLiquidOffsetModes"]        = GetLoc("sLiquidOffsetModes");
             loc["sHSVGs"]                    = BuildParams(GetLoc("sHue"), GetLoc("sSaturation"), GetLoc("sValue"), GetLoc("sGamma"));
@@ -192,7 +190,6 @@ namespace lilToon
             sOutlineVertexColorUsages       = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
             sShadowColorTypes               = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             sShadowMaskTypes                = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
-            sLiquidSurfaceModes             = BuildParams(GetLoc("sLiquidSurfaceMode"), GetLoc("sLiquidSurfaceModeLiquid"), GetLoc("sLiquidSurfaceModeCap"), GetLoc("sLiquidSurfaceModeOff"));
             sLiquidWaveSpaces               = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
             sLiquidOffsetModes              = GetLoc("sLiquidOffsetModes");
             colorRGBAContent                = new GUIContent(GetLoc("sColor"),                              GetLoc("sTextureRGBA"));

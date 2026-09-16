@@ -1124,18 +1124,6 @@ msgstr "액체 설정"
 msgid "sLiquid"
 msgstr "액체"
 
-msgid "sLiquidSurfaceMode"
-msgstr "액면 모드"
-
-msgid "sLiquidSurfaceModeLiquid"
-msgstr "액체"
-
-msgid "sLiquidSurfaceModeCap"
-msgstr "뚜껑"
-
-msgid "sLiquidSurfaceModeOff"
-msgstr "끄기"
-
 msgid "sSpace"
 msgstr "공간"
 

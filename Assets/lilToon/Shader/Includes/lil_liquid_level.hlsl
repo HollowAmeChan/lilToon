@@ -253,7 +253,7 @@ float lilLiquidCalcSoft(float3 N)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-// 液面切面 alpha
+// 液面切面 alpha（软切，唯一路径）
 //   d      : lilLiquidLevelOS() 的返回值（>0 在液面以下）
 //   facing : fd.facing（>0 正面）
 //
@@ -262,35 +262,20 @@ float lilLiquidCalcSoft(float3 N)
 //    alpha=0.5 的那条线才是真正的液面。斜坡一旦偏离，切面就会跑到别的 d 上，
 //    表现为"液面高度调不动 / 永远满"（这个坑实际踩过，见设计文档 §11）。
 //
-//    所以所有模式的斜坡都写成 saturate(d / width * 0.5 + 0.5) 的形状：
+//    所以斜坡写成 saturate(d / width * 0.5 + 0.5) 的形状：
 //      d = -width -> 0   (液面以上，丢掉)
 //      d =  0     -> 0.5 (液面，正好等于 _Cutoff)
 //      d = +width -> 1   (液体内部，保留)
 //
-// _LiquidSurfaceMode: 0 = Liquid（宽过渡，默认）/ 1 = LiquidCap（窄过渡 + 背面下层）/ 2 = Off（硬切）
+// 关于「盖子」：切一个闭合体积会在切面处留一个洞（拓扑问题，纯着色填不上）。
+// 本设计**不生成封顶几何** —— 透过洞看到的那片内部天然是 fd.facing < 0，
+// 由 pass 末尾的 _BackfaceColor 染色（外加可选的 _LiquidUnderlayTex 常态流动层），
+// 读起来就是"液体的深处"。参考实现（41水瓶 Liquid.shader）也是这么做的。
 float lilLiquidSurfaceAlpha(float d, float facing, float3 N)
 {
-    float soft = lilLiquidCalcSoft(N);   // _LiquidSurfaceWidth * (1 - 朝上程度)
+    float width = lilLiquidCalcSoft(N);   // _LiquidSurfaceWidth * (1 - 朝上程度)
 
-    // 模式 2（硬切）：**不能用 fwidth(d) 当斜坡宽度**。
-    //   fwidth(d) 是逐像素的 d 变化量（正方体上约 0.003），用它做半宽
-    //   => 台阶只有几毫米 => 液面跑到网格外面 => 看起来"永远是满的"。
-    //   正确做法是用液面自身的量程来定宽：网格本地 Y 从 _LiquidLevelY 到 _LiquidLevelH，
-    //   取它的 1/1000 作为极窄但有限的过渡带，alpha=0.5 仍然精确落在 d=0。
-    if(_LiquidSurfaceMode == 2)
-        return saturate(d / max(abs(_LiquidLevelH - _LiquidLevelY) * 0.001, 1e-5) * 0.5 + 0.5);
-
-    // 模式 1 用一半宽度 → 更锐利的液面轮廓
-    float width = (_LiquidSurfaceMode == 1) ? soft * 0.5 : soft;
-
-    #if defined(LIL_LIQUID_CAP)
-        // 背面切面抬高一整个 width，露出的一圈背面就是"液面下层"
-        // （会被 lil_pass_forward_* 末尾的 _BackfaceColor 染色，再叠 lilLiquidUnderlay 的流动层）
-        if(_LiquidSurfaceMode == 1 && facing < 0.0) d -= width;
-    #endif
-
-    // ★ 不变式：alpha(d=0) == 0.5 == _Cutoff。
-    //   所有模式的斜坡都必须写成这个形状，否则切面会跑到别的 d 上。
+    // ★ 不变式：alpha(d=0) == 0.5 == _Cutoff
     return saturate(d / max(width, 1e-4) * 0.5 + 0.5);
 }
 
