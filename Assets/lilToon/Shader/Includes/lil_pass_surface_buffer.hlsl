@@ -76,7 +76,7 @@ float _HoSSSTransmissionRadius;
 
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
+// octa / owner 的编解码与消费者共用同一份实现（免得两边的约定各自漂移）。
 
 // lil_common_input.hlsl aliases sampler_MainTex to sampler_OutlineTex when
 // LIL_OUTLINE is defined, so drop the old definition before rebinding it here.
@@ -189,7 +189,7 @@ float lilHoSurfaceBufferResolveProfileByte()
 // 数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（规划 §0.1）。
 float lilHoSurfaceBufferOwnerEncoded()
 {
-    return (float)(unity_RendererUserValue & 0xFFFFu) / 65535.0;
+    return HoSurfaceOwnerEncode(unity_RendererUserValue & 0xFFFFu);
 }
 
 lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
@@ -309,7 +309,7 @@ lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
 
     lilHoSurfaceBufferOutput output;
     output.color = half4(fd.col.rgb, 1.0h);
-    output.normal = half4((half2)(PackNormalOctQuadEncode(fd.N) * 0.5 + 0.5), 0.0h, 1.0h);
+    output.normal = half4((half2)HoSurfaceOctEncode(fd.N), 0.0h, 1.0h);
     output.material = (half4)lilHoSurfaceBufferResolveMaterial(fd);
     output.reflection = (half4)lilHoSurfaceBufferResolveReflection(fd);
     output.classification = half4(
