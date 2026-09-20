@@ -70,7 +70,7 @@ float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, flo
 lilHoSurfaceSemanticOutput fragSurfaceSemantic(v2f input LIL_VFACE(facing))
 {
     // 只为它内部的 clip（cutout / dissolve / dither）：语义 pass 必须与数值 pass 落在同一批像素上。
-    lilHoSurfaceBuildFrag(input LIL_VFACE(facing));
+    lilHoSurfaceBuildFrag(input, LIL_HO_SURFACE_VFACE_VALUE);
 
     uint partId = unity_RendererUserValue & 0xFFFFu;
     uint partTags = HoObjectBufferLoadPart(partId).tags;

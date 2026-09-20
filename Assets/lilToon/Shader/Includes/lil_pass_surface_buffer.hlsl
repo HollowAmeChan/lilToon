@@ -120,7 +120,7 @@ float lilHoSurfaceBufferResolveProfileByte()
 
 lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
 {
-    lilFragData fd = lilHoSurfaceBuildFrag(input LIL_VFACE(facing));
+    lilFragData fd = lilHoSurfaceBuildFrag(input, LIL_HO_SURFACE_VFACE_VALUE);
 
     lilHoSurfaceBufferOutput output;
     output.color = half4(fd.col.rgb, 1.0h);

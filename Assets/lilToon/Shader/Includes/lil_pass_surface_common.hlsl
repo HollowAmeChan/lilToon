@@ -92,9 +92,20 @@ float2 lilHoSurfaceOwnerEncoded()
     return HoSurfaceOwnerEncode(unity_RendererUserValue & 0xFFFFu);
 }
 
+// 共享前半段要拿到 facing 的**值**：`LIL_VFACE(facing)` 是只能写在函数签名上的声明宏
+// （展开成 `, bool isFrontFace : SV_IsFrontFace`），调用点上只能用这里的值宏。
+#if defined(SHADER_API_D3D11_9X)
+    // 这个平台没有 VFACE：`LIL_COPY_VFACE` 展开为空，fd.facing 保持 lilInitFragData 的默认值。
+    #define LIL_HO_SURFACE_VFACE_NONE
+#elif defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES) || defined(SHADER_API_D3D9)
+    #define LIL_HO_SURFACE_VFACE_VALUE facing
+#else
+    #define LIL_HO_SURFACE_VFACE_VALUE (isFrontFace ? 1.0 : -1.0)
+#endif
+
 // 几何 → fd（主色链、法线、dissolve、dither、cutout/dissolve 的 clip 全在这里）。
 // 两个 pass 都调它；返回值里的 col.a 已经按 LIL_RENDER 归一。
-lilFragData lilHoSurfaceBuildFrag(v2f input LIL_VFACE(facing))
+lilFragData lilHoSurfaceBuildFrag(v2f input, float facingValue)
 {
     LIL_SETUP_INSTANCE_ID(input);
     LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -103,7 +114,9 @@ lilFragData lilHoSurfaceBuildFrag(v2f input LIL_VFACE(facing))
 
     BEFORE_UNPACK_V2F
     OVERRIDE_UNPACK_V2F
-    LIL_COPY_VFACE(fd.facing);
+    #if !defined(LIL_HO_SURFACE_VFACE_NONE)
+        fd.facing = facingValue;
+    #endif
 
     LIL_GET_POSITION_WS_DATA(input,fd);
     #if defined(LIL_V2F_NORMAL_WS) && defined(LIL_V2F_TANGENT_WS)
