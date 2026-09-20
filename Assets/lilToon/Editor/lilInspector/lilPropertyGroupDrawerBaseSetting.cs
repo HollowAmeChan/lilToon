@@ -496,27 +496,6 @@ namespace lilToon
             }
         }
 
-        private void DrawMetadataBufferSettings()
-        {
-            if(!ShouldDrawBlock(PropertyBlock.MetadataBuffer)) return;
-            edSet.isShowMetadataBufferSettings = lilEditorGUI.Foldout(GetLoc("MetadataBuffer"), edSet.isShowMetadataBufferSettings);
-            lilEditorGUI.DrawHelpButton("MetadataBuffer");
-            if(edSet.isShowMetadataBufferSettings)
-            {
-                EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField(GetLoc("MetadataBuffer"), customToggleFont);
-                DrawMenuButton(GetLoc("MetadataBuffer"), PropertyBlock.MetadataBuffer);
-                EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 0"), "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
-                if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 1"), "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
-                if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 2"), "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
-                if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 3"), "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
-                if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, GetLoc("Character Capture Opacity"));
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndVertical();
-            }
-        }
-
         private void DrawPlanarReflectionSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.PlanarReflection)) return;

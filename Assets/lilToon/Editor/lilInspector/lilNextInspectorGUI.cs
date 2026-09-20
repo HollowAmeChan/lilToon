@@ -859,15 +859,6 @@ namespace lilToon
             LocalizedProperty(reflectionBlendMode);
         }
 
-        private void DrawNextMetadata()
-        {
-            if(metadataBufferCustom0Tex.p != null && metadataBufferCustom0Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 0"), "Texture R x grayscale color"), metadataBufferCustom0Tex, metadataBufferCustom0Color);
-            if(metadataBufferCustom1Tex.p != null && metadataBufferCustom1Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 1"), "Texture R x grayscale color"), metadataBufferCustom1Tex, metadataBufferCustom1Color);
-            if(metadataBufferCustom2Tex.p != null && metadataBufferCustom2Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 2"), "Texture R x grayscale color"), metadataBufferCustom2Tex, metadataBufferCustom2Color);
-            if(metadataBufferCustom3Tex.p != null && metadataBufferCustom3Color.p != null) LocalizedPropertyTexture(new GUIContent(GetLoc("Custom 3"), "Texture R x grayscale color"), metadataBufferCustom3Tex, metadataBufferCustom3Color);
-            if(hoCharacterCaptureOpacity.p != null) LocalizedProperty(hoCharacterCaptureOpacity.p, GetLoc("Character Capture Opacity"));
-        }
-
         private void DrawNextPlanarReflection()
         {
             if(usePlanarReflection.p != null) LocalizedProperty(usePlanarReflection.p, GetLoc("Planar Reflection"), false);
@@ -1054,7 +1045,6 @@ namespace lilToon
             DrawNextPanel(delegate
             {
                 DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, false);
-                DrawNextSection("pipeline.metadata", GetLoc("MetadataBuffer"), PropertyBlock.MetadataBuffer, DrawNextMetadata, false);
                 DrawNextSection("pipeline.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
                 {
                     if(lilEditorGUI.Button(GetLoc("sRenderingReset")))

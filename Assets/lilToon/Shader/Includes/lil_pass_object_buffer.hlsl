@@ -2,8 +2,9 @@
 #define LIL_PASS_OBJECT_BUFFER_INCLUDED
 
 // ObjectBuffer 的材质侧写入（跨仓契约）。
-// 复用 MetadataBuffer 的材质路径（UV 动画 / 遮罩 / 溶解 / dither / cutout 的 clip 副作用），
-// 但**输出必须与 Runtime/ObjectBuffer/Shaders/HoObjectBufferFallback.shader 逐通道一致**：
+// 复用**共享的材质路径**（`lilHoSurfaceBuildFrag`：UV 动画 / 遮罩 / 溶解 / dither / cutout 的 clip 副作用，
+// GB 与 SB 用的是同一份），保证三条链落在同一批像素上；
+// 而且**输出必须与 Runtime/ObjectBuffer/Shaders/HoObjectBufferFallback.shader 逐通道一致**：
 //   Id0      = 两个 ID 的 (组, 槽位) 对：R/G = 第一个、B/A = 第二个
 //   Id1      = 另外两个（单样本材质恒 0）
 //   Coverage = 4 层覆盖率（ID 0 = 背景，不占层）
@@ -18,7 +19,7 @@
 // 因为同一个材质在"平台降到 1x"和"自建 MSAA"两种绑定下都要能画：
 //   _HO_OBJECT_BUFFER_MSAA     —— 逐样本单个 16 bit 身份
 //   _HO_OBJECT_BUFFER_SELECTION —— 多一张选择图（= 多一个 SV_Target）
-#include "lil_pass_metadata_buffer.hlsl"
+#include "lil_pass_surface_common.hlsl"
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ObjectBuffer/Shaders/HoObjectBufferIdPass.hlsl"
 
 #if defined(_HO_OBJECT_BUFFER_MSAA)
@@ -46,13 +47,8 @@
 
 HoObjectBufferOutput fragObjectBuffer(v2f input LIL_VFACE(facing))
 {
-    #if defined(SHADER_API_D3D11_9X)
-        lilHoMetadataBufferOutput ignored = fragMetadataBuffer(input);
-    #elif defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES) || defined(SHADER_API_D3D9)
-        lilHoMetadataBufferOutput ignored = fragMetadataBuffer(input, facing);
-    #else
-        lilHoMetadataBufferOutput ignored = fragMetadataBuffer(input, isFrontFace);
-    #endif
+    // 只为了那串 macro 的 clip 副作用（结果丢弃）：与 GB / SB 共用同一份材质路径。
+    lilFragData ignored = lilHoSurfaceBuildFrag(input, LIL_HO_SURFACE_VFACE_VALUE);
 
     // 身份只从 RSUV 来（低 16 bit = 组 8 + 槽位 8，由 HoObjectBufferGroup 写）。
     // 没有身份就 discard：背景由纹理的清理值 0 表示，不需要也不应该由材质写。

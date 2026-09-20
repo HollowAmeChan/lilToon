@@ -20,16 +20,7 @@
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)
                         _AAStrength                 ("sAAShading", Range(0, 1)) = 1
         [NoScaleOffset] _TriMask                    ("TriMask", 2D) = "white" {}
-                        _HoMetadataBufferCustom0Color          ("MetadataBuffer Custom 0 Color", Color) = (0,0,0,0)
-        [NoScaleOffset] _HoMetadataBufferCustom0Tex            ("MetadataBuffer Custom 0", 2D) = "white" {}
-                        _HoMetadataBufferCustom1Color          ("MetadataBuffer Custom 1 Color", Color) = (0,0,0,0)
-        [NoScaleOffset] _HoMetadataBufferCustom1Tex            ("MetadataBuffer Custom 1", 2D) = "white" {}
-                        _HoMetadataBufferCustom2Color          ("MetadataBuffer Custom 2 Color", Color) = (0,0,0,0)
-        [NoScaleOffset] _HoMetadataBufferCustom2Tex            ("MetadataBuffer Custom 2", 2D) = "white" {}
-                        _HoMetadataBufferCustom3Color          ("MetadataBuffer Custom 3 Color", Color) = (0,0,0,0)
-        [NoScaleOffset] _HoMetadataBufferCustom3Tex            ("MetadataBuffer Custom 3", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
-                        // Ho-SurfaceBuffer：表面数值 + 语义权重（不再新增 _HoMetadataBuffer*，也不用 MPB）
                         // 显示名直接用中文：这几个参数只在 lilToon 面板的「Ho 表面语义」一节里出现，
                         // 走 lilToon 的 GetLoc 反而要改十几个语言文件。
                         _HoSurfaceThickness         ("表面厚度（SB）", Range(0,1)) = 0

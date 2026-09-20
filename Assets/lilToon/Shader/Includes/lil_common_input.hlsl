@@ -168,10 +168,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _HoSSSThicknessScale;
     float   _HoSSSTransmissionStrength;
     float   _HoSSSTransmissionRadius;
-    float4  _HoMetadataBufferCustom0Color;
-    float4  _HoMetadataBufferCustom1Color;
-    float4  _HoMetadataBufferCustom2Color;
-    float4  _HoMetadataBufferCustom3Color;
 #elif defined(LIL_FAKESHADOW)
     float4  _Color;
     float4  _MainTex_ST;
@@ -841,10 +837,6 @@ CBUFFER_START(UnityPerMaterial)
     float   _HoSSSThicknessScale;
     float   _HoSSSTransmissionStrength;
     float   _HoSSSTransmissionRadius;
-    float4  _HoMetadataBufferCustom0Color;
-    float4  _HoMetadataBufferCustom1Color;
-    float4  _HoMetadataBufferCustom2Color;
-    float4  _HoMetadataBufferCustom3Color;
 #else
     #include "lil_common_input_base.hlsl"
 #endif
@@ -932,10 +924,6 @@ TEXTURE2D(_FurVectorTex);
 TEXTURE2D(_TriMask);
 // Ho 扩展的材质贴图（MB 的自定义通道）。贴图不能进 CBUFFER，但同样要在每个 pass 里声明 ——
 // 统一放在这里（lilToon 自己的贴图也是这么声明的），各 pass 就不用各写一遍。
-TEXTURE2D(_HoMetadataBufferCustom0Tex);
-TEXTURE2D(_HoMetadataBufferCustom1Tex);
-TEXTURE2D(_HoMetadataBufferCustom2Tex);
-TEXTURE2D(_HoMetadataBufferCustom3Tex);
 // Ho 语义权重遮罩（SB 的语义 lane 用；R 通道乘到标量权重上，不填 = 白 ⇒ 只由标量决定）。
 TEXTURE2D(_HoSemanticWeightTex);
 SAMPLER(sampler_MainTex);

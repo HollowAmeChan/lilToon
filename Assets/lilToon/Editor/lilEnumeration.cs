@@ -78,14 +78,14 @@ namespace lilToon
         Fur,
         Stencil,
         Rendering,
-        MetadataBuffer,
-        PlanarReflection,
-        Other,
         /// <summary>
         /// Ho 扩展的**材质参数**（SB 的表面数值与语义权重、角色捕获）。
-        /// **追加在末尾**：`PropertyBlock` 会存进编辑器设置，插在中间会让已有设置错位。
+        /// 占的是原 MetadataBuffer 的槽位：MB 整块删掉后由 SB 顶上 —— `PropertyBlock` 会存进编辑器设置，
+        /// 借这个空槽既不会让后面的块错位，也不用把新块追加到末尾（块列表里的位置也更顺）。
         /// </summary>
-        HoSurface
+        HoSurface,
+        PlanarReflection,
+        Other
     }
 
     public enum lilRenderPipeline

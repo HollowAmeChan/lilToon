@@ -4,7 +4,7 @@
 #define LIL_OUTLINE
 #define LIL_PASS_DEPTHNORMALS
 
-#include "lil_pass_metadata_buffer.hlsl"
+#include "lil_pass_geometry_buffer.hlsl"
 
 half4 fragOutlineNormalDepth(v2f input LIL_VFACE(facing)) : SV_Target
 {

@@ -39,7 +39,6 @@ namespace lilToon
                 // Lighting / GI
                 DrawLightingSettings();
                 DrawGIAOSettings();
-                DrawMetadataBufferSettings();
                 DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
@@ -556,7 +555,6 @@ namespace lilToon
                 // Lighting / GI
                 DrawLightingSettings();
                 DrawGIAOSettings();
-                DrawMetadataBufferSettings();
                 DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
