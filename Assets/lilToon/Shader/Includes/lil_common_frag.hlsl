@@ -814,7 +814,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // AO public channel
 // One AO system, one shared colour input, two outputs:
-//   input    : the AO Map (_ShadowBorderMask RGB) and the realtime HoAO (_HoAOTexture)
+//   input    : the AO Map (_ShadowBorderMask RGB) and the realtime Ho-AO (_HoAOTexture)
 //   output 1 : overall darkening  fd.col.rgb *= lerp(1, _AOColor.rgb, occ * _AODarkStrength)
 //   output 2 : toon ramp offset   lns.xyz    *= lerp(1, aoVis, _AOStrength)  (inside lilGetShading)
 // The shared visibility is composed once per fragment by lilCalcAO() and stored in

@@ -1007,10 +1007,10 @@ namespace lilToon
                             EditorGUI.indentLevel++;
                             LocalizedPropertyAlpha(sssColor);
                             LocalizedProperty(sssStrength);
-                            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, GetLoc("HoSSS Profile ID"));
-                            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, GetLoc("HoSSS Thickness Scale"));
-                            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, GetLoc("HoSSS Transmission Strength"));
-                            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, GetLoc("HoSSS Transmission Radius"));
+                            if(hoSSSProfileId.p != null) LocalizedProperty(hoSSSProfileId.p, GetLoc("Ho-SSS Profile ID"));
+                            if(hoSSSThicknessScale.p != null) LocalizedProperty(hoSSSThicknessScale.p, GetLoc("Ho-SSS Thickness Scale"));
+                            if(hoSSSTransmissionStrength.p != null) LocalizedProperty(hoSSSTransmissionStrength.p, GetLoc("Ho-SSS Transmission Strength"));
+                            if(hoSSSTransmissionRadius.p != null) LocalizedProperty(hoSSSTransmissionRadius.p, GetLoc("Ho-SSS Transmission Radius"));
                             LocalizedProperty(sssReceiveShadow);
                             LocalizedProperty(sssThicknessInvert);
                             EditorGUI.indentLevel--;

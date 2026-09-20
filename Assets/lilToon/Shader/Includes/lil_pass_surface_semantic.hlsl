@@ -1,9 +1,12 @@
 #ifndef LIL_PASS_SURFACE_SEMANTIC_INCLUDED
 #define LIL_PASS_SURFACE_SEMANTIC_INCLUDED
 
-// Ho-SurfaceBuffer（SB）**语义 lane** 材质 pass：MSAA、逐 sample 写
-//   owner        = RSUV 的低 16 bit（和数值 pass 同一个值；AC 用它跟 OB 层 0 逐 sample 对齐）
+// Ho-SurfaceBuffer（SB）**语义 lane** 材质 pass（单采样）：
+//   owner        = RSUV 的低 16 bit（和数值 pass 同一个值；AC 用它跟 OB 层 0 对齐）
 //   lane 0..7    = `(SemanticId, value)`，一张 RGBA8 装两条 lane（R/G = lane A，B/A = lane B）
+//
+// 读端永远按单采样纹理采样（**不是** `Texture2DMS` + `Load`）：逐 sample 的细分要重新上时，
+// 形态是"SB 自己渲染多重采样 + 自己 resolve 成单采样 lane 再发布"，别让消费者读多重采样。
 //
 // **SB 只允许覆盖 OB 语义**（规划 §0.3.6）：
 // - lane j 只写"本 renderer 在 OB 里真的有的那一位"（物体位掩码从 palette 表按 RSUV 的 partId 读），
@@ -73,17 +76,12 @@ float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, flo
 
 /// <summary>
 /// 材质侧的语义权重 = 标量 `_HoSemanticWeight` × 遮罩贴图的 **R 通道**。
-/// **遮罩必须显式打开**（材质上的「使用语义遮罩」⇒ `shader_feature_local _HO_SEMANTIC_MASK`）：
-/// 老材质没有这张贴图，未声明的纹理绑定内容是不确定的 —— 实测会把整条 lane 污染成"拖影"。
-/// 不打开就只由标量决定，也不采样那张图。
+/// 遮罩走显式开关（「使用语义遮罩」⇒ `shader_feature_local _HO_SEMANTIC_MASK`）：
+/// **打开就必须给贴图**，否则绑定的是一张未声明内容，整条 lane 会被污染成拖影。
 /// </summary>
 float lilHoSemanticWeight(lilFragData fd)
 {
     float weight = saturate(_HoSemanticWeight);
-    // 遮罩这条路**暂时不接**：`_HoSemanticWeightTex` 在老材质上没有赋值，未声明的纹理绑定内容不确定，
-    // 实测会把整条 lane 污染成"拖影"（`enableSemanticLanes` 一关就干净，就是它）。
-    // 重新接上的形态已经定了：材质侧一个 `[Toggle(_HO_SEMANTIC_MASK)]`（只有显式打开才声明/采样这张图）,
-    // 连同一个可见的开关行一起加 —— 见规划 §2.2 的备注。在那之前只由标量决定。
     #if defined(_HO_SEMANTIC_MASK)
         weight *= saturate(LIL_SAMPLE_2D(_HoSemanticWeightTex, sampler_MainTex, fd.uvMain).r);
     #endif

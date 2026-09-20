@@ -3,7 +3,7 @@
 
 // Ho-SurfaceBuffer 两个材质 pass 的**共享前半段**：
 //   HoSurfaceBuffer  = 五张数值图 + owner（单采样）
-//   HoSurfaceSemantic= owner + 语义 lane（MSAA，逐 sample）
+//   HoSurfaceSemantic= owner + 语义 lane（单采样，逐像素）
 // 两趟必须对"哪些像素存在"给出一致答案，所以几何解包、主色链、溶解 / 抖动 / cutout 的
 // alpha clip **只写一份**（`lilHoSurfaceBuildFrag`），否则 cutout 的洞上会出现
 // "数值面没写、语义面写了"这种自相矛盾的像素。
