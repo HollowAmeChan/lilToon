@@ -29,6 +29,11 @@
                         _HoMetadataBufferCustom3Color          ("MetadataBuffer Custom 3 Color", Color) = (0,0,0,0)
         [NoScaleOffset] _HoMetadataBufferCustom3Tex            ("MetadataBuffer Custom 3", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
+                        // Ho-SurfaceBuffer：表面数值（不再新增 _HoMetadataBuffer*，也不用 MPB）
+                        _HoSurfaceThickness         ("Ho Surface Thickness", Range(0,1)) = 0
+                        _HoSurfaceCurvature         ("Ho Surface Curvature", Range(-1,1)) = 0
+                        _HoSurfaceTransmittanceHint ("Ho Surface Transmittance Hint", Range(0,1)) = 0
+                        _HoSurfaceMaterialClassId   ("Ho Surface Material Class Id", Range(0,255)) = 0
         //----------------------------------------------------------------------------------------------------------------------
         // Main
         [lilHDR] [MainColor] _Color                 ("sColor", Color) = (1,1,1,1)
