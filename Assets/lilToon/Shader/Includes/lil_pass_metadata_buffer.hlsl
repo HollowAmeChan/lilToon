@@ -47,11 +47,9 @@ struct v2f
 struct lilHoMetadataBufferOutput
 {
     half4 maskId : SV_Target0;
-    half4 surfaceData : SV_Target1;
-    half4 custom0 : SV_Target2;
-    half4 objectCustom0 : SV_Target3;
-    half4 objectCustom1 : SV_Target4;
-    half4 reflectionMaterial : SV_Target5;
+    half4 custom0 : SV_Target1;
+    half4 objectCustom0 : SV_Target2;
+    half4 objectCustom1 : SV_Target3;
 };
 
 float _HoMetadataBufferMaskWeight;
@@ -61,11 +59,7 @@ float _HoMetadataBufferCustomWriteMask;
 float4 _HoMetadataBufferCustomValues0;
 float _HoMetadataBufferGroupId;
 float _HoMetadataBufferObjectId;
-float _HoMetadataBufferMaterialClass;
 float _HoMetadataBufferFlags;
-float _HoMetadataBufferThickness;
-float _HoMetadataBufferCurvature;
-float _HoMetadataBufferTransmittanceHint;
 float _HoMetadataBufferObjectCustomMask;
 float _HoMetadataBufferRsuvAssigned;
 // `_HoSSS*` 与 `_HoMetadataBufferCustom0~3Color` / `Custom0~3Tex` 是**材质属性**，
@@ -94,18 +88,6 @@ float lilHoMetadataBufferEncodeByte(float value)
 float lilHoMetadataBufferGetObjectId()
 {
     return _HoMetadataBufferObjectId;
-}
-
-float lilHoMetadataBufferResolveMaterialProfile()
-{
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
-        if(_UseSSS)
-        {
-            return lilHoMetadataBufferEncodeByte(_HoSSSProfileId);
-        }
-    #endif
-
-    return lilHoMetadataBufferEncodeScalar(_HoMetadataBufferMaterialClass);
 }
 
 float4 lilHoMetadataBufferApplyCustomWriteMask(float4 values, float startBit)
@@ -180,85 +162,6 @@ float4 lilHoMetadataBufferResolveCustom0To3(float2 uv)
     return lilHoMetadataBufferSampleCustom0To3(uv);
 }
 
-float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
-{
-    #if defined(LIL_LITE) || defined(LIL_GEM)
-        return 0.0;
-    #else
-    float smoothness = _Smoothness;
-    #if defined(LIL_FEATURE_SmoothnessTex)
-        smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
-    #endif
-    GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
-
-    float metallic = _Metallic;
-    #if defined(LIL_FEATURE_MetallicGlossMap)
-        metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, sampler_MainTex, fd.uvMain).r;
-    #endif
-
-    #if defined(LIL_FEATURE_REFLECTION)
-        float planarReflectionEnabled = (_UseReflection != 0 && _UsePlanarReflection != 0) ? 1.0 : 0.0;
-    #else
-        float planarReflectionEnabled = 0.0;
-    #endif
-    return float4(
-        saturate(1.0 - smoothness),
-        saturate(metallic),
-        saturate(_Reflectance),
-        saturate(_PlanarReflectionStrength) * planarReflectionEnabled);
-    #endif
-}
-
-float lilHoMetadataBufferResolveThickness(float2 uv)
-{
-    float thickness = saturate(_HoMetadataBufferThickness);
-
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
-        if(_UseSSS)
-        {
-            float sssThickness = 1.0;
-            #if defined(LIL_FEATURE_SSSThicknessMap)
-                sssThickness = LIL_SAMPLE_2D(_SSSThicknessMap, sampler_MainTex, uv).r;
-            #endif
-            if(_SSSThicknessInvert) sssThickness = 1.0 - sssThickness;
-            sssThickness = pow(saturate(sssThickness), max(_SSSPower, 0.001));
-            thickness = max(thickness, saturate(sssThickness * _SSSStrength * max(_HoSSSThicknessScale, 0.0)));
-        }
-    #endif
-
-    return saturate(thickness);
-}
-
-float lilHoMetadataBufferResolveCurvatureBoost()
-{
-    float curvatureBoost = saturate(abs(_HoMetadataBufferCurvature));
-
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
-        if(_UseSSS)
-        {
-            float transmissionBoost = _HoSSSTransmissionStrength * (0.5 + _SSSBorder * 0.5 + _SSSViewStrength * 0.25);
-            curvatureBoost = max(curvatureBoost, saturate(transmissionBoost));
-        }
-    #endif
-
-    return curvatureBoost;
-}
-
-float lilHoMetadataBufferResolveTransmittanceHint()
-{
-    float transmittanceHint = saturate(_HoMetadataBufferTransmittanceHint);
-
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
-        if(_UseSSS)
-        {
-            float transmissionRadius = saturate(_HoSSSTransmissionRadius * 0.5);
-            transmittanceHint = max(transmittanceHint, transmissionRadius);
-        }
-    #endif
-
-    return transmittanceHint;
-}
-
 float lilHoMetadataBufferResolveSubjectCoverage(float alpha)
 {
     // Semantic metadata represents object membership. Transparent materials still occupy their full mesh area.
@@ -274,10 +177,9 @@ float lilHoMetadataBufferHasExplicitPayload(float hasRendererUserValue, uint obj
     float hasObjectCustom = objectCustomMask != 0u ? 1.0 : 0.0;
     float hasIds = step(0.5, max(max(abs(groupId), abs(objectId)), abs(flags)));
     float hasSubject = step(0.5, _HoMetadataBufferRsuvAssigned);
-    float hasSurfaceMetadata = step(0.0001, max(max(abs(_HoMetadataBufferMaterialClass), abs(_HoMetadataBufferThickness)), max(abs(_HoMetadataBufferCurvature), abs(_HoMetadataBufferTransmittanceHint))));
     float hasCustomOverride = step(0.5, _HoMetadataBufferCustomWriteMask);
     float hasCustomMaterial = step(0.0001, max(max(abs(_HoMetadataBufferCustom0Color.r), abs(_HoMetadataBufferCustom1Color.r)), max(abs(_HoMetadataBufferCustom2Color.r), abs(_HoMetadataBufferCustom3Color.r))));
-    return saturate(max(max(max(hasRendererUserValue, hasObjectCustom), max(hasIds, hasSubject)), max(hasSurfaceMetadata, max(hasCustomOverride, hasCustomMaterial))));
+    return saturate(max(max(max(hasRendererUserValue, hasObjectCustom), max(hasIds, hasSubject)), max(hasCustomOverride, hasCustomMaterial)));
 }
 
 void lilHoMetadataBufferClipTransparentUnassigned(float explicitPayload)
@@ -405,10 +307,6 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
     float maskEnabled = lilHoMetadataBufferHasSystemChannel(1.0);
     float idEnabled = lilHoMetadataBufferHasSystemChannel(2.0);
     float flagsEnabled = lilHoMetadataBufferHasSystemChannel(4.0);
-    float thicknessEnabled = lilHoMetadataBufferHasSystemChannel(256.0);
-    float curvatureEnabled = lilHoMetadataBufferHasSystemChannel(512.0);
-    float materialEnabled = lilHoMetadataBufferHasSystemChannel(1024.0);
-    float transmittanceHintEnabled = lilHoMetadataBufferHasSystemChannel(2048.0);
     float subjectCoverage = lilHoMetadataBufferResolveSubjectCoverage(fd.col.a);
     float subjectValid = step(0.0001, subjectCoverage);
 
@@ -426,15 +324,9 @@ lilHoMetadataBufferOutput fragMetadataBuffer(v2f input LIL_VFACE(facing))
         lilHoMetadataBufferEncodeByte(effectiveGroupId) * idEnabled * subjectValid,
         lilHoMetadataBufferEncodeByte(effectiveObjectId) * idEnabled * subjectValid,
         lilHoMetadataBufferEncodeByte(effectiveFlags) * flagsEnabled * subjectValid);
-    output.surfaceData = half4(
-        lilHoMetadataBufferResolveThickness(fd.uvMain) * thicknessEnabled * subjectValid,
-        lilHoMetadataBufferResolveCurvatureBoost() * curvatureEnabled * subjectValid,
-        lilHoMetadataBufferResolveMaterialProfile() * materialEnabled * subjectValid,
-        lilHoMetadataBufferResolveTransmittanceHint() * transmittanceHintEnabled * subjectValid);
     output.custom0 = half4(lilHoMetadataBufferResolveCustom0To3(fd.uvMain) * subjectValid);
     output.objectCustom0 = half4(lilHoMetadataBufferDecodeObjectCustom0(objectCustomMask) * subjectValid);
     output.objectCustom1 = half4(lilHoMetadataBufferDecodeObjectCustom1(objectCustomMask) * subjectValid);
-    output.reflectionMaterial = half4(lilHoMetadataBufferResolveReflectionMaterial(fd) * subjectValid);
     return output;
 }
 
