@@ -185,9 +185,9 @@ float lilHoSurfaceBufferResolveProfileByte()
     return 0.0;
 }
 
-// owner = RSUV 的低 16 bit（OB 写进去的 partId）。没有身份时是 0 = "没有 writer"：
-// 数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（规划 §0.1）。
-float lilHoSurfaceBufferOwnerEncoded()
+// owner = RSUV 的低 16 bit（OB 写进去的 partId），存成两个字节（R = 高、G = 低）。
+// 没有身份时是 0 = "没有 writer"：数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（规划 §0.1）。
+float2 lilHoSurfaceBufferOwnerEncoded()
 {
     return HoSurfaceOwnerEncode(unity_RendererUserValue & 0xFFFFu);
 }
@@ -317,7 +317,8 @@ lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
         lilHoSurfaceBufferResolveCurvatureHint(),
         lilHoSurfaceBufferResolveTransmittanceHint(),
         lilHoSurfaceBufferEncodeByte(_HoSurfaceMaterialClassId));
-    output.owner = half4(lilHoSurfaceBufferOwnerEncoded(), 0.0h, 0.0h, 0.0h);
+    float2 ownerBytes = lilHoSurfaceBufferOwnerEncoded();
+    output.owner = half4((half2)ownerBytes, 0.0h, 0.0h);
     return output;
 }
 
