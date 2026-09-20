@@ -76,7 +76,8 @@ float _HoSSSTransmissionRadius;
 
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
-// octa / owner 的编解码与消费者共用同一份实现（免得两边的约定各自漂移）。
+// octa / owner 的编解码与消费者（另一个包里的调试/消费端）共用同一份实现。
+#include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/SurfaceBuffer/Shaders/HoSurfaceBufferCommon.hlsl"
 
 // lil_common_input.hlsl aliases sampler_MainTex to sampler_OutlineTex when
 // LIL_OUTLINE is defined, so drop the old definition before rebinding it here.
