@@ -185,6 +185,8 @@ namespace lilToon
         private readonly lilMaterialProperty hoSurfaceTransmittanceHint = new lilMaterialProperty("_HoSurfaceTransmittanceHint", PropertyBlock.HoSurface);
         private readonly lilMaterialProperty hoSurfaceMaterialClassId   = new lilMaterialProperty("_HoSurfaceMaterialClassId", PropertyBlock.HoSurface);
         private readonly lilMaterialProperty hoSemanticWeight           = new lilMaterialProperty("_HoSemanticWeight", PropertyBlock.HoSurface);
+        // 遮罩必须显式打开（`[Toggle(_HO_SEMANTIC_MASK)]`）：老材质没有那张贴图，无条件采样会读到未定义的绑定。
+        private readonly lilMaterialProperty hoSemanticMaskOn           = new lilMaterialProperty("_HoSemanticMaskOn", PropertyBlock.HoSurface);
         private readonly lilMaterialProperty hoSemanticWeightTex        = new lilMaterialProperty("_HoSemanticWeightTex", true, PropertyBlock.HoSurface);
         private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.HoSurface);
         private readonly lilMaterialProperty usePlanarReflection        = new lilMaterialProperty("_UsePlanarReflection", PropertyBlock.PlanarReflection);

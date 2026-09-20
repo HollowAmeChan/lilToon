@@ -640,7 +640,8 @@ namespace lilToon
 
             lilEditorGUI.DrawLine();
             LocalizedProperty(hoSemanticWeight);
-            if(hoSemanticWeightTex.p != null)
+            LocalizedProperty(hoSemanticMaskOn);
+            if(hoSemanticMaskOn.floatValue > 0.5f && hoSemanticWeightTex.p != null)
             {
                 m_MaterialEditor.TexturePropertySingleLine(hoSemanticWeightTexContent, hoSemanticWeightTex.p);
             }

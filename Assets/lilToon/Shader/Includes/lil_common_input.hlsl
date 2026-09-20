@@ -163,6 +163,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _HoSurfaceTransmittanceHint;
     float   _HoSurfaceMaterialClassId;
     float   _HoSemanticWeight;
+    float   _HoSemanticMaskOn;
     float   _HoSSSProfileId;
     float   _HoSSSThicknessScale;
     float   _HoSSSTransmissionStrength;
@@ -835,6 +836,7 @@ CBUFFER_START(UnityPerMaterial)
     float   _HoSurfaceTransmittanceHint;
     float   _HoSurfaceMaterialClassId;
     float   _HoSemanticWeight;
+    float   _HoSemanticMaskOn;
     float   _HoSSSProfileId;
     float   _HoSSSThicknessScale;
     float   _HoSSSTransmissionStrength;

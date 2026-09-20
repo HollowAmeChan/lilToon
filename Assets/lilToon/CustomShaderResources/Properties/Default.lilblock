@@ -52,6 +52,7 @@
                         _HoSurfaceTransmittanceHint ("透射提示（SB）", Range(0,1)) = 0
                         _HoSurfaceMaterialClassId   ("材质类 ID（SB）", Range(0,255)) = 0
                         _HoSemanticWeight           ("语义权重（0~1）", Range(0,1)) = 1
+        [Toggle(_HO_SEMANTIC_MASK)] _HoSemanticMaskOn ("使用语义遮罩", Float) = 0
         [NoScaleOffset] _HoSemanticWeightTex        ("语义遮罩（R 通道）", 2D) = "white" {}
         [lilToggle]     _UsePlanarReflection        ("平面反射", Int) = 0
                         _PlanarReflectionStrength   ("强度", Range(0, 1)) = 1
