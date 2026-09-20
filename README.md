@@ -27,6 +27,7 @@
 
 - 场景级批量材质管理器（`HoLil/[材质] 材质管理器`）：按物体层级批量选材质、**只写你动过的属性**、跨 `Hidden/lilToon*` 变体 shader 广播写入、没吃到的材质在日志里点名；旧的多材质编辑器窗口（`Window/_lil/`）已删除。
 - URP HoAOV 和 HoCharacterCapture pass。
+- HoObjectBuffer pass：为 `lilToon-URP-Extensions` 的逐 sample IdentityId/coverage 链路提供 alpha-mask、dissolve、dither 与 cutout 一致的 `LightMode = "HoObjectBuffer"` 写入。
 - HoAOV 材质属性：custom channel、object/group ID、thickness、curvature、utility、capture opacity 等。
 - Screen Space AO 接收路径，可读取 URP `_ScreenSpaceOcclusionTexture` 或 HTrace `_HTraceBufferAO`。
 - HTrace SSGI 的背面法线处理开关。
