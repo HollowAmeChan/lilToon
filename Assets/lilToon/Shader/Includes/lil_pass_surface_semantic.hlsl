@@ -17,6 +17,9 @@
 #include "lil_pass_surface_common.hlsl"
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ObjectBuffer/Shaders/HoObjectBufferIdPass.hlsl"
 
+// 逐像素的语义遮罩（材质上的「使用语义遮罩」）——**必须显式打开**，理由见 lilHoSemanticWeight。
+#pragma shader_feature_local _HO_SEMANTIC_MASK
+
 /// <summary>每条 lane 的 SemanticId（1..255）与它对应的物体位掩码（1/2/4/8…；0 = 没有物体位）。</summary>
 float4 _HoSemanticLaneIds0;
 float4 _HoSemanticLaneIds1;
@@ -68,15 +71,23 @@ float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, flo
 }
 
 /// <summary>
-/// 材质侧的语义权重 = 标量 `_HoSemanticWeight` × 遮罩贴图的 **R 通道**（不填贴图 = 白 ⇒ 只由标量决定）。
-/// 这是"同一材质内部的逐像素细分"（眼白 / 虹膜那种）唯一的表达手段；语义**名字**不在这里加，
-/// 要加就往物体位词表加一位。
+/// 材质侧的语义权重 = 标量 `_HoSemanticWeight` × 遮罩贴图的 **R 通道**。
+/// **遮罩必须显式打开**（材质上的「使用语义遮罩」⇒ `shader_feature_local _HO_SEMANTIC_MASK`）：
+/// 老材质没有这张贴图，未声明的纹理绑定内容是不确定的 —— 实测会把整条 lane 污染成"拖影"。
+/// 不打开就只由标量决定，也不采样那张图。
 /// </summary>
 float lilHoSemanticWeight(lilFragData fd)
 {
-    // `[NoScaleOffset]` ⇒ 没有 `_ST`，所以用不带 ST 的采样宏（uv 直接给主 UV）。
-    float mask = saturate(LIL_SAMPLE_2D(_HoSemanticWeightTex, sampler_MainTex, fd.uvMain).r);
-    return saturate(saturate(_HoSemanticWeight) * mask);
+    float weight = saturate(_HoSemanticWeight);
+    // 遮罩这条路**暂时不接**：`_HoSemanticWeightTex` 在老材质上没有赋值，未声明的纹理绑定内容不确定，
+    // 实测会把整条 lane 污染成"拖影"（`enableSemanticLanes` 一关就干净，就是它）。
+    // 重新接上的形态已经定了：材质侧一个 `[Toggle(_HO_SEMANTIC_MASK)]`（只有显式打开才声明/采样这张图）,
+    // 连同一个可见的开关行一起加 —— 见规划 §2.2 的备注。在那之前只由标量决定。
+    #if defined(_HO_SEMANTIC_MASK)
+        weight *= saturate(LIL_SAMPLE_2D(_HoSemanticWeightTex, sampler_MainTex, fd.uvMain).r);
+    #endif
+
+    return weight;
 }
 
 lilHoSurfaceSemanticOutput fragSurfaceSemantic(v2f input LIL_VFACE(facing))
