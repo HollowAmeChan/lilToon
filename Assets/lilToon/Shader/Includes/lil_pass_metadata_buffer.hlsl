@@ -180,12 +180,6 @@ float4 lilHoMetadataBufferResolveCustom0To3(float2 uv)
     return lilHoMetadataBufferSampleCustom0To3(uv);
 }
 
-float4 lilHoMetadataBufferResolveSurfaceColor(float4 surfaceColor)
-{
-    // Base diffuse/albedo is a core MetadataBuffer output and is not gated by SSS.
-    return float4(surfaceColor.rgb, saturate(surfaceColor.a));
-}
-
 float4 lilHoMetadataBufferResolveReflectionMaterial(lilFragData fd)
 {
     #if defined(LIL_LITE) || defined(LIL_GEM)
@@ -273,12 +267,6 @@ float lilHoMetadataBufferResolveSubjectCoverage(float alpha)
     #else
         return saturate(_HoMetadataBufferMaskWeight) * saturate(alpha);
     #endif
-}
-
-float lilHoMetadataBufferResolveSurfaceColorCoverage(float alpha)
-{
-    // SurfaceColor is blended as premultiplied color in the RT, so it keeps material alpha as coverage.
-    return saturate(_HoMetadataBufferMaskWeight) * saturate(alpha);
 }
 
 float lilHoMetadataBufferHasExplicitPayload(float hasRendererUserValue, uint objectCustomMask, float groupId, float objectId, float flags)
@@ -564,109 +552,6 @@ half4 fragGeometryBuffer(v2f input LIL_VFACE(facing)) : SV_Target
 
     float linearDepth = LIL_TO_LINEARDEPTH(input.positionCS.z, input.positionCS.xy);
     return half4(normalize(fd.N) * 0.5 + 0.5, linearDepth);
-}
-
-half4 fragMetadataBufferSurfaceColor(v2f input LIL_VFACE(facing)) : SV_Target
-{
-    LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-    lilFragData fd = lilInitFragData();
-
-    BEFORE_UNPACK_V2F
-    OVERRIDE_UNPACK_V2F
-    LIL_COPY_VFACE(fd.facing);
-
-    LIL_GET_POSITION_WS_DATA(input,fd);
-    #if defined(LIL_V2F_NORMAL_WS) && defined(LIL_V2F_TANGENT_WS)
-        LIL_GET_TBN_DATA(input,fd);
-        LIL_GET_PARALLAX_DATA(input,fd);
-    #endif
-
-    BEFORE_ANIMATE_MAIN_UV
-    OVERRIDE_ANIMATE_MAIN_UV
-    BEFORE_CALC_DDX_DDY
-    OVERRIDE_CALC_DDX_DDY
-
-    BEFORE_PARALLAX
-    #if defined(LIL_FEATURE_PARALLAX)
-        OVERRIDE_PARALLAX
-    #endif
-
-    BEFORE_MAIN
-    OVERRIDE_MAIN
-
-    BEFORE_MAIN2ND
-    #if defined(LIL_FEATURE_MAIN2ND)
-        float main2ndDissolveAlpha = 0.0;
-        float4 color2nd = 1.0;
-        OVERRIDE_MAIN2ND
-    #endif
-
-    BEFORE_MAIN3RD
-    #if defined(LIL_FEATURE_MAIN3RD)
-        float main3rdDissolveAlpha = 0.0;
-        float4 color3rd = 1.0;
-        OVERRIDE_MAIN3RD
-    #endif
-
-    BEFORE_ALPHAMASK
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
-        OVERRIDE_ALPHAMASK
-    #endif
-
-    BEFORE_DISSOLVE
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
-        float dissolveAlpha = 0.0;
-        if (fd.dissolveActive)
-        {
-            float priorAlpha = fd.col.a;
-            fd.col.a = 1.0f;
-            OVERRIDE_DISSOLVE
-            if (fd.dissolveInvert)
-            {
-                fd.col.a = 1.0f - fd.col.a;
-            }
-            fd.col.a *= priorAlpha;
-        }
-    #endif
-
-    BEFORE_DITHER
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
-        OVERRIDE_DITHER
-    #endif
-
-    #if LIL_RENDER == 0
-        fd.col.a = 1.0;
-    #elif LIL_RENDER == 1
-        #if defined(LIL_FEATURE_DITHER)
-            if(_UseDither)
-            {
-                clip(fd.col.a - 0.5);
-            }
-            else
-        #endif
-        {
-            clip(fd.col.a - _Cutoff);
-        }
-        fd.col.a = 1.0;
-    #else
-        fd.col.a = saturate(fd.col.a);
-    #endif
-
-    float subjectCoverage = lilHoMetadataBufferResolveSubjectCoverage(fd.col.a);
-    float surfaceColorCoverage = lilHoMetadataBufferResolveSurfaceColorCoverage(fd.col.a);
-    float subjectValid = step(0.0001, subjectCoverage);
-    uint rendererUserValue = unity_RendererUserValue;
-    bool hasRendererUserValue = rendererUserValue != 0u;
-    uint objectCustomMask = hasRendererUserValue ? (rendererUserValue & 255u) : (uint)round(saturate(_HoMetadataBufferObjectCustomMask / 255.0) * 255.0);
-    float effectiveGroupId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 8u) : _HoMetadataBufferGroupId;
-    float effectiveObjectId = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 16u) : lilHoMetadataBufferGetObjectId();
-    float effectiveFlags = hasRendererUserValue ? lilHoMetadataBufferByteToFloat(rendererUserValue, 24u) : _HoMetadataBufferFlags;
-    lilHoMetadataBufferClipTransparentUnassigned(lilHoMetadataBufferHasExplicitPayload(hasRendererUserValue ? 1.0 : 0.0, objectCustomMask, effectiveGroupId, effectiveObjectId, effectiveFlags));
-
-    float4 surfaceColor = lilHoMetadataBufferResolveSurfaceColor(fd.col);
-    surfaceColor.a = surfaceColorCoverage;
-    return half4(surfaceColor * subjectValid);
 }
 
 #endif
