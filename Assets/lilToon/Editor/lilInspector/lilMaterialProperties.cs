@@ -177,7 +177,16 @@ namespace lilToon
         private readonly lilMaterialProperty metadataBufferCustom2Tex            = new lilMaterialProperty("_HoMetadataBufferCustom2Tex", true, PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom3Color          = new lilMaterialProperty("_HoMetadataBufferCustom3Color", PropertyBlock.MetadataBuffer);
         private readonly lilMaterialProperty metadataBufferCustom3Tex            = new lilMaterialProperty("_HoMetadataBufferCustom3Tex", true, PropertyBlock.MetadataBuffer);
-        private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.MetadataBuffer);
+        // Ho 表面 / 语义：SB 的材质侧输入。**标签（属于哪几类）由物体侧的 Ho-ObjectBuffer 组件决定**，
+        // 这里只说"数值"与"权重"。归到 PropertyBlock.HoSurface —— 这几个参数之前没归任何块，
+        // 于是材质面板里根本不显示（作者只能靠 Debug 视图或脚本改）。
+        private readonly lilMaterialProperty hoSurfaceThickness         = new lilMaterialProperty("_HoSurfaceThickness", PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoSurfaceCurvature         = new lilMaterialProperty("_HoSurfaceCurvature", PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoSurfaceTransmittanceHint = new lilMaterialProperty("_HoSurfaceTransmittanceHint", PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoSurfaceMaterialClassId   = new lilMaterialProperty("_HoSurfaceMaterialClassId", PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoSemanticWeight           = new lilMaterialProperty("_HoSemanticWeight", PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoSemanticWeightTex        = new lilMaterialProperty("_HoSemanticWeightTex", true, PropertyBlock.HoSurface);
+        private readonly lilMaterialProperty hoCharacterCaptureOpacity  = new lilMaterialProperty("_HoCharacterCaptureOpacity", PropertyBlock.HoSurface);
         private readonly lilMaterialProperty usePlanarReflection        = new lilMaterialProperty("_UsePlanarReflection", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionStrength   = new lilMaterialProperty("_PlanarReflectionStrength", PropertyBlock.PlanarReflection);
         private readonly lilMaterialProperty planarReflectionMinSmoothness = new lilMaterialProperty("_PlanarReflectionMinSmoothness", PropertyBlock.PlanarReflection);

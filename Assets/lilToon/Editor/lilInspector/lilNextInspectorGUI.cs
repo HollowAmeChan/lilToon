@@ -280,6 +280,8 @@ namespace lilToon
                     LocalizedProperty(shiftBackfaceUV);
                 }, false);
                 DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
+                // Ho 的表面数值与语义权重：SB 的材质侧输入（标签归物体侧，见 DrawNextHoSurface 的注释）。
+                DrawNextSection("surface.ho", "Ho 表面语义", PropertyBlock.HoSurface, DrawNextHoSurface, false);
                 DrawNextSection("surface.lighting", GetLoc("sLightingSettings"), PropertyBlock.Lighting, DrawNextLightingControls, false);
                 if(isCustomShader) DrawNextSection("surface.custom", GetLoc("sCustomProperties"), PropertyBlock.Other, delegate { DrawCustomProperties(material); }, false, null, false);
             });
@@ -612,6 +614,39 @@ namespace lilToon
                     LocalizedProperty(emission2ndFluorescence);
                 }
             }
+        }
+
+        /// <summary>
+        /// Ho 表面 / 语义：SB 的材质侧输入。
+        /// **标签（脸 / 前发 / 眼睛…）归物体侧**（Ho-ObjectBuffer 组件的「标签」），材质这边只说数值与权重 ——
+        /// 于是"同一个材质用在哪个部件上"不需要材质知道，作者也不用在两边各填一遍；
+        /// 材质**只能覆盖它自己 renderer 已经有的那几位**（SB 的材质 pass 按 palette 表把住）。
+        /// </summary>
+        private static readonly GUIContent hoSemanticWeightTexContent = new GUIContent(
+            "语义遮罩（R 通道）",
+            "逐像素权重：乘到上面的标量权重上。不填 = 白 ⇒ 只由标量决定。");
+
+        private void DrawNextHoSurface()
+        {
+            EditorGUILayout.HelpBox(
+                "「脸 / 前发 / 眼睛…」这些标签由物体侧的 Ho-ObjectBuffer 组件决定；材质这里只给数值与权重。\n" +
+                "权重 = 标量 × 遮罩贴图 R 通道：写了就以材质为准（细化 / 收窄），没写就回落到物体标签。",
+                MessageType.None);
+
+            LocalizedProperty(hoSurfaceThickness);
+            LocalizedProperty(hoSurfaceCurvature);
+            LocalizedProperty(hoSurfaceTransmittanceHint);
+            LocalizedProperty(hoSurfaceMaterialClassId);
+
+            lilEditorGUI.DrawLine();
+            LocalizedProperty(hoSemanticWeight);
+            if(hoSemanticWeightTex.p != null)
+            {
+                m_MaterialEditor.TexturePropertySingleLine(hoSemanticWeightTexContent, hoSemanticWeightTex.p);
+            }
+
+            lilEditorGUI.DrawLine();
+            LocalizedProperty(hoCharacterCaptureOpacity);
         }
 
         private void DrawNextNormal()

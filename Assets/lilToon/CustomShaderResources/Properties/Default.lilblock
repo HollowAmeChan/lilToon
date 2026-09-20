@@ -45,11 +45,14 @@
         [NoScaleOffset] _HoMetadataBufferCustom3Tex            ("MetadataBuffer Custom 3", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
                         // Ho-SurfaceBuffer：表面数值 + 语义权重（不再新增 _HoMetadataBuffer*，也不用 MPB）
-                        _HoSurfaceThickness         ("Ho Surface Thickness", Range(0,1)) = 0
-                        _HoSurfaceCurvature         ("Ho Surface Curvature", Range(-1,1)) = 0
-                        _HoSurfaceTransmittanceHint ("Ho Surface Transmittance Hint", Range(0,1)) = 0
-                        _HoSurfaceMaterialClassId   ("Ho Surface Material Class Id", Range(0,255)) = 0
-                        _HoSemanticWeight           ("Ho Semantic Weight", Range(0,1)) = 1
+                        // 显示名直接用中文：这几个参数只在 lilToon 面板的「Ho 表面语义」一节里出现，
+                        // 走 lilToon 的 GetLoc 反而要改十几个语言文件。
+                        _HoSurfaceThickness         ("表面厚度（SB）", Range(0,1)) = 0
+                        _HoSurfaceCurvature         ("表面曲率（SB）", Range(-1,1)) = 0
+                        _HoSurfaceTransmittanceHint ("透射提示（SB）", Range(0,1)) = 0
+                        _HoSurfaceMaterialClassId   ("材质类 ID（SB）", Range(0,255)) = 0
+                        _HoSemanticWeight           ("语义权重（0~1）", Range(0,1)) = 1
+        [NoScaleOffset] _HoSemanticWeightTex        ("语义遮罩（R 通道）", 2D) = "white" {}
         [lilToggle]     _UsePlanarReflection        ("平面反射", Int) = 0
                         _PlanarReflectionStrength   ("强度", Range(0, 1)) = 1
                         _PlanarReflectionMinSmoothness ("最小光滑度", Range(0, 1)) = 0

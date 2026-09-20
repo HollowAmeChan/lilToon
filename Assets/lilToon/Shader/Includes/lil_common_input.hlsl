@@ -934,6 +934,8 @@ TEXTURE2D(_HoMetadataBufferCustom0Tex);
 TEXTURE2D(_HoMetadataBufferCustom1Tex);
 TEXTURE2D(_HoMetadataBufferCustom2Tex);
 TEXTURE2D(_HoMetadataBufferCustom3Tex);
+// Ho 语义权重遮罩（SB 的语义 lane 用；R 通道乘到标量权重上，不填 = 白 ⇒ 只由标量决定）。
+TEXTURE2D(_HoSemanticWeightTex);
 SAMPLER(sampler_MainTex);
 SAMPLER(sampler_Main2ndTex);
 SAMPLER(sampler_Main3rdTex);

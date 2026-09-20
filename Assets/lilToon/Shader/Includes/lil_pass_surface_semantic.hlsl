@@ -67,14 +67,27 @@ float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, flo
     return float4(laneA.x, laneA.y, laneB.x, laneB.y);
 }
 
+/// <summary>
+/// 材质侧的语义权重 = 标量 `_HoSemanticWeight` × 遮罩贴图的 **R 通道**（不填贴图 = 白 ⇒ 只由标量决定）。
+/// 这是"同一材质内部的逐像素细分"（眼白 / 虹膜那种）唯一的表达手段；语义**名字**不在这里加，
+/// 要加就往物体位词表加一位。
+/// </summary>
+float lilHoSemanticWeight(lilFragData fd)
+{
+    // `[NoScaleOffset]` ⇒ 没有 `_ST`，所以用不带 ST 的采样宏（uv 直接给主 UV）。
+    float mask = saturate(LIL_SAMPLE_2D(_HoSemanticWeightTex, sampler_MainTex, fd.uvMain).r);
+    return saturate(saturate(_HoSemanticWeight) * mask);
+}
+
 lilHoSurfaceSemanticOutput fragSurfaceSemantic(v2f input LIL_VFACE(facing))
 {
-    // 只为它内部的 clip（cutout / dissolve / dither）：语义 pass 必须与数值 pass 落在同一批像素上。
-    lilHoSurfaceBuildFrag(input, LIL_HO_SURFACE_VFACE_VALUE);
+    // 这个 fd 只为两件事：内部的 clip（cutout / dissolve / dither —— 语义 pass 必须与数值 pass
+    // 落在同一批像素上）与 uvMain（遮罩贴图）。
+    lilFragData fd = lilHoSurfaceBuildFrag(input, LIL_HO_SURFACE_VFACE_VALUE);
 
     uint partId = unity_RendererUserValue & 0xFFFFu;
     uint partTags = HoObjectBufferLoadPart(partId).tags;
-    float weight = saturate(_HoSemanticWeight);
+    float weight = lilHoSemanticWeight(fd);
 
     lilHoSurfaceSemanticOutput output;
     float2 ownerBytes = lilHoSurfaceOwnerEncoded();

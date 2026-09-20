@@ -1028,6 +1028,36 @@ namespace lilToon
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
+                // Ho 表面 / 语义（SB 的材质侧输入；标签归物体侧，与 Next UI 的那一节同一套参数）
+                if(ShouldDrawBlock(PropertyBlock.HoSurface))
+                {
+                    edSet.isShowHoSurface = lilEditorGUI.Foldout("Ho 表面语义", edSet.isShowHoSurface);
+                    DrawMenuButton("Ho 表面语义", PropertyBlock.HoSurface);
+                    if(edSet.isShowHoSurface)
+                    {
+                        EditorGUILayout.BeginVertical(boxOuter);
+                        EditorGUILayout.HelpBox(
+                            "「脸 / 前发 / 眼睛…」这些标签由物体侧的 Ho-ObjectBuffer 组件决定；材质这里只给数值与权重。\n" +
+                            "权重 = 标量 × 遮罩贴图 R 通道：写了就以材质为准（细化 / 收窄），没写就回落到物体标签。",
+                            MessageType.None);
+                        LocalizedProperty(hoSurfaceThickness);
+                        LocalizedProperty(hoSurfaceCurvature);
+                        LocalizedProperty(hoSurfaceTransmittanceHint);
+                        LocalizedProperty(hoSurfaceMaterialClassId);
+                        lilEditorGUI.DrawLine();
+                        LocalizedProperty(hoSemanticWeight);
+                        if(hoSemanticWeightTex.p != null)
+                        {
+                            m_MaterialEditor.TexturePropertySingleLine(hoSemanticWeightTexContent, hoSemanticWeightTex.p);
+                        }
+
+                        lilEditorGUI.DrawLine();
+                        LocalizedProperty(hoCharacterCaptureOpacity);
+                        EditorGUILayout.EndVertical();
+                    }
+                }
+
+                //------------------------------------------------------------------------------------------------------------------------------
                 // Reflection
                 if(!isGem && ShouldDrawBlock(PropertyBlock.Reflection))
                 {
