@@ -53,14 +53,23 @@ float lilHoSemanticLaneTagMask(uint laneIndex)
 /// </summary>
 float2 lilHoSemanticLane(uint laneIndex, uint partTags, float weight)
 {
-    uint tagMask = (uint)round(max(0.0, lilHoSemanticLaneTagMask(laneIndex)));
-    if (tagMask == 0u || (partTags & tagMask) == 0u)
-    {
-        return float2(0.0, 0.0);
-    }
-
+    // ==== 临时诊断：短路掉物体位门控与权重，8 条 lane 全写、值恒 1 ====
+    // 这样 SB 变成"把所有画到的像素都写成全 1"：池子里应当出现一块**与 SB 自己的剪影完全一致的白块**
+    // （SB 自用深度 + 队列 [0, GeometryLast]，透明段不生产）。
+    //   干净剪影  ⇒ 写侧没问题，问题在 AC 的 MSAA Load（坐标 / 采样数 / 绑定）
+    //   仍然拖/糊/错位 ⇒ 写侧或附件绑定有问题
+    // 定位完把下面 return 之前的两行注释掉、把门控与权重那段恢复即可。
     uint semanticId = (uint)round(clamp(lilHoSemanticLaneId(laneIndex), 0.0, 255.0));
-    return float2((float)semanticId / 255.0, saturate(weight));
+    return float2((float)semanticId / 255.0, 1.0);
+
+    // 原实现（诊断完恢复这几行、删掉上面那条 return）：
+    // uint tagMask = (uint)round(max(0.0, lilHoSemanticLaneTagMask(laneIndex)));
+    // if (tagMask == 0u || (partTags & tagMask) == 0u)
+    // {
+    //     return float2(0.0, 0.0);
+    // }
+    //
+    // return float2((float)semanticId / 255.0, saturate(weight));
 }
 
 float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, float weight)
