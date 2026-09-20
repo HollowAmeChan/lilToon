@@ -62,25 +62,14 @@ float4 _HoMetadataBufferCustomValues0;
 float _HoMetadataBufferGroupId;
 float _HoMetadataBufferObjectId;
 float _HoMetadataBufferMaterialClass;
-float _HoSSSProfileId;
-float _HoSSSThicknessScale;
-float _HoSSSTransmissionStrength;
-float _HoSSSTransmissionRadius;
 float _HoMetadataBufferFlags;
 float _HoMetadataBufferThickness;
 float _HoMetadataBufferCurvature;
 float _HoMetadataBufferTransmittanceHint;
 float _HoMetadataBufferObjectCustomMask;
 float _HoMetadataBufferRsuvAssigned;
-float4 _HoMetadataBufferCustom0Color;
-float4 _HoMetadataBufferCustom1Color;
-float4 _HoMetadataBufferCustom2Color;
-float4 _HoMetadataBufferCustom3Color;
-
-TEXTURE2D(_HoMetadataBufferCustom0Tex);
-TEXTURE2D(_HoMetadataBufferCustom1Tex);
-TEXTURE2D(_HoMetadataBufferCustom2Tex);
-TEXTURE2D(_HoMetadataBufferCustom3Tex);
+// `_HoSSS*` 与 `_HoMetadataBufferCustom0~3Color` / `Custom0~3Tex` 是**材质属性**，
+// 声明在 `UnityPerMaterial` 里（SRP Batcher 要求材质属性都在那个 CBUFFER 中），这里不再写一遍。
 
 float lilHoMetadataBufferHasBit(float value, float bitValue)
 {

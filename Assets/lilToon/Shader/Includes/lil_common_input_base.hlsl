@@ -789,4 +789,26 @@ lilBool _PlanarReflectionFlipY;
     lilBool _RefractionColorFromMain;
 #endif
 
+//------------------------------------------------------------------------------------------------------------------------------
+// Ho 扩展的**材质参数**（SB / MB / 角色特化共用那一批）
+// 必须待在这个 UnityPerMaterial 里：SRP Batcher 要求所有材质属性都声明在这个 CBUFFER 中，
+// 之前它们是各 pass 里的全局变量 ⇒ 生成的 lilToon shader 整个对 SRP Batcher 不兼容
+// （所有 pass 都退化成逐 draw 上传属性）。这里列的都是 Properties 里有对应项的名字；
+// `_HoMetadataBufferCustomWriteMask` / `_HoMetadataBufferCustomValues0` 那种由脚本按全局或 MPB 设的
+// **不是材质属性**，继续留在各 pass 里，不要搬进来。
+float   _HoCharacterCaptureOpacity;
+float   _HoSurfaceThickness;
+float   _HoSurfaceCurvature;
+float   _HoSurfaceTransmittanceHint;
+float   _HoSurfaceMaterialClassId;
+float   _HoSemanticWeight;
+float   _HoSSSProfileId;
+float   _HoSSSThicknessScale;
+float   _HoSSSTransmissionStrength;
+float   _HoSSSTransmissionRadius;
+float4  _HoMetadataBufferCustom0Color;
+float4  _HoMetadataBufferCustom1Color;
+float4  _HoMetadataBufferCustom2Color;
+float4  _HoMetadataBufferCustom3Color;
+
 #endif

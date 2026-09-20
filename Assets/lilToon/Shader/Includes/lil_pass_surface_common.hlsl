@@ -56,16 +56,10 @@ struct v2f
     LIL_VERTEX_OUTPUT_STEREO
 };
 
-float _HoSurfaceThickness;
-float _HoSurfaceCurvature;
-float _HoSurfaceTransmittanceHint;
-float _HoSurfaceMaterialClassId;
-float _HoSSSProfileId;
-float _HoSSSThicknessScale;
-float _HoSSSTransmissionStrength;
-float _HoSSSTransmissionRadius;
-/// <summary>材质侧语义权重（0..1，默认 1）：只作用在"本 renderer 已经有的标签位"上。</summary>
-float _HoSemanticWeight;
+// `_HoSurfaceThickness` / `_HoSurfaceCurvature` / `_HoSurfaceTransmittanceHint` / `_HoSurfaceMaterialClassId`
+// / `_HoSSS*` / `_HoSemanticWeight` 都是**材质属性**，声明在 `UnityPerMaterial` 里
+// （`lil_common_input_base.hlsl` / LITE / MULTI 三处）：SRP Batcher 要求材质属性都在那个 CBUFFER 中，
+// 在各 pass 里再写一遍就会让整个 shader 不兼容。
 
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"

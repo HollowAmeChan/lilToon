@@ -48,7 +48,7 @@ struct v2f
 #include "lil_common_frag.hlsl"
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/CharacterSpecialization/Shaders/HoCharacterCaptureCommon.hlsl"
 
-float _HoCharacterCaptureOpacity;
+// `_HoCharacterCaptureOpacity` 是材质属性，声明在 `UnityPerMaterial` 里（SRP Batcher 要求）。
 
 LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
 {

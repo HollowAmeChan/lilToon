@@ -155,6 +155,22 @@ CBUFFER_START(UnityPerMaterial)
     lilBool _UsePlanarReflection;
     lilBool _PlanarReflectionFlipY;
     lilBool _OutlineDeleteMesh;
+    // Ho 扩展的材质参数（与 `lil_common_input_base.hlsl` 里那批同一组）：SRP Batcher 要求材质属性
+    // 都声明在 UnityPerMaterial 中，所以每个配置分支都要列一遍（多列出来的项在没声明它的配置里恒 0）。
+    float   _HoCharacterCaptureOpacity;
+    float   _HoSurfaceThickness;
+    float   _HoSurfaceCurvature;
+    float   _HoSurfaceTransmittanceHint;
+    float   _HoSurfaceMaterialClassId;
+    float   _HoSemanticWeight;
+    float   _HoSSSProfileId;
+    float   _HoSSSThicknessScale;
+    float   _HoSSSTransmissionStrength;
+    float   _HoSSSTransmissionRadius;
+    float4  _HoMetadataBufferCustom0Color;
+    float4  _HoMetadataBufferCustom1Color;
+    float4  _HoMetadataBufferCustom2Color;
+    float4  _HoMetadataBufferCustom3Color;
 #elif defined(LIL_FAKESHADOW)
     float4  _Color;
     float4  _MainTex_ST;
@@ -810,6 +826,23 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_REFRACTION)
         lilBool _RefractionColorFromMain;
     #endif
+
+    // Ho 扩展的材质参数（与 `lil_common_input_base.hlsl` 里那批同一组）：SRP Batcher 要求材质属性
+    // 都声明在 UnityPerMaterial 中，所以每个配置分支都要列一遍（多列出来的项在没声明它的配置里恒 0）。
+    float   _HoCharacterCaptureOpacity;
+    float   _HoSurfaceThickness;
+    float   _HoSurfaceCurvature;
+    float   _HoSurfaceTransmittanceHint;
+    float   _HoSurfaceMaterialClassId;
+    float   _HoSemanticWeight;
+    float   _HoSSSProfileId;
+    float   _HoSSSThicknessScale;
+    float   _HoSSSTransmissionStrength;
+    float   _HoSSSTransmissionRadius;
+    float4  _HoMetadataBufferCustom0Color;
+    float4  _HoMetadataBufferCustom1Color;
+    float4  _HoMetadataBufferCustom2Color;
+    float4  _HoMetadataBufferCustom3Color;
 #else
     #include "lil_common_input_base.hlsl"
 #endif
@@ -895,6 +928,12 @@ TEXTURE2D(_FurMask);
 TEXTURE2D(_FurLengthMask);
 TEXTURE2D(_FurVectorTex);
 TEXTURE2D(_TriMask);
+// Ho 扩展的材质贴图（MB 的自定义通道）。贴图不能进 CBUFFER，但同样要在每个 pass 里声明 ——
+// 统一放在这里（lilToon 自己的贴图也是这么声明的），各 pass 就不用各写一遍。
+TEXTURE2D(_HoMetadataBufferCustom0Tex);
+TEXTURE2D(_HoMetadataBufferCustom1Tex);
+TEXTURE2D(_HoMetadataBufferCustom2Tex);
+TEXTURE2D(_HoMetadataBufferCustom3Tex);
 SAMPLER(sampler_MainTex);
 SAMPLER(sampler_Main2ndTex);
 SAMPLER(sampler_Main3rdTex);
