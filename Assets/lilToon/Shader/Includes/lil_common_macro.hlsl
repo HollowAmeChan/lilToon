@@ -828,15 +828,15 @@ float4 GetShadowCoord(float3 positionWS, float4 positionCS)
     #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
         #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
         #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord) * HoShadowCastAttenuation(i.positionWS)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastAttenuation(i.positionWS)
     #elif defined(_MAIN_LIGHT_SHADOWS_CASCADE) && !defined(_MAIN_LIGHT_SHADOWS)
         #define LIL_SHADOW_COORDS(idx)
         #define LIL_TRANSFER_SHADOW(vi,uv,o)
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS)) * HoShadowCastAttenuation(i.positionWS)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS))) * HoShadowCastAttenuation(i.positionWS)
     #else
         #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
         #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = MainLightRealtimeShadow(i.shadowCoord) * HoShadowCastAttenuation(i.positionWS)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastAttenuation(i.positionWS)
     #endif
 #else
     #define LIL_SHADOW_COORDS(idx)
@@ -1008,6 +1008,7 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 
 #if defined(LIL_URP)
     #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ShadowCast/Shaders/HoShadowCastSampling.hlsl"
+    #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/CharacterShadow/Shaders/HoCharacterShadowSampling.hlsl"
     #define LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(positionWS) HoShadowCastAttenuation(positionWS)
 
     void lilGetAdditionalLightHDR(float3 positionWS, float4 positionCS, inout float3 lightColor, inout float minShadow)
