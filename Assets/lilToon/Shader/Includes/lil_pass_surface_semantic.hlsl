@@ -8,7 +8,7 @@
 // 读端永远按单采样纹理采样（**不是** `Texture2DMS` + `Load`）：逐 sample 的细分要重新上时，
 // 形态是"SB 自己渲染多重采样 + 自己 resolve 成单采样 lane 再发布"，别让消费者读多重采样。
 //
-// **SB 只允许覆盖 OB 语义**（规划 §0.3.6）：
+// **SB 只允许覆盖 OB 语义**（SB 架构 §0.3.6）：
 // - lane j 只写"本 renderer 在 OB 里真的有的那一位"（物体位掩码从 palette 表按 RSUV 的 partId 读），
 //   所以材质**在数据上**不可能凭空引入一个它 renderer 没有的语义；
 // - 没写 = `SemanticId = 0`；写 0 = `SemanticId = 声明的 ID, value = 0`（明确写 0）。

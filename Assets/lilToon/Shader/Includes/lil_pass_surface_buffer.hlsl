@@ -9,7 +9,7 @@
 //   Reflection     = (reflectance, plrStrength, 0, 0)
 //   Classification = (sssProfileIdByte, curvatureHint, transmittanceHint, materialClassIdByte)
 //   owner          = RSUV 的低 16 bit（= OB 写的 partId），用来跟 OB 层 0 对齐
-// **不用 MPB**：曲率 / class / transmittance 全走材质参数（规划 §2.3）。
+// **不用 MPB**：曲率 / class / transmittance 全走材质参数（SB 架构 §2.3）。
 // 几何 + 主色链 + alpha clip 与语义 pass 共用 `lil_pass_surface_common.hlsl`。
 
 #include "lil_pass_surface_common.hlsl"
@@ -54,7 +54,7 @@ float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
         }
     #endif
 
-    // R 存 **perceptualRoughness**（规划 §1：消费端自己平方成 linear roughness）。
+    // R 存 **perceptualRoughness**（SB 架构 §1：消费端自己平方成 linear roughness）。
     return float4(saturate(1.0 - smoothness), saturate(metallic), saturate(thickness), 0.0);
     #endif
 }

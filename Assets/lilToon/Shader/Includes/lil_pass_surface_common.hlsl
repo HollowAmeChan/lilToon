@@ -8,7 +8,7 @@
 // alpha clip **只写一份**（`lilHoSurfaceBuildFrag`），否则 cutout 的洞上会出现
 // "数值面没写、语义面写了"这种自相矛盾的像素。
 //
-// 材质侧参数（规划 §2.2；**不再新增 `_HoMetadataBuffer*`**，也不用 MPB）：
+// 材质侧参数（SB 架构 §2.2；**不再新增 `_HoMetadataBuffer*`**，也不用 MPB）：
 //   _HoSurfaceThickness / _HoSurfaceCurvature / _HoSurfaceTransmittanceHint / _HoSurfaceMaterialClassId
 //   _HoSSSProfileId 等复用 lilToon 的 SSS 参数
 //   _HoSemanticWeight = 这个材质有多少属于"自己 renderer 在 OB 里打上的那些标签"（语义 lane 用）
@@ -80,7 +80,7 @@ float lilHoSurfaceEncodeByte(float value)
 }
 
 // owner = RSUV 的低 16 bit（OB 写进去的 partId），存成两个字节（R = 高、G = 低）。
-// 没有身份时是 0 = "没有 writer"：数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（规划 §0.1）。
+// 没有身份时是 0 = "没有 writer"：数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（SB 架构 §0.1）。
 float2 lilHoSurfaceOwnerEncoded()
 {
     return HoSurfaceOwnerEncode(unity_RendererUserValue & 0xFFFFu);
