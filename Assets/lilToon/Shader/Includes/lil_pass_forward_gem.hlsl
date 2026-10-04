@@ -219,9 +219,10 @@
         float3 normalDirectionR = fd.N;
         float3 normalDirectionG = fd.facing < 0.0 ? normalize(fd.N + fd.V * invnv * _GemChromaticAberration) : fd.N;
         float3 normalDirectionB = fd.facing < 0.0 ? normalize(fd.N + fd.V * invnv * _GemChromaticAberration * 2) : fd.N;
-        float envReflectionColorR = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionR, fd.perceptualRoughness, fd.positionWS).r;
-        float envReflectionColorG = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionG, fd.perceptualRoughness, fd.positionWS).g;
-        float envReflectionColorB = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionB, fd.perceptualRoughness, fd.positionWS).b;
+        float2 reflectionScreenUV = GetNormalizedScreenSpaceUV(fd.positionCS);
+        float envReflectionColorR = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionR, fd.perceptualRoughness, fd.positionWS, reflectionScreenUV).r;
+        float envReflectionColorG = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionG, fd.perceptualRoughness, fd.positionWS, reflectionScreenUV).g;
+        float envReflectionColorB = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, normalDirectionB, fd.perceptualRoughness, fd.positionWS, reflectionScreenUV).b;
 
         float3 envReflectionColor = float3(envReflectionColorR, envReflectionColorG, envReflectionColorB);
         envReflectionColor = pow(saturate(envReflectionColor), _GemEnvContrast) * _GemEnvContrast * _GemEnvColor.rgb;

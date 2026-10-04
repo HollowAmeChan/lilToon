@@ -951,11 +951,12 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 #define LIL_DECODE_LIGHTMAP(lm)                     DecodeLightmap(lm, float4(LIGHTMAP_HDR_MULTIPLIER,LIGHTMAP_HDR_EXPONENT,0.0,0.0))
 #define LIL_DECODE_DYNAMICLIGHTMAP(lm)              lm.rgb
 
-// Environment reflection
-#define LIL_GET_ENVIRONMENT_REFLECTION(viewDirection,normalDirection,perceptualRoughness,positionWS) \
-    ((IsEmpty(unity_SpecCube0) || unity_SpecCube0_HDR.x == 0 || _ReflectionCubeOverride) ? \
+// URP owns probe selection, atlas sampling, blending, box projection and sky fallback.
+// unity_SpecCube0 is not a probe-availability test in Forward+ with probe blending.
+#define LIL_GET_ENVIRONMENT_REFLECTION(viewDirection,normalDirection,perceptualRoughness,positionWS,normalizedScreenSpaceUV) \
+    (_ReflectionCubeOverride ? \
     lilCustomReflection(_ReflectionCubeTex, _ReflectionCubeTex_HDR, viewDirection, normalDirection, perceptualRoughness) * _ReflectionCubeColor.rgb * lerp(1.0, fd.lightColor, _ReflectionCubeEnableLighting) : \
-    GlossyEnvironmentReflection(reflect(-viewDirection,normalDirection), perceptualRoughness, 1.0))
+    GlossyEnvironmentReflection(reflect(-viewDirection,normalDirection), positionWS, perceptualRoughness, 1.0, normalizedScreenSpaceUV))
 
 // Fog
 #if LIL_RENDER == 2

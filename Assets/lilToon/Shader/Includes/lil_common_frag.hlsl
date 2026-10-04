@@ -1497,7 +1497,7 @@
                         N = lerp(fd.origN, fd.reflectionN, _ReflectionNormalStrength);
                     #endif
 
-                    float3 envReflectionColor = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, N, fd.perceptualRoughness, fd.positionWS);
+                    float3 envReflectionColor = LIL_GET_ENVIRONMENT_REFLECTION(fd.V, N, fd.perceptualRoughness, fd.positionWS, GetNormalizedScreenSpaceUV(fd.positionCS));
 
                     float oneMinusReflectivity = LIL_DIELECTRIC_SPECULAR.a - metallic * LIL_DIELECTRIC_SPECULAR.a;
                     float grazingTerm = saturate(fd.smoothness + (1.0-oneMinusReflectivity));
