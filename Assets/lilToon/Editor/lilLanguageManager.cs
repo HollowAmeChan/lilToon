@@ -156,7 +156,7 @@ namespace lilToon
             loc["sDissolveParamsModes"]       = BuildParams(GetLoc("sDissolve"), GetLoc("sDissolveModeNone"), GetLoc("sDissolveModeAlpha"), GetLoc("sDissolveModeUV"), GetLoc("sDissolveModePosition"));
             loc["sDissolveParamsOther"]      = BuildParams(GetLoc("sDissolveShape"), GetLoc("sDissolveShapePoint"), GetLoc("sDissolveShapeLine"), GetLoc("sBorder"), GetLoc("sBlur"), "Dummy");
             loc["sGlitterParams2"]           = BuildParams(GetLoc("sBlinkSpeed"), GetLoc("sAngleLimit"), GetLoc("sRimLightDirection"), GetLoc("sColorRandomness"));
-            loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
+            loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"), "GD (Direction + Width)");
             loc["sShadowColorTypes"]         = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             loc["sShadowMaskTypes"]          = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
             loc["sLiquidWaveSpaces"]         = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
@@ -187,7 +187,7 @@ namespace lilToon
             sRenderingModeListLite          = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent")};
             sTransparentModeList            = new[]{GetLoc("sTransparentModeNormal"), GetLoc("sTransparentModeOnePass"), GetLoc("sTransparentModeTwoPass")};
             sBlendModeList                  = new[]{GetLoc("sBlendModeNormal"), GetLoc("sBlendModeAdd"), GetLoc("sBlendModeScreen"), GetLoc("sBlendModeMul")};
-            sOutlineVertexColorUsages       = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"));
+            sOutlineVertexColorUsages       = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"), "GD (Direction + Width)");
             sShadowColorTypes               = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             sShadowMaskTypes                = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
             sLiquidWaveSpaces               = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));

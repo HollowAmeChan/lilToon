@@ -1,4 +1,4 @@
-﻿   SubShader
+   SubShader
     {
         Tags {*LIL_SUBSHADER_TAGS**LIL_DOTS_SM_TAGS* "RenderPipeline" = "UniversalPipeline"}
         HLSLINCLUDE
@@ -57,7 +57,7 @@
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
             #define LIL_TRANSPARENT_PRE
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -104,7 +104,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -152,7 +152,7 @@
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
             #define LIL_OUTLINE
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -180,7 +180,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -222,7 +222,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -264,7 +264,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -315,7 +315,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -360,7 +360,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             *LIL_SUBSHADER_INSERT*
 
@@ -404,7 +404,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             *LIL_SUBSHADER_INSERT*
 
@@ -448,7 +448,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -494,7 +494,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -536,7 +536,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -581,7 +581,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -609,7 +609,7 @@
 
             //----------------------------------------------------------------------------------------------------------------------
             // Pass
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             // Insert functions and includes that depend on Unity here
             *LIL_SUBSHADER_INSERT*
@@ -641,7 +641,7 @@
             #define LIL_OUTLINE
             #define LIL_PASS_DEPTHNORMALS
 
-            #include "Includes/lil_pipeline_urp.hlsl"
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             *LIL_SUBSHADER_INSERT*
             #include "Includes/lil_pass_outline_normal_depth.hlsl"

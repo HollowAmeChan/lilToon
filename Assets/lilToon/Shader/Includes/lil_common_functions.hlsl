@@ -270,6 +270,9 @@ lilVertexNormalInputs lilGetVertexNormalInputsFromWS(float3 normalWS)
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Outline
+#if defined(LIL_URP) && defined(_HO_GD_OUTLINE)
+    #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/GeometryData/Shaders/HoGeometryOutline.hlsl"
+#endif
 float lilGetOutlineWidth(float2 uv, float4 color, float outlineWidth, TEXTURE2D(outlineWidthMask), uint outlineVertexR2Width LIL_SAMP_IN_FUNC(samp))
 {
     outlineWidth *= 0.01;

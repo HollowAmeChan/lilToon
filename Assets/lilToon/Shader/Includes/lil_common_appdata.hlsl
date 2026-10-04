@@ -11,6 +11,10 @@
     #define LIL_APP_PREVEL
 #endif
 
+#if defined(LIL_URP) && defined(_HO_GD_OUTLINE)
+    #define LIL_APP_VERTEXID
+#endif
+
 #define LIL_APP_POSITION
 #define LIL_APP_TEXCOORD0
 #define LIL_APP_TEXCOORD1

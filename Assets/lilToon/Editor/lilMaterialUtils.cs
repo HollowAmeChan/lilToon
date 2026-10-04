@@ -323,6 +323,7 @@ namespace lilToon
 
         public static void SetupMultiMaterial(Material material)
         {
+            SyncGeometryDataOutlineKeyword(material);
             int tpmode = 0;
             if(material.HasProperty("_TransparentMode")) tpmode = (int)material.GetFloat("_TransparentMode");
             bool useShadow = IsFeatureOnFloat(material, "_UseShadow");
@@ -498,6 +499,12 @@ namespace lilToon
         {
             if(material.HasProperty(propname)) return material.GetTexture(propname) != null;
             return false;
+        }
+
+        public static void SyncGeometryDataOutlineKeyword(Material material)
+        {
+            bool enabled = material.HasProperty("_OutlineVertexR2Width") && material.GetInt("_OutlineVertexR2Width") == 3;
+            SetShaderKeywords(material, "_HO_GD_OUTLINE", enabled);
         }
 
         private static void SetShaderKeywords(Material material, string keyword, bool enable)
