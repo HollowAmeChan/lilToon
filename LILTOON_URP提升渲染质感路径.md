@@ -24,6 +24,14 @@ Fake SSS / OIT / Reflection 继续按原路线推进
 
 ---
 
+## 0.1 2026-10-05 APV 定位与进度收口
+
+APV 按 P3 辅助间接光照能力维护，不列入近期角色 Toon 画质的主要推进顺序。当前源码把 APV 混进光照颜色与方向，缺少独立贡献和有效性诊断，暗面补光传递及全局 Weight 接收也有已知限制；尚无闭环的 APV 画面对照或贡献量化。
+
+统一进度、源码证据、调试方法与验收清单见 [APV 接入与验证进度](LILTOON_URP_APV接入与验证进度.md)。先记录现状，实际场景需要时先补诊断与必要正确性；不把 Reflection Probe 的修复或实时反射成功计作 APV 已验证。
+
+---
+
 ## 1. 总体方向
 
 当前 lilToon 更擅长角色 toon 材质；lilPBR 已经是独立 PBR shader 包，适合承接场景、透明、SSS、OIT、SSR、玻璃和湿润材质等方向。后续不再把完整 PBR 主线塞回 lilToon，而是按三条线推进：
@@ -51,6 +59,7 @@ Fake SSS / OIT / Reflection 继续按原路线推进
 | P2 | Detail AO / Bent Normal | lilPBR | lilToon 只在需要的角色材质中接入 | 否 |
 | P2 | Shadow Ramp Atlas | lilToon 主导，lilPBR 接场景 ramp | 统一角色和场景 shadow 色调 | 可选 |
 | P3 | NPR Lighting Volume | 共享运行时 | 两边按材质选择接收 volume | 需要运行时管理 |
+| P3 | APV 接入维护与最低必要诊断 | lilToon | 暂不扩大 GI 主线；实际场景需要时再补诊断和正确性，见综合进度文档 | 现有接入保留，扩展未排期 |
 | P3 | Toon Deferred / GBuffer Path | lilPBR 或独立实验分支 | lilToon 暂不作为首发目标 | 是，大工程 |
 
 推荐推进顺序：

@@ -512,6 +512,8 @@ URP17 Forward 主要关键字包括：
 - `EVALUATE_SH_MIXED / EVALUATE_SH_VERTEX`
 - lightmap、APV、reflection probe、foveated rendering 相关 include
 
+APV 这里只表示存在变体和采样入口，不代表已经完整验收。当前它是辅助间接光照输入，混入 Toon 光照颜色与方向；接入限制、调试方式和验证进度统一见 [APV 接入与验证进度](LILTOON_URP_APV接入与验证进度.md)。
+
 特别注意：
 
 - URP17/Unity 6.1 后 `_FORWARD_PLUS` 已废弃，新名是 `_CLUSTER_LIGHT_LOOP`。

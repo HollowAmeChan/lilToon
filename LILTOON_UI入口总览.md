@@ -405,7 +405,7 @@ CustomEditor "lilToon.lilToonInspector"
 | Toggle | `sShaderSettingOptimizeInEditor` | 编辑器内即时优化 |
 | Toggle | Migrate materials in startup | 启动时自动迁移材质 |
 | 折叠栏 | 着色器设置 (用于所有材质) / `sShaderSetting` | 内含 `距离裁剪消除器` toggle（`?` 帮助按钮打开手册） |
-| 折叠栏 | 优化构建大小 (用于所有材质) / `sSettingBuildSizeOptimization` | 内含：`使用光照贴图`、`使用自适应探针体积 (APV)` |
+| 折叠栏 | 优化构建大小 (用于所有材质) / `sSettingBuildSizeOptimization` | 内含：`使用光照贴图`、`使用自适应探针体积 (APV)`；APV 是项目级变体编译选项，不是单材质 GI 强度或有效性调试开关 |
 | 折叠栏 | 初始值 (用于"Fix Lighting"以及照明预设) / `sSettingDefaultValue` | 内含下面 4 组 |
 | ↳ 滑条组 | `GameObject/lilToon/[GameObject] 修正光照` | `_AsUnlit`、顶点光强度、光照上下限、单色照明、曝光前上限、方向光强度 |
 | ↳ 对象槽 | `HoLil/[模型] 从 FBX 初始化材质` | Face / Skin / Hair / Cloth 四个预设槽 |
@@ -415,6 +415,8 @@ CustomEditor "lilToon.lilToonInspector"
 - 所有开关改动会立刻重算 shader 设置（`:63-74`）。
 - 「距离裁剪消除器」「光照贴图」「APV」「LightMode」被锁定时置灰。
 - **只有「着色器设置」折叠栏**右侧带 `?` 帮助按钮（`lilEditorGUI.DrawHelpButton`，`:45`），跳到在线手册对应锚点。
+
+APV 当前没有独立贡献或采样有效性的材质调试视图；光照页的 GI 区域也不等于 APV 控制面板。现有光照参数的影响、暗面补光传递限制及后续诊断需求统一见 [APV 接入与验证进度](LILTOON_URP_APV接入与验证进度.md)。
 
 ---
 
