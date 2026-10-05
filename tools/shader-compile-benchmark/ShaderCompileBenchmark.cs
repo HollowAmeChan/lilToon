@@ -27,7 +27,7 @@ public static class ShaderCompileBenchmark
         public int processors, shaderCount, errors;
         public bool success, completed;
         public string currentRequest, colorSpace;
-        public double bootstrapMs, forceImportMs;
+        public double bootstrapMs, forceImportMs, generationPreparationMs;
         public List<double> noOpGenerationMs = new List<double>();
         public List<Row> rows = new List<Row>();
     }
@@ -89,6 +89,15 @@ public static class ShaderCompileBenchmark
             // Resolve the copied package through one of its actual shader assets.
             var package = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(AssetDatabase.GetAssetPath(materials[0].shader));
             if (package == null) throw new Exception("Benchmark requires lilToon as a local package");
+            var type = Type.GetType("lilToonSetting, lilToon.Editor", true);
+            object[] args = { null };
+            type.GetMethod("InitializeShaderSetting", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
+            var generate = type.GetMethod("ApplyShaderSetting", BindingFlags.NonPublic | BindingFlags.Static, null, new[] { type, typeof(string) }, null);
+            // Generate in the private copy before timing passes, so templates and
+            // ignored/skip-worktree outputs cannot silently describe different revisions.
+            timer.Restart();
+            generate.Invoke(null, new object[] { args[0], null });
+            report.generationPreparationMs = timer.Elapsed.TotalMilliseconds;
             var shaderPaths = Directory.GetFiles(Path.Combine(package.resolvedPath, "Shader"), "*.shader");
             report.shaderCount = shaderPaths.Length;
             timer.Restart();
@@ -129,12 +138,6 @@ public static class ShaderCompileBenchmark
             foreach (var material in materials)
                 foreach (var message in ShaderUtil.GetShaderMessages(material.shader))
                     if (message.severity == ShaderCompilerMessageSeverity.Error) { report.errors++; Debug.LogError(message.message); }
-            var type = Type.GetType("lilToonSetting, lilToon.Editor", true);
-            object[] args = { null };
-            type.GetMethod("InitializeShaderSetting", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
-            var generate = type.GetMethod("ApplyShaderSetting", BindingFlags.NonPublic | BindingFlags.Static, null, new[] { type, typeof(string) }, null);
-            // Normalize generated sources once before measuring no-op generation.
-            generate.Invoke(null, new object[] { args[0], null });
             for (int i = 0; i < 3; i++)
             {
                 timer.Restart();

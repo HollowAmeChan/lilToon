@@ -13,6 +13,7 @@ The output separates these measurements:
 
 - `Run.json/processSeconds`: the entire process, including package resolution, C# compilation, initial import, setup, benchmark and shutdown. **Not shader-only time.** A nonzero exit means the measurement did not finish; exclude that run. A completed measurement exits zero even if some sampled passes fail, so also inspect report.completed, report.success and individual compiledAfter/setPass results. Never label a failed request as a valid/renderable performance sample.
 - `bootstrapMs`: renderer initialization and a small render request; this can compile unrelated URP shaders.
+- `generationPreparationMs`: one full generation in the private copy before timing, ensuring copied templates and generated shader outputs agree. Recorded separately from compilation.
 - `forceImportMs`: sequential forced synchronous imports of all current lilToon shader assets. This includes importer/AssetDatabase work and can reuse importer/compiler caches; it is not a guaranteed cold compilation of every variant.
 - Round 0 per-request `compileMs`: first synchronous requests in this fresh process/project. A fresh project-local cache does not guarantee an empty global/compiler/driver cache. `compiledBefore` distinguishes an already resident compiled pass. A false value does not prove a disk-cache miss.
 - `setPassMs`: the subsequent native SetPass call, including applicable driver setup; reported separately from CompilePass.

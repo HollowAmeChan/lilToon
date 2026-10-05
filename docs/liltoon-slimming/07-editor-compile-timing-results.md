@@ -57,4 +57,6 @@ python D:/Unity_Fork/lilToon/tools/shader-compile-benchmark/summarize.py <Projec
 
 早期 Package Manager 解包重命名失败、Gamma 的未完成压力测试以及其他任务未提交代码导致的 C# 编译失败，均未纳入正式结果。当前工程的 Shader、材质、缓存和其他任务修改均未由计时任务改动。
 
+计时工具最终增加了测量前在私有副本生成 Shader 的准备步骤，防止模板与 skip-worktree/忽略产物不同步。最终工具回归执行了 576 次请求，completed=true，进程退出码 0；仍只有上述同一组合的四次失败。准备阶段为 688.016 毫秒，单列统计，不计入 Shader 请求时间。日志为同目录 `Editor-tool-final-check.log`；正式配置 JSON 已另存为 Configured-FP.json，不被工具回归覆盖。
+
 依据：[Unity 6.3 Shader compilation](https://docs.unity3d.com/6000.3/Documentation/Manual/shader-compilation.html)、[CompilePass](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/ShaderUtil.CompilePass.html)、[IsPassCompiled](https://docs.unity3d.com/6000.3/Documentation/ScriptReference/ShaderUtil.IsPassCompiled.html)。
