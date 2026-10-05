@@ -1217,15 +1217,6 @@ msgstr "选择 Alpha 蒙版"
 msgid "sRemoveUnused"
 msgstr "移除未使用的纹理"
 
-msgid "sConvertLite"
-msgstr "转换为 lilToonLite"
-
-msgid "sConvertMulti"
-msgstr "转换为 lilToonMulti"
-
-msgid "sConvertMToon"
-msgstr "转换为 MToon (VRM)"
-
 msgid "sOptimizeForEvents"
 msgstr "为提交事件进行优化"
 

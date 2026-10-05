@@ -1217,15 +1217,6 @@ msgstr "アルファマスクを選択してください"
 msgid "sRemoveUnused"
 msgstr "未使用のテクスチャを外す"
 
-msgid "sConvertLite"
-msgstr "lilToonLiteに変換"
-
-msgid "sConvertMulti"
-msgstr "lilToonMultiに変換"
-
-msgid "sConvertMToon"
-msgstr "MToon(VRM)に変換"
-
 msgid "sOptimizeForEvents"
 msgstr "イベント入稿用に最適化"
 

@@ -44,7 +44,7 @@
 - 运行项目：Extensions `.codex-research/CharacterShadowValidation`；成功日志 `.codex-research/pruning-liquid.log`。实际全量重生成确认 Liquid 不会复生；保留的枚举编号也全部逐项核对通过。当前规模为 53 个 Shader / 677 个程序块。
 - 本提交只包含 lilToon 的 Liquid 退出与本记录，未 stage Extensions 中其他任务的张力改动。2026-10-05 12:40 自动化续作时额度已恢复到 0% 用量。
 
-### 4. Gem / MultiGem 整族退出（随本提交）
+### 4. Gem / MultiGem 整族退出：`42a71b4`
 
 - 删除两个基础模板、Gem 属性与 URP/Multi 模板、专用 Forward HLSL、两份生成 Shader 及 meta；移除 Gem 公共输入/分支、GUI、材质分类、预设保存项和 Gem Pre 设置。
 - 唯一归档材质 `PTP_M_WaterBottleOut.mat` 与 meta 移至 BREAK_URP 根目录 `RetiredShaderMaterials/lilToon/Gem/`，保留 GUID `ea49050d2ed70f144bab3e06adc88bad`；场景/Prefab/asset 扫描未找到引用。
@@ -54,9 +54,15 @@
 - 当前生成产物为 51 个 Shader / 645 个程序块；实际视觉验收未覆盖所有用户场景。
 - UnityGLTF 扩展尚有旧 Gem/Fur/Lite 路由，其现有 missing-shader 分支会警告并保留契约；计划在四族退出后统一改为明确的退役处理，不在本提交中混入其他仓库改动。
 
+### 5. 手动材质转换入口退出（随本提交）
+
+- 删除 CreateLiteMaterial / CreateMToonMaterial / CreateMultiMaterial 实现、新旧 Inspector 对应按钮、MToon Shader 查询与引用、三组转换文案，共移除 381 行。
+- 保留材质初始化、自动关键字同步、导入/版本迁移与自定义 Shader 设置接口。此步不改 HLSL，不移除现役材质效果。
+- Roslyn 编译 0 错误，转换方法/按钮引用搜索归零；独立 Unity 执行缓存与自定义槽位恢复/新 Shader 导入回归，退出码 0。日志：Extensions `.codex-research/pruning-converters.log`。
+
 ## 下一步
 
-1. 移除不用的手动转换入口，整族退出 Fur / Lite，逐步提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
+1. 整族退出 Lite / Fur，逐步提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
 2. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
 3. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
 

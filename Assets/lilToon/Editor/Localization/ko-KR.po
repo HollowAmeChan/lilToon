@@ -1217,15 +1217,6 @@ msgstr "알파 마스크를 선택하십시오"
 msgid "sRemoveUnused"
 msgstr "미사용 텍스처 해제"
 
-msgid "sConvertLite"
-msgstr "lilToonLite로 변환"
-
-msgid "sConvertMulti"
-msgstr "lilToonMulti로 변환"
-
-msgid "sConvertMToon"
-msgstr "MToon (VRM)로 변환"
-
 msgid "sOptimizeForEvents"
 msgstr "이벤트에 대한 제도 최적화"
 

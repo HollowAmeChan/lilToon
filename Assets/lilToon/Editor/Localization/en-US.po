@@ -1217,15 +1217,6 @@ msgstr "Select Alphamask"
 msgid "sRemoveUnused"
 msgstr "Remove unused textures"
 
-msgid "sConvertLite"
-msgstr "Convert to lilToonLite"
-
-msgid "sConvertMulti"
-msgstr "Convert to lilToonMulti"
-
-msgid "sConvertMToon"
-msgstr "Convert to MToon (VRM)"
-
 msgid "sOptimizeForEvents"
 msgstr "Optimize for submission to the event"
 

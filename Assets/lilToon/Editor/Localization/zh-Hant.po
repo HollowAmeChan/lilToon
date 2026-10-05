@@ -1217,15 +1217,6 @@ msgstr "選擇 透明度遮罩"
 msgid "sRemoveUnused"
 msgstr "移除未使用的貼圖"
 
-msgid "sConvertLite"
-msgstr "轉換為 lilToonLite"
-
-msgid "sConvertMulti"
-msgstr "轉換為 lilToonMulti"
-
-msgid "sConvertMToon"
-msgstr "轉換為 MToon (VRM)"
-
 msgid "sOptimizeForEvents"
 msgstr "優化成適合投稿給活動的格式"
 

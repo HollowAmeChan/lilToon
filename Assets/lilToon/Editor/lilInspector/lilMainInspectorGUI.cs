@@ -1428,9 +1428,6 @@ namespace lilToon
                         TextureBakeGUI(material, 1);
                         TextureBakeGUI(material, 2);
                         TextureBakeGUI(material, 3);
-                        if(lilEditorGUI.Button(GetLoc("sConvertLite"))) CreateLiteMaterial(material);
-                        if(mtoon != null && lilEditorGUI.Button(GetLoc("sConvertMToon"))) CreateMToonMaterial(material);
-                        if(!isMulti && !isFur && !isRefr && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
 

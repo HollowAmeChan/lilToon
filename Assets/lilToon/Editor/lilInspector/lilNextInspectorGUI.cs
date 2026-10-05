@@ -1726,9 +1726,6 @@ namespace lilToon
                 if(lilEditorGUI.Button(GetLoc("sRimLight")))                   AutoBakeColoredMask(material, rimColorTex,          rimColor,           "RimColor");
                 if(((!isRefr && !isFur && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
                 lilEditorGUI.DrawLine();
-                if(lilEditorGUI.Button(GetLoc("sConvertLite"))) CreateLiteMaterial(material);
-                if(mtoon != null && lilEditorGUI.Button(GetLoc("sConvertMToon"))) CreateMToonMaterial(material);
-                if(!isMulti && !isFur && !isRefr && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
             });
         }
 

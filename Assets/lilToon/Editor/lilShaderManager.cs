@@ -82,7 +82,6 @@ namespace lilToon
         public static Shader ltsmo       = FindShader("Hidden/lilToonMultiOutline");
         public static Shader ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
         public static Shader ltsmfur     = FindShader("Hidden/lilToonMultiFur");
-        public static Shader mtoon       = FindShader("VRM/MToon");
 
         public static void InitializeShaders()
         {
@@ -143,7 +142,6 @@ namespace lilToon
             ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
             ltsmfur     = FindShader("Hidden/lilToonMultiFur");
 
-            mtoon       = FindShader("VRM/MToon");
         }
     }
 }
