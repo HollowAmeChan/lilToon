@@ -77,13 +77,32 @@
 - 最终 Unity 6000.3.15f1 / D3D11 / Forward+ 回归：确认 GBUFFER/UNIVERSAL2D 不存在、保留 Pass 均存在，58 个默认 Pass 加张力/GD 描边变体编译通过，退出码 0。使用最终日志 Extensions `.codex-research/pruning-unused-passes-clean.log`，不将初次过渡错误日志作为验收。
 - 本地生成产物依旧遵循 skip-worktree 约定；切到旧提交时应重新生成以恢复对应 Pass/include。
 
-### 8. GD 关键字按消费者声明（随本提交）
+### 8. GD 关键字按消费者声明：`ad63a14`
 
 - GD 描边只在 LIL_OUTLINE / LIL_ONEPASS_OUTLINE 顶点消费者声明，并改为 shader_feature_local_vertex；启用时保留 target 4.5。
 - 张力声明匹配当前 common 的真实消费者：非 Fur/Hair/Outline 的 Forward、GeometryBuffer、CharacterCapture，不再给其他 Pass 统一增加二态开关。
 - 材质同步检查 Shader keywordSpace 支持性；不支持某个消费者的 Shader 不会被同步到无效关键字状态。
 - Roslyn 编译 0 错误。Unity 6000.3.15f1 / D3D11 / Forward+：验证普通族/Hair/Outline 的关键字存在性和材质同步，58 个默认 Pass、张力 Forward/GB/Capture 以及 GD 描边 Pass 均编译通过；退出码 0，Shader 错误 0。日志：Extensions `.codex-research/pruning-gd-scope.log`。
 - 程序块数量仍为 367；本步减少冗余变体声明，不以程序块数量度量收益，也未声称四倍加速。
+
+### 9. 旧 Renderer 孤立子资产与包边界文档
+
+- Extensions `49905da`：README 对齐现役 OB/SB/AC、移除旧 MB 模块和 lilPBR peer requirement；保留历史命名的现役平面反射协议。
+- BREAK_URP 的 MB/AOV 三个旧对象实际上均已不在启用列表，只删除孤立 YAML 子资产，现役 feature 列表/map 逐字不变。项目不是 Git 仓库，原文件保存在 RetiredShaderMaterials/Pipeline，并在 Extensions 的维护文档记录前后哈希。
+- 在独立 Unity 中导入修改前后两份 Renderer 副本，Forward+、18 个 feature 的数量/顺序/加载类型相同，退出码 0；未安装的第三方插件在基线和修改版同位置均为空，不假称它们全部能在隔离项目加载。日志：Extensions `.codex-research/pruning-renderer-cleanup.log`。
+
+### 10. 导入路由清理
+
+- UnityGLTF Extensions `3ee1a7a`：Gem/Lite/Liquid/先前已移除的 tessellation 不再路由到不存在的 Shader；明确提示退役，保留契约和当前导入材质，不静默映射成 Standard。清理两个无调用的 Lite/tessellation 选择器与旧包描述。
+- Runtime 对照实际工程 DLL 编译 0 错误；Newtonsoft netstandard 2.0/2.1 身份兼容警告已记录。加载编译结果进行反射检查，四个退役类型均无选择，Standard/refraction/Fur 保持原选择。未完成完整 glTF 资产重新导入的视觉验收。
+- Fur/FurOnly 路由暂保留，等待 Alue/TAIL 资产的处理选择。
+
+## 本轮结果与未完成项
+
+- 已逐步提交调查、缓存、增量生成、Liquid、Gem、手动转换、Lite、无用 Pass 和 GD 关键字范围。当前本地产物 **54 → 36 个 Shader，701 → 367 个程序块**，少 334 个程序块（约 47.6%），不是实测时间缩减比例。
+- lilToon 工作区提交后应无本任务未提交代码；Extensions 的张力工作和 UnityGLTF 的 .vscode 属于其他工作，始终未 stage。
+- Fur 因 TAIL 的真实 FBX 引用保留，等待用户选择；本轮没有擅自迁移其视觉效果。lilPBR/WaterFlowmap 的整体删除按用户后续退役安排，不再为它们局部改实现。
+- 缓存、生成 no-op、实际 Forward+ Pass/变体、枚举映射和 Renderer 副本加载均已验证。用户正在打开的工程 GUI 延迟、完整场景效果和全量 Player 构建仍未做实测，不以静态结构数据代替它们。
 
 ## 当前资产偏好待确认
 
