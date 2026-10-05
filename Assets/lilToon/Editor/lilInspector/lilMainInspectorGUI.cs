@@ -853,15 +853,11 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Dissolve
-                if(ShouldDrawBlock(PropertyBlock.Dissolve))
+                if(SupportsAlphaClippedEffects && ShouldDrawBlock(PropertyBlock.Dissolve))
                 {
                     edSet.isShowDissolve = lilEditorGUI.Foldout(GetLoc("sDissolve"), edSet.isShowDissolve);
                     DrawMenuButton(GetLoc("sAnchorDissolve"), PropertyBlock.Dissolve);
-                    if(edSet.isShowDissolve && ((renderingModeBuf == RenderingMode.Opaque && !isMulti) || (isMulti && transparentModeMat.floatValue == 0.0f)))
-                    {
-                        GUILayout.Label(GetLoc("sDissolveWarnOpaque"), wrapLabel);
-                    }
-                    if(edSet.isShowDissolve && (renderingModeBuf != RenderingMode.Opaque || (isMulti && transparentModeMat.floatValue != 0.0f)))
+                    if(edSet.isShowDissolve)
                     {
                         EditorGUILayout.BeginVertical(boxOuter);
                         LocalizedProperty(dissolveParams, false);

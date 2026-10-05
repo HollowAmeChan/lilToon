@@ -98,7 +98,6 @@ namespace lilToon
             EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.ObjectField(GetLoc("Parent"), material.parent, typeof(Material), false);
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.HelpBox(GetLoc("This material inherits its shader and shader-switching modes from the parent. Editing texture, color, and numeric properties here creates overrides on this variant."), MessageType.Info);
             if(lilEditorGUI.Button(GetLoc("Select Parent Material")))
             {
                 Selection.activeObject = material.parent;

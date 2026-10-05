@@ -280,7 +280,7 @@ namespace lilToon
                     UVSettingGUI(mainTex, mainTex_ScrollRotate);
                     LocalizedProperty(shiftBackfaceUV);
                 }, false);
-                DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
+                if(SupportsAlphaClippedEffects) DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
                 DrawNextSection("surface.lighting", GetLoc("sLightingSettings"), PropertyBlock.Lighting, DrawNextLightingControls, false);
                 if(isCustomShader) DrawNextSection("surface.custom", GetLoc("sCustomProperties"), PropertyBlock.Other, delegate { DrawCustomProperties(material); }, false, null, false);
             });
@@ -593,10 +593,6 @@ namespace lilToon
         private void DrawNextHoSurface()
         {
             SynchronizeHoSurfaceMaterials();
-            EditorGUILayout.HelpBox(
-                "「脸 / 前发 / 眼睛…」这些标签由物体侧的 Ho-ObjectBuffer 组件决定；材质这里只给数值与权重。\n" +
-                "权重 = 标量 × 遮罩贴图 R 通道：写了就以材质为准（细化 / 收窄），没写就回落到物体标签。",
-                MessageType.None);
 
             LocalizedProperty(hoSurfaceThickness);
             LocalizedProperty(hoSurfaceCurvature);
@@ -718,14 +714,13 @@ namespace lilToon
             LocalizedProperty(sssBlur);
         }
 
+        private bool SupportsAlphaClippedEffects =>
+            !((renderingModeBuf == RenderingMode.Opaque && !isMulti) || (isMulti && transparentModeMat.floatValue == 0f));
+
         private void DrawNextAlphaMask(Material material)
         {
             if(alphaMaskMode.p == null) return;
-            if((renderingModeBuf == RenderingMode.Opaque && !isMulti) || (isMulti && transparentModeMat.floatValue == 0f))
-            {
-                EditorGUILayout.HelpBox(GetLoc("sAlphaMaskWarnOpaque"), MessageType.Info);
-                return;
-            }
+            if(!SupportsAlphaClippedEffects) return;
 
             LocalizedProperty(alphaMaskMode, false);
             if(alphaMaskMode.floatValue != 0f)
@@ -926,13 +921,8 @@ namespace lilToon
                     LocalizedPropertyAlpha(distanceFadeRimColor);
                     LocalizedProperty(distanceFadeRimFresnelPower);
                 }, false);
-                DrawNextSection("effects.dissolve", GetLoc("sDissolve"), PropertyBlock.Dissolve, delegate
+                if(SupportsAlphaClippedEffects) DrawNextSection("effects.dissolve", GetLoc("sDissolve"), PropertyBlock.Dissolve, delegate
                 {
-                    if((renderingModeBuf == RenderingMode.Opaque && !isMulti) || (isMulti && transparentModeMat.floatValue == 0.0f))
-                    {
-                        EditorGUILayout.HelpBox(GetLoc("sDissolveWarnOpaque"), MessageType.Info);
-                        return;
-                    }
                     LocalizedProperty(dissolveParams, false);
                     if(dissolveParams.vectorValue.x != 0f)
                     {
@@ -1050,7 +1040,7 @@ namespace lilToon
                     }
                 }, false);
                 DrawNextSection("pipeline.stencil", GetLoc("sStencilSetting"), PropertyBlock.Stencil, delegate { DrawNextStencil(material); }, false);
-                DrawNextSection("pipeline.mpb", GetLoc("MPB Parameter Overrides"), PropertyBlock.Other, delegate { DrawNextMaterialPropertyBlockInfo(material); }, false, null, false);
+                if(CanListMpbProperties) DrawNextSection("pipeline.mpb", GetLoc("MPB Parameter Overrides"), PropertyBlock.Other, delegate { DrawNextMaterialPropertyBlockInfo(material); }, false, null, false);
                 if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
                 {
                     DrawNextSection("pipeline.bake", GetLoc("sLightBakeSetting"), PropertyBlock.Other, delegate
@@ -1738,18 +1728,10 @@ namespace lilToon
 
             if(!mpbOverrideScanDone)
             {
-                EditorGUILayout.HelpBox(GetLoc("Click Scan to inspect MaterialPropertyBlock overrides in loaded scenes."), MessageType.Info);
                 return;
             }
-
-            if(!CanListMpbProperties)
-            {
-                EditorGUILayout.HelpBox(GetLoc("This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."), MessageType.Info);
-            }
-
             if(mpbOverrideInfos.Length == 0)
             {
-                EditorGUILayout.HelpBox(GetLoc("No renderer in the loaded scenes overrides this material with a MaterialPropertyBlock."), MessageType.Info);
                 return;
             }
 

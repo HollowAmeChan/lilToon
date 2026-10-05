@@ -44,12 +44,7 @@ namespace lilToon
 
         private void DrawAlphaMaskSettings(Material material)
         {
-            if(!ShouldDrawBlock(PropertyBlock.AlphaMask)) return;
-            if((renderingModeBuf == RenderingMode.Opaque && !isMulti) || (isMulti && transparentModeMat.floatValue == 0.0f))
-            {
-                GUILayout.Label(GetLoc("sAlphaMaskWarnOpaque"), wrapLabel);
-            }
-            else
+            if(!ShouldDrawBlock(PropertyBlock.AlphaMask) || !SupportsAlphaClippedEffects) return;
             {
                 EditorGUILayout.BeginVertical(boxOuter);
                 LocalizedProperty(alphaMaskMode, false);

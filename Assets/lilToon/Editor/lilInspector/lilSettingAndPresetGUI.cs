@@ -55,7 +55,6 @@ namespace lilToon
             if(edSet.isShowOptimizationSetting)
             {
                 EditorGUILayout.BeginVertical(customBox);
-                EditorGUILayout.HelpBox(GetLoc("sHelpShaderSetting"),MessageType.Info);
                 ShaderSettingOptimizationGUI();
                 EditorGUILayout.EndVertical();
             }

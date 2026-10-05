@@ -31,7 +31,6 @@ namespace lilToon
                         EditorGUI.BeginDisabledGroup(true);
                         EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl, customToggleFont);
                         EditorGUI.EndDisabledGroup();
-                        EditorGUILayout.HelpBox(GetLoc("Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."), MessageType.Info);
                         if(lilEditorGUI.Button(GetLoc("Select Parent Material")))
                         {
                             Selection.activeObject = material.parent;

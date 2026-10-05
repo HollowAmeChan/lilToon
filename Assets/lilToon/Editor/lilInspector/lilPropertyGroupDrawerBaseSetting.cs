@@ -23,7 +23,6 @@ namespace lilToon
                 EditorGUI.BeginDisabledGroup(true);
                 lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList);
                 EditorGUI.EndDisabledGroup();
-                EditorGUILayout.HelpBox(GetLoc("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."), MessageType.Info);
             }
             else if(isMultiVariants)
             {

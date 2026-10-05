@@ -78,7 +78,6 @@ namespace lilToon
             var materialPath = AssetDatabase.GetAssetPath(material);
             if(string.IsNullOrEmpty(materialPath))
             {
-                EditorGUILayout.HelpBox(GetLoc("sTextureSearchNoPath"), MessageType.Info);
                 if(showFoldout) EditorGUILayout.EndVertical();
                 return;
             }
@@ -87,7 +86,6 @@ namespace lilToon
 
             if(textureSearchRows.Count == 0)
             {
-                EditorGUILayout.HelpBox(GetLoc("sTextureSearchNoSlots"), MessageType.Info);
             }
             else
             {
