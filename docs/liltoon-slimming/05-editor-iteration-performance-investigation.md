@@ -2,6 +2,8 @@
 
 调查日期：2026-10-05。范围：当前 lilToon fork、lilToon-URP-Extensions、HoUrp17.3.0，以及正在运行的 `D:/Unity_Project/BREAK_URP`。本轮只调查并记录方案，没有修改运行代码或触发 Shader 重生成。
 
+执行范围更新（2026-10-05）：用户最终决定 **Fur 暂时不删**，保留旧 Fur 全族、Alue/TAIL 资产与导入路由。本文后面的四族退出和 305 程序块目标属于历史候选，不再是本轮验收目标。已执行与验证结果以 `06-pruning-execution-log.md` 为准：Gem/Liquid/Lite、无用 Pass、GD 声明范围、生成/GUI 和手动工具裁剪已完成，现为 36 个 Shader / 367 个程序块；未测量实际时间缩减。
+
 ## 结论
 
 继续优化有明确入口，但必须分别处理编辑器导入、按需编译、生成器重写、GUI 绘制和 Player 构建。按用户补充的架构方向，**优先让 Gem、Liquid、Fur 整族退出 lilToon，并退役 lilPBR / WaterFlowmap、清理旧管线；然后叠加按 Pass 声明关键字、增量生成、GUI 缓存和项目编译 profile**。lilToon 不再为这些专用效果保留全功能 Shader，专用实现归现有 HoShader；不为这些家族再新增独立仓库。

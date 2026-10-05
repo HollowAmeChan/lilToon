@@ -4,6 +4,7 @@
 
 - 用户已授权目标模式执行，每一步验证后单独提交。只提交本任务的文件，不混入 Extensions 当前未提交的 GeometryData / 张力工作。
 - 保留现役效果、动画、GD、OB/SB/GB、CharacterCapture、OIT、APV 和平面反射；不新增性能分层，不强制材质烘焙转换。
+- 2026-10-05 用户最终决定“fur就暂时不删了”：旧 Fur 全族和 Alue/TAIL 资产保留，Fur 退出从本轮执行范围撤回，不能按早期四族目标自动继续删除。
 - 五小时额度在 2026-10-05 北京时间 12:37:05 重置，本聊天 12:40 续作自动化 ID 为 `liltoon`。额度不足时留检查点，重置后续作，不使用重置券。
 - Unity 实际验证使用已有的独立项目 `D:/Unity_Fork/lilToon-URP-Extensions/.codex-research/CharacterShadowValidation`；不关闭或操作用户正在打开的 BREAK_URP。
 
@@ -95,7 +96,7 @@
 
 - UnityGLTF Extensions `3ee1a7a`：Gem/Lite/Liquid/先前已移除的 tessellation 不再路由到不存在的 Shader；明确提示退役，保留契约和当前导入材质，不静默映射成 Standard。清理两个无调用的 Lite/tessellation 选择器与旧包描述。
 - Runtime 对照实际工程 DLL 编译 0 错误；Newtonsoft netstandard 2.0/2.1 身份兼容警告已记录。加载编译结果进行反射检查，四个退役类型均无选择，Standard/refraction/Fur 保持原选择。未完成完整 glTF 资产重新导入的视觉验收。
-- Fur/FurOnly 路由暂保留，等待 Alue/TAIL 资产的处理选择。
+- Fur/FurOnly 路由保留；用户最终确认 Fur 暂时不删，无需清理这些仍有效的路由。
 
 ### 11. MPB 信息区改为显式扫描
 
@@ -116,18 +117,19 @@
 
 - 已逐步提交调查、缓存、增量生成、Liquid、Gem、手动转换、Lite、无用 Pass 和 GD 关键字范围。当前本地产物 **54 → 36 个 Shader，701 → 367 个程序块**，少 334 个程序块（约 47.6%），不是实测时间缩减比例。
 - lilToon 工作区提交后应无本任务未提交代码；Extensions 的张力工作和 UnityGLTF 的 .vscode 属于其他工作，始终未 stage。
-- Fur 因 TAIL 的真实 FBX 引用保留，等待用户选择；本轮没有擅自迁移其视觉效果。lilPBR/WaterFlowmap 的整体删除按用户后续退役安排，不再为它们局部改实现。
+- 用户已确认暂时保留 Fur；TAIL 的真实 FBX 引用、旧 Shader 和视觉效果均未改动。lilPBR/WaterFlowmap 的整体删除按用户后续退役安排，不再为它们局部改实现。
 - 缓存、生成 no-op、实际 Forward+ Pass/变体、枚举映射和 Renderer 副本加载均已验证。用户正在打开的工程 GUI 延迟、完整场景效果和全量 Player 构建仍未做实测，不以静态结构数据代替它们。
 
-## 当前资产偏好待确认
+## Fur 保留决定
 
 - Fur 的 TAIL.mat（GUID 13bab63c4242ce74ebcc71bc5a5c035b）仍被 Alue.fbx.meta 的 Tail external material 映射引用。不能照搬 Liquid/Gem 的无引用归档操作。
-- 已异步询问用户：保留旧资产/暂缓 Fur、接受现有 HoShader Fuzz 的迁移差异，或归档旧模型后退出 Fur。等待期间保留它并继续其他裁剪，不混入未经确认的视觉替换。
+- 用户已回复暂时不删 Fur，本轮不迁移或归档 Alue/TAIL，也不创建 Fur 删除工作树。七个 Fur 基础模板、Shader 查询和 Fur/FurOnly 导入路由均保留。
 
-## 下一步
+## 最终验收与后续边界
 
-1. 按用户对 Alue/TAIL 的选择整族退出 Fur；Lite 已完成。
-2. Renderer 孤立子资产、无用 Pass、GD 关键字范围、手动转换/优化入口均已完成，不重复执行；lilPBR/WaterFlowmap 留待用户整包退役安排，现役平面反射协议保留。
-3. Fur 资产选择明确后收尾 Fur/FurOnly 导入路由；最终完整场景视觉与 GUI 耗时尚需实际工程验收。
+1. 当前源与本地产物核对：36 个 Shader / 367 个 HLSLPROGRAM；Gem/Liquid/Lite 入口不复生，Fur 七个入口仍存在。无用 GBuffer/Universal2D 的实际模板/实现已退出，历史注释不算功能残留。
+2. GUI 缓存、生成 no-op、真实 Forward+ 的 58 个默认 Pass 和 GD 消费变体、模式编号、手动工具状态回退、MPB 显式扫描均有上述实际验证记录；Shader 改动后已经完成相应同步编译，后两步只改 Editor。保留的外观/动画与 Buffer/Capture/OIT/APV/平面反射路径没有作为减速项关闭。
+3. 主项目 Renderer 当前 SHA256 仍与清理后记录一致，现役 feature 列表/map 未变。lilToon 工作区无未提交本任务代码；Extensions 的其他任务改动始终未由本任务提交，UnityGLTF 的 .vscode 未跟踪内容保留。
+4. 本轮按用户最终范围完成。Fur 与 lilPBR/WaterFlowmap 的整包退役均属后续安排；完整场景视觉、GUI 实际耗时及全量 Player 构建未做实测，不声称五分钟等待已缩短到某个数值。
 
 家族删除必须通过 C# 编译、模板/include 静态检查与 Unity 实际导入/必要 Pass 验证；无法完成的验证需明确记录，不把静态检查当成渲染验收。
