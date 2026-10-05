@@ -567,27 +567,6 @@ float   _lilOITEnabled;
     float   _HairLobe4Power;
     lilBool _UseHair;
 #endif
-    #if defined(LIL_LIQUID)
-        float   _LiquidFill;
-        float   _LiquidLevelY;
-        float   _LiquidLevelH;
-        float   _LiquidTiltX;
-        float   _LiquidTiltZ;
-        float   _LiquidTiltScale;
-        float   _LiquidOffset;
-        uint    _LiquidOffsetMode;
-        float   _LiquidWaveAmp;
-        float   _LiquidWaveAmpMul;
-        float   _LiquidWaveFreq;
-        float   _LiquidWaveSpeed;
-        float   _LiquidSurfaceWidth;
-        float   _LiquidSpecularStrength;
-        uint    _LiquidWaveSpace;
-        float4  _LiquidUnderlayTex_ST;
-        float4  _LiquidUnderlayColor;
-        float4  _LiquidUnderlayScroll;
-        lilBool _UseLiquid;
-    #endif
 //------------------------------------------------------------------------------------------------------------------------------
 // Int
 uint    _Cull;

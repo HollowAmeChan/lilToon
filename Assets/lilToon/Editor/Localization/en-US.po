@@ -350,9 +350,6 @@ msgstr "[high-load] Gem"
 msgid "sRenderingModeHair"
 msgstr "Hair"
 
-msgid "sRenderingModeLiquid"
-msgstr "[Heavy] Liquid"
-
 msgid "sTransparentMode"
 msgstr "Transparent Mode"
 
@@ -1118,12 +1115,6 @@ msgstr "Width B"
 msgid "sHairPower"
 msgstr "Power"
 
-msgid "sLiquidSetting"
-msgstr "Liquid Settings"
-
-msgid "sLiquid"
-msgstr "Liquid"
-
 msgid "sSpace"
 msgstr "Space"
 
@@ -1132,54 +1123,6 @@ msgstr "Object"
 
 msgid "sSpaceWorld"
 msgstr "World"
-
-msgid "sLiquidSurfaceWidth"
-msgstr "Surface Width"
-
-msgid "sLiquidSpecularStrength"
-msgstr "Surface Specular"
-
-msgid "sLiquidFill"
-msgstr "Fill Amount"
-
-msgid "sLiquidLevelBottom"
-msgstr "Level Bottom (Local Y)"
-
-msgid "sLiquidLevelTop"
-msgstr "Level Top (Local Y)"
-
-msgid "sLiquidTiltX"
-msgstr "Tilt X (deg)"
-
-msgid "sLiquidTiltZ"
-msgstr "Tilt Z (deg)"
-
-msgid "sLiquidTiltScale"
-msgstr "Tilt Scale"
-
-msgid "sLiquidOffset"
-msgstr "Level Offset"
-
-msgid "sLiquidOffsetModes"
-msgstr "Offset Mode|Absolute|Range %"
-
-msgid "sLiquidWaveAmp"
-msgstr "Wave Amplitude"
-
-msgid "sLiquidWaveAmpMul"
-msgstr "Wave Amp Multiplier"
-
-msgid "sLiquidUnderlayTex"
-msgstr "Underlay"
-
-msgid "sLiquidUnderlayScroll"
-msgstr "Underlay Scroll"
-
-msgid "sLiquidWaveFreq"
-msgstr "Wave Frequency"
-
-msgid "sLiquidWaveSpeed"
-msgstr "Wave Speed"
 
 msgid "sStencilSetting"
 msgstr "Stencil"
@@ -1772,7 +1715,6 @@ msgstr "This material has no texture slots available for display."
 msgid "sTextureSearchUndo"
 msgstr "Apply lilToon texture search results"
 
-
 # ----------------------------------------------------------------------------
 # UI strings added by this fork (msgid = the English text; en-US keeps it)
 # ----------------------------------------------------------------------------
@@ -2273,7 +2215,6 @@ msgstr "Main texture alpha-is-transparency is disabled."
 
 msgid "UV Preset"
 msgstr "UV Preset"
-
 
 msgid "MPB Parameter Overrides"
 msgstr "MPB Parameter Overrides"

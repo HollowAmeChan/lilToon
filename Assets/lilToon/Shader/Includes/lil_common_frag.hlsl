@@ -182,7 +182,6 @@
     #define LIL_UNPACK_TEXCOORD_MAT(i,o)
 #endif
 
-// LIL_LIQUID: 液体只用 .xyz，不写也不读 .w，所以 dissolveActive / dissolveInvert 保持 0。
 // guard 必须用 LIL_V2F_POSITION_OS（= 这个 pass 真的声明了 positionOSdissolve），
 // 不能用 LIL_V2F_POSITION_OS_ACTIVE：Meta / Universal2D 没有该成员，会 invalid subscript。
 #if defined(LIL_V2F_POSITION_OS)
@@ -301,7 +300,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Main Texture
-#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR) || defined(LIL_LIQUID)
+#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)
     #define LIL_GET_MAIN_TEX \
         fd.col = LIL_SAMPLE_2D_POM(_MainTex, sampler_MainTex, fd.uvMain, fd.ddxMain, fd.ddyMain);
 
@@ -1328,7 +1327,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Reflection
-#if defined(LIL_FEATURE_REFLECTION) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR) || defined(LIL_LIQUID)) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_REFLECTION) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && !defined(LIL_LITE)
     float3 lilCalcSpecular(inout lilFragData fd, float3 L, float3 specular, float attenuation LIL_SAMP_IN_FUNC(samp))
     {
         // Normal
@@ -2059,7 +2058,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR) || defined(LIL_LIQUID)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
 void lilPlanarReflection(inout lilFragData fd)
 {
     if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
@@ -2129,7 +2128,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR) || defined(LIL_LIQUID)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else

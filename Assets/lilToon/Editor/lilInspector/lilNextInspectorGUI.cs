@@ -289,7 +289,7 @@ namespace lilToon
 
         private void DrawNextOutline(Material material)
         {
-            if(isMultiVariants || isRefr || isFur || isGem || isHair || isLiquid || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || isRefr || isFur || isGem || isHair || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
             if(isShowRenderMode && material.parent == null && !isMultiVariants)
             {
                 bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);
@@ -943,51 +943,6 @@ namespace lilToon
                             }
                             EditorGUI.indentLevel--;
                             if(i + 1 < hairLobes) lilEditorGUI.DrawLine();
-                        }
-                        EditorGUI.indentLevel--;
-                    }
-                }, false);
-                if(isLiquid) DrawNextSection("liquid.main", GetLoc("sLiquidSetting"), PropertyBlock.Liquid, delegate
-                {
-                    LocalizedProperty(useLiquid, false);
-                    if(useLiquid.floatValue == 1f)
-                    {
-                        EditorGUI.indentLevel++;
-                        LocalizedProperty(liquidSurfaceWidth);
-                        LocalizedProperty(liquidSpecularStrength);
-                        lilEditorGUI.DrawLine();
-
-                        LocalizedProperty(liquidFill);
-                        LocalizedProperty(liquidLevelY);
-                        LocalizedProperty(liquidLevelH);
-                        lilEditorGUI.DrawLine();
-
-                        LocalizedProperty(liquidTiltX);
-                        LocalizedProperty(liquidTiltZ);
-                        LocalizedProperty(liquidTiltScale);
-                        lilEditorGUI.DrawLine();
-
-                        LocalizedProperty(liquidOffset);
-                        if(liquidOffset.floatValue != 0f) LocalizedProperty(liquidOffsetMode);
-                        lilEditorGUI.DrawLine();
-
-                        LocalizedProperty(liquidWaveAmp);
-                        LocalizedProperty(liquidWaveAmpMul);
-                        // 最终振幅 = 两者相乘，所以任意一路为 0 时波纹都是 0（闸门语义），
-                        // 那时频率/速度/空间收起不显示。判据用 && 而不是 ||。
-                        if(liquidWaveAmp.floatValue != 0f && liquidWaveAmpMul.floatValue != 0f)
-                        {
-                            LocalizedProperty(liquidWaveFreq);
-                            LocalizedProperty(liquidWaveSpeed);
-                            LocalizedProperty(liquidWaveSpace);
-                        }
-                        // 液体内部的常态流动层（只作用于背面 = 透过洞看到的那片内部）
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(liquidUnderlayColor);
-                        if(liquidUnderlayColor.colorValue.a > 0f)
-                        {
-                            LocalizedPropertyTexture(liquidUnderlayContent, liquidUnderlayTex);
-                            LocalizedProperty(liquidUnderlayScroll);
                         }
                         EditorGUI.indentLevel--;
                     }

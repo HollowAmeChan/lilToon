@@ -30,8 +30,6 @@ namespace lilToon
         public static string sOutlineVertexColorUsages;
         public static string sShadowColorTypes;
         public static string sShadowMaskTypes;
-        public static string sLiquidWaveSpaces;
-        public static string sLiquidOffsetModes;
         public static string[] sRenderingModeList;
         public static string[] sRenderingModeListLite;
         public static string[] sTransparentModeList;
@@ -71,7 +69,6 @@ namespace lilToon
         public static GUIContent hairMaskContent;
         public static GUIContent hairShiftMapContent;
         public static GUIContent hairTangentMapContent;
-        public static GUIContent liquidUnderlayContent;
         public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
         public class LanguageSettings : ScriptableSingleton<LanguageSettings>
@@ -159,8 +156,6 @@ namespace lilToon
             loc["sOutlineVertexColorUsages"] = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"), "GD (Direction + Width)");
             loc["sShadowColorTypes"]         = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             loc["sShadowMaskTypes"]          = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
-            loc["sLiquidWaveSpaces"]         = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
-            loc["sLiquidOffsetModes"]        = GetLoc("sLiquidOffsetModes");
             loc["sHSVGs"]                    = BuildParams(GetLoc("sHue"), GetLoc("sSaturation"), GetLoc("sValue"), GetLoc("sGamma"));
             loc["sScrollRotates"]            = BuildParams(GetLoc("sAngle"), GetLoc("sUVAnimation"), GetLoc("sScroll"), GetLoc("sRotate"));
             loc["sDecalAnimations"]          = BuildParams(GetLoc("sAnimation"), GetLoc("sXFrames"), GetLoc("sYFrames"), GetLoc("sFrames"), GetLoc("sFPS"));
@@ -183,15 +178,13 @@ namespace lilToon
             sGlitterParams1                 = BuildParams("Tiling", GetLoc("sParticleSize"), GetLoc("sContrast"));
             sGlitterParams2                 = BuildParams(GetLoc("sBlinkSpeed"), GetLoc("sAngleLimit"), GetLoc("sRimLightDirection"), GetLoc("sColorRandomness"));
             sTransparentMode                = BuildParams(GetLoc("sRenderingMode"), GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeGem"));
-            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem"), GetLoc("sRenderingModeHair"), GetLoc("sRenderingModeLiquid")};
+            sRenderingModeList              = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent"), GetLoc("sRenderingModeRefraction"), GetLoc("sRenderingModeRefractionBlur"), GetLoc("sRenderingModeFur"), GetLoc("sRenderingModeFurCutout"), GetLoc("sRenderingModeFurTwoPass"), GetLoc("sRenderingModeGem"), GetLoc("sRenderingModeHair")};
             sRenderingModeListLite          = new[]{GetLoc("sRenderingModeOpaque"), GetLoc("sRenderingModeCutout"), GetLoc("sRenderingModeTransparent")};
             sTransparentModeList            = new[]{GetLoc("sTransparentModeNormal"), GetLoc("sTransparentModeOnePass"), GetLoc("sTransparentModeTwoPass")};
             sBlendModeList                  = new[]{GetLoc("sBlendModeNormal"), GetLoc("sBlendModeAdd"), GetLoc("sBlendModeScreen"), GetLoc("sBlendModeMul")};
             sOutlineVertexColorUsages       = BuildParams(GetLoc("sVertexColor"), GetLoc("sNone"), GetLoc("sVertexR2Width"), GetLoc("sVertexRGBA2Normal"), "GD (Direction + Width)");
             sShadowColorTypes               = BuildParams(GetLoc("sColorType"), GetLoc("sColorTypeNormal"), GetLoc("sColorTypeLUT"));
             sShadowMaskTypes                = BuildParams(GetLoc("sMaskType"), GetLoc("sStrength"), GetLoc("sFlat"), GetLoc("SDF"));
-            sLiquidWaveSpaces               = BuildParams(GetLoc("sSpace"), GetLoc("sSpaceObject"), GetLoc("sSpaceWorld"));
-            sLiquidOffsetModes              = GetLoc("sLiquidOffsetModes");
             colorRGBAContent                = new GUIContent(GetLoc("sColor"),                              GetLoc("sTextureRGBA"));
             colorAlphaRGBAContent           = new GUIContent(GetLoc("sColorAlpha"),                         GetLoc("sTextureRGBA"));
             maskBlendContent                = new GUIContent(GetLoc("sMask"),                               GetLoc("sBlendR"));
@@ -225,7 +218,6 @@ namespace lilToon
             hairMaskContent                 = new GUIContent(GetLoc("sHairMask"),                           GetLoc("sTextureRGBA"));
             hairShiftMapContent             = new GUIContent(GetLoc("sHairShiftMap"),                       GetLoc("sTextureRGBA"));
             hairTangentMapContent           = new GUIContent(GetLoc("sHairTangentMap"),                     GetLoc("sNormalRGB"));
-            liquidUnderlayContent           = new GUIContent(GetLoc("sLiquidUnderlayTex"),                   GetLoc("sTextureRGBA"));
 
         }
 

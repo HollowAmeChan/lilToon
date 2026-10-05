@@ -67,7 +67,6 @@ namespace lilToon
 
         public static Shader ltshair     = FindShader("Hidden/lilToonHair");
 
-        public static Shader ltsliquid   = FindShader("Hidden/lilToonLiquid");
 
         public static Shader ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
 
@@ -130,7 +129,6 @@ namespace lilToon
 
             ltshair     = FindShader("Hidden/lilToonHair");
 
-            ltsliquid   = FindShader("Hidden/lilToonLiquid");
 
             ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
 

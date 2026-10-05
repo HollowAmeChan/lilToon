@@ -357,7 +357,6 @@ LIL_V2F_TYPE vert(appdata input)
     #endif
 
     #if defined(LIL_V2F_POSITION_OS_ACTIVE)
-        // LIL_LIQUID 只借用 .xyz，不写 .w（dissolve 的 active / invert 标记）
         #if defined(LIL_V2F_POSITION_OS)
             LIL_V2F_OUT_BASE.positionOSdissolve.w = (dissolveActive | (dissolveInvert << 1));
         #endif

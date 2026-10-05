@@ -134,7 +134,6 @@ namespace lilToon
         protected static bool isStWr            = false;
         protected static bool isGem             = false;
         protected static bool isHair            = false;
-        protected static bool isLiquid          = false;
         protected static bool isFakeShadow      = false;
         protected static bool isOnePass         = false;
         protected static bool isTwoPass         = false;
@@ -179,8 +178,6 @@ namespace lilToon
         protected static string     sOutlineVertexColorUsages       { get { return lilLanguageManager.sOutlineVertexColorUsages     ; } private set { lilLanguageManager.sOutlineVertexColorUsages      = value; } }
         protected static string     sShadowColorTypes               { get { return lilLanguageManager.sShadowColorTypes             ; } private set { lilLanguageManager.sShadowColorTypes               = value; } }
         protected static string     sShadowMaskTypes                { get { return lilLanguageManager.sShadowMaskTypes              ; } private set { lilLanguageManager.sShadowMaskTypes               = value; } }
-        protected static string     sLiquidWaveSpaces               { get { return lilLanguageManager.sLiquidWaveSpaces             ; } private set { lilLanguageManager.sLiquidWaveSpaces              = value; } }
-        protected static string     sLiquidOffsetModes              { get { return lilLanguageManager.sLiquidOffsetModes            ; } private set { lilLanguageManager.sLiquidOffsetModes             = value; } }
         protected static string[]   sRenderingModeList              { get { return lilLanguageManager.sRenderingModeList            ; } private set { lilLanguageManager.sRenderingModeList             = value; } }
         protected static string[]   sRenderingModeListLite          { get { return lilLanguageManager.sRenderingModeListLite        ; } private set { lilLanguageManager.sRenderingModeListLite         = value; } }
         protected static string[]   sTransparentModeList            { get { return lilLanguageManager.sTransparentModeList          ; } private set { lilLanguageManager.sTransparentModeList           = value; } }
@@ -219,7 +216,6 @@ namespace lilToon
         protected static GUIContent hairMaskContent                 { get { return lilLanguageManager.hairMaskContent               ; } private set { lilLanguageManager.hairMaskContent                = value; } }
         protected static GUIContent hairShiftMapContent             { get { return lilLanguageManager.hairShiftMapContent           ; } private set { lilLanguageManager.hairShiftMapContent            = value; } }
         protected static GUIContent hairTangentMapContent           { get { return lilLanguageManager.hairTangentMapContent         ; } private set { lilLanguageManager.hairTangentMapContent          = value; } }
-        protected static GUIContent liquidUnderlayContent            { get { return lilLanguageManager.liquidUnderlayContent          ; } private set { lilLanguageManager.liquidUnderlayContent           = value; } }
     }
 }
 #endif

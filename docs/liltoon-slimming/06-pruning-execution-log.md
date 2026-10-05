@@ -22,7 +22,7 @@
 - 日志：Extensions `.codex-research/pruning-cache.log`；验证临时 Shader 已删除。
 - 未测量用户场景 Inspector 首次打开的实际毫秒数，不宣称已解决所有预览编译等待。
 
-### 2. 增量写入与导入（随本提交）
+### 2. 增量写入与导入：`edf2b33`
 
 - 设置 JSON 和生成 Shader 内容相同时不重写，内容变化时正常写入。
 - 全量生成只显式导入发生变化的 `.shader`；指定 Shader 的生成只对变化的产物做同步导入。自定义 `.lilcontainer` 的原有导入语义与末尾 Refresh 保留，避免遗漏优化 HLSL/include 的依赖更新。
@@ -32,10 +32,22 @@
 - 使用 BREAK_URP 的同一份 lilToonSetting 进行生成验证，已同步当前模板的本地产物。产物沿用仓库现有的 skip-worktree/本地生成管理方式，没有将额外生成差异混入本次提交。
 - 日志：Extensions `.codex-research/pruning-generation.log`。验证 harness 初次运行的类型命名反射错误已修正，最终成功；未把临时 harness 错误算作产品编译错误。
 
+### 3. Liquid 整族退出（随本提交）
+
+- 已删除 Liquid 的基础模板、属性/URP 模板、3 个 HLSL 文件及对应 meta，清理公共输入/宏/分支、材质属性包装器、渲染模式、Shader 查找、GUI、预设保存项、材质管理器分类和 5 种语言的 95 条文案。
+- `RenderingMode.Hair` 仍为 9；`PropertyBlock` 以 `Reserved29` 保留原槽，Outline 仍为 30、Other 仍为 40。
+- 已将唯一归档材质与 meta 从 BREAK_URP 的 `Assets/Hollow/土豆/归档/PTP_M_WaterBottle.mat` 移到项目根目录 `RetiredShaderMaterials/lilToon/Liquid/`，保留 GUID `92b28d6d233c66a44b0deca62fd51181`。扫描 Assets 的场景/Prefab/asset/meta，仅命中材质自身 meta，无其他引用。
+- 当前本地生成的 `lts_liquid.shader` / meta 原本为忽略的未跟踪产物，已删除；保留在 Extensions `.codex-research/pruning-liquid-backup` 备份中。基础模板退出后不会再生成它。
+- Roslyn 编译 0 错误，预处理指令配平通过，Editor/模板/公共 HLSL/文案的 Liquid 功能引用归零。
+- 既有 Ho 静态检查器报告 GD 张力/描边两处不可达；对 HEAD 的完整 include 基线运行同一检查得到同样两项，属于既有检查局限，不当作本次引入或测试通过。
+- 初次 Unity 验证因未设置 URP 选中了 fallback，只编译 5 个匿名 Pass，结果作废。重跑启用真正 Forward+，确认实际 SubShader/首 Pass 名称；Opaque / Cutout / Transparent / Outline / Hair 共 67 个默认 Pass，以及张力 Forward 和 GD 描边变体均通过同步编译，Shader 编译错误为 0，验证进程退出码为 0。编译通过不等于所有用户场景的视觉验收。
+- 运行项目：Extensions `.codex-research/CharacterShadowValidation`；成功日志 `.codex-research/pruning-liquid.log`。实际全量重生成确认 Liquid 不会复生；保留的枚举编号也全部逐项核对通过。当前规模为 53 个 Shader / 677 个程序块。
+- 本提交只包含 lilToon 的 Liquid 退出与本记录，未 stage Extensions 中其他任务的张力改动。2026-10-05 12:40 自动化续作时额度已恢复到 0% 用量。
+
 ## 下一步
 
-1. 整族退出 Liquid / Gem / Fur / Lite，逐族提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
-3. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
-4. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
+1. 整族退出 Gem / Fur / Lite，逐族提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
+2. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
+3. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
 
 家族删除必须通过 C# 编译、模板/include 静态检查与 Unity 实际导入/必要 Pass 验证；无法完成的验证需明确记录，不把静态检查当成渲染验收。

@@ -9,7 +9,7 @@ namespace lilToon
         private MaterialProperty[] tesionProperties;
         private bool showTesion;
         private bool SupportsTesion => lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP
-            && !isLite && !isFur && !isGem && !isHair && !isLiquid && !isFakeShadow;
+            && !isLite && !isFur && !isGem && !isHair && !isFakeShadow;
         private MaterialProperty TesionProperty(string name) => FindProperty(name, tesionProperties, false);
         private void DrawTesionSettings()
         {
