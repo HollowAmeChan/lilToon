@@ -1,5 +1,11 @@
 # 编译加速与变体治理
 
+> 2026-10-05 方向更新：用户明确要求 Gem、Liquid、Fur 从 lilToon 整族退出，专用实现归 HoShader；本文早期“保留为 Specialized”的建议已被取代。按当前代码统计，三族共 10 个 Shader / 126 个程序块。MetadataBuffer 在 lilToon 中已删除，实际残留需跨仓清理 lilPBR 与项目 Renderer 资产。最新清单、去重后的裁剪规模和执行顺序见 [05-editor-iteration-performance-investigation.md](05-editor-iteration-performance-investigation.md)。
+
+> 同日补充：lilPBR / WaterFlowmap 准备整包退役，不再为旧仓库单独修剪和维护 Pass；清理项目依赖与旧资产引用，保留仍被主管线和 lilToon 使用的平面反射协议。Gem / Liquid / Fur 使用现有 HoShader 仓库的专用模块，不新增家族仓库。
+
+> 产品边界进一步明确：用户出效果优先，长期不使用 Lite 或手动转换工具。撤回本文新增 Lite / Standard / Full 性能分层的建议；Lite 整族和不用的转换/烘焙优化工具纳入退出审计。优化目标是制作、编译与 GUI 响应效率，保留现役外观控制与材质编辑能力。
+
 目标：减少 shader 文件数量、pass 数量和 `multi_compile` 组合爆炸，同时保留项目真正使用的 URP toon 表现。
 
 ## 当前变体爆炸来源
