@@ -440,6 +440,7 @@
             // Build Option
             #pragma vertex vert
             #pragma fragment fragGeometryBuffer
+            #define LIL_PASS_GEOMETRY_BUFFER
             #pragma target 4.5
             #pragma lil_multi_compile_depthnormals
             #pragma shader_feature_local UNITY_UI_ALPHACLIP
@@ -486,6 +487,7 @@
             // Build Option
             #pragma vertex vert
             #pragma fragment frag
+            #define LIL_PASS_HO_CHARACTER_CAPTURE
             #pragma target 4.5
             #pragma lil_multi_compile_depthnormals
             #pragma shader_feature_local UNITY_UI_ALPHACLIP

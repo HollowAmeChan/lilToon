@@ -21,6 +21,13 @@
 #if defined(LIL_LITE) || defined(LIL_MULTI) || defined(LIL_IGNORE_SHADERSETTING)
     #define LIL_OPTIMIZE_APPLY_SHADOW_FA
 #endif
+#if defined(LIL_URP) && defined(_HO_GD_TENSION) && !defined(LIL_LITE) && !defined(LIL_FUR) && !defined(LIL_GEM) && !defined(LIL_HAIR) && !defined(LIL_LIQUID) && !defined(LIL_OUTLINE) && (defined(LIL_PASS_FORWARD) || defined(LIL_PASS_FORWARDADD) || defined(LIL_PASS_GEOMETRY_BUFFER) || defined(LIL_PASS_HO_CHARACTER_CAPTURE))
+    #define LIL_GD_TENSION
+    #define LIL_REQUIRE_APP_NORMAL
+    #define LIL_REQUIRE_APP_TANGENT
+    #define LIL_V2F_FORCE_TANGENT
+#endif
+
 #include "lil_common_macro.hlsl"
 #include "lil_common_input.hlsl"
 

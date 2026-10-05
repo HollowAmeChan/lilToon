@@ -176,6 +176,9 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Copy
+    #if defined(LIL_GD_TENSION)
+        LIL_V2F_OUT_BASE.gdTension = HoGDTensionVertex(input.vertexID);
+    #endif
 
     // UV
     #if defined(LIL_V2F_TEXCOORD0)

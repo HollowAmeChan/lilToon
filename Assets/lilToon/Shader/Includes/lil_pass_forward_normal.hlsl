@@ -47,6 +47,9 @@
             LIL_SHADOW_COORDS(7)
         #endif
         LIL_CUSTOM_V2F_MEMBER(8,9,10,11,12,13,14,15)
+        #if defined(LIL_GD_TENSION)
+            float4 gdTension : TEXCOORD19;
+        #endif
         LIL_VERTEX_INPUT_INSTANCE_ID
         LIL_VERTEX_OUTPUT_STEREO
     };
@@ -96,6 +99,9 @@
             LIL_SHADOW_COORDS(10)
         #endif
         LIL_CUSTOM_V2F_MEMBER(11,12,13,14,15,16,17,18)
+        #if defined(LIL_GD_TENSION)
+            float4 gdTension : TEXCOORD19;
+        #endif
         LIL_VERTEX_INPUT_INSTANCE_ID
         LIL_VERTEX_OUTPUT_STEREO
     };
@@ -284,7 +290,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Normal
         #if defined(LIL_V2F_NORMAL_WS)
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_GD_TENSION)
                 float3 normalmap = float3(0.0,0.0,1.0);
 
                 // 1st
@@ -299,6 +305,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                     OVERRIDE_NORMAL_2ND
                 #endif
 
+                LIL_APPLY_TESION_NORMAL
                 fd.N = normalize(mul(normalmap, fd.TBN));
                 fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
             #else

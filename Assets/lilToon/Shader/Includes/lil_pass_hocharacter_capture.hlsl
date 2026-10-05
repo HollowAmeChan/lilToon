@@ -40,6 +40,9 @@ struct v2f
         LIL_VECTOR_INTERPOLATION float4 tangentWS    : TEXCOORD5;
     #endif
     LIL_CUSTOM_V2F_MEMBER(6,7,8,9,10,11,12,13)
+    #if defined(LIL_GD_TENSION)
+        float4 gdTension : TEXCOORD14;
+    #endif
     LIL_VERTEX_INPUT_INSTANCE_ID
     LIL_VERTEX_OUTPUT_STEREO
 };
@@ -80,7 +83,7 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
     OVERRIDE_MAIN
 
     #if defined(LIL_V2F_NORMAL_WS)
-        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND))
+        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_GD_TENSION))
             float3 normalmap = float3(0.0,0.0,1.0);
 
             BEFORE_NORMAL_1ST
@@ -93,6 +96,7 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
                 OVERRIDE_NORMAL_2ND
             #endif
 
+            LIL_APPLY_TESION_NORMAL
             fd.N = normalize(mul(normalmap, fd.TBN));
             fd.N = fd.facing < (_FlipNormal-1.0) ? -fd.N : fd.N;
         #else

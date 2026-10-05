@@ -270,6 +270,10 @@ lilVertexNormalInputs lilGetVertexNormalInputsFromWS(float3 normalWS)
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Outline
+#if defined(LIL_GD_TENSION)
+#include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/GeometryData/Shaders/HoGeometryTension.hlsl"
+#endif
+
 #if defined(LIL_URP) && defined(_HO_GD_OUTLINE)
     #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/GeometryData/Shaders/HoGeometryOutline.hlsl"
 #endif

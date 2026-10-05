@@ -36,6 +36,22 @@
                         _AOStrength                  ("AO Strength", Range(0, 1)) = 1
         [NoScaleOffset] _AOMask                     ("AO Mask", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
+        // Tesion: optional GeometryData tension consumer
+        [Toggle(_HO_GD_TENSION)] _HoTesionEnabled ("Tesion", Float) = 0
+        _HoTesionStrength ("总体强度", Range(0,1)) = 1
+        [HideInInspector] _HoTesionMaps ("Assigned Maps", Vector) = (0,0,0,0)
+        _HoTesionStretchBaseColor ("拉伸 BaseColor", 2D) = "white" {}
+        _HoTesionStretchColor ("拉伸颜色倍率", Color) = (1,1,1,1)
+        [Normal][NoScaleOffset] _HoTesionStretchNormal ("拉伸 NormalMap", 2D) = "bump" {}
+        _HoTesionStretchNormalScale ("拉伸法线强度", Range(0,2)) = 1
+        _HoTesionStretchRange ("拉伸响应范围", Vector) = (0.02,0.2,0,0)
+        _HoTesionStretchStrength ("拉伸混合强度", Range(0,1)) = 1
+        _HoTesionCompressionBaseColor ("挤压 BaseColor", 2D) = "white" {}
+        _HoTesionCompressionColor ("挤压颜色倍率", Color) = (1,1,1,1)
+        [Normal][NoScaleOffset] _HoTesionCompressionNormal ("挤压 NormalMap", 2D) = "bump" {}
+        _HoTesionCompressionNormalScale ("挤压法线强度", Range(0,2)) = 1
+        _HoTesionCompressionRange ("挤压响应范围", Vector) = (0.02,0.2,0,0)
+        _HoTesionCompressionStrength ("挤压混合强度", Range(0,1)) = 1
                         // 显示名直接用中文：这几个参数只在 lilToon 面板的「Ho 表面语义」一节里出现，
                         // 走 lilToon 的 GetLoc 反而要改十几个语言文件。
                         _HoSurfaceThickness         ("表面厚度（SB）", Range(0,1)) = 0

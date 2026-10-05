@@ -1,5 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // PS Macro
+#include "lil_gd_tension.hlsl"
 
 // Insert for custom shader
 #if !defined(BEFORE_UNPACK_V2F)
@@ -347,7 +348,8 @@
     #define OVERRIDE_MAIN \
         LIL_GET_MAIN_TEX \
         LIL_APPLY_MAIN_TONECORRECTION \
-        fd.col *= _Color;
+        fd.col *= _Color; \
+        LIL_APPLY_TESION_COLOR
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

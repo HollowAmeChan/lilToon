@@ -845,7 +845,19 @@ CBUFFER_START(UnityPerMaterial)
     LIL_CUSTOM_PROPERTIES
 #endif
 
+// Tesion properties keep the material CBUFFER layout consistent across enabled/disabled variants.
+float _HoTesionEnabled, _HoTesionStrength, _HoTesionStretchStrength, _HoTesionCompressionStrength;
+float _HoTesionStretchNormalScale, _HoTesionCompressionNormalScale;
+float4 _HoTesionStretchRange, _HoTesionCompressionRange, _HoTesionMaps;
+float4 _HoTesionStretchColor, _HoTesionCompressionColor;
+float4 _HoTesionStretchBaseColor_ST, _HoTesionCompressionBaseColor_ST;
 CBUFFER_END
+#if defined(LIL_GD_TENSION)
+TEXTURE2D(_HoTesionStretchBaseColor);
+TEXTURE2D(_HoTesionCompressionBaseColor);
+TEXTURE2D(_HoTesionStretchNormal);
+TEXTURE2D(_HoTesionCompressionNormal);
+#endif
 
 #endif // LIL_INPUT_BASE_INCLUDED
 

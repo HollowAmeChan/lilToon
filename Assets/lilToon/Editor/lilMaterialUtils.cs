@@ -324,6 +324,7 @@ namespace lilToon
         public static void SetupMultiMaterial(Material material)
         {
             SyncGeometryDataOutlineKeyword(material);
+            SyncGeometryDataTension(material);
             int tpmode = 0;
             if(material.HasProperty("_TransparentMode")) tpmode = (int)material.GetFloat("_TransparentMode");
             bool useShadow = IsFeatureOnFloat(material, "_UseShadow");
@@ -499,6 +500,18 @@ namespace lilToon
         {
             if(material.HasProperty(propname)) return material.GetTexture(propname) != null;
             return false;
+        }
+
+        public static void SyncGeometryDataTension(Material material)
+        {
+            if (material == null || !material.HasProperty("_HoTesionEnabled")) return;
+            bool enabled = material.GetFloat("_HoTesionEnabled") > 0.5f;
+            SetShaderKeywords(material, "_HO_GD_TENSION", enabled);
+            material.SetVector("_HoTesionMaps", new Vector4(
+                material.GetTexture("_HoTesionStretchBaseColor") != null ? 1 : 0,
+                material.GetTexture("_HoTesionCompressionBaseColor") != null ? 1 : 0,
+                material.GetTexture("_HoTesionStretchNormal") != null ? 1 : 0,
+                material.GetTexture("_HoTesionCompressionNormal") != null ? 1 : 0));
         }
 
         public static void SyncGeometryDataOutlineKeyword(Material material)
