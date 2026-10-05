@@ -26,7 +26,6 @@ namespace lilToon
         private const string menuPathRoot                   = "HoLil/";
         private const string menuPathGameObject             = "GameObject/lilToon/";
         private const string menuPathRefreshShaders         = menuPathRoot + "[着色器] 刷新着色器";
-        private const string menuPathRemoveUnusedProperties = menuPathRoot + "[材质] 移除未使用的属性";
         private const string menuPathRunMigration           = menuPathRoot + "[材质] 运行迁移";
         private const string menuPathConvertNormal          = menuPathRoot + "[贴图] 转换法线贴图 (DirectX <-> OpenGL)";
         private const string menuPathPixelArtReduction      = menuPathRoot + "[贴图] 像素画降采样";
@@ -40,7 +39,6 @@ namespace lilToon
         private const int menuPriorityRoot = 1100;
         private const int menuPriorityGameObject = 21; // This must be 21 or less
         private const int menuPriorityRefreshShaders            = menuPriorityRoot + 0;
-        private const int menuPriorityRemoveUnusedProperties    = menuPriorityRoot + 20;
         private const int menuPriorityRunMigration              = menuPriorityRoot + 21;
         private const int menuPriorityConvertNormal             = menuPriorityRoot + 22;
         private const int menuPriorityPixelArtReduction         = menuPriorityRoot + 23;
@@ -76,25 +74,6 @@ namespace lilToon
             lilToonSetting.ApplyShaderSetting(shaderSetting);
 
             AssetDatabase.Refresh();
-        }
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // HoLil/[材质] 移除未使用的属性
-        [MenuItem(menuPathRemoveUnusedProperties, false, menuPriorityRemoveUnusedProperties)]
-        private static void RemoveUnusedProperties()
-        {
-            if(Selection.objects.Length == 0) return;
-            Undo.RecordObjects(Selection.objects, "Remove unused properties");
-            foreach(var m in Selection.objects.Where(o => o is Material).Select(o => (Material)o))
-            {
-                lilMaterialUtils.RemoveUnusedTexture(m);
-            }
-        }
-
-        [MenuItem(menuPathRemoveUnusedProperties, true, menuPriorityRemoveUnusedProperties)]
-        private static bool CheckRemoveUnusedProperties()
-        {
-            return CheckExtension(".mat");
         }
 
         //------------------------------------------------------------------------------------------------------------------------------

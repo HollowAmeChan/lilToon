@@ -625,14 +625,7 @@ namespace lilToon
             DrawColorAsAlpha(prop, GetLoc("sAlpha"));
         }
 
-        public static void RemoveUnusedPropertiesGUI(Material material)
-        {
-            if(Button(GetLoc("sRemoveUnused")))
-            {
-                Undo.RecordObject(material, "Remove unused properties");
-                lilMaterialUtils.RemoveUnusedTexture(material, material.shader.name.Contains("Lite"));
-            }
-        }
+
 
         public static void SetAlphaIsTransparencyGUI(MaterialProperty tex)
         {

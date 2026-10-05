@@ -33,12 +33,13 @@ namespace lilToon
         private static void ApplyInspectorUiMode(bool useNext)
         {
             edSet.useNextInspector = useNext;
+            // Serialized page 4 belonged to the retired manual optimization UI.
+            if(edSet.editorMode == EditorMode.Reserved4) edSet.editorMode = EditorMode.Advanced;
             if(useNext)
             {
-                // The next UI covers every EditorMode value; just keep the page state valid.
                 edSet.nextInspectorPage = Mathf.Clamp(edSet.nextInspectorPage, 0, 3);
             }
-            else if(edSet.editorMode == EditorMode.TextureControl || edSet.editorMode == EditorMode.Optimization)
+            else if(edSet.editorMode == EditorMode.TextureControl)
             {
                 // These pages only exist in the next UI; fall back to the legacy Advanced page.
                 edSet.editorMode = EditorMode.Advanced;

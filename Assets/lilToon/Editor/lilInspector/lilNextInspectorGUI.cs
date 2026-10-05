@@ -455,7 +455,6 @@ namespace lilToon
         private void DrawNextShadow()
         {
 
-
             LocalizedProperty(shadowMaskType);
             if(shadowMaskType.floatValue == 1f)
             {
@@ -1115,7 +1114,6 @@ namespace lilToon
                 EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"), MessageType.Warning);
             }
 
-
             if(transparentModeBuf == TransparentMode.TwoPass)
             {
                 lilEditorGUI.DrawLine();
@@ -1291,8 +1289,6 @@ namespace lilToon
             if(enabled == null) return;
             LocalizedProperty(enabled, false);
             if(enabled.floatValue != 1f) return;
-
-
 
             if(second)
             {
@@ -1624,37 +1620,6 @@ namespace lilToon
             LocalizedProperty(pass);
             LocalizedProperty(fail);
             LocalizedProperty(zFail);
-        }
-
-        private void DrawNextOptimizationPage(Material material)
-        {
-            DrawNextPanel(delegate
-            {
-                if(isMultiVariants)
-                {
-                    EditorGUILayout.HelpBox("多材质变体无法在此页执行结构优化。", MessageType.Info);
-                    return;
-                }
-
-                EditorGUILayout.HelpBox(GetLoc("sOptimizationTips"), MessageType.Info);
-                lilEditorGUI.RemoveUnusedPropertiesGUI(material);
-                lilEditorGUI.DrawLine();
-                EditorGUILayout.LabelField(GetLoc("sBake"), EditorStyles.boldLabel);
-                TextureBakeGUI(material, 0);
-                TextureBakeGUI(material, 1);
-                TextureBakeGUI(material, 2);
-                TextureBakeGUI(material, 3);
-                lilEditorGUI.DrawLine();
-                if(lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
-                if(lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
-                if(lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
-                if(lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
-                if(lilEditorGUI.Button(GetLoc("sMatCap")))                     AutoBakeColoredMask(material, matcapBlendMask,      matcapColor,        "MatCapColor");
-                if(lilEditorGUI.Button(GetLoc("sMatCap2nd")))                  AutoBakeColoredMask(material, matcap2ndBlendMask,   matcap2ndColor,     "MatCap2ndColor");
-                if(lilEditorGUI.Button(GetLoc("sRimLight")))                   AutoBakeColoredMask(material, rimColorTex,          rimColor,           "RimColor");
-                if(((!isRefr && !isFur && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
-                lilEditorGUI.DrawLine();
-            });
         }
 
         private void DrawNextRefraction()

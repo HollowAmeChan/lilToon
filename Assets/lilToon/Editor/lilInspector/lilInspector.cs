@@ -112,9 +112,6 @@ namespace lilToon
                     break;
                 case EditorMode.Preset:     DrawPresetGUI(); break;
                 case EditorMode.Settings:   DrawSettingsGUI(); break;
-                case EditorMode.Optimization:
-                    if(edSet.useNextInspector) DrawNextOptimizationPage(material);
-                    break;
             }
 
             if(EditorGUI.EndChangeCheck())

@@ -104,6 +104,14 @@
 - Roslyn 编译 0 错误，原有 TextureSearch 两条警告不变。独立 Unity 6000.3.15f1 / D3D11 执行 `PruningValidation.RunMpbScan`：首帧准备无扫描、显式扫描识别非激活 Renderer/参数、重复准备复用快照、重新扫描刷新值、多个 Inspector 独立、材质/Shader/空目标切换清空、空结果与未扫描区分，均 PASS；调用 Exit(0) 后进程已结束。日志：Extensions `.codex-research/pruning-mpb-scan.log`。
 - 此步仅改变诊断信息的扫描触发，不改材质效果或 Shader。未测量用户大场景 GUI 的实际毫秒数，程序块数量仍为 367。
 
+### 12. 手动材质优化页与无调用烘焙代码退出
+
+- 删除新旧 Inspector 的手动材质优化区、顶层“移除未使用属性”菜单，以及只服务这些入口或已无调用的 Main/Shadow/MatCap/TriMask/ColoredMask 私有烘焙方法，共精简约 520 行。
+- 保留逐层贴图编辑、AlphaMask/Outline 编辑、公开 RunBake 与材质清理 API；这些共享烘焙方法的函数体逐字对照此前提交不变。编译优化器、生成设置、动画属性扫描及构建期逻辑保留，避免把编译剪枝一并删掉。
+- EditorMode 原 4 槽改为 Reserved4，其他枚举值不变；旧优化页状态在选择工具栏或切换新版/旧版 UI 时回到 Advanced。
+- Roslyn 编译 0 错误，原有两条警告不变。独立 Unity `PruningValidation.RunToolRemoval` 验证旧页状态在两种 UI 正确回退、TextureControl 正常选择/回退、Preset/Settings 编号不变、共享烘焙及编译优化器仍存在，全部 PASS，进程退出码 0。日志：Extensions `.codex-research/pruning-manual-tools.log`。
+- 源引用审计确认优化页/旧烘焙/0–3 烘焙 UI 调用归零；不改 HLSL，也未修改项目材质。程序块数量仍为 367，不把这次工具删减宣称为 GPU Shader 编译加速。
+
 ## 本轮结果与未完成项
 
 - 已逐步提交调查、缓存、增量生成、Liquid、Gem、手动转换、Lite、无用 Pass 和 GD 关键字范围。当前本地产物 **54 → 36 个 Shader，701 → 367 个程序块**，少 334 个程序块（约 47.6%），不是实测时间缩减比例。
@@ -119,7 +127,7 @@
 ## 下一步
 
 1. 按用户对 Alue/TAIL 的选择整族退出 Fur；Lite 已完成。
-2. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
-3. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
+2. Renderer 孤立子资产、无用 Pass、GD 关键字范围、手动转换/优化入口均已完成，不重复执行；lilPBR/WaterFlowmap 留待用户整包退役安排，现役平面反射协议保留。
+3. Fur 资产选择明确后收尾 Fur/FurOnly 导入路由；最终完整场景视觉与 GUI 耗时尚需实际工程验收。
 
 家族删除必须通过 C# 编译、模板/include 静态检查与 Unity 实际导入/必要 Pass 验证；无法完成的验证需明确记录，不把静态检查当成渲染验收。

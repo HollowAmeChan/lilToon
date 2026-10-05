@@ -255,23 +255,6 @@ namespace lilToon
                     }
                 }
 
-                //------------------------------------------------------------------------------------------------------------------------------
-                // Optimization
-                if(!isMultiVariants && ShouldDrawBlock())
-                {
-                    GUILayout.Label(GetLoc("sOptimization"), boldLabel);
-                    edSet.isShowOptimization = lilEditorGUI.Foldout(GetLoc("sOptimization"), edSet.isShowOptimization);
-                    lilEditorGUI.DrawHelpButton(GetLoc("sAnchorOptimization"));
-                    if(edSet.isShowOptimization)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sOptimization"), customToggleFont);
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        lilEditorGUI.RemoveUnusedPropertiesGUI(material);
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
-                    }
-                }
             }
             else
             {
@@ -822,7 +805,6 @@ namespace lilToon
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Gem
 
-
                 EditorGUILayout.Space();
 
                 //------------------------------------------------------------------------------------------------------------------------------
@@ -1011,7 +993,6 @@ namespace lilToon
                             //------------------------------------------------------------------------------------------------------------------------------
                             // Shader
 
-
                             //------------------------------------------------------------------------------------------------------------------------------
                             // Rendering
                             if(renderingModeBuf == RenderingMode.Transparent || renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurTwoPass || (isMulti && (transparentModeMat.floatValue == 2.0f || transparentModeMat.floatValue == 4.0f)))
@@ -1127,43 +1108,6 @@ namespace lilToon
 
                 EditorGUILayout.Space();
 
-                //------------------------------------------------------------------------------------------------------------------------------
-                // Optimization
-                if(!isMultiVariants && ShouldDrawBlock())
-                {
-                    GUILayout.Label(GetLoc("sOptimization"), boldLabel);
-                    edSet.isShowOptimization = lilEditorGUI.Foldout(GetLoc("sOptimization"), edSet.isShowOptimization);
-                    lilEditorGUI.DrawHelpButton(GetLoc("sAnchorOptimization"));
-                    if(edSet.isShowOptimization)
-                    {
-                        // Optimization
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sOptimization"), customToggleFont);
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        lilEditorGUI.RemoveUnusedPropertiesGUI(material);
-                        TextureBakeGUI(material, 0);
-                        TextureBakeGUI(material, 1);
-                        TextureBakeGUI(material, 2);
-                        TextureBakeGUI(material, 3);
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
-
-                        // Bake Textures
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sBake"), customToggleFont);
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        if(lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
-                        if(lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
-                        if(lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
-                        if(lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
-                        if(lilEditorGUI.Button(GetLoc("sMatCap")))                     AutoBakeColoredMask(material, matcapBlendMask,      matcapColor,        "MatCapColor");
-                        if(lilEditorGUI.Button(GetLoc("sMatCap2nd")))                  AutoBakeColoredMask(material, matcap2ndBlendMask,   matcap2ndColor,     "MatCap2ndColor");
-                        if(lilEditorGUI.Button(GetLoc("sRimLight")))                   AutoBakeColoredMask(material, rimColorTex,          rimColor,           "RimColor");
-                        if(((!isRefr && !isFur && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
-                    }
-                }
             }
         }
     }

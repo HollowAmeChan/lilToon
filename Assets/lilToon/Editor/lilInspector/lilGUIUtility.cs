@@ -119,16 +119,14 @@ namespace lilToon
                 EditorMode.Advanced,
                 EditorMode.TextureControl,
                 EditorMode.Preset,
-                EditorMode.Settings,
-                EditorMode.Optimization
+                EditorMode.Settings
             };
             string[] labels =
             {
                 GetLoc("sEditorModeAdvanced"),
                 GetNextTextureControlLabel(),
                 GetLoc("sEditorModePreset"),
-                GetLoc("sEditorModeShaderSetting"),
-                GetLoc("sOptimization")
+                GetLoc("sEditorModeShaderSetting")
             };
             int current = Array.IndexOf(modes, edSet.editorMode);
             if(current < 0) current = 0;

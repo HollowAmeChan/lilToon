@@ -77,7 +77,6 @@ namespace lilToon
             public bool isShowFur                       = false;
             public bool isShowRendering                 = false;
             public bool isShowLightBake                 = false;
-            public bool isShowOptimization              = false;
             public bool isShowBlend                     = false;
             public bool isShowBlendAdd                  = false;
             public bool isShowBlendPre                  = false;
