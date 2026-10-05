@@ -422,7 +422,7 @@ namespace lilToon
         public static void SyncGeometryDataTension(Material material)
         {
             if (material == null || !material.HasProperty("_HoTesionEnabled")) return;
-            bool enabled = material.GetFloat("_HoTesionEnabled") > 0.5f;
+            bool enabled = material.shader != null && material.shader.keywordSpace.FindKeyword("_HO_GD_TENSION").isValid && material.GetFloat("_HoTesionEnabled") > 0.5f;
             SetShaderKeywords(material, "_HO_GD_TENSION", enabled);
             material.SetVector("_HoTesionMaps", new Vector4(
                 material.GetTexture("_HoTesionStretchBaseColor") != null ? 1 : 0,
@@ -433,7 +433,8 @@ namespace lilToon
 
         public static void SyncGeometryDataOutlineKeyword(Material material)
         {
-            bool enabled = material.HasProperty("_OutlineVertexR2Width") && material.GetInt("_OutlineVertexR2Width") == 3;
+            if (material == null) return;
+            bool enabled = material.shader != null && material.shader.keywordSpace.FindKeyword("_HO_GD_OUTLINE").isValid && material.HasProperty("_OutlineVertexR2Width") && material.GetInt("_OutlineVertexR2Width") == 3;
             SetShaderKeywords(material, "_HO_GD_OUTLINE", enabled);
         }
 
