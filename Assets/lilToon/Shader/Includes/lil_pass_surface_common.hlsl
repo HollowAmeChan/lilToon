@@ -41,12 +41,25 @@
 struct v2f
 {
     float4 positionCS   : SV_POSITION;
-    float4 uv01         : TEXCOORD0;
-    float4 uv23         : TEXCOORD1;
-    #if defined(LIL_V2F_POSITION_OS)
-        float4 positionOSdissolve   : TEXCOORD2;
+    #if defined(LIL_HO_SURFACE_SAMPLE_FREQ)
+        sample float4 uv01 : TEXCOORD0;
+        sample float4 uv23 : TEXCOORD1;
+    #else
+        float4 uv01 : TEXCOORD0;
+        float4 uv23 : TEXCOORD1;
     #endif
-    float3 positionWS   : TEXCOORD3;
+    #if defined(LIL_V2F_POSITION_OS)
+        #if defined(LIL_HO_SURFACE_SAMPLE_FREQ)
+            sample float4 positionOSdissolve : TEXCOORD2;
+        #else
+            float4 positionOSdissolve : TEXCOORD2;
+        #endif
+    #endif
+    #if defined(LIL_HO_SURFACE_SAMPLE_FREQ)
+        sample float3 positionWS : TEXCOORD3;
+    #else
+        float3 positionWS : TEXCOORD3;
+    #endif
     LIL_VECTOR_INTERPOLATION float3 normalWS     : TEXCOORD4;
     #if defined(LIL_V2F_TANGENT_WS)
         LIL_VECTOR_INTERPOLATION float4 tangentWS    : TEXCOORD5;

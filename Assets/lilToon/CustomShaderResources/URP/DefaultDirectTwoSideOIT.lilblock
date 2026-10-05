@@ -413,6 +413,52 @@
             *LIL_SUBSHADER_INSERT_POST*
             ENDHLSL
         }
+        // Correlated semantic scalar sample packet
+        Pass
+        {
+            Name "HO_SURFACE_CORRELATED_V1"
+            Tags {"LightMode" = "HoSurfaceCorrelatedV1"}
+
+            Stencil
+            {
+                Ref [_StencilRef]
+                ReadMask [_StencilReadMask]
+                WriteMask [_StencilWriteMask]
+                Comp [_StencilComp]
+                Pass [_StencilPass]
+                Fail [_StencilFail]
+                ZFail [_StencilZFail]
+            }
+            Cull [_Cull]
+            ZClip [_ZClip]
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Build Option
+            #pragma vertex vert
+            #pragma fragment fragSurfaceCorrelated
+            #pragma shader_feature_local _HO_SEMANTIC_MASK
+            #pragma target 5.0
+            #pragma only_renderers d3d11
+            #pragma lil_multi_compile_depthnormals
+            #pragma multi_compile_instancing
+            #pragma shader_feature_local UNITY_UI_ALPHACLIP
+            #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // Pass
+            #include_with_pragmas "Includes/lil_pipeline_urp.hlsl"
+            #include "Includes/lil_common.hlsl"
+            *LIL_SUBSHADER_INSERT*
+
+            #include_with_pragmas "Includes/lil_pass_surface_correlated.hlsl"
+
+            *LIL_SUBSHADER_INSERT_POST*
+            ENDHLSL
+        }
 
         // GeometryBuffer
         Pass
