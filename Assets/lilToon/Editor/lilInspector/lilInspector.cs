@@ -126,6 +126,7 @@ namespace lilToon
                 {
                     lilMaterialUtils.SyncGeometryDataOutlineKeyword(targetMaterial);
                     lilMaterialUtils.SyncGeometryDataTension(targetMaterial);
+                    lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(targetMaterial);
                 }
                 if(mainColor != null && baseColor    != null && !mainColor.hasMixedValue) baseColor.colorValue      = mainColor.colorValue;
                 if(mainTex   != null && baseMap      != null && !mainTex.hasMixedValue  ) baseMap.textureValue      = mainTex.textureValue;

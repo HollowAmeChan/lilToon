@@ -16,6 +16,7 @@ namespace lilToon
                 if(!lilMaterialUtils.CheckShaderIslilToon(material)) continue;
 
                 lilStartup.MigrateMaterial(material);
+                lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(material);
                 if(lilShaderUtils.IsMultiShaderName(material.shader.name))
                 {
                     lilMaterialUtils.SetupMultiMaterial(material);

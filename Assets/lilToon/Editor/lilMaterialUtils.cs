@@ -264,6 +264,7 @@ namespace lilToon
         {
             SyncGeometryDataOutlineKeyword(material);
             SyncGeometryDataTension(material);
+            SyncSurfaceSemanticMaskKeyword(material);
             int tpmode = 0;
             if(material.HasProperty("_TransparentMode")) tpmode = (int)material.GetFloat("_TransparentMode");
             bool useShadow = IsFeatureOnFloat(material, "_UseShadow");
@@ -431,6 +432,14 @@ namespace lilToon
                 material.GetTexture("_HoTesionCompressionNormal") != null ? 1 : 0));
         }
 
+        public static void SyncSurfaceSemanticMaskKeyword(Material material)
+        {
+            if (material == null) return;
+            bool enabled = material.shader != null && material.shader.keywordSpace.FindKeyword("_HO_SEMANTIC_MASK").isValid &&
+                           material.HasProperty("_HoSemanticMaskOn") && material.GetFloat("_HoSemanticMaskOn") > 0.5f;
+            SetShaderKeywords(material, "_HO_SEMANTIC_MASK", enabled);
+        }
+
         public static void SyncGeometryDataOutlineKeyword(Material material)
         {
             if (material == null) return;
@@ -565,6 +574,7 @@ namespace lilToon
             {
                 material.DisableKeyword(keyword);
             }
+            SyncSurfaceSemanticMaskKeyword(material);
         }
 
         private static void RemoveUnusedProperties(Material material)

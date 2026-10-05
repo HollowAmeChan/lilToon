@@ -238,6 +238,7 @@ namespace lilToon
                 if(propType == ShaderPropertyType.Range)   p.floatValue = copiedProperties[p.name].floatValue;
                 if(propType == ShaderPropertyType.Texture) p.textureValue = copiedProperties[p.name].textureValue;
             }
+            if (propertyBlock == PropertyBlock.HoSurface) SynchronizeHoSurfaceMaterials();
         }
 
         private void ResetProperties(PropertyBlock propertyBlock)
@@ -260,6 +261,7 @@ namespace lilToon
                 if(propType == ShaderPropertyType.Range)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
                 if(propType == ShaderPropertyType.Texture)   p.textureValue = null;
             }
+            if (propertyBlock == PropertyBlock.HoSurface) SynchronizeHoSurfaceMaterials();
             #endif
         }
 

@@ -114,6 +114,7 @@ public class lilToonPreset : ScriptableObject
         }
 
         if(preset.outlineMainTex) material.SetTexture("_OutlineTex", material.GetTexture("_MainTex"));
+        lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(material);
     }
 
     public static lilToonPreset[] LoadPresets()

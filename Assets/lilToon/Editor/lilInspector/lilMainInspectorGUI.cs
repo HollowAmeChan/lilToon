@@ -722,24 +722,7 @@ namespace lilToon
                     if(edSet.isShowHoSurface)
                     {
                         EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.HelpBox(
-                            "「脸 / 前发 / 眼睛…」这些标签由物体侧的 Ho-ObjectBuffer 组件决定；材质这里只给数值与权重。\n" +
-                            "权重 = 标量 × 遮罩贴图 R 通道：写了就以材质为准（细化 / 收窄），没写就回落到物体标签。",
-                            MessageType.None);
-                        LocalizedProperty(hoSurfaceThickness);
-                        LocalizedProperty(hoSurfaceCurvature);
-                        LocalizedProperty(hoSurfaceTransmittanceHint);
-                        LocalizedProperty(hoSurfaceMaterialClassId);
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(hoSemanticWeight);
-                        LocalizedProperty(hoSemanticMaskOn);
-                        if(hoSemanticMaskOn.floatValue > 0.5f && hoSemanticWeightTex.p != null)
-                        {
-                            m_MaterialEditor.TexturePropertySingleLine(hoSemanticWeightTexContent, hoSemanticWeightTex.p);
-                        }
-
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(hoCharacterCaptureOpacity);
+                        DrawNextHoSurface();
                         EditorGUILayout.EndVertical();
                     }
                 }

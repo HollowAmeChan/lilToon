@@ -783,6 +783,13 @@ namespace lilToon
                 lilShadowCasterBias,
                 multiLightIntensity,
                 multiLightCastShadowStrength,
+                hoSurfaceThickness,
+                hoSurfaceCurvature,
+                hoSurfaceTransmittanceHint,
+                hoSurfaceMaterialClassId,
+                hoSemanticWeight,
+                hoSemanticMaskOn,
+                hoSemanticWeightTex,
                 hoCharacterCaptureOpacity,
                 usePlanarReflection,
                 planarReflectionStrength,
@@ -1254,6 +1261,8 @@ namespace lilToon
                 var lilPorp = allProps[i];
                 if (dictonary.TryGetValue(lilPorp.propertyName, out var materialProperty))
                     lilPorp.p = materialProperty;
+                else if (lilPorp.blocks.Contains(PropertyBlock.HoSurface))
+                    lilPorp.p = null;
             }
 
 #if UNITY_2022_3_OR_NEWER

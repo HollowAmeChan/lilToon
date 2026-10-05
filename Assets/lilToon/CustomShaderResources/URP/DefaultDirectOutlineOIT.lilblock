@@ -406,7 +406,7 @@
             #include "Includes/lil_common.hlsl"
             *LIL_SUBSHADER_INSERT*
 
-            #include "Includes/lil_pass_surface_semantic.hlsl"
+            #include_with_pragmas "Includes/lil_pass_surface_semantic.hlsl"
 
             *LIL_SUBSHADER_INSERT_POST*
             ENDHLSL
