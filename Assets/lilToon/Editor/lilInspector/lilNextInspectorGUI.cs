@@ -281,8 +281,6 @@ namespace lilToon
                     LocalizedProperty(shiftBackfaceUV);
                 }, false);
                 DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
-                // Ho 的表面数值与语义权重：SB 的材质侧输入（标签归物体侧，见 DrawNextHoSurface 的注释）。
-                DrawNextSection("surface.ho", "Ho 表面语义", PropertyBlock.HoSurface, DrawNextHoSurface, false);
                 DrawNextSection("surface.lighting", GetLoc("sLightingSettings"), PropertyBlock.Lighting, DrawNextLightingControls, false);
                 if(isCustomShader) DrawNextSection("surface.custom", GetLoc("sCustomProperties"), PropertyBlock.Other, delegate { DrawCustomProperties(material); }, false, null, false);
             });
@@ -961,6 +959,8 @@ namespace lilToon
             DrawNextPanel(delegate
             {
                 DrawNextSection("pipeline.base", GetLoc("sBaseSetting"), PropertyBlock.Base, delegate { DrawNextBase(material); }, false);
+                // Keep the existing state key so moving the section preserves its foldout state.
+                DrawNextSection("surface.ho", "Ho 表面语义", PropertyBlock.HoSurface, DrawNextHoSurface, false);
                 DrawNextSection("pipeline.rendering", GetLoc("sRenderingSetting"), PropertyBlock.Rendering, delegate
                 {
                     if(lilEditorGUI.Button(GetLoc("sRenderingReset")))
