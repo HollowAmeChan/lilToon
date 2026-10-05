@@ -24,7 +24,6 @@ namespace lilToon
                     case 3  : rend = RenderingMode.Refraction; break;
                     case 4  : rend = RenderingMode.Fur; break;
                     case 5  : rend = RenderingMode.FurCutout; break;
-                    case 6  : rend = RenderingMode.Gem; break;
                     default : rend = RenderingMode.Opaque; break;
                 }
             }
@@ -215,21 +214,7 @@ namespace lilToon
                     material.SetInt("_FurZWrite", 0);
                     material.SetInt("_FurAlphaToMask", 0);
                     break;
-                case RenderingMode.Gem:
-                    if(ismulti)
-                    {
-                        material.shader = lilShaderManager.ltsmgem;
-                        material.SetOverrideTag("RenderType", "");
-                        material.renderQueue = -1;
-                    }
-                    else
-                    {
-                        material.shader = lilShaderManager.ltsgem;
-                    }
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_AlphaToMask", 0);
-                    break;
+
                 case RenderingMode.Hair:
                     material.shader = lilShaderManager.ltshair;
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
@@ -239,12 +224,6 @@ namespace lilToon
 
             }
             if(!ismulti) material.renderQueue = renderQueue;
-            if(rend == RenderingMode.Gem)
-            {
-                material.SetInt("_Cull", 0);
-                material.SetInt("_ZWrite", 0);
-            }
-            else
             {
                 material.SetInt("_ZWrite", 1);
             }
@@ -350,7 +329,6 @@ namespace lilToon
             bool isOutl = lilShaderUtils.IsOutlineShaderName(shaderName);
             bool isRefr = lilShaderUtils.IsRefractionShaderName(shaderName);
             bool isFur = lilShaderUtils.IsFurShaderName(shaderName);
-            bool isGem = lilShaderUtils.IsGemShaderName(shaderName);
 
             SetShaderKeywords(material, "UNITY_UI_ALPHACLIP",                   tpmode == 1);
             SetShaderKeywords(material, "UNITY_UI_CLIP_RECT",                   tpmode == 2 || tpmode == 4);
@@ -361,13 +339,6 @@ namespace lilToon
             material.SetShaderPassEnabled("DepthForwardOnly",                   material.GetFloat("_AsOverlay") == 0.0f);
             material.SetShaderPassEnabled("MotionVectors",                      material.GetFloat("_AsOverlay") == 0.0f);
 
-            if(isGem)
-            {
-                SetShaderKeywords(material, "_REQUIRE_UV2",                         false);
-                SetShaderKeywords(material, "AUTO_KEY_VALUE",                       false);
-                SetShaderKeywords(material, "_FADING_ON",                           false);
-            }
-            else
             {
                 SetShaderKeywords(material, "_REQUIRE_UV2",                         useShadow);
                 SetShaderKeywords(material, "AUTO_KEY_VALUE",                       useRimShade);
@@ -388,20 +359,6 @@ namespace lilToon
             SetShaderKeywords(material, "_SPECGLOSSMAP",                        useGlitter);
             SetShaderKeywords(material, "GEOM_TYPE_BRANCH_DETAIL",              useDissolve);
 
-            if(isGem)
-            {
-                SetShaderKeywords(material, "EFFECT_HUE_VARIATION",                 false);
-                SetShaderKeywords(material, "_COLORADDSUBDIFF_ON",                  false);
-                SetShaderKeywords(material, "_COLORCOLOR_ON",                       false);
-                SetShaderKeywords(material, "_SUNDISK_NONE",                        false);
-                SetShaderKeywords(material, "GEOM_TYPE_FROND",                      false);
-                SetShaderKeywords(material, "_COLOROVERLAY_ON",                     false);
-                SetShaderKeywords(material, "ANTI_FLICKER",                         false);
-                SetShaderKeywords(material, "_PARALLAXMAP",                         false);
-                SetShaderKeywords(material, "PIXELSNAP_ON",                         false);
-                SetShaderKeywords(material, "_GLOSSYREFLECTIONS_OFF",               false);
-            }
-            else
             {
                 SetShaderKeywords(material, "EFFECT_HUE_VARIATION",                 useMainTexHSVG || useMainGradation);
                 SetShaderKeywords(material, "_COLORADDSUBDIFF_ON",                  useMain2ndTex);
@@ -415,7 +372,7 @@ namespace lilToon
                 SetShaderKeywords(material, "_GLOSSYREFLECTIONS_OFF",               useReflection);
             }
 
-            if(isRefr || isFur || isGem)
+            if(isRefr || isFur)
             {
                 SetShaderKeywords(material, "_DETAIL_MULX2",                        false);
             }

@@ -473,7 +473,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_AODARK
 
             BEFORE_SSS
-            #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+            #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
                 OVERRIDE_SSS
             #endif
         #else

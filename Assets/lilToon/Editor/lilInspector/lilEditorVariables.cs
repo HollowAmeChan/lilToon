@@ -68,7 +68,6 @@ namespace lilToon
             public bool isShowGlitter                   = false;
             public bool isShowGlitterColorTex           = false;
             public bool isShowGlitterShapeTex           = false;
-            public bool isShowGem                       = false;
             public bool isShowDissolveMask              = false;
             public bool isShowDissolveNoiseMask         = false;
             public bool isShowStencil                   = false;
@@ -132,7 +131,6 @@ namespace lilToon
         protected static bool isBlur            = false;
         protected static bool isFur             = false;
         protected static bool isStWr            = false;
-        protected static bool isGem             = false;
         protected static bool isHair            = false;
         protected static bool isFakeShadow      = false;
         protected static bool isOnePass         = false;

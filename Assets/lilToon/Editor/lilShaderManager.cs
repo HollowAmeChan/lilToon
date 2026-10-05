@@ -63,7 +63,6 @@ namespace lilToon
         public static Shader ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
         public static Shader ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
 
-        public static Shader ltsgem      = FindShader("Hidden/lilToonGem");
 
         public static Shader ltshair     = FindShader("Hidden/lilToonHair");
 
@@ -83,7 +82,6 @@ namespace lilToon
         public static Shader ltsmo       = FindShader("Hidden/lilToonMultiOutline");
         public static Shader ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
         public static Shader ltsmfur     = FindShader("Hidden/lilToonMultiFur");
-        public static Shader ltsmgem     = FindShader("Hidden/lilToonMultiGem");
         public static Shader mtoon       = FindShader("VRM/MToon");
 
         public static void InitializeShaders()
@@ -125,7 +123,6 @@ namespace lilToon
             ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
             ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
 
-            ltsgem      = FindShader("Hidden/lilToonGem");
 
             ltshair     = FindShader("Hidden/lilToonHair");
 
@@ -145,7 +142,6 @@ namespace lilToon
             ltsmo       = FindShader("Hidden/lilToonMultiOutline");
             ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
             ltsmfur     = FindShader("Hidden/lilToonMultiFur");
-            ltsmgem     = FindShader("Hidden/lilToonMultiGem");
 
             mtoon       = FindShader("VRM/MToon");
         }

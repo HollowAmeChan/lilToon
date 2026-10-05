@@ -144,7 +144,6 @@ public class lilToonSetting : ScriptableObject
     public string preLightModeName = "";
     public string furLightModeName = "";
     public string furPreLightModeName = "";
-    public string gemPreLightModeName = "";
 
     public lilToonPreset presetSkin;
     public lilToonPreset presetFace;
@@ -184,7 +183,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.preLightModeName                   = lockedSetting.preLightModeName;
             shaderSetting.furLightModeName                   = lockedSetting.furLightModeName;
             shaderSetting.furPreLightModeName                = lockedSetting.furPreLightModeName;
-            shaderSetting.gemPreLightModeName                = lockedSetting.gemPreLightModeName;
         }
     }
 

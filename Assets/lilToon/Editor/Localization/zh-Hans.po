@@ -344,9 +344,6 @@ msgstr "[高负载] 毛发 (镂空)"
 msgid "sRenderingModeFurTwoPass"
 msgstr "[高负载] 毛发 (2 pass)"
 
-msgid "sRenderingModeGem"
-msgstr "[高负载] 宝石"
-
 msgid "sRenderingModeHair"
 msgstr "头发"
 
@@ -1051,12 +1048,6 @@ msgstr "角度限制"
 
 msgid "sColorRandomness"
 msgstr "随机颜色"
-
-msgid "sGemSetting"
-msgstr "宝石设置"
-
-msgid "sGem"
-msgstr "宝石"
 
 msgid "sChromaticAberration"
 msgstr "色差"
@@ -2188,9 +2179,6 @@ msgstr "透明背面"
 
 msgid "Fur Pre"
 msgstr "毛发 PrePass"
-
-msgid "Gem Pre"
-msgstr "宝石 PrePass"
 
 msgid "Select All"
 msgstr "全选"

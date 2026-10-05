@@ -9,7 +9,7 @@
 // Vector
 float4  _LightDirectionOverride;
 float4  _BackfaceColor;
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_GEM) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float4  _PreColor;
 #endif
 // Main
@@ -150,7 +150,7 @@ float4  _PlanarReflectionTint;
 #if defined(LIL_FEATURE_REFLECTION) || defined(LIL_REFRACTION_BLUR2)
     float4  _SmoothnessTex_ST;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM)
+#if defined(LIL_FEATURE_REFLECTION)
     float4  _ReflectionCubeColor;
     float4  _ReflectionCubeTex_HDR;
 #endif
@@ -223,7 +223,7 @@ float4  _PlanarReflectionTint;
 #endif
 
 // Outline
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
+#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float4  _OutlineColor;
     float4  _OutlineLitColor;
     float4  _OutlineTex_ST;
@@ -250,10 +250,6 @@ float4  _PlanarReflectionTint;
 #endif
 
 // Gem
-#if defined(LIL_GEM)
-    float4  _GemParticleColor;
-    float4  _GemEnvColor;
-#endif
 // Hair
 #if defined(LIL_HAIR)
     float4  _HairLobe1Color;
@@ -269,7 +265,7 @@ float4  _PlanarReflectionTint;
 // Float
 float   _AsUnlit;
 float   _Cutoff;
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_GEM) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float   _PreCutoff;
 #endif
 float   _SubpassCutoff;
@@ -392,7 +388,7 @@ float   _PlanarReflectionFadeEnd;
     float   _Anisotropy2ndShiftNoiseScale;
     float   _Anisotropy2ndSpecularStrength;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM) || defined(LIL_URP)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Reflectance;
     float   _SpecularNormalStrength;
     float   _SpecularBorder;
@@ -400,7 +396,7 @@ float   _PlanarReflectionFadeEnd;
     float   _ReflectionNormalStrength;
     float   _ReflectionCubeEnableLighting;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
     float   _Smoothness;
 #endif
 #if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
@@ -496,7 +492,7 @@ float   _PlanarReflectionFadeEnd;
 float   _lilShadowCasterBias;
 float   _lilOITEnabled;
 
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
+#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float   _OutlineLitScale;
     float   _OutlineLitOffset;
     float   _OutlineWidth;
@@ -523,14 +519,6 @@ float   _lilOITEnabled;
 #if defined(LIL_REFRACTION)
     float   _RefractionStrength;
     float   _RefractionFresnelPower;
-#endif
-#if defined(LIL_GEM)
-    float   _GemChromaticAberration;
-    float   _GemParticleLoop;
-    float   _RefractionStrength;
-    float   _RefractionFresnelPower;
-    float   _GemEnvContrast;
-    float   _GemVRParallaxStrength;
 #endif
 #if defined(LIL_HAIR)
     float   _HairLobeCount;
@@ -570,10 +558,10 @@ float   _lilOITEnabled;
 //------------------------------------------------------------------------------------------------------------------------------
 // Int
 uint    _Cull;
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
+#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     uint    _OutlineCull;
 #endif
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_GEM) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     uint    _PreOutType;
 #endif
 #if defined(LIL_FEATURE_MAIN2ND)
@@ -627,7 +615,7 @@ uint    _Cull;
 #if defined(LIL_FEATURE_DITHER)
     uint    _UseDither;
 #endif
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
+#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     uint    _OutlineVertexR2Width;
     uint    _OutlineVectorUVMode;
 #endif
@@ -702,7 +690,7 @@ lilBool _PlanarReflectionFlipY;
     lilBool _SpecularToon;
     lilBool _ReflectionApplyTransparency;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_GEM)
+#if defined(LIL_FEATURE_REFLECTION)
     lilBool _ReflectionCubeOverride;
 #endif
 #if defined(LIL_FEATURE_MATCAP)
@@ -754,7 +742,7 @@ lilBool _PlanarReflectionFlipY;
         lilBool _UsePOM;
     #endif
 #endif
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION) && !defined(LIL_GEM)
+#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     lilBool _OutlineLitApplyTex;
     lilBool _OutlineLitShadowReceive;
     lilBool _OutlineDeleteMesh;

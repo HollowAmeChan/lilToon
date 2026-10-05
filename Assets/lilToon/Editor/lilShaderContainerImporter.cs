@@ -265,7 +265,6 @@ namespace lilToon
             LightModeOverride(ref sb, "FORWARD_BACK",       GetStringField("preLightModeName"));
             LightModeOverride(ref sb, "FORWARD_FUR",        GetStringField("furLightModeName"));
             LightModeOverride(ref sb, "FORWARD_FUR_PRE",    GetStringField("furPreLightModeName"));
-            LightModeOverride(ref sb, "FORWARD_PRE",        GetStringField("gemPreLightModeName"));
 
             if(version.Major == 8)
             {

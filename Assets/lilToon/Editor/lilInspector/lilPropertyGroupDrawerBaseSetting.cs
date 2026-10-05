@@ -21,8 +21,8 @@ namespace lilToon
             if(material.parent != null)
             {
                 EditorGUI.BeginDisabledGroup(true);
-                if(isLite)  lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeListLite);
-                else        lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeList);
+                if(isLite)  lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeListLite);
+                else        lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList);
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.HelpBox(GetLoc("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."), MessageType.Info);
             }
@@ -30,7 +30,7 @@ namespace lilToon
             {
                 GUI.enabled = false;
                 EditorGUI.showMixedValue = true;
-                lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeList);
+                lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList);
                 EditorGUI.showMixedValue = false;
                 GUI.enabled = true;
             }
@@ -39,8 +39,8 @@ namespace lilToon
                 if(isShowRenderMode && !isMulti)
                 {
                     RenderingMode renderingMode;
-                    if(isLite)  renderingMode = (RenderingMode)lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeListLite);
-                    else        renderingMode = (RenderingMode)lilEditorGUI.Popup(GetLoc("sRenderingMode"), (int)renderingModeBuf, sRenderingModeList);
+                    if(isLite)  renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeListLite));
+                    else        renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList));
                     if(renderingModeBuf != renderingMode)
                     {
                         SetupMaterialWithRenderingMode(renderingMode, transparentModeBuf);
@@ -79,7 +79,7 @@ namespace lilToon
                 }
                 if(lilDirectoryManager.ExistsClusterCreatorKit())
                 {
-                    if(renderingModeBuf == RenderingMode.Refraction || renderingModeBuf == RenderingMode.RefractionBlur || renderingModeBuf == RenderingMode.Gem)
+                    if(renderingModeBuf == RenderingMode.Refraction || renderingModeBuf == RenderingMode.RefractionBlur)
                     {
                         EditorGUILayout.HelpBox(GetLoc("sHelpGrabPass"), MessageType.Warning);
                     }
@@ -117,7 +117,7 @@ namespace lilToon
                     {
                         LocalizedProperty(lilOITEnabled, GetLoc("Weighted OIT"));
                     }
-                    if(!isGem && !isFakeShadow)
+                    if(!isFakeShadow)
                     {
                         LocalizedProperty(cull);
                         EditorGUI.indentLevel++;
@@ -138,7 +138,7 @@ namespace lilToon
                     }
                     LocalizedProperty(invisible);
                     LocalizedProperty(zwrite);
-                    if(zwrite.floatValue != 1.0f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
+                    if(zwrite.floatValue != 1.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
                     {
                         zwrite.floatValue = 1.0f;
                     }

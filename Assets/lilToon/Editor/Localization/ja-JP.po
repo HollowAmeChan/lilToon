@@ -344,9 +344,6 @@ msgstr "[高負荷] ファー (カットアウト)"
 msgid "sRenderingModeFurTwoPass"
 msgstr "[高負荷] ファー (2パス)"
 
-msgid "sRenderingModeGem"
-msgstr "[高負荷] 宝石"
-
 msgid "sRenderingModeHair"
 msgstr "髪"
 
@@ -1051,12 +1048,6 @@ msgstr "角度制限"
 
 msgid "sColorRandomness"
 msgstr "ランダムカラー"
-
-msgid "sGemSetting"
-msgstr "宝石設定"
-
-msgid "sGem"
-msgstr "宝石"
 
 msgid "sChromaticAberration"
 msgstr "色収差"

@@ -900,7 +900,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Shadow
-#if defined(LIL_FEATURE_SHADOW) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_FEATURE_SHADOW) && !defined(LIL_LITE)
     void lilGetShading(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseShadow)
@@ -1223,7 +1223,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Backlight
-#if defined(LIL_FEATURE_BACKLIGHT) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_FEATURE_BACKLIGHT) && !defined(LIL_LITE)
     void lilBacklight(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseBacklight)
@@ -1266,7 +1266,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // SSS
-#if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
     void lilSSS(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseSSS)
@@ -2058,7 +2058,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE)
 void lilPlanarReflection(inout lilFragData fd)
 {
     if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
@@ -2128,7 +2128,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE) && !defined(LIL_GEM)
+    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else
@@ -2139,13 +2139,8 @@ void lilPlanarReflection(inout lilFragData fd)
 //------------------------------------------------------------------------------------------------------------------------------
 // Fog
 #if !defined(OVERRIDE_FOG)
-    #if defined(LIL_GEM) && !defined(LIL_GEM_PRE)
-        #define OVERRIDE_FOG \
-            LIL_APPLY_FOG_COLOR(fd.col, input, fogColor);
-    #else
         #define OVERRIDE_FOG \
             LIL_APPLY_FOG(fd.col, input);
-    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

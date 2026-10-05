@@ -90,7 +90,7 @@ namespace lilToon
             bool disabled = material != null && material.parent != null || isMultiVariants || !isShowRenderMode;
             using(new EditorGUI.DisabledScope(disabled))
             {
-                int current = Mathf.Clamp((int)renderingModeBuf, 0, Mathf.Max(0, modes.Length - 1));
+                int current = Mathf.Clamp(lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), 0, Mathf.Max(0, modes.Length - 1));
                 EditorGUI.BeginChangeCheck();
                 Rect modeRect = rect;
                 Rect transparentRect = new Rect(0f, 0f, 0f, 0f);
@@ -105,7 +105,7 @@ namespace lilToon
                 int next = EditorGUI.Popup(modeRect, current, modes);
                 if(EditorGUI.EndChangeCheck() && next != current && !isMulti)
                 {
-                    RenderingMode renderingMode = (RenderingMode)next;
+                    RenderingMode renderingMode = lilLanguageManager.GetRenderingMode(next);
                     SetupMaterialWithRenderingMode(renderingMode, transparentModeBuf);
                     if(renderingMode == RenderingMode.Cutout || renderingMode == RenderingMode.FurCutout) cutoff.floatValue = 0.5f;
                     if(renderingMode == RenderingMode.Transparent || renderingMode == RenderingMode.Fur || renderingMode == RenderingMode.FurTwoPass) cutoff.floatValue = 0.001f;
@@ -289,7 +289,7 @@ namespace lilToon
 
         private void DrawNextOutline(Material material)
         {
-            if(isMultiVariants || isRefr || isFur || isGem || isHair || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || isRefr || isFur || isHair || isFakeShadow || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
             if(isShowRenderMode && material.parent == null && !isMultiVariants)
             {
                 bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);
@@ -375,7 +375,7 @@ namespace lilToon
                 EditorGUILayout.LabelField(GetLoc("sMainColorSetting") + " 1", EditorStyles.boldLabel);
                 LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
                 if(isUseAlpha) lilEditorGUI.SetAlphaIsTransparencyGUI(mainTex);
-                if(!isGem && mainColorAdjustMask.p != null && mainTexHSVG.p != null && mainGradationStrength.p != null)
+                if(mainColorAdjustMask.p != null && mainTexHSVG.p != null && mainGradationStrength.p != null)
                 {
                     LocalizedPropertyTexture(maskBlendContent, mainColorAdjustMask);
                     EditorGUILayout.LabelField(GetLoc("HSV / Gamma"), boldLabel);
@@ -800,14 +800,14 @@ namespace lilToon
                 {
                     if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                 }, false);
-                if(!isGem) DrawNextSection("lighting.shadow", GetLoc("sDirectShadow"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
-                if(!isGem && !isLite) DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false, GetLoc("Uses the Shadow section's AO input"));
+                DrawNextSection("lighting.shadow", GetLoc("sDirectShadow"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
+                if(!isLite) DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false, GetLoc("Uses the Shadow section's AO input"));
                 DrawNextSection("lighting.emission", GetLoc("sEmissionSetting"), PropertyBlock.Emission, delegate { DrawNextEmission(material); }, false, null, true, useEmission);
-                if(!isGem) DrawNextSection("lighting.reflection", GetLoc("sReflectionsSetting"), PropertyBlock.Reflection, DrawNextReflection, false, null, true, useReflection);
-                if(!isGem) DrawNextSection("lighting.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, false, null, true, useRimShade);
+                DrawNextSection("lighting.reflection", GetLoc("sReflectionsSetting"), PropertyBlock.Reflection, DrawNextReflection, false, null, true, useReflection);
+                DrawNextSection("lighting.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, false, null, true, useRimShade);
                 DrawNextSection("lighting.rim", GetLoc("sRimLightSetting"), PropertyBlock.RimLight, DrawNextRim, false, null, true, useRim);
-                if(!isGem) DrawNextSection("lighting.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, false, null, true, useBacklight);
-                if(!isGem) DrawNextSection("lighting.sss", GetLoc("SSS"), PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
+                DrawNextSection("lighting.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, false, null, true, useBacklight);
+                DrawNextSection("lighting.sss", GetLoc("SSS"), PropertyBlock.SSS, DrawNextSSS, false, null, true, useSSS);
             });
         }
 
@@ -881,23 +881,7 @@ namespace lilToon
                 DrawTesionSettings();
                 DrawNextSection("effects.matcap", GetLoc("sMatCapSetting"), PropertyBlock.MatCaps, DrawNextMatCap, false);
                 DrawNextSection("effects.glitter", GetLoc("sGlitterSetting"), PropertyBlock.Glitter, DrawNextGlitter, false, null, true, useGlitter);
-                if(isGem) DrawNextSection("effects.gem", GetLoc("sGemSetting"), PropertyBlock.Gem, delegate
-                {
-                    LocalizedProperty(refractionStrength);
-                    LocalizedProperty(refractionFresnelPower);
-                    lilEditorGUI.DrawLine();
-                    LocalizedProperty(gemChromaticAberration);
-                    LocalizedProperty(gemEnvContrast);
-                    LocalizedProperty(gemEnvColor);
-                    LocalizedProperty(gemParticleLoop);
-                    LocalizedProperty(gemParticleColor);
-                    LocalizedProperty(gemVRParallaxStrength);
-                    LocalizedPropertyTexture(smoothnessContent, smoothnessTex, smoothness);
-                    LocalizedProperty(reflectance);
-                    LocalizedPropertyTexture(cubemapContent, reflectionCubeTex, reflectionCubeColor);
-                    LocalizedProperty(reflectionCubeOverride);
-                    LocalizedProperty(reflectionCubeEnableLighting);
-                }, false);
+
                 if(isHair) DrawNextSection("hair.main", GetLoc("sHairSetting"), PropertyBlock.Hair, delegate
                 {
                     LocalizedProperty(useHair, false);
@@ -1119,7 +1103,7 @@ namespace lilToon
             if(isMulti) LocalizedProperty(asOverlay);
             if(isUseAlpha) LocalizedProperty(cutoff);
             if(isTransparent && lilOITEnabled.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(lilOITEnabled, GetLoc("Weighted OIT"));
-            if(!isGem && !isFakeShadow)
+            if(!isFakeShadow)
             {
                 LocalizedProperty(cull);
                 EditorGUI.indentLevel++;
@@ -1137,7 +1121,7 @@ namespace lilToon
             }
             LocalizedProperty(invisible);
             LocalizedProperty(zwrite);
-            if(zwrite.floatValue != 1f && !isGem && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
+            if(zwrite.floatValue != 1f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
             {
                 zwrite.floatValue = 1f;
             }
@@ -1733,18 +1717,18 @@ namespace lilToon
                 TextureBakeGUI(material, 2);
                 TextureBakeGUI(material, 3);
                 lilEditorGUI.DrawLine();
-                if(!isGem && lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
-                if(!isGem && lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
-                if(!isGem && lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
-                if(!isGem && lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
+                if(lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
+                if(lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
+                if(lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
+                if(lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
                 if(lilEditorGUI.Button(GetLoc("sMatCap")))                     AutoBakeColoredMask(material, matcapBlendMask,      matcapColor,        "MatCapColor");
                 if(lilEditorGUI.Button(GetLoc("sMatCap2nd")))                  AutoBakeColoredMask(material, matcap2ndBlendMask,   matcap2ndColor,     "MatCap2ndColor");
                 if(lilEditorGUI.Button(GetLoc("sRimLight")))                   AutoBakeColoredMask(material, rimColorTex,          rimColor,           "RimColor");
-                if(((!isRefr && !isFur && !isGem && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
+                if(((!isRefr && !isFur && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
                 lilEditorGUI.DrawLine();
                 if(lilEditorGUI.Button(GetLoc("sConvertLite"))) CreateLiteMaterial(material);
                 if(mtoon != null && lilEditorGUI.Button(GetLoc("sConvertMToon"))) CreateMToonMaterial(material);
-                if(!isMulti && !isFur && !isRefr && !isGem && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
+                if(!isMulti && !isFur && !isRefr && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
             });
         }
 

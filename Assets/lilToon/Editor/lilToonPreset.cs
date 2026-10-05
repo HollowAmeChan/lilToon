@@ -159,7 +159,6 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveDistanceFade = true;
         private bool shouldSaveDissolve = true;
         private bool shouldSaveRefraction = true;
-        private bool shouldSaveGem = true;
         private bool shouldSaveHair = true;
         private bool shouldSaveOutline = true;
         private bool shouldSaveFur = true;
@@ -222,7 +221,6 @@ public class lilToonPreset : ScriptableObject
                 if(lilShaderUtils.IsFurShaderName(shaderName))            renderingMode = RenderingMode.Fur;
                 if(lilShaderUtils.IsFurCutoutShaderName(shaderName))      renderingMode = RenderingMode.FurCutout;
                 if(lilShaderUtils.IsFurTwoPassShaderName(shaderName))     renderingMode = RenderingMode.FurTwoPass;
-                if(lilShaderUtils.IsGemShaderName(shaderName))            renderingMode = RenderingMode.Gem;
             }
             else
             {
@@ -287,7 +285,6 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveMatCap2nd                 = EditorGUILayout.ToggleLeft(GetLoc("sMatCap2nd"), shouldSaveMatCap2nd);
                 shouldSaveRim                       = EditorGUILayout.ToggleLeft(GetLoc("sRimLight"), shouldSaveRim);
                 shouldSaveGlitter                   = EditorGUILayout.ToggleLeft(GetLoc("sGlitter"), shouldSaveGlitter);
-                shouldSaveGem                       = EditorGUILayout.ToggleLeft(GetLoc("sGem"), shouldSaveGem);
                 shouldSaveHair                      = EditorGUILayout.ToggleLeft(GetLoc("sHair"), shouldSaveHair);
                 EditorGUI.indentLevel--;
 
@@ -426,7 +423,6 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveDistanceFade && lilPropertyNameChecker.IsDistanceFadeProperty(propName) ||
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||
                     shouldSaveRefraction && lilPropertyNameChecker.IsRefractionProperty(propName) ||
-                    shouldSaveGem && lilPropertyNameChecker.IsGemProperty(propName) ||
                     shouldSaveHair && lilPropertyNameChecker.IsHairProperty(propName) ||
                     shouldSaveOutline && lilPropertyNameChecker.IsOutlineProperty(propName) ||
                     shouldSaveFur && lilPropertyNameChecker.IsFurProperty(propName) ||
@@ -507,7 +503,6 @@ public class lilToonPreset : ScriptableObject
             shouldSaveDistanceFade = val;
             shouldSaveDissolve = val;
             shouldSaveRefraction = val;
-            shouldSaveGem = val;
             shouldSaveHair = val;
             shouldSaveOutline = val;
             shouldSaveFur = val;

@@ -601,26 +601,6 @@ namespace lilToon
                     DrawMenuButton(GetLoc("sAnchorMainColor"), PropertyBlock.MainColor);
                     if(edSet.isShowMain)
                     {
-                        if(isGem)
-                        {
-                            //------------------------------------------------------------------------------------------------------------------------------
-                            // Main
-                            if(ShouldDrawBlock(PropertyBlock.MainColor1st))
-                            {
-                                EditorGUILayout.BeginVertical(boxOuter);
-                                EditorGUILayout.LabelField(sMainColorBranch, customToggleFont);
-                                DrawMenuButton(GetLoc("sAnchorMainColor1"), PropertyBlock.MainColor1st);
-                                //LocalizedProperty(useMainTex);
-                                //if(useMainTex.floatValue == 1)
-                                //{
-                                    EditorGUILayout.BeginVertical(boxInnerHalf);
-                                    LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
-                                    EditorGUILayout.EndVertical();
-                                //}
-                                EditorGUILayout.EndVertical();
-                            }
-                        }
-                        else
                         {
                             //------------------------------------------------------------------------------------------------------------------------------
                             // Main
@@ -743,21 +723,19 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Shadow
-                if(!isGem)
                 {
                     DrawShadowSettings();
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // AO
-                if(!isGem && !isLite)
+                if(!isLite)
                 {
                     DrawAOSettings();
                 }
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Rim Shade
-                if(!isGem)
                 {
                     if(ShouldDrawBlock(PropertyBlock.RimShade))
                     {
@@ -958,7 +936,7 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Backlight
-                if(!isGem && ShouldDrawBlock(PropertyBlock.Backlight))
+                if(ShouldDrawBlock(PropertyBlock.Backlight))
                 {
                     edSet.isShowBacklight = lilEditorGUI.Foldout(GetLoc("sBacklightSetting"), edSet.isShowBacklight);
                     DrawMenuButton(GetLoc("sAnchorBacklight"), PropertyBlock.Backlight);
@@ -991,7 +969,7 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // SSS
-                if(!isGem && ShouldDrawBlock(PropertyBlock.SSS))
+                if(ShouldDrawBlock(PropertyBlock.SSS))
                 {
                     edSet.isShowSSS = lilEditorGUI.Foldout(GetLoc("SSS"), edSet.isShowSSS);
                     DrawMenuButton(GetLoc("SSS"), PropertyBlock.SSS);
@@ -1060,7 +1038,7 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Reflection
-                if(!isGem && ShouldDrawBlock(PropertyBlock.Reflection))
+                if(ShouldDrawBlock(PropertyBlock.Reflection))
                 {
                     edSet.isShowReflections = lilEditorGUI.Foldout(GetLoc("sReflectionsSetting"), edSet.isShowReflections);
                     DrawMenuButton(GetLoc("sAnchorReflection"), PropertyBlock.Reflection);
@@ -1118,42 +1096,7 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Gem
-                if(isGem && ShouldDrawBlock(PropertyBlock.Gem))
-                {
-                    edSet.isShowGem = lilEditorGUI.Foldout(GetLoc("sGemSetting"), edSet.isShowGem);
-                    DrawMenuButton(GetLoc("sAnchorGem"), PropertyBlock.Gem);
-                    if(edSet.isShowGem)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sGem"), customToggleFont);
-                        DrawMenuButton(GetLoc("sAnchorGem"), PropertyBlock.Gem);
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        GUILayout.Label(GetLoc("sRefraction"), boldLabel);
-                        EditorGUI.indentLevel++;
-                        LocalizedProperty(refractionStrength);
-                        LocalizedProperty(refractionFresnelPower);
-                        EditorGUI.indentLevel--;
-                        lilEditorGUI.DrawLine();
-                        GUILayout.Label(GetLoc("sGem"), boldLabel);
-                        EditorGUI.indentLevel++;
-                        LocalizedProperty(gemChromaticAberration);
-                        LocalizedProperty(gemEnvContrast);
-                        LocalizedProperty(gemEnvColor);
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(gemParticleLoop);
-                        LocalizedProperty(gemParticleColor);
-                        EditorGUI.indentLevel--;
-                        lilEditorGUI.DrawLine();
-                        LocalizedProperty(gemVRParallaxStrength);
-                        LocalizedPropertyTexture(smoothnessContent, smoothnessTex, smoothness);
-                        LocalizedProperty(reflectance);
-                        LocalizedPropertyTexture(cubemapContent, reflectionCubeTex, reflectionCubeColor);
-                        LocalizedProperty(reflectionCubeOverride);
-                        LocalizedProperty(reflectionCubeEnableLighting);
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
-                    }
-                }
+
 
                 EditorGUILayout.Space();
 
@@ -1191,7 +1134,7 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Distance Fade
-                if(!isGem && ShouldDrawBlock(PropertyBlock.DistanceFade))
+                if(ShouldDrawBlock(PropertyBlock.DistanceFade))
                 {
                     edSet.isShowDistanceFade = lilEditorGUI.Foldout(GetLoc("sDistanceFade"), edSet.isShowDistanceFade);
                     DrawMenuButton(GetLoc("sAnchorDistanceFade"), PropertyBlock.DistanceFade);
@@ -1487,7 +1430,7 @@ namespace lilToon
                         TextureBakeGUI(material, 3);
                         if(lilEditorGUI.Button(GetLoc("sConvertLite"))) CreateLiteMaterial(material);
                         if(mtoon != null && lilEditorGUI.Button(GetLoc("sConvertMToon"))) CreateMToonMaterial(material);
-                        if(!isMulti && !isFur && !isRefr && !isGem && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
+                        if(!isMulti && !isFur && !isRefr && lilEditorGUI.Button(GetLoc("sConvertMulti"))) CreateMultiMaterial(material);
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
 
@@ -1495,14 +1438,14 @@ namespace lilToon
                         EditorGUILayout.BeginVertical(boxOuter);
                         EditorGUILayout.LabelField(GetLoc("sBake"), customToggleFont);
                         EditorGUILayout.BeginVertical(boxInnerHalf);
-                        if(!isGem && lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
-                        if(!isGem && lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
-                        if(!isGem && lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
-                        if(!isGem && lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
+                        if(lilEditorGUI.Button(GetLoc("sShadow1stColor")))   AutoBakeColoredMask(material, shadowColorTex,       shadowColor,        "Shadow1stColor");
+                        if(lilEditorGUI.Button(GetLoc("sShadow2ndColor")))   AutoBakeColoredMask(material, shadow2ndColorTex,    shadow2ndColor,     "Shadow2ndColor");
+                        if(lilEditorGUI.Button(GetLoc("sShadow3rdColor")))   AutoBakeColoredMask(material, shadow3rdColorTex,    shadow3rdColor,     "Shadow3rdColor");
+                        if(lilEditorGUI.Button(GetLoc("sReflection")))       AutoBakeColoredMask(material, reflectionColorTex,   reflectionColor,    "ReflectionColor");
                         if(lilEditorGUI.Button(GetLoc("sMatCap")))                     AutoBakeColoredMask(material, matcapBlendMask,      matcapColor,        "MatCapColor");
                         if(lilEditorGUI.Button(GetLoc("sMatCap2nd")))                  AutoBakeColoredMask(material, matcap2ndBlendMask,   matcap2ndColor,     "MatCap2ndColor");
                         if(lilEditorGUI.Button(GetLoc("sRimLight")))                   AutoBakeColoredMask(material, rimColorTex,          rimColor,           "RimColor");
-                        if(((!isRefr && !isFur && !isGem && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
+                        if(((!isRefr && !isFur && !isCustomShader) || (isCustomShader && isOutl)) && lilEditorGUI.EditorButton(GetLoc("sSettingTexOutlineColor"))) AutoBakeColoredMask(material, outlineColorMask, outlineColor, "OutlineColor");
                         EditorGUILayout.EndVertical();
                         EditorGUILayout.EndVertical();
                     }

@@ -48,7 +48,6 @@ namespace lilToon
         protected static Shader ltsfuro     { get { return lilShaderManager.ltsfuro   ; } set { lilShaderManager.ltsfuro    = value; } }
         protected static Shader ltsfuroc    { get { return lilShaderManager.ltsfuroc  ; } set { lilShaderManager.ltsfuroc   = value; } }
         protected static Shader ltsfurotwo  { get { return lilShaderManager.ltsfurotwo; } set { lilShaderManager.ltsfurotwo = value; } }
-        protected static Shader ltsgem      { get { return lilShaderManager.ltsgem    ; } set { lilShaderManager.ltsgem     = value; } }
         protected static Shader ltsfs       { get { return lilShaderManager.ltsfs     ; } set { lilShaderManager.ltsfs      = value; } }
         protected static Shader ltsover     { get { return lilShaderManager.ltsover   ; } set { lilShaderManager.ltsover    = value; } }
         protected static Shader ltsoover    { get { return lilShaderManager.ltsoover  ; } set { lilShaderManager.ltsoover   = value; } }
@@ -62,7 +61,6 @@ namespace lilToon
         protected static Shader ltsmo       { get { return lilShaderManager.ltsmo     ; } set { lilShaderManager.ltsmo      = value; } }
         protected static Shader ltsmref     { get { return lilShaderManager.ltsmref   ; } set { lilShaderManager.ltsmref    = value; } }
         protected static Shader ltsmfur     { get { return lilShaderManager.ltsmfur   ; } set { lilShaderManager.ltsmfur    = value; } }
-        protected static Shader ltsmgem     { get { return lilShaderManager.ltsmgem   ; } set { lilShaderManager.ltsmgem    = value; } }
         protected static Shader mtoon       { get { return lilShaderManager.mtoon     ; } set { lilShaderManager.mtoon      = value; } }
     }
 }

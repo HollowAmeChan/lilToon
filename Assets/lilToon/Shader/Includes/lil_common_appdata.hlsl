@@ -58,7 +58,7 @@
     #define LIL_APP_COLOR
 #endif
 
-#if defined(LIL_REQUIRE_APP_NORMAL) || defined(LIL_SHOULD_NORMAL) || defined(LIL_OUTLINE) || defined(LIL_LITE) || defined(LIL_GEM) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || ((defined(LIL_PASS_DEPTHONLY_INCLUDED) || defined(LIL_PASS_MOTIONVECTOR_INCLUDED)) && defined(LIL_FUR)) || defined(LIL_PASS_DEPTHNORMAL_INCLUDED) || defined(WRITE_NORMAL_BUFFER) || defined(LIL_PASS_SHADOWCASTER_INCLUDED)
+#if defined(LIL_REQUIRE_APP_NORMAL) || defined(LIL_SHOULD_NORMAL) || defined(LIL_OUTLINE) || defined(LIL_LITE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || ((defined(LIL_PASS_DEPTHONLY_INCLUDED) || defined(LIL_PASS_MOTIONVECTOR_INCLUDED)) && defined(LIL_FUR)) || defined(LIL_PASS_DEPTHNORMAL_INCLUDED) || defined(WRITE_NORMAL_BUFFER) || defined(LIL_PASS_SHADOWCASTER_INCLUDED)
     #define LIL_APP_NORMAL
 #endif
 
@@ -66,7 +66,7 @@
 // lil_common_vert.hlsl:229 输出 vertexNormalInput.tangentWS ——
 // 而那个值要求 appdata 里真的有 tangentOS。所以这里必须列上家族，
 // 否则 FORWARD pass 直接 invalid subscript 'tangentOS'。
-#if defined(LIL_REQUIRE_APP_TANGENT) || ((defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_GEM) || defined(LIL_HAIR)) && defined(LIL_SHOULD_TANGENT)) || defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || (!defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FUR)) || defined(LIL_BAKER)
+#if defined(LIL_REQUIRE_APP_TANGENT) || ((defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_SHOULD_TANGENT)) || defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED) || (!defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FUR)) || defined(LIL_BAKER)
     #define LIL_APP_TANGENT
 #endif
 

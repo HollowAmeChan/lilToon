@@ -32,7 +32,7 @@
 - 使用 BREAK_URP 的同一份 lilToonSetting 进行生成验证，已同步当前模板的本地产物。产物沿用仓库现有的 skip-worktree/本地生成管理方式，没有将额外生成差异混入本次提交。
 - 日志：Extensions `.codex-research/pruning-generation.log`。验证 harness 初次运行的类型命名反射错误已修正，最终成功；未把临时 harness 错误算作产品编译错误。
 
-### 3. Liquid 整族退出（随本提交）
+### 3. Liquid 整族退出：`228b9fa`
 
 - 已删除 Liquid 的基础模板、属性/URP 模板、3 个 HLSL 文件及对应 meta，清理公共输入/宏/分支、材质属性包装器、渲染模式、Shader 查找、GUI、预设保存项、材质管理器分类和 5 种语言的 95 条文案。
 - `RenderingMode.Hair` 仍为 9；`PropertyBlock` 以 `Reserved29` 保留原槽，Outline 仍为 30、Other 仍为 40。
@@ -44,9 +44,19 @@
 - 运行项目：Extensions `.codex-research/CharacterShadowValidation`；成功日志 `.codex-research/pruning-liquid.log`。实际全量重生成确认 Liquid 不会复生；保留的枚举编号也全部逐项核对通过。当前规模为 53 个 Shader / 677 个程序块。
 - 本提交只包含 lilToon 的 Liquid 退出与本记录，未 stage Extensions 中其他任务的张力改动。2026-10-05 12:40 自动化续作时额度已恢复到 0% 用量。
 
+### 4. Gem / MultiGem 整族退出（随本提交）
+
+- 删除两个基础模板、Gem 属性与 URP/Multi 模板、专用 Forward HLSL、两份生成 Shader 及 meta；移除 Gem 公共输入/分支、GUI、材质分类、预设保存项和 Gem Pre 设置。
+- 唯一归档材质 `PTP_M_WaterBottleOut.mat` 与 meta 移至 BREAK_URP 根目录 `RetiredShaderMaterials/lilToon/Gem/`，保留 GUID `ea49050d2ed70f144bab3e06adc88bad`；场景/Prefab/asset 扫描未找到引用。
+- `RenderingMode.Hair` 保持 9，PropertyBlock 的 Gem 槽用 Reserved27 占位，所有保留的枚举编号逐项核对不变。新旧 Inspector 的菜单都使用显式 index ↔ enum 映射，删除中间项后不会把 Hair 错选成其他模式。
+- Roslyn 编译 0 错误，预处理配平通过，Editor/模板/HLSL 无 Gem 功能引用；初次机械清理导致的一处 dangling else 在提交前修复并重新编译。
+- Unity 6000.3.15f1 / D3D11 / 实际 Forward+ 回归通过：两个 Gem Shader 不存在，全量重生成不能复生它们，Hair index 8 正确映射 enum 9；67 个默认 Pass、张力 Forward 和 GD 描边变体均同步编译通过，退出码 0、Shader 错误 0。日志：Extensions `.codex-research/pruning-gem.log`。
+- 当前生成产物为 51 个 Shader / 645 个程序块；实际视觉验收未覆盖所有用户场景。
+- UnityGLTF 扩展尚有旧 Gem/Fur/Lite 路由，其现有 missing-shader 分支会警告并保留契约；计划在四族退出后统一改为明确的退役处理，不在本提交中混入其他仓库改动。
+
 ## 下一步
 
-1. 整族退出 Gem / Fur / Lite，逐族提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
+1. 移除不用的手动转换入口，整族退出 Fur / Lite，逐步提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
 2. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
 3. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
 

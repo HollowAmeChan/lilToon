@@ -344,9 +344,6 @@ msgstr "[high-load] Fur (Cutout)"
 msgid "sRenderingModeFurTwoPass"
 msgstr "[high-load] Fur (2 pass)"
 
-msgid "sRenderingModeGem"
-msgstr "[high-load] Gem"
-
 msgid "sRenderingModeHair"
 msgstr "Hair"
 
@@ -1051,12 +1048,6 @@ msgstr "Angle limit"
 
 msgid "sColorRandomness"
 msgstr "Color Randomness"
-
-msgid "sGemSetting"
-msgstr "Gem"
-
-msgid "sGem"
-msgstr "Gem"
 
 msgid "sChromaticAberration"
 msgstr "Chromatic Aberration"
@@ -2188,9 +2179,6 @@ msgstr "Transparent backface"
 
 msgid "Fur Pre"
 msgstr "Fur Pre"
-
-msgid "Gem Pre"
-msgstr "Gem Pre"
 
 msgid "Select All"
 msgstr "Select All"

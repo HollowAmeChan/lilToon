@@ -128,10 +128,7 @@ namespace lilToon
             return shaderName.EndsWith("FurTwoPass");
         }
 
-        public static bool IsGemShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Gem");
-        }
+
 
         public static bool IsHairShaderName(string shaderName)
         {

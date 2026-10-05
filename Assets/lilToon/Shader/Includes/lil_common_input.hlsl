@@ -304,7 +304,7 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_REFRACTION_BLUR2)
         float4  _SmoothnessTex_ST;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION)
         float4  _ReflectionCubeColor;
         float4  _ReflectionCubeTex_HDR;
     #endif
@@ -365,12 +365,8 @@ CBUFFER_START(UnityPerMaterial)
         float4  _FurVector;
         float4  _FurRimColor;
     #endif
-    #if defined(LIL_REFRACTION) || defined(LIL_GEM)
+    #if defined(LIL_REFRACTION)
         float4  _RefractionColor;
-    #endif
-    #if defined(LIL_GEM)
-        float4  _GemParticleColor;
-        float4  _GemEnvColor;
     #endif
     float   _AsUnlit;
     float   _Cutoff;
@@ -486,7 +482,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _Anisotropy2ndShiftNoiseScale;
         float   _Anisotropy2ndSpecularStrength;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM) || defined(LIL_URP)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_URP)
         float   _Reflectance;
         float   _SpecularNormalStrength;
         float   _SpecularBorder;
@@ -494,7 +490,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _ReflectionNormalStrength;
         float   _ReflectionCubeEnableLighting;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
         float   _Smoothness;
     #endif
     #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_URP)
@@ -599,15 +595,9 @@ CBUFFER_START(UnityPerMaterial)
         float   _FurRimFresnelPower;
         float   _FurRimAntiLight;
     #endif
-    #if defined(LIL_REFRACTION) || defined(LIL_GEM)
+    #if defined(LIL_REFRACTION)
         float   _RefractionStrength;
         float   _RefractionFresnelPower;
-    #endif
-    #if defined(LIL_GEM)
-        float   _GemChromaticAberration;
-        float   _GemParticleLoop;
-        float   _GemEnvContrast;
-        float   _GemVRParallaxStrength;
     #endif
     #if defined(LIL_HAIR)
         float4  _HairLobe1Color;
@@ -758,7 +748,7 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _SpecularToon;
         lilBool _ReflectionApplyTransparency;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_GEM)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION)
         lilBool _ReflectionCubeOverride;
     #endif
     #if defined(LIL_MULTI_INPUTS_MATCAP)

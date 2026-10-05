@@ -344,9 +344,6 @@ msgstr "[과부하] 퍼 (컷아웃)"
 msgid "sRenderingModeFurTwoPass"
 msgstr "[과부하] 퍼 (2 pass)"
 
-msgid "sRenderingModeGem"
-msgstr "[과부하] 보석"
-
 msgid "sRenderingModeHair"
 msgstr "머리카락"
 
@@ -1051,12 +1048,6 @@ msgstr "각도 제한"
 
 msgid "sColorRandomness"
 msgstr "랜덤 컬러"
-
-msgid "sGemSetting"
-msgstr "보석 설정"
-
-msgid "sGem"
-msgstr "보석"
 
 msgid "sChromaticAberration"
 msgstr "색수차"

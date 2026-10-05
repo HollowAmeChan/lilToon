@@ -20,8 +20,7 @@ namespace lilToon
         Fur,
         FurCutout,
         FurTwoPass,
-        Gem,
-        Hair
+        Hair = 9
     }
 
     public enum TransparentMode
@@ -66,7 +65,7 @@ namespace lilToon
         Glitter,
         Backlight,
         SSS,
-        Gem,
+        Reserved27, // Removed family slot; preserve serialized PropertyBlock IDs.
         Hair,
         Reserved29, // Removed family slot; preserve serialized PropertyBlock IDs.
         Outline,

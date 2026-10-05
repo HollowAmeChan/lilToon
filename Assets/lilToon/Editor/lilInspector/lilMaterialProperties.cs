@@ -291,8 +291,8 @@ namespace lilToon
         private readonly lilMaterialProperty sssThicknessInvert         = new lilMaterialProperty("_SSSThicknessInvert", PropertyBlock.SSS);
 
         private readonly lilMaterialProperty useReflection                  = new lilMaterialProperty("_UseReflection", PropertyBlock.Reflection);
-        private readonly lilMaterialProperty metallic                       = new lilMaterialProperty("_Metallic", PropertyBlock.Reflection, PropertyBlock.Gem);
-        private readonly lilMaterialProperty metallicGlossMap               = new lilMaterialProperty("_MetallicGlossMap", true, PropertyBlock.Reflection, PropertyBlock.Gem);
+        private readonly lilMaterialProperty metallic                       = new lilMaterialProperty("_Metallic", PropertyBlock.Reflection);
+        private readonly lilMaterialProperty metallicGlossMap               = new lilMaterialProperty("_MetallicGlossMap", true, PropertyBlock.Reflection);
         private readonly lilMaterialProperty smoothness                     = new lilMaterialProperty("_Smoothness", PropertyBlock.Reflection);
         private readonly lilMaterialProperty smoothnessTex                  = new lilMaterialProperty("_SmoothnessTex", true, PropertyBlock.Reflection);
         private readonly lilMaterialProperty reflectance                    = new lilMaterialProperty("_Reflectance", PropertyBlock.Reflection);
@@ -399,12 +399,6 @@ namespace lilToon
         private readonly lilMaterialProperty glitterVRParallaxStrength  = new lilMaterialProperty("_GlitterVRParallaxStrength", PropertyBlock.Glitter);
         private readonly lilMaterialProperty glitterNormalStrength      = new lilMaterialProperty("_GlitterNormalStrength", PropertyBlock.Glitter);
 
-        private readonly lilMaterialProperty gemChromaticAberration = new lilMaterialProperty("_GemChromaticAberration", PropertyBlock.Gem);
-        private readonly lilMaterialProperty gemEnvContrast         = new lilMaterialProperty("_GemEnvContrast", PropertyBlock.Gem);
-        private readonly lilMaterialProperty gemEnvColor            = new lilMaterialProperty("_GemEnvColor", PropertyBlock.Gem);
-        private readonly lilMaterialProperty gemParticleLoop        = new lilMaterialProperty("_GemParticleLoop", PropertyBlock.Gem);
-        private readonly lilMaterialProperty gemParticleColor       = new lilMaterialProperty("_GemParticleColor", PropertyBlock.Gem);
-        private readonly lilMaterialProperty gemVRParallaxStrength  = new lilMaterialProperty("_GemVRParallaxStrength", PropertyBlock.Gem);
 
         private readonly lilMaterialProperty useHair                = new lilMaterialProperty("_UseHair", PropertyBlock.Hair);
         private readonly lilMaterialProperty hairLobeCount          = new lilMaterialProperty("_HairLobeCount", PropertyBlock.Hair);
@@ -491,8 +485,8 @@ namespace lilToon
         private readonly lilMaterialProperty dissolveParams                 = new lilMaterialProperty("_DissolveParams", PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolvePos                    = new lilMaterialProperty("_DissolvePos", PropertyBlock.Dissolve);
 
-        private readonly lilMaterialProperty refractionStrength         = new lilMaterialProperty("_RefractionStrength", PropertyBlock.Refraction, PropertyBlock.Gem);
-        private readonly lilMaterialProperty refractionFresnelPower     = new lilMaterialProperty("_RefractionFresnelPower", PropertyBlock.Refraction, PropertyBlock.Gem);
+        private readonly lilMaterialProperty refractionStrength         = new lilMaterialProperty("_RefractionStrength", PropertyBlock.Refraction);
+        private readonly lilMaterialProperty refractionFresnelPower     = new lilMaterialProperty("_RefractionFresnelPower", PropertyBlock.Refraction);
         private readonly lilMaterialProperty refractionColorFromMain    = new lilMaterialProperty("_RefractionColorFromMain", PropertyBlock.Refraction);
         private readonly lilMaterialProperty refractionColor            = new lilMaterialProperty("_RefractionColor", PropertyBlock.Refraction);
 
@@ -1008,12 +1002,6 @@ namespace lilToon
                 glitterVRParallaxStrength,
                 glitterNormalStrength,
 
-                gemChromaticAberration,
-                gemEnvContrast,
-                gemEnvColor,
-                gemParticleLoop,
-                gemParticleColor,
-                gemVRParallaxStrength,
 
                 useHair,
                 hairLobeCount,

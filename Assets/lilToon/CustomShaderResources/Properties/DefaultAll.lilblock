@@ -610,12 +610,6 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         //Gem
-                        _GemChromaticAberration     ("sChromaticAberration", Range(0, 1)) = 0.02
-                        _GemEnvContrast             ("sContrast", Float) = 2.0
-        [lilHDR]        _GemEnvColor                ("sEnvironmentColor", Color) = (1,1,1,1)
-                        _GemParticleLoop            ("sParticleLoop", Float) = 8
-        [lilHDR]        _GemParticleColor           ("sColor", Color) = (4,4,4,1)
-                        _GemVRParallaxStrength      ("sVRParallaxStrength", Range(0, 1)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
         // Fur

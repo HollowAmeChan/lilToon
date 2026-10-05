@@ -344,9 +344,6 @@ msgstr "[高負荷] 毛髮 (鏤空)"
 msgid "sRenderingModeFurTwoPass"
 msgstr "[高負荷] 毛髮 (2 pass)"
 
-msgid "sRenderingModeGem"
-msgstr "[高負荷] 寶石"
-
 msgid "sRenderingModeHair"
 msgstr "頭髮"
 
@@ -1051,12 +1048,6 @@ msgstr "角度限制"
 
 msgid "sColorRandomness"
 msgstr "隨機顏色"
-
-msgid "sGemSetting"
-msgstr "寶石設定"
-
-msgid "sGem"
-msgstr "寶石"
 
 msgid "sChromaticAberration"
 msgstr "色差"

@@ -284,14 +284,7 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsGemProperty(string name)
-        {
-            bool res = false;
-            res = res || name.Contains("_Gem");
-            res = res || IsReflectionProperty(name);
-            res = res || IsRefractionProperty(name);
-            return res;
-        }
+
 
         public static bool IsHairProperty(string name)
         {
