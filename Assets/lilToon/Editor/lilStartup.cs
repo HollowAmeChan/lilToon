@@ -82,11 +82,6 @@ namespace lilToon
                 bool shouldRewrite = false;
                 string projectRP = lilRenderPipelineReader.GetRP().ToString();
                 string projectAPI = SystemInfo.graphicsDeviceType.ToString();
-                var swRP = new StreamWriter(currentRPPath,false);
-                swRP.WriteLine(projectRP);
-                swRP.WriteLine(projectAPI);
-                swRP.Close();
-
                 if(shaderRP != projectRP)
                 {
                     Debug.Log("[lilToon] Switch " + shaderRP + " to " + projectRP);
@@ -101,6 +96,11 @@ namespace lilToon
 
                 if(shouldRewrite)
                 {
+                    using(var swRP = new StreamWriter(currentRPPath,false))
+                    {
+                        swRP.WriteLine(projectRP);
+                        swRP.WriteLine(projectAPI);
+                    }
                     if(shaderSetting.isDebugOptimize)
                     {
                         lilToonSetting.ApplyShaderSettingOptimized();

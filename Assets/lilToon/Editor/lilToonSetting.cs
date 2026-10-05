@@ -200,9 +200,14 @@ public class lilToonSetting : ScriptableObject
     public static void SaveShaderSetting(lilToonSetting shaderSetting)
     {
         string shaderSettingPath = lilDirectoryManager.GetShaderSettingPath();
-        var sw = new StreamWriter(shaderSettingPath, false);
-        sw.Write(JsonUtility.ToJson(shaderSetting, true));
-        sw.Close();
+        WriteFileIfChanged(shaderSettingPath, JsonUtility.ToJson(shaderSetting, true));
+    }
+
+    private static bool WriteFileIfChanged(string path, string content)
+    {
+        if(File.Exists(path) && string.Equals(File.ReadAllText(path), content, StringComparison.Ordinal)) return false;
+        File.WriteAllText(path, content);
+        return true;
     }
 
     internal static void LoadShaderSetting(ref lilToonSetting shaderSetting)
@@ -463,10 +468,15 @@ public class lilToonSetting : ScriptableObject
 
         string shaderFolderPath = lilDirectoryManager.GetShaderFolderPath();
         string baseShaderFolderPath = lilDirectoryManager.GetBaseShaderFolderPath();
+        var changedShaderPaths = new List<string>();
         foreach(var baseShaderPath in lilDirectoryManager.FindAssetsPath("", new[] {baseShaderFolderPath}).Where(p => p.Contains(".lilinternal")))
         {
             string shaderPath = shaderFolderPath + Path.AltDirectorySeparatorChar + Path.GetFileNameWithoutExtension(baseShaderPath) + ".shader";
-            File.WriteAllText(shaderPath, lilShaderContainer.UnpackContainer(baseShaderPath));
+            if(WriteFileIfChanged(shaderPath, lilShaderContainer.UnpackContainer(baseShaderPath))) changedShaderPaths.Add(shaderPath);
+        }
+        foreach(var shaderPath in changedShaderPaths)
+        {
+            AssetDatabase.ImportAsset(shaderPath);
         }
         foreach(var folder in lilDirectoryManager.FindAssetsPath("t:shader").Where(p => p.Contains(".lilcontainer")).Select(p => Path.GetDirectoryName(p)).Distinct())
         {
@@ -498,12 +508,15 @@ public class lilToonSetting : ScriptableObject
         {
             string shaderPath = AssetDatabase.GetAssetPath(shader);
             if(string.IsNullOrEmpty(shaderPath)) continue;
-            if(!shaderPathes.Contains(shaderPath)) shaderPathes.Add(shaderPath);
-            if(shaderPath.Contains(".lilcontainer")) continue;
+            if(shaderPath.Contains(".lilcontainer"))
+            {
+                if(!shaderPathes.Contains(shaderPath)) shaderPathes.Add(shaderPath);
+                continue;
+            }
 
             string baseShaderPath = baseShaderFolderPath + Path.AltDirectorySeparatorChar + Path.GetFileNameWithoutExtension(shaderPath) + ".lilinternal";
             if(!File.Exists(baseShaderPath)) continue;
-            File.WriteAllText(shaderPath, lilShaderContainer.UnpackContainer(baseShaderPath, null, doOptimize));
+            if(WriteFileIfChanged(shaderPath, lilShaderContainer.UnpackContainer(baseShaderPath, null, doOptimize)) && !shaderPathes.Contains(shaderPath)) shaderPathes.Add(shaderPath);
         }
         foreach(var shaderPath in shaderPathes)
         {
