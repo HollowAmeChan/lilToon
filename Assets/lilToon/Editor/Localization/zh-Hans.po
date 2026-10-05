@@ -2195,6 +2195,12 @@ msgstr "MPB参数覆写情况"
 msgid "Rescan"
 msgstr "重新扫描"
 
+msgid "Scan"
+msgstr "扫描"
+
+msgid "Click Scan to inspect MaterialPropertyBlock overrides in loaded scenes."
+msgstr "点击“扫描”查看已加载场景中的 MPB 参数覆写。"
+
 msgid "Select"
 msgstr "选中"
 

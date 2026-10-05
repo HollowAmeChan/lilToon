@@ -97,6 +97,13 @@
 - Runtime 对照实际工程 DLL 编译 0 错误；Newtonsoft netstandard 2.0/2.1 身份兼容警告已记录。加载编译结果进行反射检查，四个退役类型均无选择，Standard/refraction/Fur 保持原选择。未完成完整 glTF 资产重新导入的视觉验收。
 - Fur/FurOnly 路由暂保留，等待 Alue/TAIL 资产的处理选择。
 
+### 11. MPB 信息区改为显式扫描
+
+- 新版 Inspector 不再在首次显示信息区或切换材质时扫描所有 Renderer；点击“扫描/重新扫描”才查找覆写。未扫描状态显示操作提示，不错误地报告没有覆写。
+- 扫描结果按 Inspector 实例保存；材质或 Shader 变化时清掉旧结果，避免多个面板互相覆盖快照或显示旧 Shader 的属性。
+- Roslyn 编译 0 错误，原有 TextureSearch 两条警告不变。独立 Unity 6000.3.15f1 / D3D11 执行 `PruningValidation.RunMpbScan`：首帧准备无扫描、显式扫描识别非激活 Renderer/参数、重复准备复用快照、重新扫描刷新值、多个 Inspector 独立、材质/Shader/空目标切换清空、空结果与未扫描区分，均 PASS；调用 Exit(0) 后进程已结束。日志：Extensions `.codex-research/pruning-mpb-scan.log`。
+- 此步仅改变诊断信息的扫描触发，不改材质效果或 Shader。未测量用户大场景 GUI 的实际毫秒数，程序块数量仍为 367。
+
 ## 本轮结果与未完成项
 
 - 已逐步提交调查、缓存、增量生成、Liquid、Gem、手动转换、Lite、无用 Pass 和 GD 关键字范围。当前本地产物 **54 → 36 个 Shader，701 → 367 个程序块**，少 334 个程序块（约 47.6%），不是实测时间缩减比例。

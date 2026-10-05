@@ -1706,9 +1706,10 @@ namespace lilToon
             public string[] materialValues = new string[0];
         }
 
-        private static int mpbOverrideScanMaterialId = 0;
-        private static bool mpbOverrideScanDone = false;
-        private static MpbOverrideInfo[] mpbOverrideInfos = new MpbOverrideInfo[0];
+        private Material mpbOverrideScanMaterial;
+        private Shader mpbOverrideScanShader;
+        private bool mpbOverrideScanDone = false;
+        private MpbOverrideInfo[] mpbOverrideInfos = new MpbOverrideInfo[0];
         private static Func<MaterialPropertyBlock, int, bool> mpbHasProperty;
         private static Func<MaterialPropertyBlock, int, bool> mpbHasInteger;
         private static Func<MaterialPropertyBlock, int, int> mpbGetInteger;
@@ -1751,18 +1752,18 @@ namespace lilToon
         {
             if(material == null) return;
 
-            int materialId = material.GetInstanceID();
-            if(!mpbOverrideScanDone || mpbOverrideScanMaterialId != materialId)
-            {
-                mpbOverrideScanMaterialId = materialId;
-                mpbOverrideScanDone = true;
-                RescanMaterialPropertyBlockOverrides(material);
-            }
+            PrepareMaterialPropertyBlockScan(material);
 
             using(new EditorGUILayout.HorizontalScope())
             {
-                if(GUILayout.Button(GetLoc("Rescan"), GUILayout.Width(90f))) RescanMaterialPropertyBlockOverrides(material);
+                if(GUILayout.Button(GetLoc(mpbOverrideScanDone ? "Rescan" : "Scan"), GUILayout.Width(90f))) RescanMaterialPropertyBlockOverrides(material);
                 GUILayout.FlexibleSpace();
+            }
+
+            if(!mpbOverrideScanDone)
+            {
+                EditorGUILayout.HelpBox(GetLoc("Click Scan to inspect MaterialPropertyBlock overrides in loaded scenes."), MessageType.Info);
+                return;
             }
 
             if(!CanListMpbProperties)
@@ -1819,8 +1820,20 @@ namespace lilToon
             }
         }
 
-        private static void RescanMaterialPropertyBlockOverrides(Material material)
+        private void PrepareMaterialPropertyBlockScan(Material material)
         {
+            Shader shader = material == null ? null : material.shader;
+            if(mpbOverrideScanMaterial == material && mpbOverrideScanShader == shader) return;
+            mpbOverrideScanMaterial = material;
+            mpbOverrideScanShader = shader;
+            mpbOverrideScanDone = false;
+            mpbOverrideInfos = new MpbOverrideInfo[0];
+        }
+
+        private void RescanMaterialPropertyBlockOverrides(Material material)
+        {
+            PrepareMaterialPropertyBlockScan(material);
+            mpbOverrideScanDone = false;
             mpbOverrideInfos = new MpbOverrideInfo[0];
             if(material == null) return;
             Shader shader = material.shader;
@@ -1867,6 +1880,7 @@ namespace lilToon
                 System.Array.Resize(ref mpbOverrideInfos, mpbOverrideInfos.Length + 1);
                 mpbOverrideInfos[mpbOverrideInfos.Length - 1] = info;
             }
+            mpbOverrideScanDone = true;
         }
 
         private static void AddMpbOverride(MpbOverrideInfo info, string propertyName, string blockValue, string materialValue)

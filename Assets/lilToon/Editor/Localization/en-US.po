@@ -2195,6 +2195,12 @@ msgstr "MPB Parameter Overrides"
 msgid "Rescan"
 msgstr "Rescan"
 
+msgid "Scan"
+msgstr "Scan"
+
+msgid "Click Scan to inspect MaterialPropertyBlock overrides in loaded scenes."
+msgstr "Click Scan to inspect MaterialPropertyBlock overrides in loaded scenes."
+
 msgid "Select"
 msgstr "Select"
 
