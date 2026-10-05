@@ -286,6 +286,8 @@ namespace lilToon
 
 
 
+        public static bool IsTesionProperty(string name) => name.StartsWith("_HoTesion", System.StringComparison.Ordinal) && name != "_HoTesionMaps";
+
         public static bool IsHairProperty(string name)
         {
             bool res = false;

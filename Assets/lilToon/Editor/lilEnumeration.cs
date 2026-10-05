@@ -83,7 +83,8 @@ namespace lilToon
         /// </summary>
         HoSurface,
         PlanarReflection,
-        Other
+        Other,
+        Tesion // Append only: existing serialized PropertyBlock IDs stay unchanged.
     }
 
     public enum lilRenderPipeline

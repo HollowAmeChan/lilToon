@@ -264,6 +264,7 @@ namespace lilToon
 
         private void OpenNextHelpPage(object title)
         {
+            if (Equals(title, "Tesion")) { OpenTesionHelp(); return; }
             Application.OpenURL(GetLoc("sManualURL") + title);
         }
 

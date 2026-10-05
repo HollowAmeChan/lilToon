@@ -155,6 +155,16 @@ CustomEditor "lilToon.lilToonInspector"
 
 ### 3.3 额外属性 Additional
 
+Tesion 现在使用与相邻组分相同的 `DrawNextSection`：24px 灰色标题栏、左侧折叠 / 开关、右侧菜单，默认关闭且收起。固定名称 **Tesion**，SessionState key `effects.tesion`，独立 `PropertyBlock.Tesion`（追加枚举，不改变旧块编号）。
+
+展开后有总体强度、拉伸 / 挤压两组 BaseColor + NormalMap、颜色倍率 / 法线强度、响应起点 / 全响应 / 混合强度。BaseColor 行的折叠箭头展开该路 UV0 tiling / offset，NormalMap 共用这套变换；没有显示一套 shader 不消费的独立 normal UV。
+
+15 个材质属性接入 AllProperties / SetProperties，4 个贴图加入搜索与贴图中控。右键复制 / 粘贴 / 带贴图粘贴 / 重置接入标准分组；带贴图粘贴包含 UV，重置恢复 UV，并即时同步本地关键字与贴图存在标志。预设保存窗口新增 Tesion 勾选，排除派生 `_HoTesionMaps`，应用预设后同步实际贴图状态。旧版 UI 在高级区使用原有 Foldout + boxOuter / boxInnerHalf 样式。
+
+选择不支持 `_HO_GD_TENSION` 的 shader，或 Fur / Hair / FakeShadow 家族时隐藏该入口。模块右键“说明”显示本地使用说明，而非跳到不存在的官方 Tesion 锚点。
+
+实现：`Editor/lilInspector/lilTesionInspector.cs`；属性注册 `lilMaterialProperties.cs`；上下文操作 `lilGUIUtility.cs`；预设 `lilToonPreset.cs`。
+
 | 顺序 | 折叠栏（中文 / 英文键） | key | PropertyBlock | 顶部开关属性 | 默认展开 | 额外可见条件 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | MatCap / `sMatCapSetting` | `effects.matcap` | `MatCaps` | 无（内部 `_UseMatCap` / `_UseMatCap2nd`） | ❌ | — |

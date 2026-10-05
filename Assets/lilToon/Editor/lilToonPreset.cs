@@ -114,6 +114,7 @@ public class lilToonPreset : ScriptableObject
         }
 
         if(preset.outlineMainTex) material.SetTexture("_OutlineTex", material.GetTexture("_MainTex"));
+        lilMaterialUtils.SyncGeometryDataTension(material);
         lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(material);
     }
 
@@ -156,6 +157,7 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveMatCap2nd = true;
         private bool shouldSaveRim = true;
         private bool shouldSaveGlitter = true;
+        private bool shouldSaveTesion = true;
         private bool shouldSaveParallax = true;
         private bool shouldSaveDistanceFade = true;
         private bool shouldSaveDissolve = true;
@@ -286,6 +288,7 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveMatCap2nd                 = EditorGUILayout.ToggleLeft(GetLoc("sMatCap2nd"), shouldSaveMatCap2nd);
                 shouldSaveRim                       = EditorGUILayout.ToggleLeft(GetLoc("sRimLight"), shouldSaveRim);
                 shouldSaveGlitter                   = EditorGUILayout.ToggleLeft(GetLoc("sGlitter"), shouldSaveGlitter);
+                shouldSaveTesion = EditorGUILayout.ToggleLeft("Tesion", shouldSaveTesion);
                 shouldSaveHair                      = EditorGUILayout.ToggleLeft(GetLoc("sHair"), shouldSaveHair);
                 EditorGUI.indentLevel--;
 
@@ -420,6 +423,7 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveMatCap2nd && lilPropertyNameChecker.IsMatCap2ndProperty(propName) ||
                     shouldSaveRim && lilPropertyNameChecker.IsRimProperty(propName) ||
                     shouldSaveGlitter && lilPropertyNameChecker.IsGlitterProperty(propName) ||
+                    shouldSaveTesion && lilPropertyNameChecker.IsTesionProperty(propName) ||
                     shouldSaveParallax && lilPropertyNameChecker.IsParallaxProperty(propName) ||
                     shouldSaveDistanceFade && lilPropertyNameChecker.IsDistanceFadeProperty(propName) ||
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||

@@ -1238,6 +1238,9 @@ namespace lilToon
                 triMask,
                 matcapMul,
                 fakeShadowVector,
+                tesionEnabled, tesionStrength, tesionMaps,
+                tesionStretchBaseColor, tesionStretchColor, tesionStretchNormal, tesionStretchNormalScale, tesionStretchRange, tesionStretchStrength,
+                tesionCompressionBaseColor, tesionCompressionColor, tesionCompressionNormal, tesionCompressionNormalScale, tesionCompressionRange, tesionCompressionStrength,
             };
         }
 
@@ -1261,7 +1264,7 @@ namespace lilToon
                 var lilPorp = allProps[i];
                 if (dictonary.TryGetValue(lilPorp.propertyName, out var materialProperty))
                     lilPorp.p = materialProperty;
-                else if (lilPorp.blocks.Contains(PropertyBlock.HoSurface))
+                else if (lilPorp.blocks.Contains(PropertyBlock.Tesion) || lilPorp.blocks.Contains(PropertyBlock.HoSurface))
                     lilPorp.p = null;
             }
 

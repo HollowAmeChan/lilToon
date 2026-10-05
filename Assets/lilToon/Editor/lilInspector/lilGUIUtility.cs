@@ -26,7 +26,11 @@ namespace lilToon
         public static void DrawLine() { lilEditorGUI.DrawLine(); }
 
         private static void ToggleGUI(string label, ref bool value) { value = EditorGUILayout.ToggleLeft(label, value); }
-        private void OpenHelpPage(object helpAnchor) { Application.OpenURL(GetLoc("sManualURL") + helpAnchor); }
+        private void OpenHelpPage(object helpAnchor)
+        {
+            if (Equals(helpAnchor, "Tesion")) { OpenTesionHelp(); return; }
+            Application.OpenURL(GetLoc("sManualURL") + helpAnchor);
+        }
 
         private static void DrawWebPages()
         {
@@ -223,6 +227,7 @@ namespace lilToon
 
         private void PasteProperties(PropertyBlock propertyBlock, bool shouldCopyTex)
         {
+            if (propertyBlock == PropertyBlock.Tesion) m_MaterialEditor.RegisterPropertyChangeUndo("Paste Tesion");
             foreach(var p in AllProperties().Where(p =>
                 p.p != null &&
                 p.blocks.Contains(propertyBlock) &&
@@ -236,13 +241,19 @@ namespace lilToon
                 if(propType == ShaderPropertyType.Vector)  p.vectorValue = copiedProperties[p.name].vectorValue;
                 if(propType == ShaderPropertyType.Float)   p.floatValue = copiedProperties[p.name].floatValue;
                 if(propType == ShaderPropertyType.Range)   p.floatValue = copiedProperties[p.name].floatValue;
-                if(propType == ShaderPropertyType.Texture) p.textureValue = copiedProperties[p.name].textureValue;
+                if(propType == ShaderPropertyType.Texture)
+                {
+                    p.textureValue = copiedProperties[p.name].textureValue;
+                    if (propertyBlock == PropertyBlock.Tesion) p.p.textureScaleAndOffset = copiedProperties[p.name].textureScaleAndOffset;
+                }
             }
+            if (propertyBlock == PropertyBlock.Tesion) SynchronizeTesionMaterials();
             if (propertyBlock == PropertyBlock.HoSurface) SynchronizeHoSurfaceMaterials();
         }
 
         private void ResetProperties(PropertyBlock propertyBlock)
         {
+            if (propertyBlock == PropertyBlock.Tesion) m_MaterialEditor.RegisterPropertyChangeUndo("Reset Tesion");
             #if UNITY_2019_3_OR_NEWER
             foreach(var p in AllProperties().Where(p =>
                 p.p != null &&
@@ -259,8 +270,13 @@ namespace lilToon
                 if(propType == ShaderPropertyType.Vector)    p.vectorValue = shader.GetPropertyDefaultVectorValue(propID);
                 if(propType == ShaderPropertyType.Float)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
                 if(propType == ShaderPropertyType.Range)     p.floatValue = shader.GetPropertyDefaultFloatValue(propID);
-                if(propType == ShaderPropertyType.Texture)   p.textureValue = null;
+                if(propType == ShaderPropertyType.Texture)
+                {
+                    p.textureValue = null;
+                    if (propertyBlock == PropertyBlock.Tesion) p.p.textureScaleAndOffset = new Vector4(1,1,0,0);
+                }
             }
+            if (propertyBlock == PropertyBlock.Tesion) SynchronizeTesionMaterials();
             if (propertyBlock == PropertyBlock.HoSurface) SynchronizeHoSurfaceMaterials();
             #endif
         }
