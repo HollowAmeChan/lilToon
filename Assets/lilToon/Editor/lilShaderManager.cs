@@ -1,134 +1,155 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace lilToon
 {
     public class lilShaderManager
     {
-        public static Shader lts         = Shader.Find("lilToon");
-        public static Shader ltsc        = Shader.Find("Hidden/lilToonCutout");
-        public static Shader ltst        = Shader.Find("Hidden/lilToonTransparent");
-        public static Shader ltsot       = Shader.Find("Hidden/lilToonOnePassTransparent");
-        public static Shader ltstt       = Shader.Find("Hidden/lilToonTwoPassTransparent");
+        // Keep the per-draw reset of public shader slots for custom inspectors, while
+        // avoiding native lookups until assets change. Cache absent optional shaders too.
+        private static readonly Dictionary<string, Shader> shaderCache = new Dictionary<string, Shader>();
 
-        public static Shader ltso        = Shader.Find("Hidden/lilToonOutline");
-        public static Shader ltsco       = Shader.Find("Hidden/lilToonCutoutOutline");
-        public static Shader ltsto       = Shader.Find("Hidden/lilToonTransparentOutline");
-        public static Shader ltsoto      = Shader.Find("Hidden/lilToonOnePassTransparentOutline");
-        public static Shader ltstto      = Shader.Find("Hidden/lilToonTwoPassTransparentOutline");
+        static lilShaderManager()
+        {
+            EditorApplication.projectChanged += shaderCache.Clear;
+        }
 
-        public static Shader ltsoo       = Shader.Find("_lil/[Optional] lilToonOutlineOnly");
-        public static Shader ltscoo      = Shader.Find("_lil/[Optional] lilToonOutlineOnlyCutout");
-        public static Shader ltstoo      = Shader.Find("_lil/[Optional] lilToonOutlineOnlyTransparent");
+        private static Shader FindShader(string name)
+        {
+            if (shaderCache.TryGetValue(name, out var shader) && (ReferenceEquals(shader, null) || shader))
+                return shader;
 
-        public static Shader ltsl        = Shader.Find("Hidden/lilToonLite");
-        public static Shader ltslc       = Shader.Find("Hidden/lilToonLiteCutout");
-        public static Shader ltslt       = Shader.Find("Hidden/lilToonLiteTransparent");
-        public static Shader ltslot      = Shader.Find("Hidden/lilToonLiteOnePassTransparent");
-        public static Shader ltsltt      = Shader.Find("Hidden/lilToonLiteTwoPassTransparent");
+            shader = Shader.Find(name);
+            shaderCache[name] = shader;
+            return shader;
+        }
 
-        public static Shader ltslo       = Shader.Find("Hidden/lilToonLiteOutline");
-        public static Shader ltslco      = Shader.Find("Hidden/lilToonLiteCutoutOutline");
-        public static Shader ltslto      = Shader.Find("Hidden/lilToonLiteTransparentOutline");
-        public static Shader ltsloto     = Shader.Find("Hidden/lilToonLiteOnePassTransparentOutline");
-        public static Shader ltsltto     = Shader.Find("Hidden/lilToonLiteTwoPassTransparentOutline");
+        public static Shader lts         = FindShader("lilToon");
+        public static Shader ltsc        = FindShader("Hidden/lilToonCutout");
+        public static Shader ltst        = FindShader("Hidden/lilToonTransparent");
+        public static Shader ltsot       = FindShader("Hidden/lilToonOnePassTransparent");
+        public static Shader ltstt       = FindShader("Hidden/lilToonTwoPassTransparent");
 
-        public static Shader ltsref      = Shader.Find("Hidden/lilToonRefraction");
-        public static Shader ltsrefb     = Shader.Find("Hidden/lilToonRefractionBlur");
-        public static Shader ltsfur      = Shader.Find("Hidden/lilToonFur");
-        public static Shader ltsfurc     = Shader.Find("Hidden/lilToonFurCutout");
-        public static Shader ltsfurtwo   = Shader.Find("Hidden/lilToonFurTwoPass");
-        public static Shader ltsfuro     = Shader.Find("_lil/[Optional] lilToonFurOnlyTransparent");
-        public static Shader ltsfuroc    = Shader.Find("_lil/[Optional] lilToonFurOnlyCutout");
-        public static Shader ltsfurotwo  = Shader.Find("_lil/[Optional] lilToonFurOnlyTwoPass");
+        public static Shader ltso        = FindShader("Hidden/lilToonOutline");
+        public static Shader ltsco       = FindShader("Hidden/lilToonCutoutOutline");
+        public static Shader ltsto       = FindShader("Hidden/lilToonTransparentOutline");
+        public static Shader ltsoto      = FindShader("Hidden/lilToonOnePassTransparentOutline");
+        public static Shader ltstto      = FindShader("Hidden/lilToonTwoPassTransparentOutline");
 
-        public static Shader ltsgem      = Shader.Find("Hidden/lilToonGem");
+        public static Shader ltsoo       = FindShader("_lil/[Optional] lilToonOutlineOnly");
+        public static Shader ltscoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyCutout");
+        public static Shader ltstoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyTransparent");
 
-        public static Shader ltshair     = Shader.Find("Hidden/lilToonHair");
+        public static Shader ltsl        = FindShader("Hidden/lilToonLite");
+        public static Shader ltslc       = FindShader("Hidden/lilToonLiteCutout");
+        public static Shader ltslt       = FindShader("Hidden/lilToonLiteTransparent");
+        public static Shader ltslot      = FindShader("Hidden/lilToonLiteOnePassTransparent");
+        public static Shader ltsltt      = FindShader("Hidden/lilToonLiteTwoPassTransparent");
 
-        public static Shader ltsliquid   = Shader.Find("Hidden/lilToonLiquid");
+        public static Shader ltslo       = FindShader("Hidden/lilToonLiteOutline");
+        public static Shader ltslco      = FindShader("Hidden/lilToonLiteCutoutOutline");
+        public static Shader ltslto      = FindShader("Hidden/lilToonLiteTransparentOutline");
+        public static Shader ltsloto     = FindShader("Hidden/lilToonLiteOnePassTransparentOutline");
+        public static Shader ltsltto     = FindShader("Hidden/lilToonLiteTwoPassTransparentOutline");
 
-        public static Shader ltsfs       = Shader.Find("_lil/[Optional] lilToonFakeShadow");
+        public static Shader ltsref      = FindShader("Hidden/lilToonRefraction");
+        public static Shader ltsrefb     = FindShader("Hidden/lilToonRefractionBlur");
+        public static Shader ltsfur      = FindShader("Hidden/lilToonFur");
+        public static Shader ltsfurc     = FindShader("Hidden/lilToonFurCutout");
+        public static Shader ltsfurtwo   = FindShader("Hidden/lilToonFurTwoPass");
+        public static Shader ltsfuro     = FindShader("_lil/[Optional] lilToonFurOnlyTransparent");
+        public static Shader ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
+        public static Shader ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
 
-        public static Shader ltsover     = Shader.Find("_lil/[Optional] lilToonOverlay");
-        public static Shader ltsoover    = Shader.Find("_lil/[Optional] lilToonOverlayOnePass");
-        public static Shader ltslover    = Shader.Find("_lil/[Optional] lilToonLiteOverlay");
-        public static Shader ltsloover   = Shader.Find("_lil/[Optional] lilToonLiteOverlayOnePass");
+        public static Shader ltsgem      = FindShader("Hidden/lilToonGem");
 
-        public static Shader ltsbaker    = Shader.Find("Hidden/ltsother_baker");
-        public static Shader ltspo       = Shader.Find("Hidden/ltspass_opaque");
-        public static Shader ltspc       = Shader.Find("Hidden/ltspass_cutout");
-        public static Shader ltspt       = Shader.Find("Hidden/ltspass_transparent");
-        public static Shader ltsm        = Shader.Find("_lil/lilToonMulti");
-        public static Shader ltsmo       = Shader.Find("Hidden/lilToonMultiOutline");
-        public static Shader ltsmref     = Shader.Find("Hidden/lilToonMultiRefraction");
-        public static Shader ltsmfur     = Shader.Find("Hidden/lilToonMultiFur");
-        public static Shader ltsmgem     = Shader.Find("Hidden/lilToonMultiGem");
-        public static Shader mtoon       = Shader.Find("VRM/MToon");
+        public static Shader ltshair     = FindShader("Hidden/lilToonHair");
+
+        public static Shader ltsliquid   = FindShader("Hidden/lilToonLiquid");
+
+        public static Shader ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
+
+        public static Shader ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
+        public static Shader ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");
+        public static Shader ltslover    = FindShader("_lil/[Optional] lilToonLiteOverlay");
+        public static Shader ltsloover   = FindShader("_lil/[Optional] lilToonLiteOverlayOnePass");
+
+        public static Shader ltsbaker    = FindShader("Hidden/ltsother_baker");
+        public static Shader ltspo       = FindShader("Hidden/ltspass_opaque");
+        public static Shader ltspc       = FindShader("Hidden/ltspass_cutout");
+        public static Shader ltspt       = FindShader("Hidden/ltspass_transparent");
+        public static Shader ltsm        = FindShader("_lil/lilToonMulti");
+        public static Shader ltsmo       = FindShader("Hidden/lilToonMultiOutline");
+        public static Shader ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
+        public static Shader ltsmfur     = FindShader("Hidden/lilToonMultiFur");
+        public static Shader ltsmgem     = FindShader("Hidden/lilToonMultiGem");
+        public static Shader mtoon       = FindShader("VRM/MToon");
 
         public static void InitializeShaders()
         {
-            lts         = Shader.Find("lilToon");
-            ltsc        = Shader.Find("Hidden/lilToonCutout");
-            ltst        = Shader.Find("Hidden/lilToonTransparent");
-            ltsot       = Shader.Find("Hidden/lilToonOnePassTransparent");
-            ltstt       = Shader.Find("Hidden/lilToonTwoPassTransparent");
+            lts         = FindShader("lilToon");
+            ltsc        = FindShader("Hidden/lilToonCutout");
+            ltst        = FindShader("Hidden/lilToonTransparent");
+            ltsot       = FindShader("Hidden/lilToonOnePassTransparent");
+            ltstt       = FindShader("Hidden/lilToonTwoPassTransparent");
 
-            ltso        = Shader.Find("Hidden/lilToonOutline");
-            ltsco       = Shader.Find("Hidden/lilToonCutoutOutline");
-            ltsto       = Shader.Find("Hidden/lilToonTransparentOutline");
-            ltsoto      = Shader.Find("Hidden/lilToonOnePassTransparentOutline");
-            ltstto      = Shader.Find("Hidden/lilToonTwoPassTransparentOutline");
+            ltso        = FindShader("Hidden/lilToonOutline");
+            ltsco       = FindShader("Hidden/lilToonCutoutOutline");
+            ltsto       = FindShader("Hidden/lilToonTransparentOutline");
+            ltsoto      = FindShader("Hidden/lilToonOnePassTransparentOutline");
+            ltstto      = FindShader("Hidden/lilToonTwoPassTransparentOutline");
 
-            ltsoo       = Shader.Find("_lil/[Optional] lilToonOutlineOnly");
-            ltscoo      = Shader.Find("_lil/[Optional] lilToonOutlineOnlyCutout");
-            ltstoo      = Shader.Find("_lil/[Optional] lilToonOutlineOnlyTransparent");
+            ltsoo       = FindShader("_lil/[Optional] lilToonOutlineOnly");
+            ltscoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyCutout");
+            ltstoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyTransparent");
 
-            ltsl        = Shader.Find("Hidden/lilToonLite");
-            ltslc       = Shader.Find("Hidden/lilToonLiteCutout");
-            ltslt       = Shader.Find("Hidden/lilToonLiteTransparent");
-            ltslot      = Shader.Find("Hidden/lilToonLiteOnePassTransparent");
-            ltsltt      = Shader.Find("Hidden/lilToonLiteTwoPassTransparent");
+            ltsl        = FindShader("Hidden/lilToonLite");
+            ltslc       = FindShader("Hidden/lilToonLiteCutout");
+            ltslt       = FindShader("Hidden/lilToonLiteTransparent");
+            ltslot      = FindShader("Hidden/lilToonLiteOnePassTransparent");
+            ltsltt      = FindShader("Hidden/lilToonLiteTwoPassTransparent");
 
-            ltslo       = Shader.Find("Hidden/lilToonLiteOutline");
-            ltslco      = Shader.Find("Hidden/lilToonLiteCutoutOutline");
-            ltslto      = Shader.Find("Hidden/lilToonLiteTransparentOutline");
-            ltsloto     = Shader.Find("Hidden/lilToonLiteOnePassTransparentOutline");
-            ltsltto     = Shader.Find("Hidden/lilToonLiteTwoPassTransparentOutline");
+            ltslo       = FindShader("Hidden/lilToonLiteOutline");
+            ltslco      = FindShader("Hidden/lilToonLiteCutoutOutline");
+            ltslto      = FindShader("Hidden/lilToonLiteTransparentOutline");
+            ltsloto     = FindShader("Hidden/lilToonLiteOnePassTransparentOutline");
+            ltsltto     = FindShader("Hidden/lilToonLiteTwoPassTransparentOutline");
 
-            ltsref      = Shader.Find("Hidden/lilToonRefraction");
-            ltsrefb     = Shader.Find("Hidden/lilToonRefractionBlur");
-            ltsfur      = Shader.Find("Hidden/lilToonFur");
-            ltsfurc     = Shader.Find("Hidden/lilToonFurCutout");
-            ltsfurtwo   = Shader.Find("Hidden/lilToonFurTwoPass");
-            ltsfuro     = Shader.Find("_lil/[Optional] lilToonFurOnlyTransparent");
-            ltsfuroc    = Shader.Find("_lil/[Optional] lilToonFurOnlyCutout");
-            ltsfurotwo  = Shader.Find("_lil/[Optional] lilToonFurOnlyTwoPass");
+            ltsref      = FindShader("Hidden/lilToonRefraction");
+            ltsrefb     = FindShader("Hidden/lilToonRefractionBlur");
+            ltsfur      = FindShader("Hidden/lilToonFur");
+            ltsfurc     = FindShader("Hidden/lilToonFurCutout");
+            ltsfurtwo   = FindShader("Hidden/lilToonFurTwoPass");
+            ltsfuro     = FindShader("_lil/[Optional] lilToonFurOnlyTransparent");
+            ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
+            ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
 
-            ltsgem      = Shader.Find("Hidden/lilToonGem");
+            ltsgem      = FindShader("Hidden/lilToonGem");
 
-            ltshair     = Shader.Find("Hidden/lilToonHair");
+            ltshair     = FindShader("Hidden/lilToonHair");
 
-            ltsliquid   = Shader.Find("Hidden/lilToonLiquid");
+            ltsliquid   = FindShader("Hidden/lilToonLiquid");
 
-            ltsfs       = Shader.Find("_lil/[Optional] lilToonFakeShadow");
+            ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
 
-            ltsover     = Shader.Find("_lil/[Optional] lilToonOverlay");
-            ltsoover    = Shader.Find("_lil/[Optional] lilToonOverlayOnePass");
-            ltslover    = Shader.Find("_lil/[Optional] lilToonLiteOverlay");
-            ltsloover   = Shader.Find("_lil/[Optional] lilToonLiteOverlayOnePass");
+            ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
+            ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");
+            ltslover    = FindShader("_lil/[Optional] lilToonLiteOverlay");
+            ltsloover   = FindShader("_lil/[Optional] lilToonLiteOverlayOnePass");
 
-            ltsbaker    = Shader.Find("Hidden/ltsother_baker");
-            ltspo       = Shader.Find("Hidden/ltspass_opaque");
-            ltspc       = Shader.Find("Hidden/ltspass_cutout");
-            ltspt       = Shader.Find("Hidden/ltspass_transparent");
-            ltsm        = Shader.Find("_lil/lilToonMulti");
-            ltsmo       = Shader.Find("Hidden/lilToonMultiOutline");
-            ltsmref     = Shader.Find("Hidden/lilToonMultiRefraction");
-            ltsmfur     = Shader.Find("Hidden/lilToonMultiFur");
-            ltsmgem     = Shader.Find("Hidden/lilToonMultiGem");
+            ltsbaker    = FindShader("Hidden/ltsother_baker");
+            ltspo       = FindShader("Hidden/ltspass_opaque");
+            ltspc       = FindShader("Hidden/ltspass_cutout");
+            ltspt       = FindShader("Hidden/ltspass_transparent");
+            ltsm        = FindShader("_lil/lilToonMulti");
+            ltsmo       = FindShader("Hidden/lilToonMultiOutline");
+            ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
+            ltsmfur     = FindShader("Hidden/lilToonMultiFur");
+            ltsmgem     = FindShader("Hidden/lilToonMultiGem");
 
-            mtoon       = Shader.Find("VRM/MToon");
+            mtoon       = FindShader("VRM/MToon");
         }
     }
 }
