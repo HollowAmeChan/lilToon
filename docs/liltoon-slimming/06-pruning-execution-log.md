@@ -54,15 +54,29 @@
 - 当前生成产物为 51 个 Shader / 645 个程序块；实际视觉验收未覆盖所有用户场景。
 - UnityGLTF 扩展尚有旧 Gem/Fur/Lite 路由，其现有 missing-shader 分支会警告并保留契约；计划在四族退出后统一改为明确的退役处理，不在本提交中混入其他仓库改动。
 
-### 5. 手动材质转换入口退出（随本提交）
+### 5. 手动材质转换入口退出：`2eef4bc`
 
 - 删除 CreateLiteMaterial / CreateMToonMaterial / CreateMultiMaterial 实现、新旧 Inspector 对应按钮、MToon Shader 查询与引用、三组转换文案，共移除 381 行。
 - 保留材质初始化、自动关键字同步、导入/版本迁移与自定义 Shader 设置接口。此步不改 HLSL，不移除现役材质效果。
 - Roslyn 编译 0 错误，转换方法/按钮引用搜索归零；独立 Unity 执行缓存与自定义槽位恢复/新 Shader 导入回归，退出码 0。日志：Extensions `.codex-research/pruning-converters.log`。
 
+### 6. Lite 整族退出（随本提交）
+
+- 删除 12 个材质 Shader、3 个配套 Pass Shader、15 个基础模板、Lite Properties 与 URP 模板以及独立 Forward 实现，源入口/产物/meta 一起退出。
+- 公共 HLSL 按 LIL_LITE=false 保留普通族路径，清理 Lite 简化输入布局、Shadow/Meta/Depth 等分支；新旧 GUI 删除 Lite 面板、类型切换和对应模式分支。
+- 暂保留旧设置 API 中 bool islite 的签名，显式请求 Lite 会拒绝且不切换材质；普通调用始终走完整族。手动转换实现此前已单独删除。
+- Roslyn 编译 0 错误，全部 HLSL 预处理指令配平；Editor/模板/include 无 Lite 家族功能引用，序列化模式编号不变。
+- Unity 6000.3.15f1 / D3D11 / 实际 Forward+：Lite 及其配套 Pass Shader 查询均为空；旧 API 请求 Lite 被拒绝且原 Shader 保留；全量重生成与保留的 67 个默认 Pass、张力 Forward、GD 描边变体回归通过，退出码 0、Shader 错误 0。日志：Extensions `.codex-research/pruning-lite.log`。
+- 当前规模 **36 个 Shader / 413 个程序块**；不宣称同等比例的实际时间缩减。
+
+## 当前资产偏好待确认
+
+- Fur 的 TAIL.mat（GUID 13bab63c4242ce74ebcc71bc5a5c035b）仍被 Alue.fbx.meta 的 Tail external material 映射引用。不能照搬 Liquid/Gem 的无引用归档操作。
+- 已异步询问用户：保留旧资产/暂缓 Fur、接受现有 HoShader Fuzz 的迁移差异，或归档旧模型后退出 Fur。等待期间保留它并继续其他裁剪，不混入未经确认的视觉替换。
+
 ## 下一步
 
-1. 整族退出 Lite / Fur，逐步提交；先处理引用和菜单入口，确保保留枚举序列化编号，模板和产物一起退出。
+1. 按用户对 Alue/TAIL 的选择整族退出 Fur；Lite 已完成。
 2. 清理确定退役的 RendererFeature / Pass，lilPBR 按包退役处理，保留仍在使用的平面反射协议。
 3. 限定 GD 关键字范围、清理不使用的手动转换和优化入口，拆分必要的公共依赖。
 

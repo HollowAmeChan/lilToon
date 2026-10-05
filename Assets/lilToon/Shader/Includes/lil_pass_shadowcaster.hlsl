@@ -18,7 +18,7 @@
         #define LIL_V2F_PACKED_TEXCOORD23
     #endif
 #endif
-#if defined(LIL_V2F_FORCE_POSITION_OS) || ((LIL_RENDER > 0) && !defined(LIL_LITE) && defined(LIL_FEATURE_DISSOLVE))
+#if defined(LIL_V2F_FORCE_POSITION_OS) || ((LIL_RENDER > 0) && defined(LIL_FEATURE_DISSOLVE))
     #define LIL_V2F_POSITION_OS
 #endif
 #if defined(LIL_V2F_FORCE_POSITION_WS) || (LIL_RENDER > 0) && defined(LIL_FEATURE_DISTANCE_FADE)

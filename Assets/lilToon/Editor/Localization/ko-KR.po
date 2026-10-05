@@ -314,9 +314,6 @@ msgstr "셰이더 유형"
 msgid "sShaderTypeNormal"
 msgstr "Normal"
 
-msgid "sShaderTypeLite"
-msgstr "Lite"
-
 msgid "sRenderingMode"
 msgstr "렌더링 모드"
 
@@ -1318,9 +1315,6 @@ msgstr "Unity 버그로 인해 필요한 정점 데이터까지 삭제될 수 �
 
 msgid "sPresets"
 msgstr "프리셋"
-
-msgid "sPresetsNotAvailable"
-msgstr "사전 설정이 쉐이더를 사용할 수 없습니다."
 
 msgid "sPresetIsMaterial"
 msgstr "머티리얼 이외를 선택하고 있습니다."

@@ -39,35 +39,6 @@ TEXTURE2D_SCREEN(_CameraOpaqueTexture);
 #if !defined(LIL_FEATURE_DitherTex)
     #define LIL_FEATURE_DitherTex
 #endif
-#if defined(LIL_LITE)
-    #if !defined(LIL_FEATURE_TriMask)
-        #define LIL_FEATURE_TriMask
-    #endif
-    #if !defined(LIL_FEATURE_MainTex)
-        #define LIL_FEATURE_MainTex
-    #endif
-    #if !defined(LIL_FEATURE_ShadowColorTex)
-        #define LIL_FEATURE_ShadowColorTex
-    #endif
-    #if !defined(LIL_FEATURE_Shadow2ndColorTex)
-        #define LIL_FEATURE_Shadow2ndColorTex
-    #endif
-    #if !defined(LIL_FEATURE_MatCapTex)
-        #define LIL_FEATURE_MatCapTex
-    #endif
-    #if !defined(LIL_FEATURE_EmissionMap)
-        #define LIL_FEATURE_EmissionMap
-    #endif
-    #if !defined(LIL_FEATURE_OutlineTex)
-        #define LIL_FEATURE_OutlineTex
-    #endif
-    #if !defined(LIL_FEATURE_OutlineWidthMask)
-        #define LIL_FEATURE_OutlineWidthMask
-    #endif
-    #if !defined(LIL_FEATURE_OutlineZBiasMask)
-        #define LIL_FEATURE_OutlineZBiasMask
-    #endif
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Input
@@ -86,89 +57,7 @@ TEXTURE2D_SCREEN(_CameraOpaqueTexture);
 #ifndef LIL_INPUT_BASE_INCLUDED
 
 CBUFFER_START(UnityPerMaterial)
-#if defined(LIL_LITE)
-    float4  _LightDirectionOverride;
-    float4  _Color;
-    float4  _MainTex_ST;
-    float4  _MainTex_ScrollRotate;
-    float4  _ShadowBorderColor;
-    float4  _MatCapTex_ST;
-    float4  _MatCapBlendUV1;
-    float4  _RimColor;
-    float4  _EmissionColor;
-    float4  _EmissionBlink;
-    float4  _EmissionMap_ST;
-    float4  _EmissionMap_ScrollRotate;
-    float4  _PlanarReflectionTint;
-    float4  _OutlineColor;
-    float4  _OutlineTex_ST;
-    float4  _OutlineTex_ScrollRotate;
-    float   _AsUnlit;
-    float   _Cutoff;
-    float   _SubpassCutoff;
-    float   _FlipNormal;
-    float   _HTraceSSGIBackfaceNormalFix;
-    float   _ShiftBackfaceUV;
-    float   _VertexLightStrength;
-    float   _LightMinLimit;
-    float   _LightMaxLimit;
-    float   _MonochromeLighting;
-    float   _MultiLightIntensity;
-    float   _MultiLightCastShadowStrength;
-    float   _AAStrength;
-    float   _BackfaceForceShadow;
-    float   _ShadowBorder;
-    float   _ShadowBlur;
-    float   _Shadow2ndBorder;
-    float   _Shadow2ndBlur;
-    float   _ShadowEnvStrength;
-    float   _ShadowBorderRange;
-    float   _MatCapVRParallaxStrength;
-    float   _RimBorder;
-    float   _RimBlur;
-    float   _RimFresnelPower;
-    float   _RimShadowMask;
-    float   _lilShadowCasterBias;
-    float   _lilOITEnabled;
-    float   _PlanarReflectionStrength;
-    float   _PlanarReflectionMinSmoothness;
-    float   _PlanarReflectionEdgeFade;
-    float   _PlanarReflectionFadeStart;
-    float   _PlanarReflectionFadeEnd;
-    float   _OutlineWidth;
-    float   _OutlineEnableLighting;
-    float   _OutlineShadowStrength;
-    float   _OutlineFixWidth;
-    float   _OutlineZBias;
-    uint    _Cull;
-    uint    _OutlineCull;
-    uint    _EmissionMap_UVMode;
-    uint    _OutlineVertexR2Width;
-    lilBool _Invisible;
-    lilBool _UseShadow;
-    lilBool _UseMatCap;
-    lilBool _MatCapMul;
-    lilBool _MatCapPerspective;
-    lilBool _MatCapZRotCancel;
-    lilBool _UseRim;
-    lilBool _UseEmission;
-    lilBool _UsePlanarReflection;
-    lilBool _PlanarReflectionFlipY;
-    lilBool _OutlineDeleteMesh;
-    // Ho 扩展的材质参数（与 `lil_common_input_base.hlsl` 里那批同一组）：SRP Batcher 要求材质属性
-    // 都声明在 UnityPerMaterial 中，所以每个配置分支都要列一遍（多列出来的项在没声明它的配置里恒 0）。
-    float   _HoCharacterCaptureOpacity;
-    float   _HoSurfaceThickness;
-    float   _HoSurfaceCurvature;
-    float   _HoSurfaceTransmittanceHint;
-    float   _HoSurfaceMaterialClassId;
-    float   _HoSemanticWeight;
-    float   _HoSemanticMaskOn;
-    float   _HoSSSProfileId;
-    float   _HoSSSThicknessScale;
-    float   _HoSSSTransmissionStrength;
-    float   _HoSSSTransmissionRadius;
-#elif defined(LIL_FAKESHADOW)
+#if defined(LIL_FAKESHADOW)
     float4  _Color;
     float4  _MainTex_ST;
     float4  _FakeShadowVector;

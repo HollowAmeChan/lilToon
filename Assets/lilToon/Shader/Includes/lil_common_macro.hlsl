@@ -1078,7 +1078,7 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 #endif
 
 // Do not apply shadow
-#if (defined(LIL_LITE) || defined(LIL_FUR)) && !defined(LIL_PASS_FORWARDADD)
+#if (defined(LIL_FUR)) && !defined(LIL_PASS_FORWARDADD)
     #undef LIL_SHADOW_COORDS
     #undef LIL_TRANSFER_SHADOW
     #undef LIL_LIGHT_ATTENUATION
@@ -1159,9 +1159,9 @@ float3 lilGetLightMapDirection(float2 uv)
 // Dir light & indir light
 #if (defined(PROBE_VOLUMES_L1) || defined(PROBE_VOLUMES_L2))
     #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDoubleAPV(i.positionWS, vertexNormalInput.normalWS, o.lightColor, o.indLightColor)
-#elif defined(LIL_USE_LPPV) && (defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE))
+#elif defined(LIL_USE_LPPV) && (defined(LIL_FEATURE_SHADOW))
     #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDouble(i.positionWS, o.lightColor, o.indLightColor)
-#elif defined(LIL_FEATURE_SHADOW) || defined(LIL_LITE)
+#elif defined(LIL_FEATURE_SHADOW)
     #define LIL_CALC_TWOLIGHT(i,o) lilGetLightColorDouble(o.lightColor, o.indLightColor)
 #elif defined(LIL_USE_LPPV)
     #define LIL_CALC_TWOLIGHT(i,o) o.lightColor = lilGetLightColor(i.positionWS)

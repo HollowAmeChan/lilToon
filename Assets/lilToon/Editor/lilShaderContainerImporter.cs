@@ -132,7 +132,7 @@ namespace lilToon
         private const string LIL_LIGHTMODE_URP_9_FORWARD_0  = "SRPDefaultUnlit";
         private const string LIL_LIGHTMODE_URP_9_FORWARD_1  = "UniversalForward";
         private const string LIL_LIGHTMODE_URP_9_FORWARD_2  = "UniversalForwardOnly";
-        
+
         private const string csdShaderNameTag                   = "ShaderName";
         private const string csdEditorNameTag                   = "EditorName";
         private const string csdReplaceTag                      = "Replace";
@@ -304,7 +304,6 @@ namespace lilToon
                 doOptimize &&
                 !assetName.Contains("ltsmulti") &&
                 !assetName.Contains("ltspass_lite") &&
-                !assetName.Contains("ltsl") &&
                 !assetName.Contains("fakeshadow") &&
                 !string.IsNullOrEmpty(lilEditorParameters.instance.modifiedShaders)
             )

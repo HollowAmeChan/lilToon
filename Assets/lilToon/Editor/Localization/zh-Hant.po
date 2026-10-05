@@ -314,9 +314,6 @@ msgstr "著色器類型"
 msgid "sShaderTypeNormal"
 msgstr "Normal"
 
-msgid "sShaderTypeLite"
-msgstr "Lite"
-
 msgid "sRenderingMode"
 msgstr "渲染模式"
 
@@ -1318,9 +1315,6 @@ msgstr "Unity 可能會錯誤刪除所需的頂點資料。 發生問題時，�
 
 msgid "sPresets"
 msgstr "預設"
-
-msgid "sPresetsNotAvailable"
-msgstr "預設在此著色器中不可用。"
 
 msgid "sPresetIsMaterial"
 msgstr "當前選擇的不是材質。"

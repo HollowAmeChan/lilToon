@@ -54,7 +54,7 @@ LIL_V2F_TYPE vert(appdata input)
 {
     bool dissolveActive = true;
     bool dissolveInvert = false;
-    
+
     LIL_V2F_TYPE LIL_V2F_OUT;
     LIL_INITIALIZE_STRUCT(v2f, LIL_V2F_OUT_BASE);
     #if defined(LIL_ONEPASS_OUTLINE)
@@ -66,9 +66,9 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Invisible
-    #if defined(LIL_OUTLINE) && !defined(LIL_LITE) && !defined(LIL_PASS_SHADOWCASTER) && defined(USING_STEREO_MATRICES)
+    #if defined(LIL_OUTLINE) && !defined(LIL_PASS_SHADOWCASTER) && defined(USING_STEREO_MATRICES)
         #define LIL_VERTEX_CONDITION (_Invisible || _OutlineDisableInVR)
-    #elif defined(LIL_OUTLINE) && !defined(LIL_LITE) && !defined(LIL_PASS_SHADOWCASTER)
+    #elif defined(LIL_OUTLINE) && !defined(LIL_PASS_SHADOWCASTER)
         #define LIL_VERTEX_CONDITION (_Invisible || _OutlineDisableInVR && (abs(LIL_MATRIX_P._m02) > 0.000001))
     #else
         #define LIL_VERTEX_CONDITION (_Invisible)
@@ -82,7 +82,7 @@ LIL_V2F_TYPE vert(appdata input)
     #endif
 
     #undef LIL_VERTEX_CONDITION
-    
+
     //------------------------------------------------------------------------------------------------------------------------------
     // Single Pass Instanced rendering
     LIL_SETUP_INSTANCE_ID(input);
@@ -248,7 +248,7 @@ LIL_V2F_TYPE vert(appdata input)
             }
         #endif
     #endif
-    
+
     //------------------------------------------------------------------------------------------------------------------------------
     // Fog & Lighting
     lilFragData fd = lilInitFragData();
@@ -278,7 +278,7 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Clipping Canceller
-    #if defined(LIL_V2F_POSITION_CS) && defined(LIL_FEATURE_CLIPPING_CANCELLER) && !defined(LIL_LITE) && !defined(LIL_PASS_SHADOWCASTER_INCLUDED) && !defined(LIL_PASS_META_INCLUDED)
+    #if defined(LIL_V2F_POSITION_CS) && defined(LIL_FEATURE_CLIPPING_CANCELLER) && !defined(LIL_PASS_SHADOWCASTER_INCLUDED) && !defined(LIL_PASS_META_INCLUDED)
         #if defined(UNITY_REVERSED_Z)
             // DirectX
             if(LIL_V2F_OUT_BASE.positionCS.w < _ProjectionParams.y * 1.01 && LIL_V2F_OUT_BASE.positionCS.w > 0 && _ProjectionParams.y < LIL_NEARCLIP_THRESHOLD LIL_MULTI_SHOULD_CLIPPING && !LIL_IS_MIRROR)
@@ -307,7 +307,7 @@ LIL_V2F_TYPE vert(appdata input)
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Clipping Canceller
-        #if defined(LIL_FEATURE_CLIPPING_CANCELLER) && !defined(LIL_LITE) && !defined(LIL_PASS_SHADOWCASTER_INCLUDED) && !defined(LIL_PASS_META_INCLUDED)
+        #if defined(LIL_FEATURE_CLIPPING_CANCELLER) && !defined(LIL_PASS_SHADOWCASTER_INCLUDED) && !defined(LIL_PASS_META_INCLUDED)
             #if defined(UNITY_REVERSED_Z)
                 // DirectX
                 if(LIL_V2F_OUT.positionCSOL.w < _ProjectionParams.y * 1.01 && LIL_V2F_OUT.positionCSOL.w > 0 && _ProjectionParams.y < LIL_NEARCLIP_THRESHOLD LIL_MULTI_SHOULD_CLIPPING && !LIL_IS_MIRROR)
@@ -361,11 +361,11 @@ LIL_V2F_TYPE vert(appdata input)
             LIL_V2F_OUT_BASE.positionOSdissolve.w = (dissolveActive | (dissolveInvert << 1));
         #endif
     #endif
-    
+
     #if !defined(SHADER_STAGE_VERTEX) || defined(LIL_CUSTOM_SAFEVERT)
         }
     #endif
-    
+
     return LIL_V2F_OUT;
 }
 

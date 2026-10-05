@@ -86,7 +86,7 @@ namespace lilToon
 
         private void DrawNextRenderingModeControl(Rect rect, Material material)
         {
-            string[] modes = isLite ? sRenderingModeListLite : sRenderingModeList;
+            string[] modes = sRenderingModeList;
             bool disabled = material != null && material.parent != null || isMultiVariants || !isShowRenderMode;
             using(new EditorGUI.DisabledScope(disabled))
             {
@@ -94,7 +94,7 @@ namespace lilToon
                 EditorGUI.BeginChangeCheck();
                 Rect modeRect = rect;
                 Rect transparentRect = new Rect(0f, 0f, 0f, 0f);
-                bool showTransparentMode = !isLite && renderingModeBuf == RenderingMode.Transparent && sTransparentModeList != null && sTransparentModeList.Length > 0;
+                bool showTransparentMode = renderingModeBuf == RenderingMode.Transparent && sTransparentModeList != null && sTransparentModeList.Length > 0;
                 if(showTransparentMode)
                 {
                     float modeWidth = rect.width * 0.56f;
@@ -301,7 +301,6 @@ namespace lilToon
             }
             if(!isOutl) return;
 
-            if(!isLite)
             {
                 TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
                 EditorGUI.indentLevel++;
@@ -350,21 +349,6 @@ namespace lilToon
                 EditorGUI.indentLevel--;
                 LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
                 LocalizedProperty(outlineVectorUVMode, 2);
-            }
-            else
-            {
-                TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
-                LocalizedProperty(outlineEnableLighting);
-                LocalizedProperty(outlineShadowStrength);
-                lilEditorGUI.DrawLine();
-                LocalizedPropertyTexture(widthMaskContent, outlineWidthMask, outlineWidth);
-                EditorGUI.indentLevel++;
-                LocalizedProperty(outlineFixWidth);
-                LocalizedProperty(outlineVertexR2Width);
-                LocalizedProperty(outlineDeleteMesh);
-                if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
-                else LocalizedProperty(outlineZBias);
-                EditorGUI.indentLevel--;
             }
         }
 
@@ -470,25 +454,7 @@ namespace lilToon
 
         private void DrawNextShadow()
         {
-            if(isLite)
-            {
-                LocalizedPropertyTexture(shadow1stColorRGBAContent, shadowColorTex);
-                EditorGUI.indentLevel += 2;
-                LocalizedProperty(shadowBorder);
-                LocalizedProperty(shadowBlur);
-                EditorGUI.indentLevel -= 2;
-                lilEditorGUI.DrawLine();
-                LocalizedPropertyTexture(shadow2ndColorRGBAContent, shadow2ndColorTex);
-                EditorGUI.indentLevel += 2;
-                LocalizedProperty(shadow2ndBorder);
-                LocalizedProperty(shadow2ndBlur);
-                EditorGUI.indentLevel -= 2;
-                lilEditorGUI.DrawLine();
-                LocalizedProperty(shadowEnvStrength);
-                LocalizedProperty(shadowBorderColor);
-                LocalizedProperty(shadowBorderRange);
-                return;
-            }
+
 
             LocalizedProperty(shadowMaskType);
             if(shadowMaskType.floatValue == 1f)
@@ -801,7 +767,7 @@ namespace lilToon
                     if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP) LocalizedProperty(htraceSSGIBackfaceNormalFix);
                 }, false);
                 DrawNextSection("lighting.shadow", GetLoc("sDirectShadow"), PropertyBlock.Shadow, DrawNextShadow, false, null, true, useShadow);
-                if(!isLite) DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false, GetLoc("Uses the Shadow section's AO input"));
+                DrawNextSection("lighting.ao", GetLoc("AO"), PropertyBlock.Shadow, DrawNextAO, false, GetLoc("Uses the Shadow section's AO input"));
                 DrawNextSection("lighting.emission", GetLoc("sEmissionSetting"), PropertyBlock.Emission, delegate { DrawNextEmission(material); }, false, null, true, useEmission);
                 DrawNextSection("lighting.reflection", GetLoc("sReflectionsSetting"), PropertyBlock.Reflection, DrawNextReflection, false, null, true, useReflection);
                 DrawNextSection("lighting.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, false, null, true, useRimShade);
@@ -993,15 +959,7 @@ namespace lilToon
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
                     }
                     lilEditorGUI.DrawLine();
-                    int shaderType = isLite ? 1 : 0;
-                    int shaderTypeBuf = shaderType;
-                    shaderType = lilEditorGUI.Popup(GetLoc("sShaderType"), shaderType, new string[]{GetLoc("sShaderTypeNormal"), GetLoc("sShaderTypeLite")});
-                    if(shaderTypeBuf != shaderType)
-                    {
-                        if(shaderType == 0) isLite = false;
-                        if(shaderType == 1) isLite = true;
-                        SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                    }
+
                     lilEditorGUI.DrawLine();
                     if(renderingModeBuf == RenderingMode.Transparent || renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurTwoPass || (isMulti && (transparentModeMat.floatValue == 2f || transparentModeMat.floatValue == 4f)))
                     {
@@ -1039,11 +997,7 @@ namespace lilToon
                         LocalizedProperty(preAlphaToMask);
                         lilEditorGUI.DrawLine();
                         BlendSettingGUI(ref edSet.isShowBlendPre, GetLoc("sForward"), preSrcBlend, preDstBlend, preSrcBlendAlpha, preDstBlendAlpha, preBlendOp, preBlendOpAlpha);
-                        if(isLite)
-                        {
-                            lilEditorGUI.DrawLine();
-                            BlendSettingGUI(ref edSet.isShowBlendAddPre, GetLoc("sForwardAdd"), preSrcBlendFA, preDstBlendFA, preSrcBlendAlphaFA, preDstBlendAlphaFA, preBlendOpFA, preBlendOpAlphaFA);
-                        }
+
                         EditorGUI.indentLevel--;
                     }
                     if(isOutl)
@@ -1115,7 +1069,7 @@ namespace lilToon
                 {
                     LocalizedProperty(flipNormal);
                     LocalizedProperty(backfaceForceShadow);
-                    if(!isLite) LocalizedPropertyColorWithAlpha(backfaceColor);
+                    LocalizedPropertyColorWithAlpha(backfaceColor);
                 }
                 EditorGUI.indentLevel--;
             }
@@ -1160,11 +1114,7 @@ namespace lilToon
             {
                 EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"), MessageType.Warning);
             }
-            if(isLite)
-            {
-                lilEditorGUI.DrawLine();
-                LocalizedPropertyTexture(triMaskContent, triMask);
-            }
+
 
             if(transparentModeBuf == TransparentMode.TwoPass)
             {
@@ -1289,7 +1239,6 @@ namespace lilToon
 
         private void DrawNextRim()
         {
-            if(!isLite)
             {
                 TextureGUI(ref edSet.isShowRimColorTex, colorMaskRGBAContent, rimColorTex, rimColor);
                 LocalizedPropertyAlpha(rimColor);
@@ -1324,15 +1273,6 @@ namespace lilToon
                 LocalizedProperty(rimFresnelPower);
                 LocalizedProperty(rimVRParallaxStrength);
             }
-            else
-            {
-                LocalizedProperty(rimColor);
-                LocalizedProperty(rimShadowMask);
-                lilEditorGUI.DrawLine();
-                lilEditorGUI.InvBorderGUI(rimBorder);
-                LocalizedProperty(rimBlur);
-                LocalizedProperty(rimFresnelPower);
-            }
         }
 
         private void DrawNextMatCap()
@@ -1352,19 +1292,7 @@ namespace lilToon
             LocalizedProperty(enabled, false);
             if(enabled.floatValue != 1f) return;
 
-            if(isLite)
-            {
-                if(second)
-                {
-                    MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective, matcap2ndVRParallaxStrength);
-                }
-                else
-                {
-                    MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapBlendUV1, matcapZRotCancel, matcapPerspective, matcapVRParallaxStrength);
-                }
-                LocalizedProperty(matcapMul);
-                return;
-            }
+
 
             if(second)
             {

@@ -246,11 +246,11 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // UV Animation
 #if !defined(OVERRIDE_ANIMATE_MAIN_UV)
-    #if defined(LIL_PASS_META_INCLUDED) && (defined(LIL_FEATURE_ANIMATE_MAIN_UV) || defined(LIL_LITE))
+    #if defined(LIL_PASS_META_INCLUDED) && (defined(LIL_FEATURE_ANIMATE_MAIN_UV))
         #define OVERRIDE_ANIMATE_MAIN_UV \
             fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
             fd.uvMain = lilCalcUVWithoutAnimation(fd.uvMain, _MainTex_ST, _MainTex_ScrollRotate);
-    #elif defined(LIL_FEATURE_ANIMATE_MAIN_UV) || defined(LIL_LITE)
+    #elif defined(LIL_FEATURE_ANIMATE_MAIN_UV)
         #define OVERRIDE_ANIMATE_MAIN_UV \
             fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
             fd.uvMain = lilCalcUV(fd.uvMain, _MainTex_ST, _MainTex_ScrollRotate);
@@ -267,7 +267,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Outline UV Animation
 #if !defined(OVERRIDE_ANIMATE_OUTLINE_UV)
-    #if defined(LIL_FEATURE_ANIMATE_OUTLINE_UV) || defined(LIL_LITE)
+    #if defined(LIL_FEATURE_ANIMATE_OUTLINE_UV)
         #define OVERRIDE_ANIMATE_OUTLINE_UV \
             fd.uvMain = lilCalcUV(fd.uv0, _OutlineTex_ST, _OutlineTex_ScrollRotate);
     #else
@@ -628,7 +628,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Main 2nd
-#if defined(LIL_FEATURE_MAIN2ND) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_MAIN2ND)
     void lilGetMain2nd(inout lilFragData fd, inout float4 color2nd, inout float main2ndDissolveAlpha LIL_SAMP_IN_FUNC(samp))
     {
         #if !(defined(LIL_FEATURE_DECAL) && defined(LIL_FEATURE_ANIMATE_DECAL))
@@ -721,7 +721,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Main 3rd
-#if defined(LIL_FEATURE_MAIN3RD) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_MAIN3RD)
     void lilGetMain3rd(inout lilFragData fd, inout float4 color3rd, inout float main3rdDissolveAlpha LIL_SAMP_IN_FUNC(samp))
     {
         #if !(defined(LIL_FEATURE_DECAL) && defined(LIL_FEATURE_ANIMATE_DECAL))
@@ -821,7 +821,7 @@
 // The shared visibility is composed once per fragment by lilCalcAO() and stored in
 // fd.aoVis, so both outputs consume the same value and the same AO Mask gate.
 // NOTE: this has to stay above lilGetShading, which consumes fd.aoVis.
-#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP)
     float lilSampleRealtimeAO(float2 screenUV)
     {
         // _HoAOTexture.r is 0..1 visibility (1 = unoccluded).
@@ -837,7 +837,6 @@
     }
 #endif
 
-#if !defined(LIL_LITE)
     // Compose the shared AO visibility (1 = unoccluded).
     void lilCalcAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
@@ -880,7 +879,6 @@
         float3 aoOcc = saturate(1.0 - fd.aoVis);
         fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength);
     }
-#endif
 
 #if !defined(BEFORE_AO)
     #define BEFORE_AO
@@ -900,7 +898,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Shadow
-#if defined(LIL_FEATURE_SHADOW) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_SHADOW)
     void lilGetShading(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseShadow)
@@ -1127,60 +1125,6 @@
             fd.col.rgb *= fd.lightColor;
         }
     }
-#elif defined(LIL_LITE)
-    void lilGetShading(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseShadow)
-        {
-            // Shade
-            float ln1 = saturate(fd.ln*0.5+0.5);
-            float ln2 = ln1;
-            float lnB = ln1;
-
-            // Toon
-            ln1 = lilTooningScale(_AAStrength, ln1, _ShadowBorder, _ShadowBlur);
-            ln2 = lilTooningScale(_AAStrength, ln2, _Shadow2ndBorder, _Shadow2ndBlur);
-            lnB = lilTooningScale(_AAStrength, lnB, _ShadowBorder, _ShadowBlur, _ShadowBorderRange);
-
-            // Force shadow on back face (skipped in the outline pass, see lilGetShading above)
-            #if defined(LIL_OUTLINE)
-                float bfshadow = 1.0;
-            #else
-                float bfshadow = (fd.facing < 0.0) ? 1.0 - _BackfaceForceShadow : 1.0;
-            #endif
-            ln1 *= bfshadow;
-            ln2 *= bfshadow;
-            lnB *= bfshadow;
-
-            // Copy
-            fd.shadowmix = ln1;
-
-            // Shadow Color 1
-            float4 shadowColorTex = LIL_SAMPLE_2D(_ShadowColorTex, samp, fd.uvMain);
-            float3 indirectCol = lerp(fd.albedo, shadowColorTex.rgb, shadowColorTex.a);
-            // Shadow Color 2
-            float4 shadow2ndColorTex = LIL_SAMPLE_2D(_Shadow2ndColorTex, samp, fd.uvMain);
-            indirectCol = lerp(indirectCol, shadow2ndColorTex.rgb, shadow2ndColorTex.a - ln2 * shadow2ndColorTex.a);
-
-            // Apply Light
-            float3 directCol = fd.albedo * fd.lightColor;
-            indirectCol = indirectCol * fd.lightColor;
-
-            // Environment Light
-            indirectCol = lerp(indirectCol, fd.albedo, saturate(fd.indLightColor * _ShadowEnvStrength));
-            // Fix
-            indirectCol = min(indirectCol, directCol);
-            // Gradation
-            indirectCol = lerp(indirectCol, directCol, lnB * _ShadowBorderColor.rgb);
-
-            // Mix
-            fd.col.rgb = lerp(indirectCol, directCol, ln1);
-        }
-        else
-        {
-            fd.col.rgb *= fd.lightColor;
-        }
-    }
 #endif
 
 #if !defined(OVERRIDE_SHADOW)
@@ -1212,18 +1156,13 @@
 #endif
 
 #if !defined(OVERRIDE_RIMSHADE)
-    #if defined(LIL_LITE)
-        #define OVERRIDE_RIMSHADE \
-            lilGetRimShade(fd);
-    #else
         #define OVERRIDE_RIMSHADE \
             lilGetRimShade(fd LIL_SAMP_IN(sampler_MainTex));
-    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Backlight
-#if defined(LIL_FEATURE_BACKLIGHT) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_BACKLIGHT)
     void lilBacklight(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseBacklight)
@@ -1266,7 +1205,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // SSS
-#if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_SSS)
     void lilSSS(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseSSS)
@@ -1305,7 +1244,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Refraction
-#if defined(LIL_REFRACTION) && !defined(LIL_LITE)
+#if defined(LIL_REFRACTION)
     void lilRefraction(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         float2 refractUV = fd.uvScn + (pow(1.0 - fd.nv, _RefractionFresnelPower) * _RefractionStrength) * mul((float3x3)LIL_MATRIX_V, fd.N).xy;
@@ -1327,7 +1266,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Reflection
-#if defined(LIL_FEATURE_REFLECTION) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_REFLECTION) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR))
     float3 lilCalcSpecular(inout lilFragData fd, float3 L, float3 specular, float attenuation LIL_SAMP_IN_FUNC(samp))
     {
         // Normal
@@ -1529,7 +1468,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // MatCap
-#if defined(LIL_FEATURE_MATCAP) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_MATCAP)
     void lilGetMatCap(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseMatCap)
@@ -1578,16 +1517,6 @@
             fd.col.rgb = lilBlendColor(fd.col.rgb, matCapColor.rgb, _MatCapBlend * matCapColor.a * matCapMask, _MatCapBlendMode);
         }
     }
-#elif defined(LIL_LITE)
-    void lilGetMatCap(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseMatCap)
-        {
-            float3 matcap = 1.0;
-            matcap = LIL_SAMPLE_2D(_MatCapTex, samp, fd.uvMat).rgb;
-            fd.col.rgb = lerp(fd.col.rgb, _MatCapMul ? fd.col.rgb * matcap : fd.col.rgb + matcap, fd.triMask.r);
-        }
-    }
 #endif
 
 #if !defined(OVERRIDE_MATCAP)
@@ -1597,7 +1526,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // MatCap 2nd
-#if defined(LIL_FEATURE_MATCAP_2ND) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_MATCAP_2ND)
     void lilGetMatCap2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseMatCap2nd)
@@ -1655,7 +1584,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Rim Light
-#if defined(LIL_FEATURE_RIMLIGHT) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_RIMLIGHT)
     void lilGetRim(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseRim)
@@ -1745,32 +1674,16 @@
             #endif
         }
     }
-#elif defined(LIL_LITE)
-    void lilGetRim(inout lilFragData fd)
-    {
-        if(_UseRim)
-        {
-            float rim = pow(saturate(1.0 - fd.nvabs), _RimFresnelPower);
-            rim = lilTooningScale(_AAStrength, rim, _RimBorder, _RimBlur);
-            rim = lerp(rim, rim * fd.shadowmix, _RimShadowMask);
-            fd.col.rgb += rim * fd.triMask.g * _RimColor.rgb * fd.lightColor;
-        }
-    }
 #endif
 
 #if !defined(OVERRIDE_RIMLIGHT)
-    #if defined(LIL_LITE)
-        #define OVERRIDE_RIMLIGHT \
-            lilGetRim(fd);
-    #else
         #define OVERRIDE_RIMLIGHT \
             lilGetRim(fd LIL_SAMP_IN(sampler_MainTex));
-    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Glitter
-#if defined(LIL_FEATURE_GLITTER) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_GLITTER)
     void lilGlitter(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseGlitter)
@@ -1827,7 +1740,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Emission
-#if defined(LIL_FEATURE_EMISSION_1ST) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_EMISSION_1ST)
     void lilEmission(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseEmission)
@@ -1872,37 +1785,16 @@
             fd.col.rgb = lilBlendColor(fd.col.rgb, emissionColor.rgb, emissionBlend, _EmissionBlendMode);
         }
     }
-#elif defined(LIL_LITE)
-    void lilEmission(inout lilFragData fd)
-    {
-        if(_UseEmission)
-        {
-            float emissionBlinkSeq = lilCalcBlink(_EmissionBlink);
-            float4 emissionColor = _EmissionColor;
-            float2 emissionUV = fd.uv0;
-            if(_EmissionMap_UVMode == 1) emissionUV = fd.uv1;
-            if(_EmissionMap_UVMode == 2) emissionUV = fd.uv2;
-            if(_EmissionMap_UVMode == 3) emissionUV = fd.uv3;
-            if(_EmissionMap_UVMode == 4) emissionUV = fd.uvRim;
-            emissionColor *= LIL_GET_EMITEX(_EmissionMap,emissionUV);
-            fd.emissionColor += emissionBlinkSeq * fd.triMask.b * emissionColor.rgb;
-        }
-    }
 #endif
 
 #if !defined(OVERRIDE_EMISSION_1ST)
-    #if defined(LIL_LITE)
-        #define OVERRIDE_EMISSION_1ST \
-            lilEmission(fd);
-    #else
         #define OVERRIDE_EMISSION_1ST \
             lilEmission(fd LIL_SAMP_IN(sampler_MainTex));
-    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Emission 2nd
-#if defined(LIL_FEATURE_EMISSION_2ND) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_EMISSION_2ND)
     void lilEmission2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseEmission2nd)
@@ -1975,7 +1867,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Depth Fade
-#if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION)
     void lilDepthFade(inout lilFragData fd)
     {
         if((_DepthFadeTransparency < 1) && LIL_ENABLED_DEPTH_TEX)
@@ -2008,7 +1900,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Distance Fade
-#if defined(LIL_FEATURE_DISTANCE_FADE) && !defined(LIL_LITE)
+#if defined(LIL_FEATURE_DISTANCE_FADE)
     void lilDistanceFadeAlphaOnly(inout lilFragData fd)
     {
         float depth = _DistanceFadeMode ? fd.depthObject : fd.depth;
@@ -2058,7 +1950,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE)
+#if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION)
 void lilPlanarReflection(inout lilFragData fd)
 {
     if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
@@ -2128,7 +2020,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION) && !defined(LIL_LITE)
+    #if defined(LIL_URP) && (defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_HAIR)) && defined(LIL_FEATURE_REFLECTION)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else

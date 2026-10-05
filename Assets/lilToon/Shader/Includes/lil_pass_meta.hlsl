@@ -55,20 +55,15 @@ float4 frag(v2f input) : SV_Target
     OVERRIDE_MAIN
     fd.albedo = fd.col.rgb;
     fd.col.rgb = 0.0;
-    #if defined(LIL_LITE)
-        fd.triMask = LIL_SAMPLE_2D(_TriMask, sampler_MainTex, fd.uvMain);
-    #endif
 
     BEFORE_EMISSION_1ST
-    #if defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_LITE)
+    #if defined(LIL_FEATURE_EMISSION_1ST)
         OVERRIDE_EMISSION_1ST
     #endif
-    #if !defined(LIL_LITE)
         BEFORE_EMISSION_1ST
         #if defined(LIL_FEATURE_EMISSION_2ND)
             OVERRIDE_EMISSION_2ND
         #endif
-    #endif
     BEFORE_BLEND_EMISSION
     OVERRIDE_BLEND_EMISSION
 

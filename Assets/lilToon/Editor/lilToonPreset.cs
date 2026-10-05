@@ -69,7 +69,7 @@ public class lilToonPreset : ScriptableObject
         if(preset.shader != null) material.shader = preset.shader;
         var shaderName = material.shader.name;
         bool isoutl         = preset.outline == -1 ? lilShaderUtils.IsOutlineShaderName(shaderName) : (preset.outline == 1);
-        bool islite         = lilShaderUtils.IsLiteShaderName(shaderName);
+
         bool iscutout       = lilShaderUtils.IsCutoutShaderName(shaderName);
         bool istransparent  = lilShaderUtils.IsTransparentShaderName(shaderName);
         bool isrefr         = lilShaderUtils.IsRefractionShaderName(shaderName);
@@ -100,7 +100,7 @@ public class lilToonPreset : ScriptableObject
         if(isonepass)           transparentMode = TransparentMode.OnePass;
         if(!isfur && istwopass) transparentMode = TransparentMode.TwoPass;
 
-        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
+        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, false, ismulti);
         if(preset.renderQueue != -2) material.renderQueue = preset.renderQueue;
 
         foreach(var c in preset.colors ) material.SetColor(c.name, c.value);

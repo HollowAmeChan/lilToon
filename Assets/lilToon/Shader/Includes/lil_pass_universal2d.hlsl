@@ -42,11 +42,7 @@ float4 frag(v2f input) : SV_Target
     BEFORE_MAIN
     OVERRIDE_MAIN
     #if LIL_RENDER == 1
-        #ifdef LIL_LITE
-            clip(fd.col.a - _Cutoff);
-        #else
             fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
-        #endif
     #elif LIL_RENDER == 2
         clip(fd.col.a - _Cutoff);
     #endif

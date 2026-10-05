@@ -123,7 +123,6 @@ namespace lilToon
         protected static MaterialEditor m_MaterialEditor;
         protected static RenderingMode renderingModeBuf;
         protected static TransparentMode transparentModeBuf;
-        protected static bool isLite            = false;
         protected static bool isCutout          = false;
         protected static bool isTransparent     = false;
         protected static bool isOutl            = false;
@@ -177,7 +176,6 @@ namespace lilToon
         protected static string     sShadowColorTypes               { get { return lilLanguageManager.sShadowColorTypes             ; } private set { lilLanguageManager.sShadowColorTypes               = value; } }
         protected static string     sShadowMaskTypes                { get { return lilLanguageManager.sShadowMaskTypes              ; } private set { lilLanguageManager.sShadowMaskTypes               = value; } }
         protected static string[]   sRenderingModeList              { get { return lilLanguageManager.sRenderingModeList            ; } private set { lilLanguageManager.sRenderingModeList             = value; } }
-        protected static string[]   sRenderingModeListLite          { get { return lilLanguageManager.sRenderingModeListLite        ; } private set { lilLanguageManager.sRenderingModeListLite         = value; } }
         protected static string[]   sTransparentModeList            { get { return lilLanguageManager.sTransparentModeList          ; } private set { lilLanguageManager.sTransparentModeList           = value; } }
         protected static string[]   sBlendModeList                  { get { return lilLanguageManager.sBlendModeList                ; } private set { lilLanguageManager.sBlendModeList                 = value; } }
         protected static GUIContent mainColorRGBAContent            { get { return lilLanguageManager.mainColorRGBAContent          ; } private set { lilLanguageManager.mainColorRGBAContent           = value; } }

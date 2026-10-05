@@ -11,6 +11,7 @@ namespace lilToon
         internal static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
         {
             if(material == null || material.parent != null) return;
+            if(islite) throw new System.ArgumentException("The Lite shader family has been retired.", nameof(islite));
             Undo.RecordObject(material, null);
             int renderQueue = GetTrueRenderQueue(material);
             RenderingMode rend = renderingMode;
@@ -30,12 +31,7 @@ namespace lilToon
             switch(rend)
             {
                 case RenderingMode.Opaque:
-                    if(islite)
-                    {
-                        if(isoutl)  material.shader = lilShaderManager.ltslo;
-                        else        material.shader = lilShaderManager.ltsl;
-                    }
-                    else if(ismulti)
+                    if(ismulti)
                     {
                         if(isoutl)  material.shader = lilShaderManager.ltsmo;
                         else        material.shader = lilShaderManager.ltsm;
@@ -58,12 +54,7 @@ namespace lilToon
                     }
                     break;
                 case RenderingMode.Cutout:
-                    if(islite)
-                    {
-                        if(isoutl)  material.shader = lilShaderManager.ltslco;
-                        else        material.shader = lilShaderManager.ltslc;
-                    }
-                    else if(ismulti)
+                    if(ismulti)
                     {
                         if(isoutl)  material.shader = lilShaderManager.ltsmo;
                         else        material.shader = lilShaderManager.ltsm;
@@ -98,36 +89,18 @@ namespace lilToon
                         switch (transparentMode)
                         {
                             case TransparentMode.Normal:
-                                if(islite)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltslto;
-                                    else        material.shader = lilShaderManager.ltslt;
-                                }
-                                else
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltsto;
                                     else        material.shader = lilShaderManager.ltst;
                                 }
                                 break;
                             case TransparentMode.OnePass:
-                                if(islite)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltsloto;
-                                    else        material.shader = lilShaderManager.ltslot;
-                                }
-                                else
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltsoto;
                                     else        material.shader = lilShaderManager.ltsot;
                                 }
                                 break;
                             case TransparentMode.TwoPass:
-                                if(islite)
-                                {
-                                    if(isoutl)  material.shader = lilShaderManager.ltsltto;
-                                    else        material.shader = lilShaderManager.ltsltt;
-                                }
-                                else
                                 {
                                     if(isoutl)  material.shader = lilShaderManager.ltstto;
                                     else        material.shader = lilShaderManager.ltstt;
@@ -474,34 +447,19 @@ namespace lilToon
         {
             var shaderName = material.shader.name;
             if(!shaderName.Contains("lilToon")) return;
-            RemoveUnusedTexture(material, lilShaderUtils.IsLiteShaderName(shaderName), animatedProps);
+            RemoveUnusedTexture(material, false, animatedProps);
         }
 
         public static void RemoveUnusedTexture(Material material, bool islite, params string[] animatedProps)
         {
+            if(islite) throw new System.ArgumentException("The Lite shader family has been retired.", nameof(islite));
             RemoveUnusedProperties(material);
-            RemoveUnusedTextureOnly(material, islite, animatedProps);
+            RemoveUnusedTextureOnly(material, false, animatedProps);
         }
 
         public static void RemoveUnusedTextureOnly(Material material, bool islite, params string[] animatedProps)
         {
-            if(islite)
-            {
-                if(IsPropZero(material, "_UseShadow", animatedProps))
-                {
-                    material.SetTexture("_ShadowColorTex", null);
-                    material.SetTexture("_Shadow2ndColorTex", null);
-                }
-                if(IsPropZero(material, "_UseEmission", animatedProps))
-                {
-                    material.SetTexture("_EmissionMap", null);
-                }
-                if(IsPropZero(material, "_UseMatCap", animatedProps))
-                {
-                    material.SetTexture("_MatCapTex", null);
-                }
-            }
-            else
+            if(islite) throw new System.ArgumentException("The Lite shader family has been retired.", nameof(islite));
             {
                 if(IsPropZero(material, "_MainGradationStrength", animatedProps)) material.SetTexture("_MainGradationTex", null);
                 if(IsPropZero(material, "_UseMain2ndTex", animatedProps))

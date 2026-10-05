@@ -4,37 +4,7 @@ namespace lilToon
 {
     public static class lilShaderUtils
     {
-        public static bool IsLiteShaderName(string shaderName)
-        {
-            var separatorIndex = shaderName.LastIndexOf('/');
-            if (separatorIndex == -1 || separatorIndex + 1 == shaderName.Length)
-            {
-                return false;
-            }
 
-            if (shaderName.IndexOf("Lite", separatorIndex + 1) != -1)
-            {
-                return true;
-            }
-
-            // For following custom shader names.
-            // - Hidden/*LIL_SHADER_NAME*/Lite/Cutout
-            // - Hidden/*LIL_SHADER_NAME*/Lite/Transparent
-            // - Hidden/*LIL_SHADER_NAME*/Lite/OnePassTransparent
-            // - Hidden/*LIL_SHADER_NAME*/Lite/TwoPassTransparent
-            // - Hidden/*LIL_SHADER_NAME*/Lite/OpaqueOutline
-            // - Hidden/*LIL_SHADER_NAME*/Lite/CutoutOutline
-            // - Hidden/*LIL_SHADER_NAME*/Lite/TransparentOutline
-            // - Hidden/*LIL_SHADER_NAME*/Lite/OnePassTransparentOutline
-            // - Hidden/*LIL_SHADER_NAME*/Lite/TwoPassTransparentOutline
-            var partIndex = shaderName.LastIndexOf("/Lite/");
-            if (partIndex != -1 && partIndex + 5 == separatorIndex)
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         public static bool IsCutoutShaderName(string shaderName)
         {

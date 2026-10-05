@@ -756,7 +756,7 @@ public class lilToonSetting : ScriptableObject
         {
             var next = toVisit.Dequeue();
             if(next == null) continue;
-        
+
             callback.Invoke(next);
 
             if(
@@ -988,7 +988,7 @@ public class lilToonSetting : ScriptableObject
         if(material == null || material.shader == null) return;
 
         var shaderName = material.shader.name;
-        if(lilShaderUtils.IsLiteShaderName(shaderName) || lilShaderUtils.IsMultiShaderName(shaderName)) return;
+        if(false || lilShaderUtils.IsMultiShaderName(shaderName)) return;
         if(!lilMaterialUtils.CheckShaderIslilToon(material.shader)) return;
 
         if(!shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV && material.HasProperty("_MainTex_ScrollRotate") && material.GetVector("_MainTex_ScrollRotate") != lilConstants.defaultScrollRotate)

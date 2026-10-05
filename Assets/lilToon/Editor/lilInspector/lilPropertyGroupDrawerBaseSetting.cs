@@ -16,13 +16,12 @@ namespace lilToon
     public partial class lilToonInspector
     {
 
-        private void DrawRenderingModeSettings(Material material, string sTransparentMode, string[] sRenderingModeList, string[] sRenderingModeListLite)
+        private void DrawRenderingModeSettings(Material material, string sTransparentMode, string[] sRenderingModeList)
         {
             if(material.parent != null)
             {
                 EditorGUI.BeginDisabledGroup(true);
-                if(isLite)  lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeListLite);
-                else        lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList);
+                lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList);
                 EditorGUI.EndDisabledGroup();
                 EditorGUILayout.HelpBox(GetLoc("Material Variant inherits rendering mode from the parent material because lilToon changes rendering mode by switching shaders."), MessageType.Info);
             }
@@ -39,8 +38,7 @@ namespace lilToon
                 if(isShowRenderMode && !isMulti)
                 {
                     RenderingMode renderingMode;
-                    if(isLite)  renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeListLite));
-                    else        renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList));
+                    renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList));
                     if(renderingModeBuf != renderingMode)
                     {
                         SetupMaterialWithRenderingMode(renderingMode, transparentModeBuf);
@@ -91,9 +89,9 @@ namespace lilToon
             }
         }
 
-        private void DrawBaseSettings(Material material, string sTransparentMode, string[] sRenderingModeList, string[] sRenderingModeListLite, string[] sTransparentModeList)
+        private void DrawBaseSettings(Material material, string sTransparentMode, string[] sRenderingModeList, string[] sTransparentModeList)
         {
-            DrawRenderingModeSettings(material, sTransparentMode, sRenderingModeList, sRenderingModeListLite);
+            DrawRenderingModeSettings(material, sTransparentMode, sRenderingModeList);
 
             if(!ShouldDrawBlock(PropertyBlock.Base)) return;
 
@@ -129,7 +127,6 @@ namespace lilToon
                         {
                             LocalizedProperty(flipNormal);
                             LocalizedProperty(backfaceForceShadow);
-                            if(!isLite)
                             {
                                 LocalizedPropertyColorWithAlpha(backfaceColor);
                             }
@@ -177,11 +174,7 @@ namespace lilToon
                     {
                         EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"),MessageType.Warning);
                     }
-                    if(isLite)
-                    {
-                        lilEditorGUI.DrawLine();
-                        LocalizedPropertyTexture(triMaskContent, triMask);
-                    }
+
                 EditorGUILayout.EndVertical();
 
                 if(transparentModeBuf == TransparentMode.TwoPass)

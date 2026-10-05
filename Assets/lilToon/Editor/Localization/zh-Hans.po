@@ -314,9 +314,6 @@ msgstr "着色器功能"
 msgid "sShaderTypeNormal"
 msgstr "Normal (常规)"
 
-msgid "sShaderTypeLite"
-msgstr "Lite (轻量)"
-
 msgid "sRenderingMode"
 msgstr "渲染模式"
 
@@ -1318,9 +1315,6 @@ msgstr "Unity可能会错误删除所需的顶点数据。发生问题时，请�
 
 msgid "sPresets"
 msgstr "预设"
-
-msgid "sPresetsNotAvailable"
-msgstr "预设在此着色器中不可用。"
 
 msgid "sPresetIsMaterial"
 msgstr "当前选择的不是材质。"

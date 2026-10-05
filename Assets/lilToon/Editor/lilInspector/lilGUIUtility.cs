@@ -165,7 +165,6 @@ namespace lilToon
         {
             var shaderName = material.shader.name;
 
-            isLite          = lilShaderUtils.IsLiteShaderName(shaderName);
             isCutout        = lilShaderUtils.IsCutoutShaderName(shaderName);
             isTransparent   = lilShaderUtils.IsTransparentShaderName(shaderName) || lilShaderUtils.IsOverlayShaderName(shaderName);
             isOutl          = !isMultiVariants && lilShaderUtils.IsOutlineShaderName(shaderName);

@@ -101,7 +101,7 @@ namespace lilToon
                 EditorGUILayout.BeginVertical(boxOuter);
                 LocalizedProperty(useShadow, false);
                 DrawMenuButton(GetLoc("sAnchorShadow"), PropertyBlock.Shadow);
-                if(useShadow.floatValue == 1 && !isLite)
+                if(useShadow.floatValue == 1)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
                     LocalizedProperty(shadowMaskType);
@@ -200,7 +200,6 @@ namespace lilToon
                 // them instead of exposing a second copy. Drawn outside the _UseShadow
                 // branches: the same input also drives the darkening, which works with the
                 // toon shadow off.
-                if(!isLite)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
                     DrawShadowAOGroup();

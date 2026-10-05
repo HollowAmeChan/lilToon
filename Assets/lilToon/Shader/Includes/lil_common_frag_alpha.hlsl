@@ -50,14 +50,14 @@
     //------------------------------------------------------------------------------------------------------------------------------
     // Alpha Mask
     BEFORE_ALPHAMASK
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_ALPHAMASK)
+    #if defined(LIL_FEATURE_ALPHAMASK)
         OVERRIDE_ALPHAMASK
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Dissolve
     BEFORE_DISSOLVE
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DISSOLVE)
+    #if defined(LIL_FEATURE_DISSOLVE)
         float dissolveAlpha = 0.0;
         if (fd.dissolveActive)
         {
@@ -69,7 +69,7 @@
                 fd.col.a = 1.0f - fd.col.a;
                 dissolveAlpha = 1.0f - dissolveAlpha;
             }
-                        
+
             fd.col.a *= priorAlpha;
         }
     #endif
@@ -84,7 +84,7 @@
     //------------------------------------------------------------------------------------------------------------------------------
     // Dither
     BEFORE_DITHER
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
+    #if defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
         OVERRIDE_DITHER
     #endif
 

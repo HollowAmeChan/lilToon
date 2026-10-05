@@ -314,9 +314,6 @@ msgstr "Shader Type"
 msgid "sShaderTypeNormal"
 msgstr "Normal"
 
-msgid "sShaderTypeLite"
-msgstr "Lite"
-
 msgid "sRenderingMode"
 msgstr "Rendering Mode"
 
@@ -1318,9 +1315,6 @@ msgstr "Due to a bug in Unity, even necessary vertex data may be deleted. If the
 
 msgid "sPresets"
 msgstr "Presets"
-
-msgid "sPresetsNotAvailable"
-msgstr "Presets are not available for this shader."
 
 msgid "sPresetIsMaterial"
 msgstr "Currently selected is not a Material."

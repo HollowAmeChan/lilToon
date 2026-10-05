@@ -124,12 +124,12 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
     #endif
 
     BEFORE_ALPHAMASK
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
+    #if defined(LIL_FEATURE_ALPHAMASK) && LIL_RENDER != 0
         OVERRIDE_ALPHAMASK
     #endif
 
     BEFORE_DISSOLVE
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
+    #if defined(LIL_FEATURE_DISSOLVE) && LIL_RENDER != 0
         float dissolveAlpha = 0.0;
         if (fd.dissolveActive)
         {
@@ -145,7 +145,7 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
     #endif
 
     BEFORE_DITHER
-    #if !defined(LIL_LITE) && defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
+    #if defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
         OVERRIDE_DITHER
     #endif
 

@@ -22,7 +22,6 @@ namespace lilToon
             DrawMenuButton(GetLoc("sAnchorMatCap"), PropertyBlock.MatCaps);
             if(edSet.isShowMatCap)
             {
-                if(!isLite)
                 {
                     //------------------------------------------------------------------------------------------------------------------------------
                     // MatCap
@@ -98,23 +97,6 @@ namespace lilToon
                         EditorGUILayout.EndVertical();
                     }
                 }
-                else
-                {
-                    if(ShouldDrawBlock(PropertyBlock.MatCap1st))
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        LocalizedProperty(useMatCap, false);
-                        DrawMenuButton(GetLoc("sAnchorMatCap"), PropertyBlock.MatCap1st);
-                        if(useMatCap.floatValue == 1)
-                        {
-                            EditorGUILayout.BeginVertical(boxInnerHalf);
-                            MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapBlendUV1, matcapZRotCancel, matcapPerspective, matcapVRParallaxStrength);
-                            LocalizedProperty(matcapMul);
-                            EditorGUILayout.EndVertical();
-                        }
-                        EditorGUILayout.EndVertical();
-                    }
-                }
             }
         }
 
@@ -126,7 +108,6 @@ namespace lilToon
             if(edSet.isShowRim)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                if(!isLite)
                 {
                     LocalizedProperty(useRim, false);
                     DrawMenuButton(GetLoc("sAnchorRimLight"), PropertyBlock.RimLight);
@@ -165,22 +146,6 @@ namespace lilToon
                         LocalizedProperty(rimNormalStrength);
                         LocalizedProperty(rimFresnelPower);
                         LocalizedProperty(rimVRParallaxStrength);
-                        EditorGUILayout.EndVertical();
-                    }
-                }
-                else
-                {
-                    LocalizedProperty(useRim, false);
-                    DrawMenuButton(GetLoc("sAnchorRimLight"), PropertyBlock.RimLight);
-                    if(useRim.floatValue == 1)
-                    {
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        LocalizedProperty(rimColor);
-                        LocalizedProperty(rimShadowMask);
-                        lilEditorGUI.DrawLine();
-                        lilEditorGUI.InvBorderGUI(rimBorder);
-                        LocalizedProperty(rimBlur);
-                        LocalizedProperty(rimFresnelPower);
                         EditorGUILayout.EndVertical();
                     }
                 }

@@ -198,7 +198,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 {
                     fd.col.a = 1.0f - fd.col.a;
                 }
-                
+
                 fd.col.a *= priorAlpha;
             }
         #endif
@@ -365,7 +365,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 {
                     fd.col.a = 1.0f - fd.col.a;
                 }
-                        
+
                 fd.col.a *= priorAlpha;
             }
         #endif
@@ -471,7 +471,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_AODARK
 
             BEFORE_SSS
-            #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+            #if defined(LIL_FEATURE_SSS)
                 OVERRIDE_SSS
             #endif
         #else

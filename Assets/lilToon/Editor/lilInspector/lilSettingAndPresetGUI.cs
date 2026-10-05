@@ -18,8 +18,7 @@ namespace lilToon
         #region
         private void DrawPresetGUI()
         {
-            if(isLite)  EditorGUILayout.LabelField(GetLoc("sPresetsNotAvailable"), wrapLabel);
-            else        DrawPreset();
+            DrawPreset();
         }
 
         private void DrawSettingsGUI()

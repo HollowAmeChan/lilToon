@@ -314,9 +314,6 @@ msgstr "シェーダーの種類"
 msgid "sShaderTypeNormal"
 msgstr "Normal (通常版)"
 
-msgid "sShaderTypeLite"
-msgstr "Lite (軽量版)"
-
 msgid "sRenderingMode"
 msgstr "描画モード"
 
@@ -1318,9 +1315,6 @@ msgstr "Unityのバグにより必要な頂点データまで削除されるこ�
 
 msgid "sPresets"
 msgstr "プリセット"
-
-msgid "sPresetsNotAvailable"
-msgstr "プリセットはこのシェーダーでは利用できません。"
 
 msgid "sPresetIsMaterial"
 msgstr "マテリアル以外が選択されています。"

@@ -47,7 +47,7 @@ namespace lilToon
                 {
                     EditorGUILayout.LabelField(GetLoc("sOutline"), customToggleFont);
                 }
-                if(!isLite && isOutl)
+                if(isOutl)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
                     TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);

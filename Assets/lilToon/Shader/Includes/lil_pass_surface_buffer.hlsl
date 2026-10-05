@@ -26,9 +26,6 @@ struct lilHoSurfaceBufferOutput
 
 float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
 {
-    #if defined(LIL_LITE)
-        return 0.0;
-    #else
     float smoothness = _Smoothness;
     #if defined(LIL_FEATURE_SmoothnessTex)
         smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
@@ -41,7 +38,7 @@ float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
     #endif
 
     float thickness = saturate(_HoSurfaceThickness);
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+    #if defined(LIL_FEATURE_SSS)
         if(_UseSSS)
         {
             float sssThickness = 1.0;
@@ -56,14 +53,10 @@ float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
 
     // R 存 **perceptualRoughness**（SB 架构 §1：消费端自己平方成 linear roughness）。
     return float4(saturate(1.0 - smoothness), saturate(metallic), saturate(thickness), 0.0);
-    #endif
 }
 
 float4 lilHoSurfaceBufferResolveReflection(lilFragData fd)
 {
-    #if defined(LIL_LITE)
-        return 0.0;
-    #else
     #if defined(LIL_FEATURE_REFLECTION)
         float planarReflectionEnabled = (_UseReflection != 0 && _UsePlanarReflection != 0) ? 1.0 : 0.0;
     #else
@@ -74,14 +67,13 @@ float4 lilHoSurfaceBufferResolveReflection(lilFragData fd)
         saturate(_PlanarReflectionStrength) * planarReflectionEnabled,
         0.0,
         0.0);
-    #endif
 }
 
 float lilHoSurfaceBufferResolveCurvatureHint()
 {
     float curvatureHint = saturate(abs(_HoSurfaceCurvature));
 
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+    #if defined(LIL_FEATURE_SSS)
         if(_UseSSS)
         {
             float transmissionBoost = _HoSSSTransmissionStrength * (0.5 + _SSSBorder * 0.5 + _SSSViewStrength * 0.25);
@@ -96,7 +88,7 @@ float lilHoSurfaceBufferResolveTransmittanceHint()
 {
     float transmittanceHint = saturate(_HoSurfaceTransmittanceHint);
 
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+    #if defined(LIL_FEATURE_SSS)
         if(_UseSSS)
         {
             transmittanceHint = max(transmittanceHint, saturate(_HoSSSTransmissionRadius * 0.5));
@@ -108,7 +100,7 @@ float lilHoSurfaceBufferResolveTransmittanceHint()
 
 float lilHoSurfaceBufferResolveProfileByte()
 {
-    #if defined(LIL_FEATURE_SSS) && !defined(LIL_LITE)
+    #if defined(LIL_FEATURE_SSS)
         if(_UseSSS)
         {
             return lilHoSurfaceEncodeByte(_HoSSSProfileId);
