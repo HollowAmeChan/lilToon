@@ -60,7 +60,7 @@
 - 保留材质初始化、自动关键字同步、导入/版本迁移与自定义 Shader 设置接口。此步不改 HLSL，不移除现役材质效果。
 - Roslyn 编译 0 错误，转换方法/按钮引用搜索归零；独立 Unity 执行缓存与自定义槽位恢复/新 Shader 导入回归，退出码 0。日志：Extensions `.codex-research/pruning-converters.log`。
 
-### 6. Lite 整族退出（随本提交）
+### 6. Lite 整族退出：`18f3133`
 
 - 删除 12 个材质 Shader、3 个配套 Pass Shader、15 个基础模板、Lite Properties 与 URP 模板以及独立 Forward 实现，源入口/产物/meta 一起退出。
 - 公共 HLSL 按 LIL_LITE=false 保留普通族路径，清理 Lite 简化输入布局、Shadow/Meta/Depth 等分支；新旧 GUI 删除 Lite 面板、类型切换和对应模式分支。
@@ -68,6 +68,14 @@
 - Roslyn 编译 0 错误，全部 HLSL 预处理指令配平；Editor/模板/include 无 Lite 家族功能引用，序列化模式编号不变。
 - Unity 6000.3.15f1 / D3D11 / 实际 Forward+：Lite 及其配套 Pass Shader 查询均为空；旧 API 请求 Lite 被拒绝且原 Shader 保留；全量重生成与保留的 67 个默认 Pass、张力 Forward、GD 描边变体回归通过，退出码 0、Shader 错误 0。日志：Extensions `.codex-research/pruning-lite.log`。
 - 当前规模 **36 个 Shader / 413 个程序块**；不宣称同等比例的实际时间缩减。
+
+### 7. 当前 Forward+ 管线不使用的 GBuffer / Universal2D 退出（随本提交）
+
+- 从 23 个 URP 模板 Pass 定义及相关 UsePass 引用中移除 UniversalGBuffer / Universal2D，删除两个专用 HLSL 文件与 meta。展开后少 46 个程序块，当前 **36 个 Shader / 367 个程序块**。
+- 保留 Meta、MotionVectors、DepthNormals、OB/SB/Semantic/GB/CharacterCapture 与 OIT；项目 Renderer 仍为 Forward+，没有 2D/Deferred Renderer。
+- Roslyn 编译 0 错误。首次导入在旧本地产物尚未重新生成时报告缺失已删除 include；全量重生成后重复验证，干净日志 Shader 错误 0。
+- 最终 Unity 6000.3.15f1 / D3D11 / Forward+ 回归：确认 GBUFFER/UNIVERSAL2D 不存在、保留 Pass 均存在，58 个默认 Pass 加张力/GD 描边变体编译通过，退出码 0。使用最终日志 Extensions `.codex-research/pruning-unused-passes-clean.log`，不将初次过渡错误日志作为验收。
+- 本地生成产物依旧遵循 skip-worktree 约定；切到旧提交时应重新生成以恢复对应 Pass/include。
 
 ## 当前资产偏好待确认
 
