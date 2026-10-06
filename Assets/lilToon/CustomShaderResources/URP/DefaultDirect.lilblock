@@ -297,6 +297,7 @@
             #pragma vertex vert
             #pragma fragment fragSurfaceSemantic
             #pragma target 4.5
+            #pragma shader_feature_local _HO_SEMANTIC_MASK
             #pragma lil_multi_compile_depthnormals
             #pragma multi_compile_instancing
             #pragma shader_feature_local UNITY_UI_ALPHACLIP

@@ -21,7 +21,7 @@
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ObjectBuffer/Shaders/HoObjectBufferIdPass.hlsl"
 
 // 逐像素的语义遮罩（材质上的「使用语义遮罩」）——**必须显式打开**，理由见 lilHoSemanticWeight。
-#pragma shader_feature_local _HO_SEMANTIC_MASK
+#include "lil_ho_semantic_weight.hlsl"
 
 /// <summary>每条 lane 的 SemanticId（1..255）与它对应的物体位掩码（1/2/4/8…；0 = 没有物体位）。</summary>
 float4 _HoSemanticLaneIds0;
@@ -81,12 +81,7 @@ float4 lilHoSemanticPackRow(uint laneIndexA, uint laneIndexB, uint partTags, flo
 /// </summary>
 float lilHoSemanticWeight(lilFragData fd)
 {
-    float weight = saturate(_HoSemanticWeight);
-    #if defined(_HO_SEMANTIC_MASK)
-        weight *= saturate(LIL_SAMPLE_2D(_HoSemanticWeightTex, sampler_MainTex, fd.uvMain).r);
-    #endif
-
-    return weight;
+    return lilHoSemanticWeightAt(fd.uvMain);
 }
 
 lilHoSurfaceSemanticOutput fragSurfaceSemantic(v2f input LIL_VFACE(facing))

@@ -395,6 +395,7 @@
             #pragma vertex vert
             #pragma fragment fragSurfaceSemantic
             #pragma target 4.5
+            #pragma shader_feature_local _HO_SEMANTIC_MASK
             #pragma lil_multi_compile_depthnormals
             #pragma multi_compile_instancing
             #pragma shader_feature_local UNITY_UI_ALPHACLIP
@@ -628,9 +629,19 @@
         {
             Name "HO_OUTLINE_NORMAL_DEPTH"
             Tags {"LightMode" = "HoGeometryBufferOutlineNormalDepth"}
+            Stencil
+            {
+                Ref [_OutlineStencilRef]
+                ReadMask [_OutlineStencilReadMask]
+                WriteMask [_OutlineStencilWriteMask]
+                Comp [_OutlineStencilComp]
+                Pass [_OutlineStencilPass]
+                Fail [_OutlineStencilFail]
+                ZFail [_OutlineStencilZFail]
+            }
             Cull [_OutlineCull]
             ZClip [_OutlineZClip]
-            ZWrite Off
+            ZWrite [_OutlineZWrite]
             ZTest [_OutlineZTest]
             ColorMask RGBA
 
@@ -638,7 +649,10 @@
             #pragma vertex vert
             #pragma fragment fragOutlineNormalDepth
             #pragma target 4.5
+            #pragma shader_feature_local _HO_SEMANTIC_MASK
             #pragma lil_multi_compile_depthnormals
+            #pragma multi_compile_instancing
+            #pragma instancing_options renderinglayer
             #pragma shader_feature_local UNITY_UI_ALPHACLIP
             #pragma shader_feature_local ETC1_EXTERNAL_ALPHA
             #define LIL_OUTLINE
