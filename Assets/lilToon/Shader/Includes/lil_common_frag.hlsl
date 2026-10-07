@@ -1741,7 +1741,9 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Emission
 #if defined(LIL_FEATURE_EMISSION_1ST)
-    void lilEmission(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    // RGB: sampled emission color; A: evaluated blend weight. Kept separate
+    // from surface compositing so buffer/ray-hit producers can reuse it.
+    float4 lilEmissionComponent(lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseEmission)
         {
@@ -1782,7 +1784,17 @@
             #if LIL_RENDER == 2 && !defined(LIL_REFRACTION)
                 emissionBlend *= fd.col.a;
             #endif
-            fd.col.rgb = lilBlendColor(fd.col.rgb, emissionColor.rgb, emissionBlend, _EmissionBlendMode);
+            return float4(emissionColor.rgb, emissionBlend);
+        }
+        return 0.0;
+    }
+
+    void lilEmission(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        if(_UseEmission)
+        {
+            float4 emission = lilEmissionComponent(fd LIL_SAMP_IN(samp));
+            fd.col.rgb = lilBlendColor(fd.col.rgb, emission.rgb, emission.a, _EmissionBlendMode);
         }
     }
 #endif
@@ -1795,7 +1807,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Emission 2nd
 #if defined(LIL_FEATURE_EMISSION_2ND)
-    void lilEmission2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    float4 lilEmission2ndComponent(lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
         if(_UseEmission2nd)
         {
@@ -1836,7 +1848,17 @@
             #if LIL_RENDER == 2 && !defined(LIL_REFRACTION)
                 emission2ndBlend *= fd.col.a;
             #endif
-            fd.col.rgb = lilBlendColor(fd.col.rgb, emission2ndColor.rgb, emission2ndBlend, _Emission2ndBlendMode);
+            return float4(emission2ndColor.rgb, emission2ndBlend);
+        }
+        return 0.0;
+    }
+
+    void lilEmission2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
+    {
+        if(_UseEmission2nd)
+        {
+            float4 emission = lilEmission2ndComponent(fd LIL_SAMP_IN(samp));
+            fd.col.rgb = lilBlendColor(fd.col.rgb, emission.rgb, emission.a, _Emission2ndBlendMode);
         }
     }
 #endif

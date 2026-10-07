@@ -1,13 +1,14 @@
 #ifndef LIL_PASS_SURFACE_BUFFER_INCLUDED
 #define LIL_PASS_SURFACE_BUFFER_INCLUDED
 
-// Ho-SurfaceBuffer（SB）材质 pass：一趟把**表面数值**写成五张图 + owner。
+// Ho-SurfaceBuffer（SB）材质 pass：六张数值图（含独立 Emission）+ owner。
 // 与 MetadataBuffer 的 surface 部分同源，但按 SB 冻结契约换了名字与布局：
 //   Color          = fd.col（主色链，不预乘、不钳制）
 //   Normal         = octa(着色法线)
 //   Material       = (perceptualRoughness, metallic, thickness, 0)
 //   Reflection     = (reflectance, plrStrength, 0, 0)
 //   Classification = (sssProfileIdByte, curvatureHint, transmittanceHint, materialClassIdByte)
+//   Emission       = (dedicated emission contribution RGB, surface writer)
 //   owner          = RSUV 的低 16 bit（= OB 写的 partId），用来跟 OB 层 0 对齐
 // **不用 MPB**：曲率 / class / transmittance 全走材质参数（SB 架构 §2.3）。
 // 几何 + 主色链 + alpha clip 与语义 pass 共用 `lil_pass_surface_common.hlsl`。
@@ -22,7 +23,28 @@ struct lilHoSurfaceBufferOutput
     half4 reflection : SV_Target3;
     half4 classification : SV_Target4;
     half4 owner : SV_Target5;
+    half4 emission : SV_Target6;
 };
+
+float3 lilHoSurfaceResolveEmission(lilFragData fd)
+{
+    // Material-only source: fluorescence uses a neutral lighting gate. The
+    // forward pass still evaluates its original lighting-dependent appearance.
+    fd.albedo = fd.col.rgb;
+    fd.invLighting = 1.0;
+    fd.nvabs = abs(dot(fd.N, fd.V));
+    fd.uvRim = fd.nvabs.xx;
+    float3 result = 0.0;
+    #if defined(LIL_FEATURE_EMISSION_1ST)
+        float4 first = lilEmissionComponent(fd LIL_SAMP_IN(sampler_MainTex));
+        result += first.rgb * first.a;
+    #endif
+    #if defined(LIL_FEATURE_EMISSION_2ND)
+        float4 second = lilEmission2ndComponent(fd LIL_SAMP_IN(sampler_MainTex));
+        result += second.rgb * second.a;
+    #endif
+    return max(result, 0.0);
+}
 
 float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
 {
@@ -126,6 +148,9 @@ lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
         lilHoSurfaceEncodeByte(_HoSurfaceMaterialClassId));
     float2 ownerBytes = lilHoSurfaceOwnerEncoded();
     output.owner = half4((half2)ownerBytes, 0.0h, 0.0h);
+    // A is writer validity, including unregistered (owner=0) surfaces. It is
+    // neither material alpha nor OB coverage. Cleared background remains zero.
+    output.emission = half4(lilHoSurfaceResolveEmission(fd), 1.0h);
     return output;
 }
 

@@ -2,7 +2,7 @@
 #define LIL_PASS_SURFACE_COMMON_INCLUDED
 
 // Ho-SurfaceBuffer 两个材质 pass 的**共享前半段**：
-//   HoSurfaceBuffer  = 五张数值图 + owner（单采样）
+//   HoSurfaceBuffer  = 六张数值图（含 Emission）+ owner（单采样）
 //   HoSurfaceSemantic= owner + 语义 lane（单采样，逐像素）
 // 两趟必须对"哪些像素存在"给出一致答案，所以几何解包、主色链、溶解 / 抖动 / cutout 的
 // alpha clip **只写一份**（`lilHoSurfaceBuildFrag`），否则 cutout 的洞上会出现
@@ -93,7 +93,8 @@ float lilHoSurfaceEncodeByte(float value)
 }
 
 // owner = RSUV 的低 16 bit（OB 写进去的 partId），存成两个字节（R = 高、G = 低）。
-// 没有身份时是 0 = "没有 writer"：数值图的 0 是合法值，**只有 owner 能区分"写了 0"和"没人写"**（SB 架构 §0.1）。
+// 没有登记身份时为 0，保留 AC 的身份对齐规则。独立表面 writer 由 Emission.a 表达，
+// 不要求可见场景面先登记 OB；数值图的 0 始终是合法值。
 float2 lilHoSurfaceOwnerEncoded()
 {
     return HoSurfaceOwnerEncode(unity_RendererUserValue & 0xFFFFu);
