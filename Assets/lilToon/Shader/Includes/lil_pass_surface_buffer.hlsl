@@ -4,8 +4,8 @@
 // Ho-SurfaceBuffer（SB）材质 pass：六张数值图（含独立 Emission）+ owner。
 // 与 MetadataBuffer 的 surface 部分同源，但按 SB 冻结契约换了名字与布局：
 //   Color          = fd.col（主色链，不预乘、不钳制）
-//   Normal         = octa(着色法线)
-//   Material       = (perceptualRoughness, metallic, thickness, 0)
+//   Normal         = (octa(着色法线), octa(未经过 normal map 的网格法线))
+//   Material       = (perceptualRoughness, metallic, thickness, meshNormalAvailable)
 //   Reflection     = (reflectance, plrStrength, 0, 0)
 //   Classification = (sssProfileIdByte, curvatureHint, transmittanceHint, materialClassIdByte)
 //   Emission       = (dedicated emission contribution RGB, surface writer)
@@ -74,7 +74,7 @@ float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
     #endif
 
     // R 存 **perceptualRoughness**（SB 架构 §1：消费端自己平方成 linear roughness）。
-    return float4(saturate(1.0 - smoothness), saturate(metallic), saturate(thickness), 0.0);
+    return float4(saturate(1.0 - smoothness), saturate(metallic), saturate(thickness), 1.0);
 }
 
 float4 lilHoSurfaceBufferResolveReflection(lilFragData fd)
@@ -138,7 +138,9 @@ lilHoSurfaceBufferOutput fragSurfaceBuffer(v2f input LIL_VFACE(facing))
 
     lilHoSurfaceBufferOutput output;
     output.color = half4(fd.col.rgb, 1.0h);
-    output.normal = half4((half2)HoSurfaceOctEncode(fd.N), 0.0h, 1.0h);
+    float3 meshNormalWS = normalize(input.normalWS);
+    meshNormalWS = fd.facing < (_FlipNormal-1.0) ? -meshNormalWS : meshNormalWS;
+    output.normal = half4((half2)HoSurfaceOctEncode(fd.N), (half2)HoSurfaceOctEncode(meshNormalWS));
     output.material = (half4)lilHoSurfaceBufferResolveMaterial(fd);
     output.reflection = (half4)lilHoSurfaceBufferResolveReflection(fd);
     output.classification = half4(
