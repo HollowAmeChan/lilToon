@@ -138,7 +138,6 @@ CustomEditor "lilToon.lilToonInspector"
 
 | 顺序 | 折叠栏（中文 / 英文键） | key | PropertyBlock | 顶部开关属性 | 默认展开 | 额外可见条件 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | GI / `GI` | `lighting.giao` | `GIAO` | 无 | ❌ | 内容仅 URP 下显示 `_HTraceSSGIBackfaceNormalFix` |
 | 2 | 阴影 / `sDirectShadow` | `lighting.shadow` | `Shadow` | `_UseShadow` | ❌ | 非宝石 |
 | 3 | AO / `AO` | `lighting.ao` | `Shadow`（**与阴影同一块**） | 无 | ❌ | 非宝石且非 Lite |
 | 4 | 自发光 / `sEmissionSetting` | `lighting.emission` | `Emission` | `_UseEmission` | ❌ | — |
@@ -481,7 +480,6 @@ APV 当前没有独立贡献或采样有效性的材质调试视图；光照页�
 | --- | --- | --- | --- |
 | 1 | 基本设置 | `Base` | 内含**渲染模式下拉 + 透明模式下拉** |
 | 2 | 照明设置 | `Lighting` | |
-| 3 | GI | `GIAO` | 含 `?` 帮助按钮，块内 `Global Illumination` 标题 + ⋮ |
 | 4 | MetadataBuffer | `MetadataBuffer` | 含 `?` 帮助按钮 |
 | 5 | 平面反射 | `PlanarReflection` | 含 `?` 帮助按钮 |
 | 6 | UV 设置 | `UV` | |
@@ -657,7 +655,7 @@ APV 当前没有独立贡献或采样有效性的材质调试视图；光照页�
 | 编辑器模式页签、UI 切换按钮 | `lilGUIUtility.cs` / `lilInspectorUiSwitcher.cs` | `SelectEditorMode` / `DrawInspectorUiSwitcher` |
 | 新版 UI 的 4 个分类页和所有折叠栏 | `lilInspector/lilNextInspectorGUI.cs` | `DrawNextInspectorGUI`、`DrawNextSection`、`DrawNextMaterialPage`、`DrawNextLightingPage`、`DrawNextExtraPage`、`DrawNextPipelinePage` |
 | 旧版 UI 的列表与三套分支 | `lilInspector/lilMainInspectorGUI.cs` | `DrawAdvancedGUI` |
-| 各功能组的属性排布（新旧共用） | `lilInspector/lilPropertyGroupDrawer*.cs` | `DrawBaseSettings`、`DrawShadowSettings`、`DrawAOSettings`、`DrawMatCapSettings`、`DrawRimSettings`、`DrawGlitterSettings`、`DrawOutlineSettings`、`DrawStencilSettings`、`DrawLightingSettings`、`DrawGIAOSettings`、`DrawMetadataBufferSettings`、`DrawPlanarReflectionSettings` |
+| 各功能组的属性排布（新旧共用） | `lilInspector/lilPropertyGroupDrawer*.cs` | `DrawBaseSettings`、`DrawShadowSettings`、`DrawAOSettings`、`DrawMatCapSettings`、`DrawRimSettings`、`DrawGlitterSettings`、`DrawOutlineSettings`、`DrawStencilSettings`、`DrawLightingSettings`、`DrawMetadataBufferSettings`、`DrawPlanarReflectionSettings` |
 | 预设 / 着色器设置 / 优化页 | `lilInspector/lilSettingAndPresetGUI.cs`（预设、设置）、`lilNextInspectorGUI.cs:1639`（优化） | — |
 | 贴图中控 | `lilInspector/lilTextureSearchGUI.cs` | `DrawTextureSearchGUI` |
 | 属性行内的特殊控件 | `Editor/lilToonPropertyDrawer.cs` | 各 `MaterialPropertyDrawer.OnGUI` |

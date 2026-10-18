@@ -45,10 +45,10 @@ namespace lilToon
 
         private static readonly string[] BucketOrder =
         {
-            "基本设置", "照明", "GI / AO", "UV", "主色", "主色 2", "主色 3", "Alpha 蒙版",
+            "基本设置", "照明", "UV", "主色", "主色 2", "主色 3", "Alpha 蒙版",
             "阴影", "边缘阴影", "自发光", "自发光 2", "法线", "法线 2", "各向异性",
             "背光", "SSS", "反射", "MatCap", "MatCap 2", "边缘光", "闪粉",
-            "视差", "距离淡化", "溶解", "折射", "宝石", "轮廓", "毛发",
+            "视差", "距离淡化", "溶解", "折射", "轮廓", "毛发",
             "Stencil", "轮廓渲染", "毛发渲染", "渲染", "其它"
         };
 
@@ -629,7 +629,6 @@ namespace lilToon
         {
             if(lilPropertyNameChecker.IsBaseProperty(name)) return "基本设置";
             if(lilPropertyNameChecker.IsLightingProperty(name)) return "照明";
-            if(lilPropertyNameChecker.IsGIAOProperty(name)) return "GI / AO";
             if(lilPropertyNameChecker.IsUVProperty(name)) return "UV";
             if(lilPropertyNameChecker.IsMainProperty(name)) return "主色";
             if(lilPropertyNameChecker.IsMain2ndProperty(name)) return "主色 2";

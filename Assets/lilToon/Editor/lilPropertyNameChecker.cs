@@ -72,13 +72,6 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsGIAOProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_HTraceSSGIBackfaceNormalFix";
-            return res;
-        }
-
         public static bool IsUVProperty(string name)
         {
             bool res = false;

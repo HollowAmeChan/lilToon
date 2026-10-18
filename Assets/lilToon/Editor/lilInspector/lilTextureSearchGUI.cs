@@ -31,7 +31,6 @@ namespace lilToon
             public Texture pendingTexture;
             public bool isReadOnly;
             public string linkedPropertyName;
-            public bool isControlOnly;
             public string displayLabel;
         }
 
@@ -41,7 +40,6 @@ namespace lilToon
         private GUIContent textureSearchRemoveCurrentContent;
         private GUIContent textureSearchButtonContent;
         private GUIContent textureSearchApplyContent;
-        private GUIContent textureSearchFixContent;
         private int textureSearchMaterialId;
         private static GUIStyle textureSearchNextHeaderStyle;
         private static GUIStyle textureSearchNextColumnStyle;

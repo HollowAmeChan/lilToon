@@ -1,5 +1,7 @@
 # lilToon Shader 拼装与发布笔记
 
+> 2026-10-18 更新：仅清理材质侧 HTrace 专用属性与 GI 折叠项，Extensions 的 Ho-SSGI 保留。AO 保留 Ho-GTAO / AO Map；下文的 HTrace 材质接入说明为历史记录。
+
 这份文档是给这个 fork 后续魔改时用的速查笔记，重点回答几件事：
 
 - `BaseShaderResources`、`CustomShaderResources`、`Shader` 各自是什么

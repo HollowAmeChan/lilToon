@@ -27,11 +27,11 @@
 ## 本地扩展
 
 - 场景级批量材质管理器（`HoLil/[材质] 材质管理器`）：按物体层级批量选材质、**只写你动过的属性**、跨 `Hidden/lilToon*` 变体 shader 广播写入、没吃到的材质在日志里点名；旧的多材质编辑器窗口（`Window/_lil/`）已删除。
-- URP HoAOV 和 HoCharacterCapture pass。
+- URP HoGeometryBuffer、HoSurfaceBuffer 和 HoCharacterCapture pass。
 - HoObjectBuffer pass：为 `lilToon-URP-Extensions` 的逐 sample IdentityId/coverage 链路提供 alpha-mask、dissolve、dither 与 cutout 一致的 `LightMode = "HoObjectBuffer"` 写入。
-- HoAOV 材质属性：custom channel、object/group ID、thickness、curvature、utility、capture opacity 等。
-- Screen Space AO 接收路径，可读取 URP `_ScreenSpaceOcclusionTexture` 或 HTrace `_HTraceBufferAO`。
-- HTrace SSGI 的背面法线处理开关。
+- Ho 表面材质属性：thickness、curvature、语义权重、SSS 参数和 capture opacity；物体身份由 OB 组件提供。
+- AO 接收路径：烘焙 AO Map 与 Ho-GTAO 的 `_HoAOTexture`。
+- 材质侧 HTrace 专用修正和 GI 折叠项已删除；Ho-SSGI RendererFeature 保留，见 [Ho 扩展清理记录](docs/liltoon-slimming/08-ho-extension-retirement.md)。
 - Weighted OIT 集成：`_lilOITEnabled`、`_lilOITActive`、`LightMode = "lilToonOIT"` 和 OIT include。
 - HoShadowCast 接收侧集成：URP 主光和 additional 补光路径会乘 `HoShadowCastAttenuation(positionWS)`。
 

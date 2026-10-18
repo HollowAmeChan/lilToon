@@ -468,26 +468,6 @@ namespace lilToon
             }
         }
 
-        private void DrawGIAOSettings()
-        {
-            if(!ShouldDrawBlock(PropertyBlock.GIAO)) return;
-            edSet.isShowGIAOSettings = lilEditorGUI.Foldout(GetLoc("GI"), edSet.isShowGIAOSettings);
-            lilEditorGUI.DrawHelpButton("GI");
-            if(edSet.isShowGIAOSettings)
-            {
-                EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField(GetLoc("Global Illumination"), customToggleFont);
-                DrawMenuButton(GetLoc("GI"), PropertyBlock.GIAO);
-                EditorGUILayout.BeginVertical(boxInnerHalf);
-                if(htraceSSGIBackfaceNormalFix.p != null && lilRenderPipelineReader.GetRP() == lilRenderPipeline.URP)
-                {
-                    LocalizedProperty(htraceSSGIBackfaceNormalFix);
-                }
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndVertical();
-            }
-        }
-
         private void DrawPlanarReflectionSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.PlanarReflection)) return;

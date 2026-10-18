@@ -40,7 +40,7 @@ namespace lilToon
     {
         Base,
         Lighting,
-        GIAO,
+        Reserved2, // Retired GI block; keep the remaining block IDs stable.
         UV,
         MainColor,
         MainColor1st,

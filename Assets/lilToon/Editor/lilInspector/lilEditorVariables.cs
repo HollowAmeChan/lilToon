@@ -88,7 +88,6 @@ namespace lilToon
             public bool isShowWebPages                  = false;
             public bool isShowHelpPages                 = false;
             public bool isShowLightingSettings          = false;
-            public bool isShowGIAOSettings              = false;
             public bool isShowHoSurface                 = false;
             public bool isShowPlanarReflectionSettings  = false;
             public bool isShowRealtimeAOMask                  = false;

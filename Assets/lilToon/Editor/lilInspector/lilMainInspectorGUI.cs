@@ -263,9 +263,8 @@ namespace lilToon
                 DrawBaseSettings(material, sTransparentMode, sRenderingModeList, sTransparentModeList);
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // Lighting / GI
+                // Lighting
                 DrawLightingSettings();
-                DrawGIAOSettings();
                 DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
