@@ -76,6 +76,7 @@ struct v2f
 
 #include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
+#include "lil_ho_surface_alpha.hlsl"
 // octa / owner 的编解码与消费者（另一个包里的调试/消费端）共用同一份实现。
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/SurfaceBuffer/Shaders/HoSurfaceBufferCommon.hlsl"
 
@@ -212,6 +213,7 @@ lilFragData lilHoSurfaceBuildFrag(v2f input, float facingValue)
         OVERRIDE_DITHER
     #endif
 
+    lilHoClipTransparentInfrastructure(fd.col.a);
     #if LIL_RENDER == 0
         fd.col.a = 1.0;
     #elif LIL_RENDER == 1

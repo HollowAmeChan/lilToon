@@ -6,6 +6,7 @@
 #define LIL_PASS_GEOMETRY_BUFFER_INCLUDED
 
 #include "lil_common.hlsl"
+#include "lil_ho_surface_alpha.hlsl"
 
 #define LIL_REQUIRE_APP_NORMAL
 #if defined(LIL_SHOULD_TANGENT) || defined(LIL_V2F_FORCE_TANGENT)
@@ -158,6 +159,7 @@ half4 fragGeometryBuffer(v2f input LIL_VFACE(facing)) : SV_Target
         OVERRIDE_DITHER
     #endif
 
+    lilHoClipTransparentInfrastructure(fd.col.a);
     #if LIL_RENDER == 0
         fd.col.a = 1.0;
     #elif LIL_RENDER == 1

@@ -25,6 +25,7 @@ lilHoOutlineOutput fragOutlineNormalDepth(v2f input LIL_VFACE(facing))
     LIL_COPY_VFACE(fd.facing);
 
     #include "lil_common_frag_alpha.hlsl"
+    lilHoClipTransparentInfrastructure(fd.col.a);
     float3 normalDirection = normalize(input.normalWS);
     normalDirection = fd.facing < (_FlipNormal - 1.0) ? -normalDirection : normalDirection;
     float linearDepth = LIL_TO_LINEARDEPTH(input.positionCS.z, input.positionCS.xy);
