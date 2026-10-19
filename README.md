@@ -1,66 +1,30 @@
 # lilToon Fork
 
-这个仓库是 Hollow 本地维护的 `jp.lilxyzw.liltoon` 2.3.2 fork。它保留上游 lilToon 的包结构，同时加入了 `D:/Unity_Fork` 这套渲染系统需要的 shader 侧接口、语义 pass 和材质属性。
+Ho 渲染体系的角色 / NPR 着色器，基于 lilToon 2.3.2 维护，面向本地 URP 管线。
 
-## 在整套系统里的定位
+## 功能
 
-`lilToon` 是角色/NPR shader 的源头。周边包会给它提供数据，或消费它输出的额外 pass：
+- **角色着色**：卡通明暗、Ramp / 影色、描边、头发、MatCap、边缘光、自发光与透明材质，保留 Fur 毛发家族。
+- **材质管理**：场景级批量材质管理器、跨变体属性编辑、材质预设与贴图工具。
+- **几何效果**：GD 描边修正、Tesion 张力形变及拉伸 / 挤压贴图混合。
+- **管线数据输出**：物体身份、几何、表面数值、语义权重、独立自发光与角色捕获 pass。
+- **渲染扩展联动**：AO / AO Map、独立 ShadowCast 阴影、平面反射、Weighted OIT 与角色特化。
+- **生成与编辑工具**：模板化 Shader 生成、按材质能力显示参数，以及独立的编译计时工具。
 
-- `lilToon-URP-Extensions` 负责 OIT、HoAOV、HoCharacterCapture、HoShadowCast、HoPost/Shoost 后处理和平面反射等 URP 功能。
-- `lilToon-UnityGLTF-Extensions` 在 glTF 导入阶段保存材质契约，后续用于映射 lilToon/lilPBR 材质。
-- `lilPBR` 是共享材质语义的场景/PBR 侧 shader 包。
-- `HoUrp17.3.0` 和 `HoUrpConfig17.0.3` 提供本地 URP 基座。
+本 fork 已移除非 URP 路径及 Lite、Gem、Liquid 等旧家族。上游说明见 [lilToon 文档](https://lilxyzw.github.io/lilToon/)，本地界面入口见 [UI 入口总览](LILTOON_UI入口总览.md)。
 
-## 重要目录
+## Ho 渲染体系相关仓库
 
-- `Assets/lilToon/BaseShaderResources/`：顶层 `.lilinternal` shader 装配描述。
-- `Assets/lilToon/CustomShaderResources/`：各管线的 `.lilblock` 模板和属性块。
-- `Assets/lilToon/Shader/Includes/`：生成 shader 共用的 HLSL 实现。
-- `Assets/lilToon/Shader/`：Unity 实际编译的生成结果。
-- `Assets/lilToon/Editor/`：shader 生成器、Inspector、材质工具、本地化和导入辅助。
-- `Assets/lilToon/Editor/lilMaterialManager/`：场景级批量材质管理器面板（入口 `HoLil/[材质] 材质管理器`）。
-- 根目录下的 `LILTOON架构总览.md`、`接口契约.md`、URP AO/SSS 相关文档记录了本地 fork 的设计决策。
-- 根目录下的 `LILTOON_UI入口总览.md`：Inspector / 菜单栏 / 独立窗口的全部功能入口清单，改 UI 前后都要对照。
-- 根目录下的 `LILTOON_材质管理器设计.md`：批量材质管理器的设计决策（D1–D16）、界面与写入语义。
-- [APV 接入与验证进度](LILTOON_URP_APV接入与验证进度.md)：APV 的定位、已知接入限制、调试方法与验收状态的统一入口；目前按低优先级辅助光照能力维护。
+| 仓库 | 用途 |
+| --- | --- |
+| [HoTools](https://github.com/HollowAmeChan/HoTools) | Blender 角色、模型、贴图、动画与自动化工具 |
+| [HoGLTF](https://github.com/HollowAmeChan/HoGLTF) | Blender glTF 导出与 Ho 材质契约桥接 |
+| [HoUrp17.3.0](https://github.com/HollowAmeChan/HoUrp17.3.0) | URP 渲染基座 |
+| [HoUrpConfig17.0.3](https://github.com/HollowAmeChan/HoUrpConfig17.0.3) | URP Shader 配置 |
+| [lilToon-URP-Extensions](https://github.com/HollowAmeChan/lilToon-URP-Extensions) | 光照、阴影、反射与后处理扩展 |
+| [lilToon-UnityGLTF-Extensions](https://github.com/HollowAmeChan/lilToon-UnityGLTF-Extensions) | glTF 材质契约导入 |
+| [HoUnityTools](https://github.com/HollowAmeChan/HoUnityTools) | 角色、动画与创作工具 |
 
-## 本地扩展
+## 可选材质合集
 
-- 场景级批量材质管理器（`HoLil/[材质] 材质管理器`）：按物体层级批量选材质、**只写你动过的属性**、跨 `Hidden/lilToon*` 变体 shader 广播写入、没吃到的材质在日志里点名；旧的多材质编辑器窗口（`Window/_lil/`）已删除。
-- URP HoGeometryBuffer、HoSurfaceBuffer 和 HoCharacterCapture pass。
-- HoObjectBuffer pass：为 `lilToon-URP-Extensions` 的逐 sample IdentityId/coverage 链路提供 alpha-mask、dissolve、dither 与 cutout 一致的 `LightMode = "HoObjectBuffer"` 写入。
-- Ho 表面材质属性：thickness、curvature、语义权重、SSS 参数和 capture opacity；物体身份由 OB 组件提供。
-- AO 接收路径：烘焙 AO Map 与 Ho-GTAO 的 `_HoAOTexture`。
-- 材质侧 HTrace 专用修正和 GI 折叠项已删除；Ho-SSGI RendererFeature 保留，见 [Ho 扩展清理记录](docs/liltoon-slimming/08-ho-extension-retirement.md)。
-- Weighted OIT 集成：`_lilOITEnabled`、`_lilOITActive`、`LightMode = "lilToonOIT"` 和 OIT include。
-- HoShadowCast 接收侧集成：URP 主光和 additional 补光路径会乘 `HoShadowCastAttenuation(positionWS)`。
-
-## Shader 生成注意
-
-大多数 `Assets/lilToon/Shader/*.shader` 是生成结果。长期维护时优先修改：
-
-- `.lilinternal`：改顶层 shader 装配。
-- `CustomShaderResources/<RP>/*.lilblock`：改 pass 结构。
-- `CustomShaderResources/Properties/*.lilblock`：加材质属性。
-- `Shader/Includes/*.hlsl`：改真正的 shading 逻辑。
-
-改完模板或 include 后，让 Unity 里的 lilToon editor/importer 重新生成 shader。
-
-## 安装
-
-在 Unity 项目中指向包目录：
-
-```json
-{
-  "dependencies": {
-    "jp.lilxyzw.liltoon": "file:D:/Unity_Fork/lilToon/Assets/lilToon"
-  }
-}
-```
-
-根仓库还包含本地 fork 设计笔记，这些文档不是 Unity package 本体的一部分，但对理解整套 Hollow 渲染系统很重要。
-
-## 上游参考
-
-- 文档：`https://lilxyzw.github.io/lilToon/`
-- 发布：`https://github.com/lilxyzw/lilToon/releases`
+- [HoShader](https://github.com/HollowAmeChan/HoShader)：宝石、皮肤、绒毛等独立材质与 Shader 实验合集，按需选用。
