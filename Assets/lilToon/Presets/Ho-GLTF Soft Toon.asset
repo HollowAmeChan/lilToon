@@ -29,6 +29,7 @@ MonoBehaviour:
     value: {r: 0.58, g: 0.6, b: 0.68, a: 0.35}
   - name: _RimColor
     value: {r: 0.72, g: 0.68, b: 0.62, a: 1}
+  vectors: []
   floats:
   - name: _AsUnlit
     value: 0.08
@@ -64,7 +65,6 @@ MonoBehaviour:
     value: 0
   - name: _Smoothness
     value: 0.55
-  vectors: []
   textures: []
   renderQueue: -2
   outline: -1

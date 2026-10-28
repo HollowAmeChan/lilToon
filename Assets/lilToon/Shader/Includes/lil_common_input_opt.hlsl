@@ -277,7 +277,10 @@ float   _LightMaxLimit;
 float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
-// AO: realtime source + offline AO Map (shadow grade + final multiply).
+// AO: realtime source + offline AO Map, driving the shadow grade and the final
+// AO multiply. Declared unconditionally because the offline AO Map path can be
+// used without realtime AO, so lilGetShading references these outside the
+// LIL_FEATURE_REALTIMEAO guard.
 float   _AOStrength;
 float   _AOLevel;
 float   _AOContrast;
@@ -751,5 +754,23 @@ lilBool _PlanarReflectionFlipY;
 #if defined(LIL_REFRACTION)
     lilBool _RefractionColorFromMain;
 #endif
+
+//------------------------------------------------------------------------------------------------------------------------------
+// Ho 扩展的**材质参数**（SB / MB / 角色特化共用那一批）
+// 必须待在这个 UnityPerMaterial 里：SRP Batcher 要求所有材质属性都声明在这个 CBUFFER 中，
+// 之前它们是各 pass 里的全局变量 ⇒ 生成的 lilToon shader 整个对 SRP Batcher 不兼容
+// （所有 pass 都退化成逐 draw 上传属性）。这里列的都是 Properties 里有对应项的名字；
+// **不是材质属性**，继续留在各 pass 里，不要搬进来。
+float   _HoCharacterCaptureOpacity;
+float   _HoSurfaceThickness;
+float   _HoSurfaceCurvature;
+float   _HoSurfaceTransmittanceHint;
+float   _HoSurfaceMaterialClassId;
+float   _HoSemanticWeight;
+float   _HoSemanticMaskOn;
+float   _HoSSSProfileId;
+float   _HoSSSThicknessScale;
+float   _HoSSSTransmissionStrength;
+float   _HoSSSTransmissionRadius;
 
 #endif

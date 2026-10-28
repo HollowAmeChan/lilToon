@@ -18,6 +18,7 @@ MonoBehaviour:
   - language: Japanese
     name: "\u8EFD\u91CF\u7248\u30AC\u30E9\u30B9"
   category: 4
+  renderingMode: 
   shader: {fileID: 4800000, guid: 165365ab7100a044ca85fc8c33548a62, type: 3}
   colors:
   - name: _Color
