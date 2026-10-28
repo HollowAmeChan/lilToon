@@ -961,7 +961,7 @@
             #endif
 
             // Shadow
-            #if (defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK)) && defined(LIL_FEATURE_RECEIVE_SHADOW)
+            #if (defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK) || defined(LIL_USE_HO_CAST)) && defined(LIL_FEATURE_RECEIVE_SHADOW)
                 float calculatedShadow = saturate(fd.attenuation + distance(fd.L, fd.origL));
                 lns.x *= lerp(1.0, calculatedShadow, _ShadowReceive * shadowReceiveMask);
                 lns.y *= lerp(1.0, calculatedShadow, _Shadow2ndReceive * shadowReceiveMask);

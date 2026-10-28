@@ -804,6 +804,11 @@ float4 GetShadowCoord(float3 positionWS, float4 positionCS)
     return GetShadowCoord(vertexInput);
 }
 
+// A dedicated Cast producer can exist without URP's shadow-map keyword. Keep
+// this separate from LIL_USE_SHADOW so lightmap/lighting branches stay intact.
+#if defined(LIL_URP) && defined(LIL_PASS_FORWARD) && defined(LIL_FEATURE_RECEIVE_SHADOW)
+    #define LIL_USE_HO_CAST
+#endif
 #if defined(LIL_USE_SHADOW)
     #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
         #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
@@ -818,6 +823,10 @@ float4 GetShadowCoord(float3 positionWS, float4 positionCS)
         #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
         #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastAttenuation(i.positionWS)
     #endif
+#elif defined(LIL_USE_HO_CAST)
+    #define LIL_SHADOW_COORDS(idx)
+    #define LIL_TRANSFER_SHADOW(vi,uv,o)
+    #define LIL_LIGHT_ATTENUATION(atten,i) atten = HoCSResolveMainCast(i.positionWS, 1.0) * HoShadowCastAttenuation(i.positionWS)
 #else
     #define LIL_SHADOW_COORDS(idx)
     #define LIL_TRANSFER_SHADOW(vi,uv,o)

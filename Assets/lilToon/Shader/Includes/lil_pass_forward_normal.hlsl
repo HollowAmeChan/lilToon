@@ -139,7 +139,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION) && !defined(LIL_OUTLINE)
         clip(0.5 - _lilOITEnabled * _lilOITActive);
     #endif
-    #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD)
+    #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD) || defined(LIL_USE_HO_CAST)
         LIL_LIGHT_ATTENUATION(fd.attenuation, input);
     #endif
 
