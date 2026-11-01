@@ -142,6 +142,10 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD) || defined(LIL_USE_HO_CAST)
         LIL_LIGHT_ATTENUATION(fd.attenuation, input);
     #endif
+    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
+        if(_HoRTShadowConsumerDebugMode==8) fd.attenuation=1;
+        if(_HoRTShadowConsumerDebugMode==9) fd.attenuation=0;
+    #endif
 
     LIL_GET_LIGHTING_DATA(input,fd);
 
@@ -613,6 +617,16 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     BEFORE_FOG
     OVERRIDE_FOG
 
+    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
+        if(_HoRTShadowConsumerDebugMode==7)
+        {
+            #if defined(LIL_USE_HO_CAST)
+                fd.col.rgb=HoRTShadowConsumptionDebugColor(input.positionWS,HoRendererIdentity());
+            #else
+                fd.col.rgb=float3(1,0,1);
+            #endif
+        }
+    #endif
     BEFORE_OUTPUT
     #if defined(LIL_OIT_PASS)
         LIL_OIT_RETURN(fd.col, input.positionCS);
