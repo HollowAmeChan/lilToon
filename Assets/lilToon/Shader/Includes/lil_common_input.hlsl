@@ -57,12 +57,7 @@ TEXTURE2D_SCREEN(_CameraOpaqueTexture);
 #ifndef LIL_INPUT_BASE_INCLUDED
 
 CBUFFER_START(UnityPerMaterial)
-#if defined(LIL_FAKESHADOW)
-    float4  _Color;
-    float4  _MainTex_ST;
-    float4  _FakeShadowVector;
-    lilBool _Invisible;
-#elif defined(LIL_BAKER)
+#if defined(LIL_BAKER)
     float4  _Color;
     float4  _MainTex_ST;
     float4  _MainTexHSVG;
@@ -190,7 +185,7 @@ CBUFFER_START(UnityPerMaterial)
         float4  _MetallicGlossMap_ST;
         float4  _ReflectionColorTex_ST;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_REFRACTION_BLUR2)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION)
         float4  _SmoothnessTex_ST;
     #endif
     #if defined(LIL_MULTI_INPUTS_REFLECTION)
@@ -248,14 +243,6 @@ CBUFFER_START(UnityPerMaterial)
         float4  _OutlineTex_ST;
         float4  _OutlineTex_ScrollRotate;
         float4  _OutlineTexHSVG;
-    #endif
-    #if defined(LIL_FUR)
-        float4  _FurNoiseMask_ST;
-        float4  _FurVector;
-        float4  _FurRimColor;
-    #endif
-    #if defined(LIL_REFRACTION)
-        float4  _RefractionColor;
     #endif
     float   _AsUnlit;
     float   _Cutoff;
@@ -379,7 +366,7 @@ CBUFFER_START(UnityPerMaterial)
         float   _ReflectionNormalStrength;
         float   _ReflectionCubeEnableLighting;
     #endif
-    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
+    #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_URP)
         float   _Smoothness;
     #endif
     #if defined(LIL_MULTI_INPUTS_REFLECTION) || defined(LIL_URP)
@@ -474,62 +461,6 @@ CBUFFER_START(UnityPerMaterial)
         float   _OutlineFixWidth;
         float   _OutlineZBias;
     #endif
-    #if defined(LIL_FUR)
-        float   _FurVectorScale;
-        float   _FurGravity;
-        float   _FurAO;
-        float   _FurRootOffset;
-        float   _FurRandomize;
-        float   _FurTouchStrength;
-        float   _FurRimFresnelPower;
-        float   _FurRimAntiLight;
-    #endif
-    #if defined(LIL_REFRACTION)
-        float   _RefractionStrength;
-        float   _RefractionFresnelPower;
-    #endif
-    #if defined(LIL_HAIR)
-        float4  _HairLobe1Color;
-        float4  _HairLobe2Color;
-        float4  _HairLobe3Color;
-        float4  _HairLobe4Color;
-        float4  _HairMask_ST;
-        float4  _HairShiftMap_ST;
-        float4  _HairTangentMap_ST;
-        float   _HairLobeCount;
-        float   _HairTangentStrength;
-        float   _HairSpecularAA;
-        uint    _HairTangentMode;
-        uint    _HairLobe1Model;
-        float   _HairLobe1Strength;
-        float   _HairLobe1Shift;
-        float   _HairLobe1ShiftScale;
-        float   _HairLobe1WidthT;
-        float   _HairLobe1WidthB;
-        float   _HairLobe1Power;
-        uint    _HairLobe2Model;
-        float   _HairLobe2Strength;
-        float   _HairLobe2Shift;
-        float   _HairLobe2ShiftScale;
-        float   _HairLobe2WidthT;
-        float   _HairLobe2WidthB;
-        float   _HairLobe2Power;
-        uint    _HairLobe3Model;
-        float   _HairLobe3Strength;
-        float   _HairLobe3Shift;
-        float   _HairLobe3ShiftScale;
-        float   _HairLobe3WidthT;
-        float   _HairLobe3WidthB;
-        float   _HairLobe3Power;
-        uint    _HairLobe4Model;
-        float   _HairLobe4Strength;
-        float   _HairLobe4Shift;
-        float   _HairLobe4ShiftScale;
-        float   _HairLobe4WidthT;
-        float   _HairLobe4WidthB;
-        float   _HairLobe4Power;
-        lilBool _UseHair;
-    #endif
     uint    _Cull;
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         uint    _OutlineCull;
@@ -588,9 +519,6 @@ CBUFFER_START(UnityPerMaterial)
     #if defined(LIL_MULTI_INPUTS_OUTLINE)
         uint    _OutlineVertexR2Width;
         uint    _OutlineVectorUVMode;
-    #endif
-    #if defined(LIL_FUR)
-        uint    _FurLayerNum;
     #endif
     lilBool _Invisible;
     lilBool _UseClippingCanceller;
@@ -675,12 +603,6 @@ CBUFFER_START(UnityPerMaterial)
         lilBool _OutlineDeleteMesh;
         lilBool _OutlineDisableInVR;
     #endif
-    #if defined(LIL_FUR)
-        lilBool _VertexColor2FurVector;
-    #endif
-    #if defined(LIL_REFRACTION)
-        lilBool _RefractionColorFromMain;
-    #endif
 
     // Ho 扩展的材质参数（与 `lil_common_input_base.hlsl` 里那批同一组）：SRP Batcher 要求材质属性
     // 都声明在 UnityPerMaterial 中，所以每个配置分支都要列一遍（多列出来的项在没声明它的配置里恒 0）。
@@ -739,9 +661,6 @@ TEXTURE2D(_Bump2ndScaleMask);
 TEXTURE2D(_AnisotropyTangentMap);
 TEXTURE2D(_AnisotropyScaleMask);
 TEXTURE2D(_AnisotropyShiftNoiseMask);
-TEXTURE2D(_HairMask);
-TEXTURE2D(_HairShiftMap);
-TEXTURE2D(_HairTangentMap);
 TEXTURE2D(_ShadowBorderMask);
 TEXTURE2D(_ShadowBlurMask);
 TEXTURE2D(_ShadowStrengthMask);
@@ -784,10 +703,6 @@ TEXTURE2D(_OutlineTex);
 TEXTURE2D(_OutlineWidthMask);
 TEXTURE2D(_OutlineZBiasMask);
 TEXTURE2D(_OutlineVectorTex);
-TEXTURE2D(_FurNoiseMask);
-TEXTURE2D(_FurMask);
-TEXTURE2D(_FurLengthMask);
-TEXTURE2D(_FurVectorTex);
 TEXTURE2D(_TriMask);
 // Ho 扩展的材质贴图（MB 的自定义通道）。贴图不能进 CBUFFER，但同样要在每个 pass 里声明 ——
 // 统一放在这里（lilToon 自己的贴图也是这么声明的），各 pass 就不用各写一遍。

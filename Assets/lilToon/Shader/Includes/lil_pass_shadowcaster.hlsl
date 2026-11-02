@@ -11,12 +11,8 @@
 #endif
 
 #if defined(LIL_V2F_FORCE_TEXCOORD0) || (LIL_RENDER > 0)
-    #if defined(LIL_FUR)
-        #define LIL_V2F_TEXCOORD0
-    #else
-        #define LIL_V2F_PACKED_TEXCOORD01
-        #define LIL_V2F_PACKED_TEXCOORD23
-    #endif
+    #define LIL_V2F_PACKED_TEXCOORD01
+    #define LIL_V2F_PACKED_TEXCOORD23
 #endif
 #if defined(LIL_V2F_FORCE_POSITION_OS) || ((LIL_RENDER > 0) && defined(LIL_FEATURE_DISSOLVE))
     #define LIL_V2F_POSITION_OS

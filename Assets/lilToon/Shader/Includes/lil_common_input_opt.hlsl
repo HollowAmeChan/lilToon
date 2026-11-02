@@ -9,7 +9,7 @@
 // Vector
 float4  _LightDirectionOverride;
 float4  _BackfaceColor;
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2
     float4  _PreColor;
 #endif
 // Main
@@ -147,7 +147,7 @@ float4  _PlanarReflectionTint;
     float4  _MetallicGlossMap_ST;
     float4  _ReflectionColorTex_ST;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_REFRACTION_BLUR2)
+#if defined(LIL_FEATURE_REFLECTION)
     float4  _SmoothnessTex_ST;
 #endif
 #if defined(LIL_FEATURE_REFLECTION)
@@ -223,7 +223,6 @@ float4  _PlanarReflectionTint;
 #endif
 
 // Outline
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float4  _OutlineColor;
     float4  _OutlineLitColor;
     float4  _OutlineTex_ST;
@@ -235,37 +234,12 @@ float4  _PlanarReflectionTint;
             float4  _OutlineTexHSVG;
         #endif
     #endif
-#endif
-
-// Fur
-#if defined(LIL_FUR)
-    float4  _FurNoiseMask_ST;
-    float4  _FurVector;
-    float4  _FurRimColor;
-#endif
-
-// Refraction
-#if defined(LIL_REFRACTION)
-    float4  _RefractionColor;
-#endif
-
-// Gem
-// Hair
-#if defined(LIL_HAIR)
-    float4  _HairLobe1Color;
-    float4  _HairLobe2Color;
-    float4  _HairLobe3Color;
-    float4  _HairLobe4Color;
-    float4  _HairMask_ST;
-    float4  _HairShiftMap_ST;
-    float4  _HairTangentMap_ST;
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Float
 float   _AsUnlit;
 float   _Cutoff;
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2
     float   _PreCutoff;
 #endif
 float   _SubpassCutoff;
@@ -396,7 +370,7 @@ float   _PlanarReflectionFadeEnd;
     float   _ReflectionNormalStrength;
     float   _ReflectionCubeEnableLighting;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_REFRACTION_BLUR2) || defined(LIL_URP)
+#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Smoothness;
 #endif
 #if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
@@ -492,7 +466,6 @@ float   _PlanarReflectionFadeEnd;
 float   _lilShadowCasterBias;
 float   _lilOITEnabled;
 
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     float   _OutlineLitScale;
     float   _OutlineLitOffset;
     float   _OutlineWidth;
@@ -501,67 +474,12 @@ float   _lilOITEnabled;
     float   _OutlineVectorScale;
     float   _OutlineFixWidth;
     float   _OutlineZBias;
-#endif
 
-#if defined(LIL_FUR)
-    float   _FurVectorScale;
-    float   _FurGravity;
-    float   _FurAO;
-    float   _FurRootOffset;
-    float   _FurRandomize;
-    float   _FurCutoutLength;
-    float   _FurRimFresnelPower;
-    float   _FurRimAntiLight;
-    #if defined(LIL_FEATURE_FUR_COLLISION)
-        float   _FurTouchStrength;
-    #endif
-#endif
-#if defined(LIL_REFRACTION)
-    float   _RefractionStrength;
-    float   _RefractionFresnelPower;
-#endif
-#if defined(LIL_HAIR)
-    float   _HairLobeCount;
-    float   _HairTangentStrength;
-    float   _HairSpecularAA;
-    uint    _HairTangentMode;
-    uint    _HairLobe1Model;
-    float   _HairLobe1Strength;
-    float   _HairLobe1Shift;
-    float   _HairLobe1ShiftScale;
-    float   _HairLobe1WidthT;
-    float   _HairLobe1WidthB;
-    float   _HairLobe1Power;
-    uint    _HairLobe2Model;
-    float   _HairLobe2Strength;
-    float   _HairLobe2Shift;
-    float   _HairLobe2ShiftScale;
-    float   _HairLobe2WidthT;
-    float   _HairLobe2WidthB;
-    float   _HairLobe2Power;
-    uint    _HairLobe3Model;
-    float   _HairLobe3Strength;
-    float   _HairLobe3Shift;
-    float   _HairLobe3ShiftScale;
-    float   _HairLobe3WidthT;
-    float   _HairLobe3WidthB;
-    float   _HairLobe3Power;
-    uint    _HairLobe4Model;
-    float   _HairLobe4Strength;
-    float   _HairLobe4Shift;
-    float   _HairLobe4ShiftScale;
-    float   _HairLobe4WidthT;
-    float   _HairLobe4WidthB;
-    float   _HairLobe4Power;
-    lilBool _UseHair;
-#endif
 //------------------------------------------------------------------------------------------------------------------------------
 // Int
 uint    _Cull;
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     uint    _OutlineCull;
-#endif
-#if LIL_RENDER == 2 && !defined(LIL_FUR) && !defined(LIL_REFRACTION)
+#if LIL_RENDER == 2
     uint    _PreOutType;
 #endif
 #if defined(LIL_FEATURE_MAIN2ND)
@@ -615,13 +533,8 @@ uint    _Cull;
 #if defined(LIL_FEATURE_DITHER)
     uint    _UseDither;
 #endif
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     uint    _OutlineVertexR2Width;
     uint    _OutlineVectorUVMode;
-#endif
-#if defined(LIL_FUR)
-    uint    _FurLayerNum;
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Bool
@@ -742,19 +655,10 @@ lilBool _PlanarReflectionFlipY;
         lilBool _UsePOM;
     #endif
 #endif
-#if !defined(LIL_FUR) && !defined(LIL_REFRACTION)
     lilBool _OutlineLitApplyTex;
     lilBool _OutlineLitShadowReceive;
     lilBool _OutlineDeleteMesh;
     lilBool _OutlineDisableInVR;
-#endif
-
-#if defined(LIL_FUR)
-    lilBool _VertexColor2FurVector;
-#endif
-#if defined(LIL_REFRACTION)
-    lilBool _RefractionColorFromMain;
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Ho 扩展的**材质参数**（SB / MB / 角色特化共用那一批）

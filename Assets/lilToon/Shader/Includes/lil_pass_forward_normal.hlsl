@@ -136,7 +136,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     LIL_GET_HDRPDATA(input,fd);
     #if defined(LIL_OIT_PASS)
         clip(_lilOITEnabled - 0.5);
-    #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION) && !defined(LIL_OUTLINE)
+        #elif LIL_RENDER == 2 && !defined(LIL_OUTLINE)
         clip(0.5 - _lilOITEnabled * _lilOITActive);
     #endif
     #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD) || defined(LIL_USE_HO_CAST)
@@ -224,7 +224,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             // Cutout
             fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
             if(fd.col.a == 0) discard;
-        #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+        #elif LIL_RENDER == 2
             // Transparent
             clip(fd.col.a - _Cutoff);
         #endif
@@ -232,7 +232,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Depth Fade
         BEFORE_DEPTH_FADE
-        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2
             OVERRIDE_DEPTH_FADE
         #endif
 
@@ -395,7 +395,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             #endif
             fd.col.a = saturate((fd.col.a - _Cutoff) / max(fwidth(fd.col.a), 0.0001) + 0.5);
             if(fd.col.a == 0) discard;
-        #elif LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+        #elif LIL_RENDER == 2
             // Transparent
             #if defined(LIL_TRANSPARENT_PRE)
                 fd.col *= _PreColor;
@@ -409,20 +409,8 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Depth Fade
         BEFORE_DEPTH_FADE
-        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+        #if defined(LIL_FEATURE_DEPTH_FADE) && LIL_RENDER == 2
             OVERRIDE_DEPTH_FADE
-        #endif
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Fur AO
-        #if defined(LIL_FUR) && LIL_RENDER == 1
-            #if defined(LIL_FEATURE_FurMask)
-                float furMask = LIL_SAMPLE_2D(_FurMask, sampler_MainTex, fd.uvMain).r;
-                float furAO = _FurAO * furMask;
-            #else
-                float furAO = _FurAO;
-            #endif
-            fd.col.rgb *= 1.0-furAO;
         #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
@@ -514,21 +502,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Premultiply
         LIL_PREMULTIPLY
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Refraction
-        BEFORE_REFRACTION
-        #if defined(LIL_REFRACTION) && !defined(LIL_PASS_FORWARDADD)
-            #if defined(LIL_REFRACTION_BLUR2)
-                fd.smoothness = _Smoothness;
-                #if defined(LIL_FEATURE_SmoothnessTex)
-                    fd.smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
-                #endif
-                fd.perceptualRoughness = fd.perceptualRoughness - fd.smoothness * fd.perceptualRoughness;
-                fd.roughness = fd.perceptualRoughness * fd.perceptualRoughness;
-            #endif
-            OVERRIDE_REFRACTION
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Reflection

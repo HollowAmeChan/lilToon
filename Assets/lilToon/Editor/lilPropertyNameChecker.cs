@@ -47,7 +47,6 @@ namespace lilToon
             res = res || name == "_FlipNormal";
             res = res || name == "_BackfaceForceShadow";
             res = res || name == "_BackfaceColor";
-            res = res || name == "_FakeShadowVector";
             res = res || name == "_TriMask";
             res = res || name == "_TransparentMode";
             res = res || name == "_UseClippingCanceller";
@@ -291,7 +290,7 @@ namespace lilToon
         public static bool IsRenderingProperty(string name)
         {
             bool res = false;
-            res = res || !name.Contains("_Outline") && !name.Contains("_Fur") && IsRenderingPropertyInternal(name);
+            res = res || !name.Contains("_Outline") && IsRenderingPropertyInternal(name);
             res = res || name == "_SubpassCutoff";
             res = res || name == "_lilShadowCasterBias";
             return res;

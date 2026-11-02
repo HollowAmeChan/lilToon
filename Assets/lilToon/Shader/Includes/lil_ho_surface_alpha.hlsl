@@ -7,7 +7,7 @@
 // refraction can remain visible at zero colour alpha, so neither is discarded.
 void lilHoClipTransparentInfrastructure(float alpha)
 {
-    #if LIL_RENDER == 2 && !defined(LIL_REFRACTION)
+    #if LIL_RENDER == 2
         clip(alpha - _Cutoff);
         clip(alpha > 0.0 ? 1.0 : -1.0);
     #endif
