@@ -1,0 +1,5 @@
+{
+    "name": "HoLightingControls.Audit",
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}
