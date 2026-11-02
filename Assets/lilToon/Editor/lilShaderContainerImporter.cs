@@ -302,7 +302,6 @@ namespace lilToon
 
             if(
                 doOptimize &&
-                !assetName.Contains("ltsmulti") &&
                 !assetName.Contains("ltspass_lite") &&
                 !assetName.Contains("fakeshadow") &&
                 !string.IsNullOrEmpty(lilEditorParameters.instance.modifiedShaders)
