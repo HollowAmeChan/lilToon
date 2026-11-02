@@ -18,25 +18,15 @@ namespace lilToon
         //------------------------------------------------------------------------------------------------------------------------------
         // Material Setup
         #region
-        public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
-        {
-            if(isMultiVariants || material == null || material.parent != null) return;
-            lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
-        }
-
         public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite)
         {
-            SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, isMulti);
+            if(isMultiVariants || material == null || material.parent != null) return;
+            lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite);
         }
 
         public static void SetupMaterialWithRenderingMode(Material material, RenderingMode renderingMode, TransparentMode transparentMode)
         {
             SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isOutl, false);
-        }
-
-        private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite, bool ismulti)
-        {
-            foreach(var material in materials) SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, islite, ismulti);
         }
 
         private void SetupMaterialWithRenderingMode(RenderingMode renderingMode, TransparentMode transparentMode, bool isoutl, bool islite)
@@ -70,12 +60,10 @@ namespace lilToon
                  if(shader == lts)           { ReplaceToCustomShaders(); shader = lts       ;}
             else if(shader == ltsc)          { ReplaceToCustomShaders(); shader = ltsc      ;}
             else if(shader == ltst)          { ReplaceToCustomShaders(); shader = ltst      ;}
-            else if(shader == ltsot)         { ReplaceToCustomShaders(); shader = ltsot     ;}
             else if(shader == ltstt)         { ReplaceToCustomShaders(); shader = ltstt     ;}
             else if(shader == ltso)          { ReplaceToCustomShaders(); shader = ltso      ;}
             else if(shader == ltsco)         { ReplaceToCustomShaders(); shader = ltsco     ;}
             else if(shader == ltsto)         { ReplaceToCustomShaders(); shader = ltsto     ;}
-            else if(shader == ltsoto)        { ReplaceToCustomShaders(); shader = ltsoto    ;}
             else if(shader == ltstto)        { ReplaceToCustomShaders(); shader = ltstto    ;}
             else if(shader == ltsoo)         { ReplaceToCustomShaders(); shader = ltsoo     ;}
             else if(shader == ltscoo)        { ReplaceToCustomShaders(); shader = ltscoo    ;}
@@ -91,10 +79,6 @@ namespace lilToon
             else if(shader == ltsfs)         { ReplaceToCustomShaders(); shader = ltsfs     ;}
             else if(shader == ltsover)       { ReplaceToCustomShaders(); shader = ltsover   ;}
             else if(shader == ltsoover)      { ReplaceToCustomShaders(); shader = ltsoover  ;}
-            else if(shader == ltsm)          { ReplaceToCustomShaders(); shader = ltsm      ;}
-            else if(shader == ltsmo)         { ReplaceToCustomShaders(); shader = ltsmo     ;}
-            else if(shader == ltsmref)       { ReplaceToCustomShaders(); shader = ltsmref   ;}
-            else if(shader == ltsmfur)       { ReplaceToCustomShaders(); shader = ltsmfur   ;}
 
             if(material.shader != shader && shader != null)
             {

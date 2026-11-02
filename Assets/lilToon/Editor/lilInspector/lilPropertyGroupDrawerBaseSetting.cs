@@ -34,7 +34,7 @@ namespace lilToon
             }
             else
             {
-                if(isShowRenderMode && !isMulti)
+                if(isShowRenderMode)
                 {
                     RenderingMode renderingMode;
                     renderingMode = lilLanguageManager.GetRenderingMode(lilEditorGUI.Popup(GetLoc("sRenderingMode"), lilLanguageManager.GetRenderingModeIndex(renderingModeBuf), sRenderingModeList));
@@ -51,20 +51,10 @@ namespace lilToon
                         }
                     }
                 }
-                else if(isShowRenderMode && isMulti)
-                {
-                    float transparentModeMatBuf = transparentModeMat.floatValue;
-                    m_MaterialEditor.ShaderProperty(transparentModeMat, sTransparentMode);
-                    if(transparentModeMatBuf != transparentModeMat.floatValue)
-                    {
-                        SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                        if(transparentModeMat.floatValue == 1.0f || transparentModeMat.floatValue == 5.0f) cutoff.floatValue = 0.5f;
-                        if(transparentModeMat.floatValue == 2.0f || transparentModeMat.floatValue == 4.0f) cutoff.floatValue = 0.001f;
-                    }
-                }
                 if(renderingModeBuf == RenderingMode.Transparent)
                 {
-                    var transparentMode = (TransparentMode)lilEditorGUI.Popup(GetLoc("sTransparentMode"), (int)transparentModeBuf, sTransparentModeList);
+                    int transparentModeIndex = GetTransparentModePopupIndex(transparentModeBuf);
+                    var transparentMode = GetTransparentModeFromPopupIndex(lilEditorGUI.Popup(GetLoc("sTransparentMode"), transparentModeIndex, sTransparentModeList));
                     if(transparentModeBuf != transparentMode)
                     {
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentMode);
@@ -102,10 +92,6 @@ namespace lilToon
             if(edSet.isShowBase)
             {
                 EditorGUILayout.BeginVertical(customBox);
-                    if(isMulti)
-                    {
-                        LocalizedProperty(asOverlay);
-                    }
                     if(isUseAlpha)
                     {
                         LocalizedProperty(cutoff);
@@ -138,14 +124,13 @@ namespace lilToon
                     {
                         zwrite.floatValue = 1.0f;
                     }
-                    if(isMulti) LocalizedProperty(useClippingCanceller);
                     if (!isFakeShadow)
                     {
                         LocalizedProperty(aaStrength);
                         LocalizedProperty(envRimBorder);
                         LocalizedProperty(envRimBlur);
                     }
-                    if (!isFakeShadow && renderingModeBuf == RenderingMode.Cutout || (isMulti && transparentModeMat.floatValue == 1.0f))
+                    if (!isFakeShadow && renderingModeBuf == RenderingMode.Cutout)
                     {
                         LocalizedProperty(useDither);
                         if (lilEditorGUI.CheckPropertyToDraw(ditherTex, ditherMaxValue) && useDither.floatValue == 1.0f)
@@ -169,7 +154,7 @@ namespace lilToon
                         }
                     }
                     RenderQueueField();
-                    if((renderingModeBuf >= RenderingMode.Transparent && renderingModeBuf != RenderingMode.FurCutout) || (isMulti && transparentModeMat.floatValue == 2.0f))
+                    if(renderingModeBuf >= RenderingMode.Transparent && renderingModeBuf != RenderingMode.FurCutout)
                     {
                         EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"),MessageType.Warning);
                     }
@@ -328,14 +313,14 @@ namespace lilToon
                     if(EditorGUI.EndChangeCheck())
                     {
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                        int shaderRenderQueue = isMulti ? material.renderQueue : material.shader.renderQueue;
+                        int shaderRenderQueue = material.shader.renderQueue;
                         switch(stencilMode)
                         {
                             case 0:
                                 stencilRef.floatValue = 0;
                                 stencilComp.floatValue = (float)CompareFunction.Always;
                                 stencilPass.floatValue = (float)StencilOp.Keep;
-                                if(!isMulti) material.renderQueue = -1;
+                                material.renderQueue = -1;
                                 break;
                             case 1: // Writer
                                 stencilComp.floatValue = (float)CompareFunction.Always;

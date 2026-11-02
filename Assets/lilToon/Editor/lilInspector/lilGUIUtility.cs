@@ -174,9 +174,7 @@ namespace lilToon
             isFur           = !isMultiVariants && lilShaderUtils.IsFurShaderName(shaderName);
             isHair          = !isMultiVariants && lilShaderUtils.IsHairShaderName(shaderName);
             isFakeShadow    = !isMultiVariants && lilShaderUtils.IsFakeShadowShaderName(shaderName);
-            isOnePass       = lilShaderUtils.IsOnePassShaderName(shaderName);
             isTwoPass       = lilShaderUtils.IsTwoPassShaderName(shaderName);
-            isMulti         = lilShaderUtils.IsMultiShaderName(shaderName);
             isCustomShader  = lilShaderUtils.IsOptionalShaderName(shaderName);
             isShowRenderMode = !isCustomShader;
             isStWr          = stencilPass.floatValue == (float)StencilOp.Replace;
@@ -192,25 +190,24 @@ namespace lilToon
             if(isHair)              renderingModeBuf = RenderingMode.Hair;
 
                                     transparentModeBuf = TransparentMode.Normal;
-            if(isOnePass)           transparentModeBuf = TransparentMode.OnePass;
             if(!isFur && isTwoPass) transparentModeBuf = TransparentMode.TwoPass;
-
-            float tpmode = 0.0f;
-            if(material.HasProperty("_TransparentMode")) tpmode = material.GetFloat("_TransparentMode");
 
             isUseAlpha =
                 renderingModeBuf == RenderingMode.Cutout ||
                 renderingModeBuf == RenderingMode.Transparent ||
                 renderingModeBuf == RenderingMode.Fur ||
                 renderingModeBuf == RenderingMode.FurCutout ||
-                renderingModeBuf == RenderingMode.FurTwoPass ||
-                (isMulti && tpmode != 0.0f && tpmode != 3.0f && tpmode != 6.0f);
+                renderingModeBuf == RenderingMode.FurTwoPass;
+        }
 
-            if(isMulti)
-            {
-                isCutout = tpmode == 1.0f || tpmode == 5.0f;
-                isTransparent = tpmode == 2.0f;
-            }
+        private static int GetTransparentModePopupIndex(TransparentMode mode)
+        {
+            return mode == TransparentMode.TwoPass ? 1 : 0;
+        }
+
+        private static TransparentMode GetTransparentModeFromPopupIndex(int index)
+        {
+            return index == 1 ? TransparentMode.TwoPass : TransparentMode.Normal;
         }
 
         private void CopyProperties(PropertyBlock propertyBlock)

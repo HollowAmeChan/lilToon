@@ -58,7 +58,7 @@ public class lilToonPreset : ScriptableObject
         public Vector2 scale;
     }
 
-    public static void ApplyPreset(Material material, lilToonPreset preset, bool ismulti)
+    public static void ApplyPreset(Material material, lilToonPreset preset)
     {
         if(material == null || preset == null) return;
         Undo.RecordObject(material, "Apply Preset");
@@ -75,7 +75,6 @@ public class lilToonPreset : ScriptableObject
         bool isrefr         = lilShaderUtils.IsRefractionShaderName(shaderName);
         bool isblur         = lilShaderUtils.IsBlurShaderName(shaderName);
         bool isfur          = lilShaderUtils.IsFurShaderName(shaderName);
-        bool isonepass      = lilShaderUtils.IsOnePassShaderName(shaderName);
         bool istwopass      = lilShaderUtils.IsTwoPassShaderName(shaderName);
 
         var renderingMode = RenderingMode.Opaque;
@@ -97,10 +96,9 @@ public class lilToonPreset : ScriptableObject
         }
 
         var                     transparentMode = TransparentMode.Normal;
-        if(isonepass)           transparentMode = TransparentMode.OnePass;
         if(!isfur && istwopass) transparentMode = TransparentMode.TwoPass;
 
-        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, false, ismulti);
+        lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, false);
         if(preset.renderQueue != -2) material.renderQueue = preset.renderQueue;
 
         foreach(var c in preset.colors ) material.SetColor(c.name, c.value);

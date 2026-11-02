@@ -118,8 +118,7 @@ namespace lilToon
                 material.SetFloat("_lilToonVersion", lilConstants.currentVersionValue);
                 if(!isMultiVariants)
                 {
-                    if(isMulti) lilMaterialUtils.SetupMultiMaterial(material);
-                    else        lilMaterialUtils.RemoveShaderKeywords(material);
+                    lilMaterialUtils.RemoveShaderKeywords(material);
                 }
                 foreach (Material targetMaterial in m_MaterialEditor.targets)
                 {

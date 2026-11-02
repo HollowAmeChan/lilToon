@@ -130,9 +130,7 @@ namespace lilToon
         protected static bool isStWr            = false;
         protected static bool isHair            = false;
         protected static bool isFakeShadow      = false;
-        protected static bool isOnePass         = false;
         protected static bool isTwoPass         = false;
-        protected static bool isMulti           = false;
         protected static bool isUseAlpha        = false;
         protected static bool isShowRenderMode  = true;
 

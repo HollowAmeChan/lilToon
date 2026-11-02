@@ -20,12 +20,10 @@ namespace lilToon
         protected static Shader lts         { get { return lilShaderManager.lts       ; } set { lilShaderManager.lts        = value; } }
         protected static Shader ltsc        { get { return lilShaderManager.ltsc      ; } set { lilShaderManager.ltsc       = value; } }
         protected static Shader ltst        { get { return lilShaderManager.ltst      ; } set { lilShaderManager.ltst       = value; } }
-        protected static Shader ltsot       { get { return lilShaderManager.ltsot     ; } set { lilShaderManager.ltsot      = value; } }
         protected static Shader ltstt       { get { return lilShaderManager.ltstt     ; } set { lilShaderManager.ltstt      = value; } }
         protected static Shader ltso        { get { return lilShaderManager.ltso      ; } set { lilShaderManager.ltso       = value; } }
         protected static Shader ltsco       { get { return lilShaderManager.ltsco     ; } set { lilShaderManager.ltsco      = value; } }
         protected static Shader ltsto       { get { return lilShaderManager.ltsto     ; } set { lilShaderManager.ltsto      = value; } }
-        protected static Shader ltsoto      { get { return lilShaderManager.ltsoto    ; } set { lilShaderManager.ltsoto     = value; } }
         protected static Shader ltstto      { get { return lilShaderManager.ltstto    ; } set { lilShaderManager.ltstto     = value; } }
         protected static Shader ltsoo       { get { return lilShaderManager.ltsoo     ; } set { lilShaderManager.ltsoo      = value; } }
         protected static Shader ltscoo      { get { return lilShaderManager.ltscoo    ; } set { lilShaderManager.ltscoo     = value; } }
@@ -45,10 +43,6 @@ namespace lilToon
         protected static Shader ltspo       { get { return lilShaderManager.ltspo     ; } set { lilShaderManager.ltspo      = value; } }
         protected static Shader ltspc       { get { return lilShaderManager.ltspc     ; } set { lilShaderManager.ltspc      = value; } }
         protected static Shader ltspt       { get { return lilShaderManager.ltspt     ; } set { lilShaderManager.ltspt      = value; } }
-        protected static Shader ltsm        { get { return lilShaderManager.ltsm      ; } set { lilShaderManager.ltsm       = value; } }
-        protected static Shader ltsmo       { get { return lilShaderManager.ltsmo     ; } set { lilShaderManager.ltsmo      = value; } }
-        protected static Shader ltsmref     { get { return lilShaderManager.ltsmref   ; } set { lilShaderManager.ltsmref    = value; } }
-        protected static Shader ltsmfur     { get { return lilShaderManager.ltsmfur   ; } set { lilShaderManager.ltsmfur    = value; } }
     }
 }
 #endif

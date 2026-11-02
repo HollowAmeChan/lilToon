@@ -185,7 +185,7 @@ namespace lilToon
                                 var objs = m_MaterialEditor.targets.Where(obj => obj is Material);
                                 foreach(var obj in objs)
                                 {
-                                    lilToonPreset.ApplyPreset((Material)obj, presets[j], isMulti);
+                                    lilToonPreset.ApplyPreset((Material)obj, presets[j]);
                                 }
                             }
                         }

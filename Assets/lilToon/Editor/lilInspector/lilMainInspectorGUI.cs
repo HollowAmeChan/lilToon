@@ -973,7 +973,7 @@ namespace lilToon
 
                             //------------------------------------------------------------------------------------------------------------------------------
                             // Rendering
-                            if(renderingModeBuf == RenderingMode.Transparent || renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurTwoPass || (isMulti && (transparentModeMat.floatValue == 2.0f || transparentModeMat.floatValue == 4.0f)))
+                            if(renderingModeBuf == RenderingMode.Transparent || renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurTwoPass)
                             {
                                 LocalizedProperty(subpassCutoff);
                             }

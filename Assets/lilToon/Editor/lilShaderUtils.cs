@@ -110,19 +110,9 @@ namespace lilToon
             return ContainsAfterLastSeparator(shaderName, "FakeShadow");
         }
 
-        public static bool IsOnePassShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "OnePass");
-        }
-
         public static bool IsTwoPassShaderName(string shaderName)
         {
             return ContainsAfterLastSeparator(shaderName, "TwoPass");
-        }
-
-        public static bool IsMultiShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Multi");
         }
 
         public static bool IsOptionalShaderName(string shaderName)

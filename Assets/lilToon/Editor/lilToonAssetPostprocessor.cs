@@ -8,7 +8,6 @@ namespace lilToon
     {
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            var id = Shader.PropertyToID("_lilToonVersion");
             foreach(var path in importedAssets)
             {
                 if(!path.EndsWith(".mat")) continue;
@@ -17,10 +16,6 @@ namespace lilToon
 
                 lilStartup.MigrateMaterial(material);
                 lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(material);
-                if(lilShaderUtils.IsMultiShaderName(material.shader.name))
-                {
-                    lilMaterialUtils.SetupMultiMaterial(material);
-                }
             }
         }
     }

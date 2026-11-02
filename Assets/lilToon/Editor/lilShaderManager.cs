@@ -29,13 +29,11 @@ namespace lilToon
         public static Shader lts         = FindShader("lilToon");
         public static Shader ltsc        = FindShader("Hidden/lilToonCutout");
         public static Shader ltst        = FindShader("Hidden/lilToonTransparent");
-        public static Shader ltsot       = FindShader("Hidden/lilToonOnePassTransparent");
         public static Shader ltstt       = FindShader("Hidden/lilToonTwoPassTransparent");
 
         public static Shader ltso        = FindShader("Hidden/lilToonOutline");
         public static Shader ltsco       = FindShader("Hidden/lilToonCutoutOutline");
         public static Shader ltsto       = FindShader("Hidden/lilToonTransparentOutline");
-        public static Shader ltsoto      = FindShader("Hidden/lilToonOnePassTransparentOutline");
         public static Shader ltstto      = FindShader("Hidden/lilToonTwoPassTransparentOutline");
 
         public static Shader ltsoo       = FindShader("_lil/[Optional] lilToonOutlineOnly");
@@ -66,23 +64,17 @@ namespace lilToon
         public static Shader ltspo       = FindShader("Hidden/ltspass_opaque");
         public static Shader ltspc       = FindShader("Hidden/ltspass_cutout");
         public static Shader ltspt       = FindShader("Hidden/ltspass_transparent");
-        public static Shader ltsm        = FindShader("_lil/lilToonMulti");
-        public static Shader ltsmo       = FindShader("Hidden/lilToonMultiOutline");
-        public static Shader ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
-        public static Shader ltsmfur     = FindShader("Hidden/lilToonMultiFur");
 
         public static void InitializeShaders()
         {
             lts         = FindShader("lilToon");
             ltsc        = FindShader("Hidden/lilToonCutout");
             ltst        = FindShader("Hidden/lilToonTransparent");
-            ltsot       = FindShader("Hidden/lilToonOnePassTransparent");
             ltstt       = FindShader("Hidden/lilToonTwoPassTransparent");
 
             ltso        = FindShader("Hidden/lilToonOutline");
             ltsco       = FindShader("Hidden/lilToonCutoutOutline");
             ltsto       = FindShader("Hidden/lilToonTransparentOutline");
-            ltsoto      = FindShader("Hidden/lilToonOnePassTransparentOutline");
             ltstto      = FindShader("Hidden/lilToonTwoPassTransparentOutline");
 
             ltsoo       = FindShader("_lil/[Optional] lilToonOutlineOnly");
@@ -113,10 +105,6 @@ namespace lilToon
             ltspo       = FindShader("Hidden/ltspass_opaque");
             ltspc       = FindShader("Hidden/ltspass_cutout");
             ltspt       = FindShader("Hidden/ltspass_transparent");
-            ltsm        = FindShader("_lil/lilToonMulti");
-            ltsmo       = FindShader("Hidden/lilToonMultiOutline");
-            ltsmref     = FindShader("Hidden/lilToonMultiRefraction");
-            ltsmfur     = FindShader("Hidden/lilToonMultiFur");
 
         }
     }

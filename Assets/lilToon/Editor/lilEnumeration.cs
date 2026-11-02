@@ -25,9 +25,9 @@ namespace lilToon
 
     public enum TransparentMode
     {
-        Normal,
-        OnePass,
-        TwoPass
+        Normal = 0,
+        ReservedOnePass = 1, // Keep the retired serialized slot stable.
+        TwoPass = 2
     }
 
     public enum LightingPreset

@@ -213,17 +213,6 @@ namespace lilToon
             if(version >= lilConstants.currentVersionValue) return;
             Debug.Log("[lilToon]Run migration: " + material.name);
             material.SetFloat(id, lilConstants.currentVersionValue);
-
-            // 1.2.7 -> 1.2.8
-            if(version < 21)
-            {
-                if(material.shader.name.Contains("_lil/lilToonMulti"))
-                {
-                    int renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
-                    material.shader = material.HasProperty("_UseOutline") && material.GetFloat("_UseOutline") != 0.0f ? Shader.Find("Hidden/lilToonMultiOutline") : Shader.Find("_lil/lilToonMulti");
-                    material.renderQueue = renderQueue;
-                }
-            }
         }
 
         private static void PackageVersionChecker(string packageName)
