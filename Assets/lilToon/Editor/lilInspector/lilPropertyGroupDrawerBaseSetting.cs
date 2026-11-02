@@ -459,6 +459,7 @@ namespace lilToon
                     LocalizedProperty(vertexLightStrength);
                     if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, GetLoc("Multi Light Intensity"));
                     if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
+                    DrawHoRPShadowMode();
                     LocalizedProperty(lightDirectionOverride);
                     if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();
@@ -466,6 +467,20 @@ namespace lilToon
                     LocalizedProperty(lilDirectionalLightStrength);
                 EditorGUILayout.EndVertical();
             }
+        }
+
+        private void DrawHoRPShadowMode()
+        {
+            if(hoRPShadowMode.p == null) return;
+            int current = Mathf.Clamp(Mathf.RoundToInt(hoRPShadowMode.floatValue) - 1, 0, 1);
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.showMixedValue = hoRPShadowMode.hasMixedValue;
+            int selected = lilEditorGUI.Popup(GetLoc("sHoRPShadowMode"), current, new string[] {
+                GetLoc("sHoRPShadowModeMain"),
+                GetLoc("sHoRPShadowModeFull")
+            });
+            EditorGUI.showMixedValue = false;
+            if(EditorGUI.EndChangeCheck()) hoRPShadowMode.floatValue = selected + 1;
         }
 
         private void DrawPlanarReflectionSettings()

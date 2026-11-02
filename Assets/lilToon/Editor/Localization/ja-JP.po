@@ -461,6 +461,15 @@ msgstr "単色"
 msgid "sLightingSettings"
 msgstr "ライティング・明るさ設定"
 
+msgid "sHoRPShadowMode"
+msgstr "HoRPシャドウモード"
+
+msgid "sHoRPShadowModeMain"
+msgstr "メインシャドウ"
+
+msgid "sHoRPShadowModeFull"
+msgstr "全シャドウ"
+
 msgid "sVertexLightStrength"
 msgstr "頂点ライトの強度"
 

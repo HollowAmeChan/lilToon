@@ -27,6 +27,7 @@
                         _MonochromeLighting         ("sMonochromeLighting", Range(0,1)) = 0
                         _MultiLightIntensity        ("sMultiLightIntensity", Range(0, 5)) = 0
                         _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
+        [Enum(Main, 1, Full, 2)] _HoRPShadowMode ("HoRP阴影模式", Float) = 1
         [lilToggle]     _UseRealtimeAO              ("Realtime AO", Int) = 1
                         _AOLevel                     ("AO Level", Range(-1, 1)) = 0
                         _AOContrast                  ("AO Contrast", Range(0, 4)) = 1

@@ -794,6 +794,7 @@ namespace lilToon
             LocalizedProperty(vertexLightStrength);
             if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, GetLoc("Multi Light Intensity"));
             if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
+            DrawHoRPShadowMode();
             LocalizedProperty(lightDirectionOverride);
             if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
             BlendOpFASetting();

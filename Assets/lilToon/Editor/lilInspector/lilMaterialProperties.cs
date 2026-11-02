@@ -168,6 +168,7 @@ namespace lilToon
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
         private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty hoRPShadowMode             = new lilMaterialProperty("_HoRPShadowMode", PropertyBlock.Lighting);
         // Ho 表面 / 语义：SB 的材质侧输入。**标签（属于哪几类）由物体侧的 Ho-ObjectBuffer 组件决定**，
         // 这里只说"数值"与"权重"。归到 PropertyBlock.HoSurface —— 这几个参数之前没归任何块，
         // 于是材质面板里根本不显示（作者只能靠 Debug 视图或脚本改）。
@@ -781,6 +782,7 @@ namespace lilToon
                 lilShadowCasterBias,
                 multiLightIntensity,
                 multiLightCastShadowStrength,
+                hoRPShadowMode,
                 hoSurfaceThickness,
                 hoSurfaceCurvature,
                 hoSurfaceTransmittanceHint,

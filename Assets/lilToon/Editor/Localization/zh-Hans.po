@@ -461,6 +461,15 @@ msgstr "Mono"
 msgid "sLightingSettings"
 msgstr "照明设置"
 
+msgid "sHoRPShadowMode"
+msgstr "HoRP阴影模式"
+
+msgid "sHoRPShadowModeMain"
+msgstr "主阴影"
+
+msgid "sHoRPShadowModeFull"
+msgstr "全阴影"
+
 msgid "sVertexLightStrength"
 msgstr "顶点灯强度"
 

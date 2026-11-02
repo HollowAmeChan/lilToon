@@ -277,6 +277,7 @@ float   _LightMaxLimit;
 float   _MonochromeLighting;
 float   _MultiLightIntensity;
 float   _MultiLightCastShadowStrength;
+float   _HoRPShadowMode;
 // AO: realtime source + offline AO Map, driving the shadow grade and the final
 // AO multiply. Declared unconditionally because the offline AO Map path can be
 // used without realtime AO, so lilGetShading references these outside the

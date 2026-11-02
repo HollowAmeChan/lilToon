@@ -461,6 +461,15 @@ msgstr "Mono"
 msgid "sLightingSettings"
 msgstr "라이팅 설정"
 
+msgid "sHoRPShadowMode"
+msgstr "HoRP 그림자 모드"
+
+msgid "sHoRPShadowModeMain"
+msgstr "메인 그림자"
+
+msgid "sHoRPShadowModeFull"
+msgstr "전체 그림자"
+
 msgid "sVertexLightStrength"
 msgstr "꼭지점 라이트의 강도"
 
