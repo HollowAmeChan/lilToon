@@ -69,56 +69,6 @@ namespace lilToon
                         material.SetInt("_OutlineAlphaToMask", 0);
                     }
                     break;
-                case RenderingMode.Refraction:
-                    material.shader = lilShaderManager.ltsref;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_AlphaToMask", 0);
-                    break;
-                case RenderingMode.RefractionBlur:
-                    material.shader = lilShaderManager.ltsrefb;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_AlphaToMask", 0);
-                    break;
-                case RenderingMode.Fur:
-                    material.shader = lilShaderManager.ltsfur;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_AlphaToMask", 0);
-                    material.SetInt("_FurSrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_FurDstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_FurZWrite", 0);
-                    material.SetInt("_FurAlphaToMask", 0);
-                    break;
-                case RenderingMode.FurCutout:
-                    material.shader = lilShaderManager.ltsfurc;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_AlphaToMask", 1);
-                    material.SetInt("_FurSrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_FurDstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_FurZWrite", 1);
-                    material.SetInt("_FurAlphaToMask", 1);
-                    break;
-                case RenderingMode.FurTwoPass:
-                    material.shader = lilShaderManager.ltsfurtwo;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_AlphaToMask", 0);
-                    material.SetInt("_FurSrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    material.SetInt("_FurDstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_FurZWrite", 0);
-                    material.SetInt("_FurAlphaToMask", 0);
-                    break;
-
-                case RenderingMode.Hair:
-                    material.shader = lilShaderManager.ltshair;
-                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_AlphaToMask", 0);
-                    break;
-
             }
             material.renderQueue = renderQueue;
             {
@@ -159,23 +109,6 @@ namespace lilToon
                 material.SetInt("_OutlineDstBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.One);
                 material.SetInt("_OutlineBlendOpFA", (int)BlendOp.Max);
                 material.SetInt("_OutlineBlendOpAlphaFA", (int)BlendOp.Max);
-            }
-            if(renderingMode == RenderingMode.Fur || renderingMode == RenderingMode.FurCutout || renderingMode == RenderingMode.FurTwoPass)
-            {
-                material.SetInt("_FurZTest", 4);
-                material.SetFloat("_FurOffsetFactor", 0.0f);
-                material.SetFloat("_FurOffsetUnits", 0.0f);
-                material.SetInt("_FurColorMask", 15);
-                material.SetInt("_FurSrcBlendAlpha", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_FurDstBlendAlpha", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_FurBlendOp", (int)BlendOp.Add);
-                material.SetInt("_FurBlendOpAlpha", (int)BlendOp.Add);
-                material.SetInt("_FurSrcBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_FurDstBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_FurSrcBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_FurDstBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_FurBlendOpFA", (int)BlendOp.Max);
-                material.SetInt("_FurBlendOpAlphaFA", (int)BlendOp.Max);
             }
         }
 
@@ -313,13 +246,6 @@ namespace lilToon
                     material.SetTexture("_OutlineWidthMask", null);
                     material.SetTexture("_OutlineZBiasMask", null);
                     material.SetTexture("_OutlineVectorTex", null);
-                }
-                if(!lilShaderUtils.IsFurShaderName(shaderName))
-                {
-                    material.SetTexture("_FurVectorTex", null);
-                    material.SetTexture("_FurLengthMask", null);
-                    material.SetTexture("_FurNoiseMask", null);
-                    material.SetTexture("_FurMask", null);
                 }
                 if(IsPropZero(material, "_UseRim", animatedProps)) material.SetTexture("_RimColorTex", null);
                 if(IsPropZero(material, "_UseGlitter", animatedProps)) material.SetTexture("_GlitterColorTex", null);

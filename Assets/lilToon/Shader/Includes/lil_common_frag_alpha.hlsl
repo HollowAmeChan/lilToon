@@ -75,13 +75,6 @@
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
-    // Fur
-    BEFORE_FUR
-    #if defined(LIL_FUR) && defined(LIL_V2F_FURLAYER)
-        OVERRIDE_FUR
-    #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
     // Dither
     BEFORE_DITHER
     #if defined(LIL_FEATURE_DITHER) && LIL_RENDER == 1
@@ -94,9 +87,6 @@
     #if LIL_RENDER == 2 && !defined(SHADER_API_GLES)
         // Dither
         float alphaRef = fd.col.a;
-        #if defined(LIL_FUR) && defined(LIL_V2F_FURLAYER) && defined(SHADERPASS) && (SHADERPASS ==  SHADERPASS_SHADOWS)
-            fd.col.a = saturate(fd.col.a*5.0);
-        #endif
         #if LIL_SUBPASS_TRANSPARENT_MODE == 1 || defined(SHADERPASS) && (SHADERPASS ==  SHADERPASS_SHADOWS)
             alphaRef = lilSampleDither(_DitherMaskLOD, input.positionCS.xy, fd.col.a);
         #elif LIL_SUBPASS_TRANSPARENT_MODE == 0 && defined(LIL_PASS_SHADOWCASTER_INCLUDED)

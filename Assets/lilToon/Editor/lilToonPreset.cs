@@ -72,9 +72,6 @@ public class lilToonPreset : ScriptableObject
 
         bool iscutout       = lilShaderUtils.IsCutoutShaderName(shaderName);
         bool istransparent  = lilShaderUtils.IsTransparentShaderName(shaderName);
-        bool isrefr         = lilShaderUtils.IsRefractionShaderName(shaderName);
-        bool isblur         = lilShaderUtils.IsBlurShaderName(shaderName);
-        bool isfur          = lilShaderUtils.IsFurShaderName(shaderName);
         bool istwopass      = lilShaderUtils.IsTwoPassShaderName(shaderName);
 
         var renderingMode = RenderingMode.Opaque;
@@ -84,11 +81,6 @@ public class lilToonPreset : ScriptableObject
         {
             if(iscutout)            renderingMode = RenderingMode.Cutout;
             if(istransparent)       renderingMode = RenderingMode.Transparent;
-            if(isrefr)              renderingMode = RenderingMode.Refraction;
-            if(isrefr && isblur)    renderingMode = RenderingMode.RefractionBlur;
-            if(isfur)               renderingMode = RenderingMode.Fur;
-            if(isfur && iscutout)   renderingMode = RenderingMode.FurCutout;
-            if(isfur && istwopass)  renderingMode = RenderingMode.FurTwoPass;
         }
         else
         {
@@ -96,7 +88,7 @@ public class lilToonPreset : ScriptableObject
         }
 
         var                     transparentMode = TransparentMode.Normal;
-        if(!isfur && istwopass) transparentMode = TransparentMode.TwoPass;
+        if(istwopass)           transparentMode = TransparentMode.TwoPass;
 
         lilMaterialUtils.SetupMaterialWithRenderingMode(material, renderingMode, transparentMode, isoutl, false);
         if(preset.renderQueue != -2) material.renderQueue = preset.renderQueue;
@@ -158,14 +150,10 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveParallax = true;
         private bool shouldSaveDistanceFade = true;
         private bool shouldSaveDissolve = true;
-        private bool shouldSaveRefraction = true;
-        private bool shouldSaveHair = true;
         private bool shouldSaveOutline = true;
-        private bool shouldSaveFur = true;
         private bool shouldSaveStencil = true;
         private bool shouldSaveRendering = true;
         private bool shouldSaveOutlineRendering = true;
-        private bool shouldSaveFurRendering = true;
 
         // Texture
         private HashSet<string> shouldSaveTexs = new HashSet<string>();
@@ -216,11 +204,6 @@ public class lilToonPreset : ScriptableObject
                 renderingMode = RenderingMode.Opaque;
                 if(lilShaderUtils.IsCutoutShaderName(shaderName))         renderingMode = RenderingMode.Cutout;
                 if(lilShaderUtils.IsTransparentShaderName(shaderName))    renderingMode = RenderingMode.Transparent;
-                if(lilShaderUtils.IsRefractionShaderName(shaderName))     renderingMode = RenderingMode.Refraction;
-                if(lilShaderUtils.IsRefractionBlurShaderName(shaderName)) renderingMode = RenderingMode.RefractionBlur;
-                if(lilShaderUtils.IsFurShaderName(shaderName))            renderingMode = RenderingMode.Fur;
-                if(lilShaderUtils.IsFurCutoutShaderName(shaderName))      renderingMode = RenderingMode.FurCutout;
-                if(lilShaderUtils.IsFurTwoPassShaderName(shaderName))     renderingMode = RenderingMode.FurTwoPass;
             }
             else
             {
@@ -285,7 +268,6 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveRim                       = EditorGUILayout.ToggleLeft(GetLoc("sRimLight"), shouldSaveRim);
                 shouldSaveGlitter                   = EditorGUILayout.ToggleLeft(GetLoc("sGlitter"), shouldSaveGlitter);
                 shouldSaveTesion = EditorGUILayout.ToggleLeft("Tesion", shouldSaveTesion);
-                shouldSaveHair                      = EditorGUILayout.ToggleLeft(GetLoc("sHair"), shouldSaveHair);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.LabelField(GetLoc("sAdvanced"), EditorStyles.boldLabel);
@@ -293,22 +275,7 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveParallax                  = EditorGUILayout.ToggleLeft(GetLoc("sParallax"), shouldSaveParallax);
                 shouldSaveDistanceFade              = EditorGUILayout.ToggleLeft(GetLoc("sDistanceFade"), shouldSaveDistanceFade);
                 shouldSaveDissolve                  = EditorGUILayout.ToggleLeft(GetLoc("sDissolve"), shouldSaveDissolve);
-                shouldSaveRefraction                = EditorGUILayout.ToggleLeft(GetLoc("sRefraction"), shouldSaveRefraction);
                 shouldSaveOutline                   = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), shouldSaveOutline);
-                if(
-                    renderingMode == RenderingMode.Fur ||
-                    renderingMode == RenderingMode.FurCutout ||
-                    renderingMode == RenderingMode.FurTwoPass
-                )
-                {
-                    shouldSaveFur                       = EditorGUILayout.ToggleLeft(GetLoc("sFur"), shouldSaveFur);
-                    shouldSaveFurRendering              = EditorGUILayout.ToggleLeft(GetLoc("sRenderingSetting") + " - " + GetLoc("sFur"), shouldSaveFurRendering);
-                }
-                else
-                {
-                    shouldSaveFur                       = false;
-                    shouldSaveFurRendering              = false;
-                }
                 shouldSaveStencil                   = EditorGUILayout.ToggleLeft(GetLoc("sStencilSetting"), shouldSaveStencil);
                 shouldSaveRendering                 = EditorGUILayout.ToggleLeft(GetLoc("sRenderingSetting"), shouldSaveRendering);
                 shouldSaveOutlineRendering          = EditorGUILayout.ToggleLeft(GetLoc("sOutline") + " - " + GetLoc("sRenderingSetting"), shouldSaveOutlineRendering);
@@ -422,14 +389,10 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveParallax && lilPropertyNameChecker.IsParallaxProperty(propName) ||
                     shouldSaveDistanceFade && lilPropertyNameChecker.IsDistanceFadeProperty(propName) ||
                     shouldSaveDissolve && lilPropertyNameChecker.IsDissolveProperty(propName) ||
-                    shouldSaveRefraction && lilPropertyNameChecker.IsRefractionProperty(propName) ||
-                    shouldSaveHair && lilPropertyNameChecker.IsHairProperty(propName) ||
                     shouldSaveOutline && lilPropertyNameChecker.IsOutlineProperty(propName) ||
-                    shouldSaveFur && lilPropertyNameChecker.IsFurProperty(propName) ||
                     shouldSaveStencil && lilPropertyNameChecker.IsStencilProperty(propName) ||
                     shouldSaveRendering && lilPropertyNameChecker.IsRenderingProperty(propName) ||
-                    shouldSaveOutlineRendering && lilPropertyNameChecker.IsOutlineRenderingProperty(propName) ||
-                    shouldSaveFurRendering && lilPropertyNameChecker.IsFurRenderingProperty(propName)
+                    shouldSaveOutlineRendering && lilPropertyNameChecker.IsOutlineRenderingProperty(propName)
                 )) continue;
 
                 var propType = material.shader.GetPropertyType(i);
@@ -501,14 +464,10 @@ public class lilToonPreset : ScriptableObject
             shouldSaveParallax = val;
             shouldSaveDistanceFade = val;
             shouldSaveDissolve = val;
-            shouldSaveRefraction = val;
-            shouldSaveHair = val;
             shouldSaveOutline = val;
-            shouldSaveFur = val;
             shouldSaveStencil = val;
             shouldSaveRendering = val;
             shouldSaveOutlineRendering = val;
-            shouldSaveFurRendering = val;
         }
 
         private void ToggleAllTextures(Material material, bool val)

@@ -18,7 +18,7 @@ namespace lilToon
         private void DrawOutlineSettings(Material material)
         {
             if(!ShouldDrawBlock(PropertyBlock.Outline)) return;
-            if(isMultiVariants || isRefr || isFur || isFakeShadow || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
             edSet.isShowOutline = lilEditorGUI.Foldout(GetLoc("sOutlineSetting"), edSet.isShowOutline);
             DrawMenuButton(GetLoc("sAnchorOutline"), PropertyBlock.Outline);
             if(edSet.isShowOutline)
@@ -213,16 +213,6 @@ namespace lilToon
                         outlineStencilFail.floatValue = (float)StencilOp.Keep;
                         outlineStencilZFail.floatValue = (float)StencilOp.Keep;
                     }
-                    if(isFur)
-                    {
-                        furStencilRef.floatValue = 0;
-                        furStencilReadMask.floatValue = 255.0f;
-                        furStencilWriteMask.floatValue = 255.0f;
-                        furStencilComp.floatValue = (float)CompareFunction.Always;
-                        furStencilPass.floatValue = (float)StencilOp.Keep;
-                        furStencilFail.floatValue = (float)StencilOp.Keep;
-                        furStencilZFail.floatValue = (float)StencilOp.Keep;
-                    }
                 }
 
                 EditorGUILayout.BeginVertical(customBox);
@@ -263,19 +253,6 @@ namespace lilToon
                     EditorGUILayout.EndVertical();
                 }
 
-                if(isFur)
-                {
-                    EditorGUILayout.LabelField(GetLoc("sFur"));
-                    EditorGUILayout.BeginVertical(customBox);
-                    LocalizedProperty(furStencilRef);
-                    LocalizedProperty(furStencilReadMask);
-                    LocalizedProperty(furStencilWriteMask);
-                    LocalizedProperty(furStencilComp);
-                    LocalizedProperty(furStencilPass);
-                    LocalizedProperty(furStencilFail);
-                    LocalizedProperty(furStencilZFail);
-                    EditorGUILayout.EndVertical();
-                }
             }
         }
     }

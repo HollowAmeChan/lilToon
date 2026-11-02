@@ -15,12 +15,12 @@ namespace lilToon
         Opaque,
         Cutout,
         Transparent,
-        Refraction,
-        RefractionBlur,
-        Fur,
-        FurCutout,
-        FurTwoPass,
-        Hair = 9
+        ReservedRefraction = 3,
+        ReservedRefractionBlur = 4,
+        ReservedFur = 5,
+        ReservedFurCutout = 6,
+        ReservedFurTwoPass = 7,
+        ReservedHair = 9
     }
 
     public enum TransparentMode
@@ -66,14 +66,14 @@ namespace lilToon
         Backlight,
         SSS,
         Reserved27, // Removed family slot; preserve serialized PropertyBlock IDs.
-        Hair,
+        Reserved28, // Removed family slot; preserve serialized PropertyBlock IDs.
         Reserved29, // Removed family slot; preserve serialized PropertyBlock IDs.
         Outline,
         Parallax,
         DistanceFade,
         Dissolve,
-        Refraction,
-        Fur,
+        ReservedRefraction, // Removed family slot; preserve serialized PropertyBlock IDs.
+        ReservedFur, // Removed family slot; preserve serialized PropertyBlock IDs.
         Stencil,
         Rendering,
         /// <summary>

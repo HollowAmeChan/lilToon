@@ -53,9 +53,9 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 // Replace keyword to transparent mode
-#if defined(UNITY_UI_CLIP_RECT) || defined(LIL_REFRACTION)
+#if defined(UNITY_UI_CLIP_RECT)
     #define LIL_RENDER 2
-#elif defined(UNITY_UI_ALPHACLIP) || defined(LIL_FUR)
+#elif defined(UNITY_UI_ALPHACLIP)
     #define LIL_RENDER 1
 #else
     #define LIL_RENDER 0
@@ -287,8 +287,4 @@
 #define LIL_FEATURE_OutlineWidthMask
 #define LIL_FEATURE_OutlineZBiasMask
 #define LIL_FEATURE_OutlineVectorTex
-#define LIL_FEATURE_FurNoiseMask
-#define LIL_FEATURE_FurMask
-#define LIL_FEATURE_FurLengthMask
-#define LIL_FEATURE_FurVectorTex
 #endif

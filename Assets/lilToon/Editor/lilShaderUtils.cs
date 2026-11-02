@@ -47,69 +47,6 @@ namespace lilToon
             return false;
         }
 
-        public static bool IsRefractionShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Refraction");
-        }
-
-        public static bool IsRefractionBlurShaderName(string shaderName)
-        {
-            return shaderName.EndsWith("RefractionBlur");
-        }
-
-        public static bool IsBlurShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Blur");
-        }
-
-        public static bool IsFurShaderName(string shaderName)
-        {
-            var separatorIndex = shaderName.LastIndexOf('/');
-            if (separatorIndex == -1 || separatorIndex + 1 == shaderName.Length)
-            {
-                return false;
-            }
-
-            if (shaderName.IndexOf("Fur", separatorIndex + 1) != -1)
-            {
-                return true;
-            }
-
-            // For following custom shader names.
-            // - *LIL_SHADER_NAME*/[Optional] FurOnly/Transparent
-            // - *LIL_SHADER_NAME*/[Optional] FurOnly/Cutout
-            // - *LIL_SHADER_NAME*/[Optional] FurOnly/TwoPass
-            var partIndex = shaderName.LastIndexOf("/[Optional] FurOnly/");
-            if (partIndex != -1 && partIndex + 19 == separatorIndex)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool IsFurCutoutShaderName(string shaderName)
-        {
-            return shaderName.EndsWith("FurCutout");
-        }
-
-        public static bool IsFurTwoPassShaderName(string shaderName)
-        {
-            return shaderName.EndsWith("FurTwoPass");
-        }
-
-
-
-        public static bool IsHairShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Hair");
-        }
-
-        public static bool IsFakeShadowShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "FakeShadow");
-        }
-
         public static bool IsTwoPassShaderName(string shaderName)
         {
             return ContainsAfterLastSeparator(shaderName, "TwoPass");

@@ -169,11 +169,6 @@ namespace lilToon
             isCutout        = lilShaderUtils.IsCutoutShaderName(shaderName);
             isTransparent   = lilShaderUtils.IsTransparentShaderName(shaderName) || lilShaderUtils.IsOverlayShaderName(shaderName);
             isOutl          = !isMultiVariants && lilShaderUtils.IsOutlineShaderName(shaderName);
-            isRefr          = !isMultiVariants && lilShaderUtils.IsRefractionShaderName(shaderName);
-            isBlur          = !isMultiVariants && lilShaderUtils.IsBlurShaderName(shaderName);
-            isFur           = !isMultiVariants && lilShaderUtils.IsFurShaderName(shaderName);
-            isHair          = !isMultiVariants && lilShaderUtils.IsHairShaderName(shaderName);
-            isFakeShadow    = !isMultiVariants && lilShaderUtils.IsFakeShadowShaderName(shaderName);
             isTwoPass       = lilShaderUtils.IsTwoPassShaderName(shaderName);
             isCustomShader  = lilShaderUtils.IsOptionalShaderName(shaderName);
             isShowRenderMode = !isCustomShader;
@@ -182,22 +177,13 @@ namespace lilToon
                                     renderingModeBuf = RenderingMode.Opaque;
             if(isCutout)            renderingModeBuf = RenderingMode.Cutout;
             if(isTransparent)       renderingModeBuf = RenderingMode.Transparent;
-            if(isRefr)              renderingModeBuf = RenderingMode.Refraction;
-            if(isRefr && isBlur)    renderingModeBuf = RenderingMode.RefractionBlur;
-            if(isFur)               renderingModeBuf = RenderingMode.Fur;
-            if(isFur && isCutout)   renderingModeBuf = RenderingMode.FurCutout;
-            if(isFur && isTwoPass)  renderingModeBuf = RenderingMode.FurTwoPass;
-            if(isHair)              renderingModeBuf = RenderingMode.Hair;
 
                                     transparentModeBuf = TransparentMode.Normal;
-            if(!isFur && isTwoPass) transparentModeBuf = TransparentMode.TwoPass;
+            if(isTwoPass)           transparentModeBuf = TransparentMode.TwoPass;
 
             isUseAlpha =
                 renderingModeBuf == RenderingMode.Cutout ||
-                renderingModeBuf == RenderingMode.Transparent ||
-                renderingModeBuf == RenderingMode.Fur ||
-                renderingModeBuf == RenderingMode.FurCutout ||
-                renderingModeBuf == RenderingMode.FurTwoPass;
+                renderingModeBuf == RenderingMode.Transparent;
         }
 
         private static int GetTransparentModePopupIndex(TransparentMode mode)

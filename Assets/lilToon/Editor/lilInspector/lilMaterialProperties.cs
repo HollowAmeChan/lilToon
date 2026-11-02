@@ -399,49 +399,6 @@ namespace lilToon
         private readonly lilMaterialProperty glitterVRParallaxStrength  = new lilMaterialProperty("_GlitterVRParallaxStrength", PropertyBlock.Glitter);
         private readonly lilMaterialProperty glitterNormalStrength      = new lilMaterialProperty("_GlitterNormalStrength", PropertyBlock.Glitter);
 
-
-        private readonly lilMaterialProperty useHair                = new lilMaterialProperty("_UseHair", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobeCount          = new lilMaterialProperty("_HairLobeCount", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairMask               = new lilMaterialProperty("_HairMask", true, PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairShiftMap           = new lilMaterialProperty("_HairShiftMap", true, PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairTangentMode        = new lilMaterialProperty("_HairTangentMode", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairTangentMap         = new lilMaterialProperty("_HairTangentMap", true, PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairTangentStrength    = new lilMaterialProperty("_HairTangentStrength", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairSpecularAA         = new lilMaterialProperty("_HairSpecularAA", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1Model         = new lilMaterialProperty("_HairLobe1Model", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1Color         = new lilMaterialProperty("_HairLobe1Color", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1Strength      = new lilMaterialProperty("_HairLobe1Strength", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1Shift         = new lilMaterialProperty("_HairLobe1Shift", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1ShiftScale    = new lilMaterialProperty("_HairLobe1ShiftScale", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1WidthT        = new lilMaterialProperty("_HairLobe1WidthT", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1WidthB        = new lilMaterialProperty("_HairLobe1WidthB", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe1Power         = new lilMaterialProperty("_HairLobe1Power", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2Model         = new lilMaterialProperty("_HairLobe2Model", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2Color         = new lilMaterialProperty("_HairLobe2Color", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2Strength      = new lilMaterialProperty("_HairLobe2Strength", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2Shift         = new lilMaterialProperty("_HairLobe2Shift", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2ShiftScale    = new lilMaterialProperty("_HairLobe2ShiftScale", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2WidthT        = new lilMaterialProperty("_HairLobe2WidthT", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2WidthB        = new lilMaterialProperty("_HairLobe2WidthB", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe2Power         = new lilMaterialProperty("_HairLobe2Power", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3Model         = new lilMaterialProperty("_HairLobe3Model", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3Color         = new lilMaterialProperty("_HairLobe3Color", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3Strength      = new lilMaterialProperty("_HairLobe3Strength", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3Shift         = new lilMaterialProperty("_HairLobe3Shift", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3ShiftScale    = new lilMaterialProperty("_HairLobe3ShiftScale", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3WidthT        = new lilMaterialProperty("_HairLobe3WidthT", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3WidthB        = new lilMaterialProperty("_HairLobe3WidthB", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe3Power         = new lilMaterialProperty("_HairLobe3Power", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4Model         = new lilMaterialProperty("_HairLobe4Model", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4Color         = new lilMaterialProperty("_HairLobe4Color", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4Strength      = new lilMaterialProperty("_HairLobe4Strength", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4Shift         = new lilMaterialProperty("_HairLobe4Shift", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4ShiftScale    = new lilMaterialProperty("_HairLobe4ShiftScale", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4WidthT        = new lilMaterialProperty("_HairLobe4WidthT", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4WidthB        = new lilMaterialProperty("_HairLobe4WidthB", PropertyBlock.Hair);
-        private readonly lilMaterialProperty hairLobe4Power         = new lilMaterialProperty("_HairLobe4Power", PropertyBlock.Hair);
-
-
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex                 = new lilMaterialProperty("_OutlineTex", true, PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex_ScrollRotate    = new lilMaterialProperty("_OutlineTex_ScrollRotate", PropertyBlock.Outline);
@@ -485,29 +442,6 @@ namespace lilToon
         private readonly lilMaterialProperty dissolveParams                 = new lilMaterialProperty("_DissolveParams", PropertyBlock.Dissolve);
         private readonly lilMaterialProperty dissolvePos                    = new lilMaterialProperty("_DissolvePos", PropertyBlock.Dissolve);
 
-        private readonly lilMaterialProperty refractionStrength         = new lilMaterialProperty("_RefractionStrength", PropertyBlock.Refraction);
-        private readonly lilMaterialProperty refractionFresnelPower     = new lilMaterialProperty("_RefractionFresnelPower", PropertyBlock.Refraction);
-        private readonly lilMaterialProperty refractionColorFromMain    = new lilMaterialProperty("_RefractionColorFromMain", PropertyBlock.Refraction);
-        private readonly lilMaterialProperty refractionColor            = new lilMaterialProperty("_RefractionColor", PropertyBlock.Refraction);
-
-        private readonly lilMaterialProperty furNoiseMask           = new lilMaterialProperty("_FurNoiseMask", true, PropertyBlock.Fur);
-        private readonly lilMaterialProperty furMask                = new lilMaterialProperty("_FurMask", true, PropertyBlock.Fur);
-        private readonly lilMaterialProperty furLengthMask          = new lilMaterialProperty("_FurLengthMask", true, PropertyBlock.Fur);
-        private readonly lilMaterialProperty furVectorTex           = new lilMaterialProperty("_FurVectorTex", true, PropertyBlock.Fur);
-        private readonly lilMaterialProperty furVectorScale         = new lilMaterialProperty("_FurVectorScale", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furVector              = new lilMaterialProperty("_FurVector", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furGravity             = new lilMaterialProperty("_FurGravity", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furRandomize           = new lilMaterialProperty("_FurRandomize", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furAO                  = new lilMaterialProperty("_FurAO", PropertyBlock.Fur);
-        private readonly lilMaterialProperty vertexColor2FurVector  = new lilMaterialProperty("_VertexColor2FurVector", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furLayerNum            = new lilMaterialProperty("_FurLayerNum", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furRootOffset          = new lilMaterialProperty("_FurRootOffset", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furCutoutLength        = new lilMaterialProperty("_FurCutoutLength", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furTouchStrength       = new lilMaterialProperty("_FurTouchStrength", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furRimColor            = new lilMaterialProperty("_FurRimColor", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furRimFresnelPower     = new lilMaterialProperty("_FurRimFresnelPower", PropertyBlock.Fur);
-        private readonly lilMaterialProperty furRimAntiLight        = new lilMaterialProperty("_FurRimAntiLight", PropertyBlock.Fur);
-
         private readonly lilMaterialProperty stencilRef                 = new lilMaterialProperty("_StencilRef", PropertyBlock.Stencil);
         private readonly lilMaterialProperty stencilReadMask            = new lilMaterialProperty("_StencilReadMask", PropertyBlock.Stencil);
         private readonly lilMaterialProperty stencilWriteMask           = new lilMaterialProperty("_StencilWriteMask", PropertyBlock.Stencil);
@@ -529,14 +463,6 @@ namespace lilToon
         private readonly lilMaterialProperty outlineStencilPass         = new lilMaterialProperty("_OutlineStencilPass", PropertyBlock.Stencil);
         private readonly lilMaterialProperty outlineStencilFail         = new lilMaterialProperty("_OutlineStencilFail", PropertyBlock.Stencil);
         private readonly lilMaterialProperty outlineStencilZFail        = new lilMaterialProperty("_OutlineStencilZFail", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilRef              = new lilMaterialProperty("_FurStencilRef", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilReadMask         = new lilMaterialProperty("_FurStencilReadMask", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilWriteMask        = new lilMaterialProperty("_FurStencilWriteMask", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilComp             = new lilMaterialProperty("_FurStencilComp", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilPass             = new lilMaterialProperty("_FurStencilPass", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilFail             = new lilMaterialProperty("_FurStencilFail", PropertyBlock.Stencil);
-        private readonly lilMaterialProperty furStencilZFail            = new lilMaterialProperty("_FurStencilZFail", PropertyBlock.Stencil);
-
         private readonly lilMaterialProperty subpassCutoff          = new lilMaterialProperty("_SubpassCutoff", PropertyBlock.Rendering);
         private readonly lilMaterialProperty cull                   = new lilMaterialProperty("_Cull", PropertyBlock.Rendering, PropertyBlock.Base);
         private readonly lilMaterialProperty srcBlend               = new lilMaterialProperty("_SrcBlend", PropertyBlock.Rendering);
@@ -601,33 +527,11 @@ namespace lilToon
         private readonly lilMaterialProperty outlineColorMask       = new lilMaterialProperty("_OutlineColorMask", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineAlphaToMask     = new lilMaterialProperty("_OutlineAlphaToMask", PropertyBlock.Rendering);
 
-        private readonly lilMaterialProperty furCull                = new lilMaterialProperty("_FurCull", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furSrcBlend            = new lilMaterialProperty("_FurSrcBlend", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furDstBlend            = new lilMaterialProperty("_FurDstBlend", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furSrcBlendAlpha       = new lilMaterialProperty("_FurSrcBlendAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furDstBlendAlpha       = new lilMaterialProperty("_FurDstBlendAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furBlendOp             = new lilMaterialProperty("_FurBlendOp", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furBlendOpAlpha        = new lilMaterialProperty("_FurBlendOpAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furSrcBlendFA          = new lilMaterialProperty("_FurSrcBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furDstBlendFA          = new lilMaterialProperty("_FurDstBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furSrcBlendAlphaFA     = new lilMaterialProperty("_FurSrcBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furDstBlendAlphaFA     = new lilMaterialProperty("_FurDstBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furBlendOpFA           = new lilMaterialProperty("_FurBlendOpFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furBlendOpAlphaFA      = new lilMaterialProperty("_FurBlendOpAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furZclip               = new lilMaterialProperty("_FurZClip", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furZwrite              = new lilMaterialProperty("_FurZWrite", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furZtest               = new lilMaterialProperty("_FurZTest", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furOffsetFactor        = new lilMaterialProperty("_FurOffsetFactor", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furOffsetUnits         = new lilMaterialProperty("_FurOffsetUnits", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furColorMask           = new lilMaterialProperty("_FurColorMask", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty furAlphaToMask         = new lilMaterialProperty("_FurAlphaToMask", PropertyBlock.Rendering);
-
         private readonly lilMaterialProperty transparentModeMat     = new lilMaterialProperty("_TransparentMode", PropertyBlock.Base);
         private readonly lilMaterialProperty useClippingCanceller   = new lilMaterialProperty("_UseClippingCanceller", PropertyBlock.Base);
         private readonly lilMaterialProperty asOverlay              = new lilMaterialProperty("_AsOverlay", PropertyBlock.Base);
         private readonly lilMaterialProperty triMask                = new lilMaterialProperty("_TriMask", true, PropertyBlock.Base);
         private readonly lilMaterialProperty matcapMul              = new lilMaterialProperty("_MatCapMul", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty fakeShadowVector       = new lilMaterialProperty("_FakeShadowVector", PropertyBlock.Base);
 
         private lilMaterialProperty[] allProperty;
         // Shared input catalog for the Inspector and scene material manager.
@@ -1010,49 +914,6 @@ namespace lilToon
                 glitterVRParallaxStrength,
                 glitterNormalStrength,
 
-
-                useHair,
-                hairLobeCount,
-                hairMask,
-                hairShiftMap,
-                hairTangentMode,
-                hairTangentMap,
-                hairTangentStrength,
-                hairSpecularAA,
-                hairLobe1Model,
-                hairLobe1Color,
-                hairLobe1Strength,
-                hairLobe1Shift,
-                hairLobe1ShiftScale,
-                hairLobe1WidthT,
-                hairLobe1WidthB,
-                hairLobe1Power,
-                hairLobe2Model,
-                hairLobe2Color,
-                hairLobe2Strength,
-                hairLobe2Shift,
-                hairLobe2ShiftScale,
-                hairLobe2WidthT,
-                hairLobe2WidthB,
-                hairLobe2Power,
-                hairLobe3Model,
-                hairLobe3Color,
-                hairLobe3Strength,
-                hairLobe3Shift,
-                hairLobe3ShiftScale,
-                hairLobe3WidthT,
-                hairLobe3WidthB,
-                hairLobe3Power,
-                hairLobe4Model,
-                hairLobe4Color,
-                hairLobe4Strength,
-                hairLobe4Shift,
-                hairLobe4ShiftScale,
-                hairLobe4WidthT,
-                hairLobe4WidthB,
-                hairLobe4Power,
-
-
                 outlineColor,
                 outlineTex,
                 outlineTex_ScrollRotate,
@@ -1096,29 +957,6 @@ namespace lilToon
                 dissolveParams,
                 dissolvePos,
 
-                refractionStrength,
-                refractionFresnelPower,
-                refractionColorFromMain,
-                refractionColor,
-
-                furNoiseMask,
-                furMask,
-                furLengthMask,
-                furVectorTex,
-                furVectorScale,
-                furVector,
-                furGravity,
-                furRandomize,
-                furAO,
-                vertexColor2FurVector,
-                furLayerNum,
-                furRootOffset,
-                furCutoutLength,
-                furTouchStrength,
-                furRimColor,
-                furRimFresnelPower,
-                furRimAntiLight,
-
                 stencilRef,
                 stencilReadMask,
                 stencilWriteMask,
@@ -1140,14 +978,6 @@ namespace lilToon
                 outlineStencilPass,
                 outlineStencilFail,
                 outlineStencilZFail,
-                furStencilRef,
-                furStencilReadMask,
-                furStencilWriteMask,
-                furStencilComp,
-                furStencilPass,
-                furStencilFail,
-                furStencilZFail,
-
                 subpassCutoff,
                 cull,
                 srcBlend,
@@ -1212,33 +1042,11 @@ namespace lilToon
                 outlineColorMask,
                 outlineAlphaToMask,
 
-                furCull,
-                furSrcBlend,
-                furDstBlend,
-                furSrcBlendAlpha,
-                furDstBlendAlpha,
-                furBlendOp,
-                furBlendOpAlpha,
-                furSrcBlendFA,
-                furDstBlendFA,
-                furSrcBlendAlphaFA,
-                furDstBlendAlphaFA,
-                furBlendOpFA,
-                furBlendOpAlphaFA,
-                furZclip,
-                furZwrite,
-                furZtest,
-                furOffsetFactor,
-                furOffsetUnits,
-                furColorMask,
-                furAlphaToMask,
-
                 transparentModeMat,
                 useClippingCanceller,
                 asOverlay,
                 triMask,
                 matcapMul,
-                fakeShadowVector,
                 tesionEnabled, tesionStrength, tesionMaps,
                 tesionStretchBaseColor, tesionStretchColor, tesionStretchNormal, tesionStretchNormalScale, tesionStretchRange, tesionStretchStrength,
                 tesionCompressionBaseColor, tesionCompressionColor, tesionCompressionNormal, tesionCompressionNormalScale, tesionCompressionRange, tesionCompressionStrength,

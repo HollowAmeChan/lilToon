@@ -103,11 +103,7 @@ struct v2f
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Shader
-#if defined(LIL_FUR)
-    #include "lil_common_vert_fur.hlsl"
-#else
-    #include "lil_common_vert.hlsl"
-#endif
+#include "lil_common_vert.hlsl"
 #include "lil_common_frag.hlsl"
 
 #if defined(WRITE_MSAA_DEPTH)

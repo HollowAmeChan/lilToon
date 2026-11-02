@@ -42,21 +42,6 @@ namespace lilToon
 
 
 
-        public static Shader ltsref      = FindShader("Hidden/lilToonRefraction");
-        public static Shader ltsrefb     = FindShader("Hidden/lilToonRefractionBlur");
-        public static Shader ltsfur      = FindShader("Hidden/lilToonFur");
-        public static Shader ltsfurc     = FindShader("Hidden/lilToonFurCutout");
-        public static Shader ltsfurtwo   = FindShader("Hidden/lilToonFurTwoPass");
-        public static Shader ltsfuro     = FindShader("_lil/[Optional] lilToonFurOnlyTransparent");
-        public static Shader ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
-        public static Shader ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
-
-
-        public static Shader ltshair     = FindShader("Hidden/lilToonHair");
-
-
-        public static Shader ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
-
         public static Shader ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
         public static Shader ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");
 
@@ -82,21 +67,6 @@ namespace lilToon
             ltstoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyTransparent");
 
 
-
-            ltsref      = FindShader("Hidden/lilToonRefraction");
-            ltsrefb     = FindShader("Hidden/lilToonRefractionBlur");
-            ltsfur      = FindShader("Hidden/lilToonFur");
-            ltsfurc     = FindShader("Hidden/lilToonFurCutout");
-            ltsfurtwo   = FindShader("Hidden/lilToonFurTwoPass");
-            ltsfuro     = FindShader("_lil/[Optional] lilToonFurOnlyTransparent");
-            ltsfuroc    = FindShader("_lil/[Optional] lilToonFurOnlyCutout");
-            ltsfurotwo  = FindShader("_lil/[Optional] lilToonFurOnlyTwoPass");
-
-
-            ltshair     = FindShader("Hidden/lilToonHair");
-
-
-            ltsfs       = FindShader("_lil/[Optional] lilToonFakeShadow");
 
             ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
             ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");

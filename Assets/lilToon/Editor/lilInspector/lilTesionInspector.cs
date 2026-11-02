@@ -28,7 +28,7 @@ namespace lilToon
             {
                 var material = m_MaterialEditor != null ? m_MaterialEditor.target as Material : null;
                 return material != null && material.HasProperty("_HoTesionEnabled") && tesionEnabled.p != null
-                    && material.shader.keywordSpace.FindKeyword("_HO_GD_TENSION").isValid && !isFur && !isHair && !isFakeShadow;
+                    && material.shader.keywordSpace.FindKeyword("_HO_GD_TENSION").isValid;
             }
         }
         private void DrawTesionSettings()

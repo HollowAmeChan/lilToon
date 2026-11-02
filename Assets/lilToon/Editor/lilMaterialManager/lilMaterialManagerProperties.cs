@@ -655,7 +655,6 @@ namespace lilToon
         private static string ClassifyProperty(string name)
         {
             if(lilPropertyNameChecker.IsOutlineRenderingProperty(name)) return "轮廓渲染";
-            if(lilPropertyNameChecker.IsFurRenderingProperty(name)) return "毛发渲染";
             if(lilPropertyNameChecker.IsStencilProperty(name)) return "Stencil";
 
             if(InspectorPropertyBlocks.TryGetValue(name, out HashSet<PropertyBlock> blocks))
@@ -663,7 +662,6 @@ namespace lilToon
                 if(blocks.Contains(PropertyBlock.HoSurface)) return "Ho 表面语义";
                 if(blocks.Contains(PropertyBlock.Tesion)) return "张力";
                 if(blocks.Contains(PropertyBlock.PlanarReflection)) return "平面反射";
-                if(blocks.Contains(PropertyBlock.Hair)) return "头发";
                 if(blocks.Contains(PropertyBlock.Base)) return "基本设置";
                 if(blocks.Contains(PropertyBlock.UV)) return "UV";
                 if(blocks.Contains(PropertyBlock.Shadow)) return "阴影";
@@ -688,9 +686,7 @@ namespace lilToon
                 if(blocks.Contains(PropertyBlock.Parallax)) return "视差";
                 if(blocks.Contains(PropertyBlock.DistanceFade)) return "距离淡化";
                 if(blocks.Contains(PropertyBlock.Dissolve)) return "溶解";
-                if(blocks.Contains(PropertyBlock.Refraction)) return "折射";
                 if(blocks.Contains(PropertyBlock.Outline)) return "轮廓";
-                if(blocks.Contains(PropertyBlock.Fur)) return "毛发";
                 if(blocks.Contains(PropertyBlock.Rendering)) return "渲染";
             }
             return ClassifyUnregisteredProperty(name);
@@ -715,7 +711,6 @@ namespace lilToon
             if(lilPropertyNameChecker.IsAnisotropyProperty(name)) return "各向异性";
             if(lilPropertyNameChecker.IsBacklightProperty(name)) return "背光";
             if(lilPropertyNameChecker.IsSSSProperty(name)) return "SSS";
-            if(lilPropertyNameChecker.IsHairProperty(name)) return "头发";
             if(lilPropertyNameChecker.IsReflectionProperty(name)) return "反射";
             if(lilPropertyNameChecker.IsMatCapProperty(name)) return "MatCap";
             if(lilPropertyNameChecker.IsMatCap2ndProperty(name)) return "MatCap 2";
@@ -724,11 +719,8 @@ namespace lilToon
             if(lilPropertyNameChecker.IsParallaxProperty(name)) return "视差";
             if(lilPropertyNameChecker.IsDistanceFadeProperty(name)) return "距离淡化";
             if(lilPropertyNameChecker.IsDissolveProperty(name)) return "溶解";
-            if(lilPropertyNameChecker.IsRefractionProperty(name)) return "折射";
             if(lilPropertyNameChecker.IsOutlineRenderingProperty(name)) return "轮廓渲染";
             if(lilPropertyNameChecker.IsOutlineProperty(name)) return "轮廓";
-            if(lilPropertyNameChecker.IsFurRenderingProperty(name)) return "毛发渲染";
-            if(lilPropertyNameChecker.IsFurProperty(name)) return "毛发";
             if(lilPropertyNameChecker.IsStencilProperty(name)) return "Stencil";
             if(lilPropertyNameChecker.IsRenderingProperty(name)) return "渲染";
             return "其它";

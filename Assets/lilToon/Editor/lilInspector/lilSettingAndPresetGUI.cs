@@ -120,8 +120,6 @@ namespace lilToon
             shaderSetting.mainLightModeName = EditorGUILayout.TextField(GetLoc("Main"), shaderSetting.mainLightModeName);
             shaderSetting.outlineLightModeName = EditorGUILayout.TextField(GetLoc("sOutline"), shaderSetting.outlineLightModeName);
             shaderSetting.preLightModeName = EditorGUILayout.TextField(GetLoc("Transparent backface"), shaderSetting.preLightModeName);
-            shaderSetting.furLightModeName = EditorGUILayout.TextField(GetLoc("sFur"), shaderSetting.furLightModeName);
-            shaderSetting.furPreLightModeName = EditorGUILayout.TextField(GetLoc("Fur Pre"), shaderSetting.furPreLightModeName);
             if(lilEditorGUI.EditorButton(GetLoc("Apply"))) lilToonSetting.ApplyShaderSetting(shaderSetting);
             GUI.enabled = true;
             EditorGUI.indentLevel--;

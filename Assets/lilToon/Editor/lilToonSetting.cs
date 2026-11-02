@@ -54,7 +54,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
     public bool LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
     public bool LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
-    public bool LIL_FEATURE_FUR_COLLISION = true;
 
     public bool LIL_FEATURE_MainGradationTex = true;
     public bool LIL_FEATURE_MainColorAdjustMask = true;
@@ -110,10 +109,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_OutlineWidthMask = true;
     public bool LIL_FEATURE_OutlineZBiasMask = true;
     public bool LIL_FEATURE_OutlineVectorTex = true;
-    public bool LIL_FEATURE_FurNoiseMask = true;
-    public bool LIL_FEATURE_FurMask = true;
-    public bool LIL_FEATURE_FurLengthMask = true;
-    public bool LIL_FEATURE_FurVectorTex = true;
 
     public bool LIL_OPTIMIZE_APPLY_SHADOW_FA = true;
     public bool LIL_OPTIMIZE_USE_FORWARDADD = true;
@@ -142,8 +137,6 @@ public class lilToonSetting : ScriptableObject
     public string mainLightModeName = "";
     public string outlineLightModeName = "";
     public string preLightModeName = "";
-    public string furLightModeName = "";
-    public string furPreLightModeName = "";
 
     public lilToonPreset presetSkin;
     public lilToonPreset presetFace;
@@ -181,8 +174,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.mainLightModeName                  = lockedSetting.mainLightModeName;
             shaderSetting.outlineLightModeName               = lockedSetting.outlineLightModeName;
             shaderSetting.preLightModeName                   = lockedSetting.preLightModeName;
-            shaderSetting.furLightModeName                   = lockedSetting.furLightModeName;
-            shaderSetting.furPreLightModeName                = lockedSetting.furPreLightModeName;
         }
     }
 
@@ -284,7 +275,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = false;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = false;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = false;
-        shaderSetting.LIL_FEATURE_FUR_COLLISION = false;
 
         shaderSetting.LIL_FEATURE_MainGradationTex = false;
         shaderSetting.LIL_FEATURE_MainColorAdjustMask = false;
@@ -340,10 +330,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_OutlineWidthMask = false;
         shaderSetting.LIL_FEATURE_OutlineZBiasMask = false;
         shaderSetting.LIL_FEATURE_OutlineVectorTex = false;
-        shaderSetting.LIL_FEATURE_FurNoiseMask = false;
-        shaderSetting.LIL_FEATURE_FurMask = false;
-        shaderSetting.LIL_FEATURE_FurLengthMask = false;
-        shaderSetting.LIL_FEATURE_FurVectorTex = false;
         shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = false;
         EditorUtility.SetDirty(shaderSetting);
         AssetDatabase.SaveAssets();
@@ -393,7 +379,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
-        shaderSetting.LIL_FEATURE_FUR_COLLISION = true;
         shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = true;
 
         if(!lilShaderAPI.IsTextureLimitedAPI())
@@ -452,10 +437,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_OutlineWidthMask = true;
             shaderSetting.LIL_FEATURE_OutlineZBiasMask = true;
             shaderSetting.LIL_FEATURE_OutlineVectorTex = true;
-            shaderSetting.LIL_FEATURE_FurNoiseMask = true;
-            shaderSetting.LIL_FEATURE_FurMask = true;
-            shaderSetting.LIL_FEATURE_FurLengthMask = true;
-            shaderSetting.LIL_FEATURE_FurVectorTex = true;
         }
     }
 
@@ -609,7 +590,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION) sb.AppendLine("#define LIL_FEATURE_OUTLINE_TONE_CORRECTION");
         if (shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW) sb.AppendLine("#define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW");
         if (shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV) sb.AppendLine("#define LIL_FEATURE_ANIMATE_OUTLINE_UV");
-        if (shaderSetting.LIL_FEATURE_FUR_COLLISION) sb.AppendLine("#define LIL_FEATURE_FUR_COLLISION");
 
         if (shaderSetting.LIL_FEATURE_MainGradationTex) sb.AppendLine("#define LIL_FEATURE_MainGradationTex");
         if (shaderSetting.LIL_FEATURE_MainColorAdjustMask) sb.AppendLine("#define LIL_FEATURE_MainColorAdjustMask");
@@ -668,10 +648,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_OutlineWidthMask) sb.AppendLine("#define LIL_FEATURE_OutlineWidthMask");
         if (shaderSetting.LIL_FEATURE_OutlineZBiasMask) sb.AppendLine("#define LIL_FEATURE_OutlineZBiasMask");
         if (shaderSetting.LIL_FEATURE_OutlineVectorTex) sb.AppendLine("#define LIL_FEATURE_OutlineVectorTex");
-        if (shaderSetting.LIL_FEATURE_FurNoiseMask) sb.AppendLine("#define LIL_FEATURE_FurNoiseMask");
-        if (shaderSetting.LIL_FEATURE_FurMask) sb.AppendLine("#define LIL_FEATURE_FurMask");
-        if (shaderSetting.LIL_FEATURE_FurLengthMask) sb.AppendLine("#define LIL_FEATURE_FurLengthMask");
-        if (shaderSetting.LIL_FEATURE_FurVectorTex) sb.AppendLine("#define LIL_FEATURE_FurVectorTex");
 
         sb.AppendLine(BuildShaderSettingStringMulti(shaderSetting));
 
@@ -1030,17 +1006,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_SHADOW_LUT = true;
         }
 
-        if(lilShaderUtils.IsFurShaderName(shaderName))
-        {
-            if(!shaderSetting.LIL_FEATURE_FUR_COLLISION && material.HasProperty("_FurTouchStrength") && material.GetFloat("_FurTouchStrength") != 0.0f)
-            {
-                logs.Add("[lilToon] LIL_FEATURE_FUR_COLLISION : " + AssetDatabase.GetAssetPath(material));
-                logs.Add("[lilToon] LIL_OPTIMIZE_USE_VERTEXLIGHT : " + AssetDatabase.GetAssetPath(material));
-                shaderSetting.LIL_FEATURE_FUR_COLLISION = true;
-                shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = true;
-            }
-        }
-
         if(!shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION && material.HasProperty("_MainTexHSVG") && material.GetVector("_MainTexHSVG") != lilConstants.defaultHSVG)
         {
             logs.Add("[lilToon] LIL_FEATURE_MAIN_TONE_CORRECTION : " + AssetDatabase.GetAssetPath(material));
@@ -1264,8 +1229,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_SHADOW_LUT = shaderSetting.LIL_FEATURE_SHADOW_LUT || propname.Contains("_ShadowColorType");
             shaderSetting.LIL_FEATURE_RIMSHADE = shaderSetting.LIL_FEATURE_RIMSHADE || propname.Contains("_UseRimShade");
 
-            shaderSetting.LIL_FEATURE_FUR_COLLISION = shaderSetting.LIL_FEATURE_FUR_COLLISION || propname.Contains("_FurTouchStrength");
-
             shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION = shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION || propname.Contains("_MainTexHSVG");
             shaderSetting.LIL_FEATURE_MAIN_GRADATION_MAP = shaderSetting.LIL_FEATURE_MAIN_GRADATION_MAP || propname.Contains("_MainGradationStrength");
             shaderSetting.LIL_FEATURE_MAIN2ND = shaderSetting.LIL_FEATURE_MAIN2ND || propname.Contains("_UseMain2ndTex");
@@ -1300,7 +1263,7 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");
             shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW || propname.Contains("_OutlineLitShadowReceive") || propname.Contains("_OutlineShadowStrength");
 
-            shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT || shaderSetting.LIL_FEATURE_FUR_COLLISION || propname.Contains("_VertexLightStrength");
+            shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT || propname.Contains("_VertexLightStrength");
 
             // Texture
             CheckTextures(ref shaderSetting, propname);
@@ -1378,10 +1341,6 @@ public class lilToonSetting : ScriptableObject
         CheckTexture(ref shaderSetting.LIL_FEATURE_OutlineWidthMask          , "_OutlineWidthMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_OutlineZBiasMask          , "_OutlineZBiasMask", material);
         CheckTexture(ref shaderSetting.LIL_FEATURE_OutlineVectorTex          , "_OutlineVectorTex", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_FurNoiseMask              , "_FurNoiseMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_FurMask                   , "_FurMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_FurLengthMask             , "_FurLengthMask", material);
-        CheckTexture(ref shaderSetting.LIL_FEATURE_FurVectorTex              , "_FurVectorTex", material);
     }
 
     internal static void CheckTextures(ref lilToonSetting shaderSetting, string propname)
@@ -1440,10 +1399,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_OutlineWidthMask           = shaderSetting.LIL_FEATURE_OutlineWidthMask         || propname.Contains("_OutlineWidthMask");
         shaderSetting.LIL_FEATURE_OutlineZBiasMask           = shaderSetting.LIL_FEATURE_OutlineZBiasMask         || propname.Contains("_OutlineZBiasMask");
         shaderSetting.LIL_FEATURE_OutlineVectorTex           = shaderSetting.LIL_FEATURE_OutlineVectorTex         || propname.Contains("_OutlineVectorTex");
-        shaderSetting.LIL_FEATURE_FurNoiseMask               = shaderSetting.LIL_FEATURE_FurNoiseMask             || propname.Contains("_FurNoiseMask");
-        shaderSetting.LIL_FEATURE_FurMask                    = shaderSetting.LIL_FEATURE_FurMask                  || propname.Contains("_FurMask");
-        shaderSetting.LIL_FEATURE_FurLengthMask              = shaderSetting.LIL_FEATURE_FurLengthMask            || propname.Contains("_FurLengthMask");
-        shaderSetting.LIL_FEATURE_FurVectorTex               = shaderSetting.LIL_FEATURE_FurVectorTex             || propname.Contains("_FurVectorTex");
     }
 
     private static void CheckTexture(ref bool LIL_FEATURE_Tex, string propname, Material material)

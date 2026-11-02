@@ -41,8 +41,8 @@ namespace lilToon
                     if(renderingModeBuf != renderingMode)
                     {
                         SetupMaterialWithRenderingMode(renderingMode, transparentModeBuf);
-                        if(renderingMode == RenderingMode.Cutout || renderingMode == RenderingMode.FurCutout) cutoff.floatValue = 0.5f;
-                        if(renderingMode == RenderingMode.Transparent || renderingMode == RenderingMode.Fur || renderingMode == RenderingMode.FurTwoPass) cutoff.floatValue = 0.001f;
+                        if(renderingMode == RenderingMode.Cutout) cutoff.floatValue = 0.5f;
+                        if(renderingMode == RenderingMode.Transparent) cutoff.floatValue = 0.001f;
                         if(transparentModeBuf == TransparentMode.TwoPass)
                         {
                             preCutoff.floatValue = 0.001f;
@@ -60,20 +60,8 @@ namespace lilToon
                         SetupMaterialWithRenderingMode(renderingModeBuf, transparentMode);
                     }
                 }
-                if(renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurCutout || renderingModeBuf == RenderingMode.FurTwoPass)
-                {
-                    EditorGUILayout.HelpBox(GetLoc("sHelpRenderingFur"), MessageType.Warning);
-                }
                 if(lilDirectoryManager.ExistsClusterCreatorKit())
                 {
-                    if(renderingModeBuf == RenderingMode.Refraction || renderingModeBuf == RenderingMode.RefractionBlur)
-                    {
-                        EditorGUILayout.HelpBox(GetLoc("sHelpGrabPass"), MessageType.Warning);
-                    }
-                    if(renderingModeBuf == RenderingMode.Fur || renderingModeBuf == RenderingMode.FurCutout || renderingModeBuf == RenderingMode.FurTwoPass)
-                    {
-                        EditorGUILayout.HelpBox(GetLoc("sHelpGeometryShader"), MessageType.Warning);
-                    }
                 }
             }
         }
@@ -100,37 +88,29 @@ namespace lilToon
                     {
                         LocalizedProperty(lilOITEnabled, GetLoc("Weighted OIT"));
                     }
-                    if(!isFakeShadow)
+                    LocalizedProperty(cull);
+                    EditorGUI.indentLevel++;
+                    if(cull.floatValue == 1.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpCullMode")))
                     {
-                        LocalizedProperty(cull);
-                        EditorGUI.indentLevel++;
-                        if(cull.floatValue == 1.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpCullMode")))
-                        {
-                            cull.floatValue = 2.0f;
-                        }
-                        if(cull.floatValue <= 1.0f || transparentModeBuf == TransparentMode.TwoPass && preCull.floatValue <= 1.0f)
-                        {
-                            LocalizedProperty(flipNormal);
-                            LocalizedProperty(backfaceForceShadow);
-                            {
-                                LocalizedPropertyColorWithAlpha(backfaceColor);
-                            }
-                        }
-                        EditorGUI.indentLevel--;
+                        cull.floatValue = 2.0f;
                     }
+                    if(cull.floatValue <= 1.0f || transparentModeBuf == TransparentMode.TwoPass && preCull.floatValue <= 1.0f)
+                    {
+                        LocalizedProperty(flipNormal);
+                        LocalizedProperty(backfaceForceShadow);
+                        LocalizedPropertyColorWithAlpha(backfaceColor);
+                    }
+                    EditorGUI.indentLevel--;
                     LocalizedProperty(invisible);
                     LocalizedProperty(zwrite);
                     if(zwrite.floatValue != 1.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpZWrite")))
                     {
                         zwrite.floatValue = 1.0f;
                     }
-                    if (!isFakeShadow)
-                    {
-                        LocalizedProperty(aaStrength);
-                        LocalizedProperty(envRimBorder);
-                        LocalizedProperty(envRimBlur);
-                    }
-                    if (!isFakeShadow && renderingModeBuf == RenderingMode.Cutout)
+                    LocalizedProperty(aaStrength);
+                    LocalizedProperty(envRimBorder);
+                    LocalizedProperty(envRimBlur);
+                    if (renderingModeBuf == RenderingMode.Cutout)
                     {
                         LocalizedProperty(useDither);
                         if (lilEditorGUI.CheckPropertyToDraw(ditherTex, ditherMaxValue) && useDither.floatValue == 1.0f)
@@ -154,7 +134,7 @@ namespace lilToon
                         }
                     }
                     RenderQueueField();
-                    if(renderingModeBuf >= RenderingMode.Transparent && renderingModeBuf != RenderingMode.FurCutout)
+                    if(renderingModeBuf >= RenderingMode.Transparent)
                     {
                         EditorGUILayout.HelpBox(GetLoc("sHelpRenderingTransparent"),MessageType.Warning);
                     }
@@ -379,16 +359,6 @@ namespace lilToon
                             outlineStencilFail.floatValue = (float)StencilOp.Keep;
                             outlineStencilZFail.floatValue = (float)StencilOp.Keep;
                         }
-                        if(isFur)
-                        {
-                            furStencilRef.floatValue = stencilRef.floatValue;
-                            furStencilComp.floatValue = stencilComp.floatValue;
-                            furStencilPass.floatValue = stencilPass.floatValue;
-                            furStencilReadMask.floatValue = stencilReadMask.floatValue;
-                            furStencilWriteMask.floatValue = stencilWriteMask.floatValue;
-                            furStencilFail.floatValue = stencilFail.floatValue;
-                            furStencilZFail.floatValue = stencilZFail.floatValue;
-                        }
                         if(transparentModeBuf == TransparentMode.TwoPass)
                         {
                             ztest.floatValue = stencilMode == 4 ? (float)CompareFunction.Less : (float)CompareFunction.LessEqual;
@@ -408,7 +378,6 @@ namespace lilToon
                         if(EditorGUI.EndChangeCheck())
                         {
                             if(isOutl) outlineStencilRef.floatValue = stencilRef.floatValue;
-                            if(isFur) furStencilRef.floatValue = stencilRef.floatValue;
                             if(transparentModeBuf == TransparentMode.TwoPass) preStencilRef.floatValue = stencilRef.floatValue;
                         }
                     }
@@ -446,7 +415,7 @@ namespace lilToon
                     if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
                     DrawHoRPShadowMode();
                     LocalizedProperty(lightDirectionOverride);
-                    if(isTransparent || (isFur && !isCutout)) LocalizedProperty(alphaBoostFA);
+                    if(isTransparent) LocalizedProperty(alphaBoostFA);
                     BlendOpFASetting();
                     LocalizedProperty(beforeExposureLimit);
                     LocalizedProperty(lilDirectionalLightStrength);

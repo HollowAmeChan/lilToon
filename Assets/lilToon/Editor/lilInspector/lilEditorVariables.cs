@@ -73,8 +73,6 @@ namespace lilToon
             public bool isShowStencil                   = false;
             public bool isShowOutline                   = false;
             public bool isShowOutlineMap                = false;
-            public bool isShowRefraction                = false;
-            public bool isShowFur                       = false;
             public bool isShowRendering                 = false;
             public bool isShowLightBake                 = false;
             public bool isShowBlend                     = false;
@@ -83,8 +81,6 @@ namespace lilToon
             public bool isShowBlendAddPre               = false;
             public bool isShowBlendOutline              = false;
             public bool isShowBlendAddOutline           = false;
-            public bool isShowBlendFur                  = false;
-            public bool isShowBlendAddFur               = false;
             public bool isShowWebPages                  = false;
             public bool isShowHelpPages                 = false;
             public bool isShowLightingSettings          = false;
@@ -124,12 +120,7 @@ namespace lilToon
         protected static bool isCutout          = false;
         protected static bool isTransparent     = false;
         protected static bool isOutl            = false;
-        protected static bool isRefr            = false;
-        protected static bool isBlur            = false;
-        protected static bool isFur             = false;
         protected static bool isStWr            = false;
-        protected static bool isHair            = false;
-        protected static bool isFakeShadow      = false;
         protected static bool isTwoPass         = false;
         protected static bool isUseAlpha        = false;
         protected static bool isShowRenderMode  = true;

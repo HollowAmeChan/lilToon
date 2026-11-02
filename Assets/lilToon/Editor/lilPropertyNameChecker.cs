@@ -271,38 +271,13 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsRefractionProperty(string name)
-        {
-            bool res = false;
-            res = res || name.Contains("_Refraction");
-            return res;
-        }
-
-
-
         public static bool IsTesionProperty(string name) => name.StartsWith("_HoTesion", System.StringComparison.Ordinal) && name != "_HoTesionMaps";
-
-        public static bool IsHairProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_UseHair";
-            res = res || name.Contains("_Hair");
-            return res;
-        }
 
         public static bool IsOutlineProperty(string name)
         {
             bool res = false;
             res = res || name == "_UseOutline";
             res = res || name.Contains("_Outline") && !IsRenderingPropertyInternal(name) && !IsStencilPropertyInternal(name);
-            return res;
-        }
-
-        public static bool IsFurProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_VertexColor2FurVector";
-            res = res || name.Contains("_Fur") && !IsRenderingPropertyInternal(name) && !IsStencilPropertyInternal(name);
             return res;
         }
 
@@ -329,11 +304,5 @@ namespace lilToon
             return res;
         }
 
-        public static bool IsFurRenderingProperty(string name)
-        {
-            bool res = false;
-            res = res || name.Contains("_Fur") && IsRenderingPropertyInternal(name);
-            return res;
-        }
     }
 }

@@ -285,7 +285,7 @@ namespace lilToon
                 sb.Replace(LIL_LIGHTMODE_FORWARD_2, LIL_LIGHTMODE_URP_9_FORWARD_2);
             }
 
-            if((assetName.Contains("lts_fur") && !assetName.Contains("cutout")) || assetName.Contains("trans") || assetName.Contains("overlay"))
+            if(assetName.Contains("trans") || assetName.Contains("overlay"))
             {
                 sb.Replace(
                     "(\"Alpha Cutoff\", Range(-0.001,1.001)) = 0.5",
