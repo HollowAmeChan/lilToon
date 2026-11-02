@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 namespace lilToon
 {
     //------------------------------------------------------------------------------------------------------------------------------
-    // 材质管理器：右栏输入值编辑（M2）
+    // 材质管理器：右栏输入值编辑
     //
     // 语义（设计文档 §4.3）：
     //   * 一个属性组（= 属性名集合相同的材质）用一个单材质 MaterialEditor 画原生属性行：
@@ -17,7 +17,7 @@ namespace lilToon
     //   * 写入逐个材质显式做（see SpreadChanges），不依赖 MaterialProperty 的多目标赋值；
     //   * 谁没吃到会在中栏的日志控制台里点名。
     //
-    // 属性分组复用 lilPropertyNameChecker（预设系统用的那套分类），避免改动 lilToon 内部的私有属性表。
+    // 属性分组优先使用 Inspector 的输入属性表；名称规则只为未登记的自定义属性兜底。
     //------------------------------------------------------------------------------------------------------------------------------
     internal sealed class lilMaterialManagerPropertyPane
     {
@@ -47,10 +47,13 @@ namespace lilToon
         {
             "基本设置", "照明", "UV", "主色", "主色 2", "主色 3", "Alpha 蒙版",
             "阴影", "边缘阴影", "自发光", "自发光 2", "法线", "法线 2", "各向异性",
-            "背光", "SSS", "反射", "MatCap", "MatCap 2", "边缘光", "闪粉",
-            "视差", "距离淡化", "溶解", "折射", "轮廓", "毛发",
+            "背光", "SSS", "头发", "反射", "平面反射", "MatCap", "MatCap 2", "边缘光", "闪粉",
+            "视差", "距离淡化", "溶解", "折射", "张力", "Ho 表面语义", "轮廓", "毛发",
             "Stencil", "轮廓渲染", "毛发渲染", "渲染", "其它"
         };
+
+        // 按脚本域缓存一次，不在绘制循环里创建 Inspector 或扫描属性。
+        private static readonly Dictionary<string, HashSet<PropertyBlock>> InspectorPropertyBlocks = BuildInspectorPropertyBlocks();
 
         private readonly List<ShaderGroup> groups = new List<ShaderGroup>();
         private readonly HashSet<string> expandedBuckets = new HashSet<string>();
@@ -500,6 +503,13 @@ namespace lilToon
                             break;
                     }
 
+                    // 和单材质 Inspector 一致：这些输入还驱动 keyword / 派生绑定缓存。
+                    // 只同步被编辑属性所属的功能，不对整批材质执行完整的重设。
+                    if(lilPropertyNameChecker.IsTesionProperty(source.name))
+                        lilMaterialUtils.SyncGeometryDataTension(material);
+                    if(source.name == "_HoSemanticMaskOn")
+                        lilMaterialUtils.SyncSurfaceSemanticMaskKeyword(material);
+
                     // 写完回读，只有确认拿到新值才算 applied；对不上就点名（不静默失败）
                     if(ValueMatches(material, source)) applied++;
                     else                               failedMaterials.Add(material);
@@ -622,10 +632,72 @@ namespace lilToon
             {
                 if(map.TryGetValue(BucketOrder[i], out PropertyBucket bucket)) group.buckets.Add(bucket);
             }
+
+            // 顺序表只决定排列，不决定可见性；新增分组不能因漏登记而整组消失。
+            foreach(PropertyBucket bucket in map.Values)
+            {
+                if(!group.buckets.Contains(bucket)) group.buckets.Add(bucket);
+            }
         }
 
-        // 分类顺序即优先级：具体分组在前，"渲染"这类宽泛的放最后
+        private static Dictionary<string, HashSet<PropertyBlock>> BuildInspectorPropertyBlocks()
+        {
+            var result = new Dictionary<string, HashSet<PropertyBlock>>(System.StringComparer.Ordinal);
+            foreach(lilMaterialProperty property in new lilToonInspector().AllProperties())
+            {
+                if(property == null || string.IsNullOrEmpty(property.propertyName)) continue;
+                result[property.propertyName] = new HashSet<PropertyBlock>(property.blocks);
+            }
+            return result;
+        }
+
+        // 优先使用与 Inspector 相同的语义块；具体子组先于聚合组 / 渲染组。
         private static string ClassifyProperty(string name)
+        {
+            if(lilPropertyNameChecker.IsOutlineRenderingProperty(name)) return "轮廓渲染";
+            if(lilPropertyNameChecker.IsFurRenderingProperty(name)) return "毛发渲染";
+            if(lilPropertyNameChecker.IsStencilProperty(name)) return "Stencil";
+
+            if(InspectorPropertyBlocks.TryGetValue(name, out HashSet<PropertyBlock> blocks))
+            {
+                if(blocks.Contains(PropertyBlock.HoSurface)) return "Ho 表面语义";
+                if(blocks.Contains(PropertyBlock.Tesion)) return "张力";
+                if(blocks.Contains(PropertyBlock.PlanarReflection)) return "平面反射";
+                if(blocks.Contains(PropertyBlock.Hair)) return "头发";
+                if(blocks.Contains(PropertyBlock.Base)) return "基本设置";
+                if(blocks.Contains(PropertyBlock.UV)) return "UV";
+                if(blocks.Contains(PropertyBlock.Shadow)) return "阴影";
+                if(blocks.Contains(PropertyBlock.Lighting)) return "照明";
+                if(blocks.Contains(PropertyBlock.MainColor3rd)) return "主色 3";
+                if(blocks.Contains(PropertyBlock.MainColor2nd)) return "主色 2";
+                if(blocks.Contains(PropertyBlock.MainColor1st) || blocks.Contains(PropertyBlock.MainColor)) return "主色";
+                if(blocks.Contains(PropertyBlock.AlphaMask)) return "Alpha 蒙版";
+                if(blocks.Contains(PropertyBlock.RimShade)) return "边缘阴影";
+                if(blocks.Contains(PropertyBlock.Emission2nd)) return "自发光 2";
+                if(blocks.Contains(PropertyBlock.Emission1st) || blocks.Contains(PropertyBlock.Emission)) return "自发光";
+                if(blocks.Contains(PropertyBlock.NormalMap2nd)) return "法线 2";
+                if(blocks.Contains(PropertyBlock.NormalMap1st) || blocks.Contains(PropertyBlock.NormalMap)) return "法线";
+                if(blocks.Contains(PropertyBlock.Anisotropy)) return "各向异性";
+                if(blocks.Contains(PropertyBlock.Backlight)) return "背光";
+                if(blocks.Contains(PropertyBlock.SSS)) return "SSS";
+                if(blocks.Contains(PropertyBlock.MatCap2nd)) return "MatCap 2";
+                if(blocks.Contains(PropertyBlock.MatCap1st) || blocks.Contains(PropertyBlock.MatCaps)) return "MatCap";
+                if(blocks.Contains(PropertyBlock.RimLight)) return "边缘光";
+                if(blocks.Contains(PropertyBlock.Glitter)) return "闪粉";
+                if(blocks.Contains(PropertyBlock.Reflection) || blocks.Contains(PropertyBlock.Reflections)) return "反射";
+                if(blocks.Contains(PropertyBlock.Parallax)) return "视差";
+                if(blocks.Contains(PropertyBlock.DistanceFade)) return "距离淡化";
+                if(blocks.Contains(PropertyBlock.Dissolve)) return "溶解";
+                if(blocks.Contains(PropertyBlock.Refraction)) return "折射";
+                if(blocks.Contains(PropertyBlock.Outline)) return "轮廓";
+                if(blocks.Contains(PropertyBlock.Fur)) return "毛发";
+                if(blocks.Contains(PropertyBlock.Rendering)) return "渲染";
+            }
+            return ClassifyUnregisteredProperty(name);
+        }
+
+        // 名称兜底保留未进入 Inspector 属性表的自定义 Shader 输入。
+        private static string ClassifyUnregisteredProperty(string name)
         {
             if(lilPropertyNameChecker.IsBaseProperty(name)) return "基本设置";
             if(lilPropertyNameChecker.IsLightingProperty(name)) return "照明";

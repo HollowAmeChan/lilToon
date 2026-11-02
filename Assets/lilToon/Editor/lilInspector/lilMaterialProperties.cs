@@ -630,7 +630,8 @@ namespace lilToon
         private readonly lilMaterialProperty fakeShadowVector       = new lilMaterialProperty("_FakeShadowVector", PropertyBlock.Base);
 
         private lilMaterialProperty[] allProperty;
-        private lilMaterialProperty[] AllProperties()
+        // Shared input catalog for the Inspector and scene material manager.
+        internal lilMaterialProperty[] AllProperties()
         {
             return allProperty != null ? allProperty : allProperty = new[]
             {

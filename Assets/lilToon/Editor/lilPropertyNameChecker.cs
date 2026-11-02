@@ -27,6 +27,7 @@ namespace lilToon
         public static bool IsDummyProperty(string name)
         {
             bool res = false;
+            res = res || name == "_DummyProperty";
             res = res || name == "_BaseColor";
             res = res || name == "_BaseMap";
             res = res || name == "_BaseColorMap";

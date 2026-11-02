@@ -232,7 +232,9 @@ class MaterialEntry {                // 中栏一行
 
 ### 5.4 属性模型
 
-- 复用 `lilMaterialProperty` / `AllProperties()`（`lilMaterialProperties.cs:594`，当前 private → 需开 `internal` 访问点）拿到 **属性名 → `PropertyBlock` 分组** 的映射，用于右栏分组与折叠。
+- 复用 Inspector 的 `lilMaterialProperty` / `AllProperties()`（`internal`）取得 **属性名 → `PropertyBlock` 分组**，每个脚本域缓存一次，新增属性自动进入对应分组；未登记的自定义属性使用名称规则兜底。`BucketOrder` 只控制排列，不能过滤分组。
+- 已覆盖 HoRP 阴影模式、多光源、AO、头发、平面反射、张力和 Ho 表面语义等输入。隐藏的运行时绑定 / 缓存与 dummy 属性仍不显示；不改变逐属性广播、混值、Undo 或未编辑值。
+- 张力输入和语义遮罩开关广播时，逐材质调用 Inspector 已有的关键字 / 派生缓存同步，不对整批材质执行完整重设。回归源码与运行说明在 `tools/material-manager-tests/`。
 - 属性值本身交给 `MaterialEditor.GetMaterialProperties(materials)` + `ShaderProperty`：多选混合值语义由 Unity 保证（要求数组内**同一 shader**，所以按 shader 分组）。
 - 显示名用 `lilLanguageManager.GetDisplayName`（`lilLanguageManager.cs:225`）。
 
@@ -299,7 +301,7 @@ class MaterialEntry {                // 中栏一行
 
 ## 9. 入口与文件规划
 
-- **菜单入口（只挂 HoLil，D7）**：`HoLil/[材质] 材质管理器`（文案写死中文，`MenuItem` 限制）。窗口标题：`[测试版] lilToon 材质管理器`。
+- **菜单入口（只挂 HoLil，D7）**：`HoLil/[材质] 材质管理器`（文案写死中文，`MenuItem` 限制）。窗口标题：`lilToon 材质管理器`；在 `OnEnable` 中同步恢复窗口的标题。
 - 可选：材质 Inspector 顶部加一个"在材质管理器中显示"的小按钮，把当前材质带过去。
 - **文件**（新建目录 `Assets/lilToon/Editor/lilMaterialManager/`，与 `lilInspector/` 平级）：
 

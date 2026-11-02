@@ -1,0 +1,6 @@
+{
+    "name": "HoMaterialManager.Tests",
+    "references": ["lilToon.Editor"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

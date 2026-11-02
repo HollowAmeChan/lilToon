@@ -6,13 +6,13 @@ using UnityEngine;
 namespace lilToon
 {
     //------------------------------------------------------------------------------------------------------------------------------
-    // 材质管理器（M1：只读浏览）
+    // 材质管理器：场景层级选择与输入值批量编辑
     // 左栏 = 当前场景的物体层级树（tri-state 批量选择）
     // 中栏 = 场景里去重后的 lilToon 材质表
-    // 右栏 = 已选材质（M2 会换成输入值编辑区）
+    // 右栏 = 已选材质的输入值编辑区
     //
     // 口径：范围 = 当前场景 + 含未激活 + 含 Prefab 实例（D1）；只列 lilToon 材质（D6）；
-    //       本阶段不写任何数据、不脏场景；文案直接写中文（D12，不走 .po）。
+    //       扫描只读，编辑只广播被改动的属性；文案直接写中文（D12，不走 .po）。
     //------------------------------------------------------------------------------------------------------------------------------
     internal sealed class lilMaterialManagerWindow : EditorWindow
     {
@@ -20,7 +20,7 @@ namespace lilToon
         private const float MinLeftPaneWidth = 150.0f;
         private const float MinMiddlePaneWidth = 180.0f;
         private const float MinRightPaneWidth = 260.0f;
-        private const string WindowTitle = "[测试版] lilToon 材质管理器";
+        private const string WindowTitle = "lilToon 材质管理器";
         private const float DefaultLogHeight = 150.0f;
         private const float MinLogHeight = 24.0f;        // 没有折叠头栏了，日志靠拖到最矮来收起来
         private const float MinListHeight = 80.0f;
@@ -64,6 +64,8 @@ namespace lilToon
 
         private void OnEnable()
         {
+            // 同时更新脚本重载后恢复的旧窗口，避免保留序列化的旧标题。
+            titleContent = new GUIContent(WindowTitle);
             needsRescan = true;
             propertyPane.log = logView;
 
