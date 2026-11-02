@@ -285,10 +285,7 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Parallax
 #if !defined(OVERRIDE_PARALLAX)
-    #if defined(LIL_MULTI) && defined(LIL_FEATURE_POM)
-        #define OVERRIDE_PARALLAX \
-            lilPOM(fd.uvMain, fd.uv0, _UseParallax, _MainTex_ST, fd.parallaxViewDirection, _ParallaxMap, _Parallax, _ParallaxOffset);
-    #elif defined(LIL_FEATURE_POM)
+    #if defined(LIL_FEATURE_POM)
         #define OVERRIDE_PARALLAX \
             if(_UsePOM) lilPOM(fd.uvMain, fd.uv0, _UseParallax, _MainTex_ST, fd.parallaxViewDirection, _ParallaxMap, _Parallax, _ParallaxOffset); \
             else        lilParallax(fd.uvMain, fd.uv0, _UseParallax, fd.parallaxOffset, _ParallaxMap, _Parallax, _ParallaxOffset);
@@ -795,11 +792,8 @@
             // The AO Map is the shared colour input: its RGB drives the per-layer ramp
             // offset and, through the same value, tints the overall darkening.
             float4 aoMap = 1.0;
-            // _ShadowBorderMaskLOD is a material property, not a macro -- the old
-            // "#if defined(_ShadowBorderMaskLOD)" was always false and its #else branch
-            // referenced the undeclared variable. It is declared by LIL_MULTI_INPUTS_SHADOW
-            // on the LIL_MULTI path and by LIL_FEATURE_SHADOW otherwise, so guard on those.
-            #if defined(LIL_MULTI_INPUTS_SHADOW) || (!defined(LIL_MULTI) && defined(LIL_FEATURE_SHADOW))
+            // _ShadowBorderMaskLOD is present in the standard material CBUFFER.
+            #if defined(LIL_FEATURE_SHADOW)
                 aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
             #else
                 aoMap = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);

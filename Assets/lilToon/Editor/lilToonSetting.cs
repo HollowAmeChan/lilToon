@@ -510,7 +510,7 @@ public class lilToonSetting : ScriptableObject
         }
     }
 
-    public static string BuildShaderSettingStringMulti(lilToonSetting shaderSetting)
+    private static string BuildShaderOptimizationDefines(lilToonSetting shaderSetting)
     {
         var sb = new StringBuilder();
         if (shaderSetting.LIL_OPTIMIZE_APPLY_SHADOW_FA) sb.AppendLine("#define LIL_OPTIMIZE_APPLY_SHADOW_FA");
@@ -649,7 +649,7 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_OutlineZBiasMask) sb.AppendLine("#define LIL_FEATURE_OutlineZBiasMask");
         if (shaderSetting.LIL_FEATURE_OutlineVectorTex) sb.AppendLine("#define LIL_FEATURE_OutlineVectorTex");
 
-        sb.AppendLine(BuildShaderSettingStringMulti(shaderSetting));
+        sb.AppendLine(BuildShaderOptimizationDefines(shaderSetting));
 
         if (isFile)
         {
@@ -681,14 +681,6 @@ public class lilToonSetting : ScriptableObject
         useBaseShadow = (shaderSetting.LIL_FEATURE_SHADOW && shaderSetting.LIL_FEATURE_RECEIVE_SHADOW) || shaderSetting.LIL_FEATURE_BACKLIGHT;
         useOutlineShadow = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW;
         string shaderSettingString = BuildShaderSettingString(shaderSetting, isFile);
-        return shaderSettingString;
-    }
-
-    public static string BuildShaderSettingStringMulti()
-    {
-        lilToonSetting shaderSetting = null;
-        InitializeShaderSetting(ref shaderSetting);
-        string shaderSettingString = BuildShaderSettingStringMulti(shaderSetting);
         return shaderSettingString;
     }
 

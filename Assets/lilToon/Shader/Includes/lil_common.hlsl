@@ -18,7 +18,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Common
-#if defined(LIL_MULTI) || defined(LIL_IGNORE_SHADERSETTING)
+#if defined(LIL_IGNORE_SHADERSETTING)
     #define LIL_OPTIMIZE_APPLY_SHADOW_FA
 #endif
 #if defined(LIL_URP) && defined(_HO_GD_TENSION) && !defined(LIL_OUTLINE) && (defined(LIL_PASS_FORWARD) || defined(LIL_PASS_FORWARDADD) || defined(LIL_PASS_GEOMETRY_BUFFER) || defined(LIL_PASS_HO_CHARACTER_CAPTURE))
@@ -30,30 +30,6 @@
 
 #include "lil_common_macro.hlsl"
 #include "lil_common_input.hlsl"
-
-// Omission of if statement
-// lilToonMulti branches using shader keywords
-#if defined(LIL_MULTI)
-    #define _UseMain2ndTex true
-    #define _UseMain3rdTex true
-    #define _UseShadow true
-    #define _UseRimShade true
-    #define _UseBacklight true
-    #define _UseBumpMap true
-    #define _UseBump2ndMap true
-    #define _UseAnisotropy true
-    #define _UseReflection true
-    #define _UseMatCap true
-    #define _UseMatCap2nd true
-    #define _UseRim true
-    #define _UseGlitter true
-    #define _UseEmission true
-    #define _UseEmission2nd true
-    #define _UseParallax true
-    #define LIL_MULTI_SHOULD_CLIPPING && _UseClippingCanceller
-#else
-    #define LIL_MULTI_SHOULD_CLIPPING
-#endif
 
 #include "lil_common_functions.hlsl"
 

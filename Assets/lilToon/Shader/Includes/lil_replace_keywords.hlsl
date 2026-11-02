@@ -49,7 +49,6 @@
 
 // removed
 // BILLBOARD_FACE_CAMERA_POS            LIL_FEATURE_CLIPPING_CANCELLER
-// ETC1_EXTERNAL_ALPHA                  LIL_MULTI_OUTLINE
 
 //----------------------------------------------------------------------------------------------------------------------
 // Replace keyword to transparent mode

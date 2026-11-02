@@ -526,13 +526,6 @@
         [lilToggle]     _OutlineDisableInVR         ("sDisableInVR", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
-        // For Multi
-        [lilToggleLeft] _UseOutline                 ("Use Outline", Int) = 0
-        [lilEnum]       _TransparentMode            ("Rendering Mode|Opaque|Cutout|Transparent|Refraction|Fur|FurCutout|Gem", Int) = 0
-        [lilToggle]     _UseClippingCanceller       ("sSettingClippingCanceller", Int) = 0
-        [lilToggle]     _AsOverlay                  ("sAsOverlay", Int) = 0
-
-        //----------------------------------------------------------------------------------------------------------------------
         // Save (Unused)
         [HideInInspector]                               _BaseColor          ("sColor", Color) = (1,1,1,1)
         [HideInInspector]                               _BaseMap            ("Texture", 2D) = "white" {}

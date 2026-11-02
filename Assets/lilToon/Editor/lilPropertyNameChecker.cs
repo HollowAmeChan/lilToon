@@ -48,9 +48,6 @@ namespace lilToon
             res = res || name == "_BackfaceForceShadow";
             res = res || name == "_BackfaceColor";
             res = res || name == "_TriMask";
-            res = res || name == "_TransparentMode";
-            res = res || name == "_UseClippingCanceller";
-            res = res || name == "_AsOverlay";
             res = res || name == "_AAStrength";
             res = res || name == "_UseDither";
             res = res || name.Contains("_Dither");
@@ -275,7 +272,6 @@ namespace lilToon
         public static bool IsOutlineProperty(string name)
         {
             bool res = false;
-            res = res || name == "_UseOutline";
             res = res || name.Contains("_Outline") && !IsRenderingPropertyInternal(name) && !IsStencilPropertyInternal(name);
             return res;
         }

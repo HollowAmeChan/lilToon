@@ -527,9 +527,6 @@ namespace lilToon
         private readonly lilMaterialProperty outlineColorMask       = new lilMaterialProperty("_OutlineColorMask", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineAlphaToMask     = new lilMaterialProperty("_OutlineAlphaToMask", PropertyBlock.Rendering);
 
-        private readonly lilMaterialProperty transparentModeMat     = new lilMaterialProperty("_TransparentMode", PropertyBlock.Base);
-        private readonly lilMaterialProperty useClippingCanceller   = new lilMaterialProperty("_UseClippingCanceller", PropertyBlock.Base);
-        private readonly lilMaterialProperty asOverlay              = new lilMaterialProperty("_AsOverlay", PropertyBlock.Base);
         private readonly lilMaterialProperty triMask                = new lilMaterialProperty("_TriMask", true, PropertyBlock.Base);
         private readonly lilMaterialProperty matcapMul              = new lilMaterialProperty("_MatCapMul", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
 
@@ -1042,9 +1039,6 @@ namespace lilToon
                 outlineColorMask,
                 outlineAlphaToMask,
 
-                transparentModeMat,
-                useClippingCanceller,
-                asOverlay,
                 triMask,
                 matcapMul,
                 tesionEnabled, tesionStrength, tesionMaps,
