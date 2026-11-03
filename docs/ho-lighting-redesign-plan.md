@@ -2,15 +2,15 @@
 
 2026-11-03。根据 [照明参数审计](liltoon-lighting-controls-audit.md) 和用户决定制定；本文件是待实施方案，不表示 Shader 已改完。范围是材质直接受光、Cast 消费与对应编辑入口；独立预设窗口的大修另外推进。
 
-## 前置：等待 Shader 裁剪完成
+## 前置：Shader 裁剪基线已建立
 
-2026-11-03 用户要求先对齐裁剪对话 `01a19e1e-b2d0-7212-8d6e-753d0117f402`。该对话仍在执行，已提交 Multi / OnePass 资源删除，正在清理编辑器与序列化映射；后续按已确认边界继续裁剪。**本计划先不修改公共 Shader、Inspector、生成入口或触发生产工程重编译，待裁剪完成并建立编译基线后再实施。**
+2026-11-03，裁剪对话 `01a19e1e-b2d0-7212-8d6e-753d0117f402` 中的 Multi、OnePass、Overlay、OutlineOnly 等退出路径已在当前 `master` 提交。照明改动只针对仍保留的不透明、Cutout、透明及其描边、TwoPass、OIT 路径；不恢复已删除资源，也不为退出的 Hair / Fur / Refraction 分支加兼容逻辑。TwoPass Transparent 与保留表面模式的正常描边仍属于支持范围。
 
-- 对方负责删除 Multi、OnePass、Refraction、Hair、Fur 等已确定退出的家族，并处理 Overlay / OutlineOnly / FakeShadow 等资源与入口。TwoPass Transparent 和保留表面模式的正常描边仍需支持；不能误读为只留下三个无描边、无双面透明的 Shader。
-- 本轮照明重构只针对最终留下的不透明、Cutout、透明及其实际保留的描边 / TwoPass / OIT 路径，不再修补将删除的头发、毛发、折射家族，也不扩展到接替这些能力的 HoShader。
-- 无效入口、枚举、设置 / 预设和生成链的清理，先检查对方完成了哪些；这里只补剩余的照明语义与入口，不重复实施，也不恢复被删资源或兼容分支。
-- **Multi Shader 家族与多光源照明不是同一件事。** 删除前者不会自动解决附加光重复计入、材质倍率无效和方向差冲淡 Cast。
-- 现状审计与隔离工程目前基于裁剪前快照。后续必须重新同步保留资源后验证，不能以旧快照通过证明裁剪后兼容，也不能为了运行旧测试把已删除 Shader 装回去。
+**2026-11-03 主工程复核进展：** Full 的 realtime HoShadowCast 接收已改为 URP 附加灯 buffer 索引逐灯映射。主 Toon 阴影只消费显式 `includeInMainShadow` 来源；Full 对匹配到的附加灯使用该灯的 Ho 可见度，图集未收录或投影不覆盖时回退 URP 原生可见度，不将整个 ShadowCast 灯池乘进主光或整份材质。Ho 可见度命中时替代同源 native 衰减，避免重复采样。固定映射数组在 C# / HLSL 维持一致长度。
+
+BREAK_URP 主工程（Unity 6000.3.15f1、URP 17.3 Forward+、D3D12）中对万象天文与冷色古堂各运行了 960×540、48 帧 Main/Full、0/1/2 倍率探针。修复后 Main 与 Full/1x 平均亮度分别为 28.862 / 28.874 与 16.195 / 16.186；修复前万象天文 Full/1x 为 26.147。两个场景的 `.unity` 与 `.mat` 文件哈希均保持基线值。BREAK_URP 这 27 个舞台的旧材质仍显式为 Main=1，未批量迁移；新建舞台继续以 Main=1 作保守默认。
+
+**未完成的验证边界：** 以上场景灯均为 Realtime。Mixed / Lightmap Shadowmask / APV 的 `InputData.shadowMask` 传递、Lightmap 与 APV 路径仍需独立验证；不得把 realtime 场景结果外推到这些模式。附加灯身份映射超出固定 256 项时按 URP native fallback 处理。
 
 ## 目标与已确定的取舍
 

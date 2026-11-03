@@ -809,20 +809,20 @@ float4 GetShadowCoord(float3 positionWS, float4 positionCS)
     #if defined(_MAIN_LIGHT_SHADOWS_SCREEN)
         #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
         #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastAttenuation(i.positionWS, _HoRPShadowMode)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastMainAttenuation(i.positionWS)
     #elif defined(_MAIN_LIGHT_SHADOWS_CASCADE) && !defined(_MAIN_LIGHT_SHADOWS)
         #define LIL_SHADOW_COORDS(idx)
         #define LIL_TRANSFER_SHADOW(vi,uv,o)
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS))) * HoShadowCastAttenuation(i.positionWS, _HoRPShadowMode)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(TransformWorldToShadowCoord(i.positionWS))) * HoShadowCastMainAttenuation(i.positionWS)
     #else
         #define LIL_SHADOW_COORDS(idx)              float4 shadowCoord : TEXCOORD##idx;
         #define LIL_TRANSFER_SHADOW(vi,uv,o)        o.shadowCoord = GetShadowCoord(vi.positionWS, vi.positionCS);
-        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastAttenuation(i.positionWS, _HoRPShadowMode)
+        #define LIL_LIGHT_ATTENUATION(atten,i)      atten = HoCSResolveMainCast(i.positionWS, MainLightRealtimeShadow(i.shadowCoord)) * HoShadowCastMainAttenuation(i.positionWS)
     #endif
 #elif defined(LIL_USE_HO_CAST)
     #define LIL_SHADOW_COORDS(idx)
     #define LIL_TRANSFER_SHADOW(vi,uv,o)
-    #define LIL_LIGHT_ATTENUATION(atten,i) atten = HoCSResolveMainCast(i.positionWS, 1.0) * HoShadowCastAttenuation(i.positionWS, _HoRPShadowMode)
+    #define LIL_LIGHT_ATTENUATION(atten,i) atten = HoCSResolveMainCast(i.positionWS, 1.0) * HoShadowCastMainAttenuation(i.positionWS)
 #else
     #define LIL_SHADOW_COORDS(idx)
     #define LIL_TRANSFER_SHADOW(vi,uv,o)
@@ -874,7 +874,11 @@ float4 URPShadowPos(float4 positionOS, float3 normalOS, float bias)
 #endif
 
 // Additional Light
-void lilGetAdditionalLightsBase(float3 positionWS, float4 positionCS, float strength, float intensity, float shadowStrength, inout float3 lightColor, inout float3 lightDirection)
+#if defined(LIL_URP)
+bool HoShadowCastTryGetAdditionalLightAttenuation(uint additionalLightIndex, float3 positionWS, out float attenuation);
+#endif
+
+void lilGetAdditionalLightsBase(float3 positionWS, float4 positionCS, float strength, float intensity, float shadowStrength, float receptionMode, inout float3 lightColor, inout float3 lightDirection)
 {
     uint renderingLayers = lilGetRenderingLayer();
     float3 objPositionWS = lilGetObjectPosition();
@@ -896,9 +900,24 @@ void lilGetAdditionalLightsBase(float3 positionWS, float4 positionCS, float stre
                 if((light.layerMask & renderingLayers) != 0)
             #endif
             {
-                // Additional lights are one direct-light path. Use the light's own
-                // URP visibility here; do not add a second global HDR pool later.
-                float lightShadow = lerp(1.0, light.shadowAttenuation, saturate(shadowStrength));
+                float resolvedShadow = light.shadowAttenuation;
+                #if defined(LIL_URP)
+                    #if defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP
+                        uint urpAdditionalLightIndex = lightIndex;
+                    #else
+                        uint urpAdditionalLightIndex = (uint)GetPerObjectLightIndex(lightIndex);
+                    #endif
+                    if(shadowStrength > 0.0 && receptionMode >= 1.5)
+                    {
+                        float hoShadow;
+                        if(HoShadowCastTryGetAdditionalLightAttenuation(urpAdditionalLightIndex, positionWS, hoShadow))
+                        {
+                            // A matched Ho source replaces URP visibility; never multiply the same light twice.
+                            resolvedShadow = hoShadow;
+                        }
+                    }
+                #endif
+                float lightShadow = lerp(1.0, resolvedShadow, saturate(shadowStrength));
                 float3 lightContribution = light.color.rgb * light.distanceAttenuation * lightShadow * strength * max(intensity, 0.0);
                 lightColor += lightContribution;
                 lightDirection += dot(lightContribution, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.direction;
@@ -923,7 +942,18 @@ void lilGetAdditionalLightsBase(float3 positionWS, float4 positionCS, float stre
                 if((light.layerMask & renderingLayers) != 0)
             #endif
             {
-                float lightShadow = lerp(1.0, light.shadowAttenuation, saturate(shadowStrength));
+                float resolvedShadow = light.shadowAttenuation;
+                #if defined(LIL_URP)
+                    if(shadowStrength > 0.0 && receptionMode >= 1.5)
+                    {
+                        float hoShadow;
+                        if(HoShadowCastTryGetAdditionalLightAttenuation(lightIndex, positionWS, hoShadow))
+                        {
+                            resolvedShadow = hoShadow;
+                        }
+                    }
+                #endif
+                float lightShadow = lerp(1.0, resolvedShadow, saturate(shadowStrength));
                 float3 lightContribution = light.color.rgb * light.distanceAttenuation * lightShadow * strength * max(intensity, 0.0);
                 lightColor += lightContribution;
                 lightDirection += dot(lightContribution, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.direction;

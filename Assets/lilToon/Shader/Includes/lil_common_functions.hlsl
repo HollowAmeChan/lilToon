@@ -8,7 +8,7 @@
 #if !defined(LIL_BAKER)
 void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength, inout float3 lightColor, inout float3 lightDirection)
 {
-    lilGetAdditionalLightsBase(positionWS, positionCS, strength, _HoAdditionalLightIntensity, _HoAdditionalLightShadowStrength, lightColor, lightDirection);
+    lilGetAdditionalLightsBase(positionWS, positionCS, strength, _HoAdditionalLightIntensity, _HoAdditionalLightShadowStrength, _HoRPShadowMode, lightColor, lightDirection);
 }
 
 float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength)
