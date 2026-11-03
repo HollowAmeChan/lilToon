@@ -323,24 +323,6 @@ msgstr "カットアウト"
 msgid "sRenderingModeTransparent"
 msgstr "半透明"
 
-msgid "sRenderingModeRefraction"
-msgstr "[高負荷] 屈折"
-
-msgid "sRenderingModeRefractionBlur"
-msgstr "[高負荷] 屈折ぼかし"
-
-msgid "sRenderingModeFur"
-msgstr "[高負荷] ファー"
-
-msgid "sRenderingModeFurCutout"
-msgstr "[高負荷] ファー (カットアウト)"
-
-msgid "sRenderingModeFurTwoPass"
-msgstr "[高負荷] ファー (2パス)"
-
-msgid "sRenderingModeHair"
-msgstr "髪"
-
 msgid "sTransparentMode"
 msgstr "透過モード"
 
@@ -500,14 +482,8 @@ msgstr "半モノクロ"
 msgid "sHelpRenderingTransparent"
 msgstr "透過マテリアル同士が重なったときに片方が見えなくなる場合があります。その場合は手前に表示されるマテリアルのRender Queueの値を上げることで改善されます。"
 
-msgid "sHelpRenderingFur"
-msgstr "ファーでは負荷軽減のためにファー部分に適用される機能が制限されています。"
-
 msgid "sHelpTransparentForWorld"
 msgstr "透過マテリアルでRenderQueueを2999以下に設定すると奥にある他のマテリアルを見えなくし、服や髪が消えるなどの問題が発生する可能性があります。ワールド用途であれば3000以上に設定したりZWriteをオフにしたりする設定がオススメです。"
-
-msgid "sHelpGrabPass"
-msgstr "屈折・宝石はGrabPassを利用するため、モバイル環境においてパフォーマンスに大きな影響を及ぼす可能性があります。"
 
 msgid "sHelpGeometryShader"
 msgstr "ジオメトリシェーダーはiOSやMacで動作しないため、他レンダリングモードに置き換えることを推奨します。"
@@ -740,29 +716,8 @@ msgstr "太さ0の頂点を削除"
 msgid "sDisableInVR"
 msgstr "VR時に非表示"
 
-msgid "sRefractionSetting"
-msgstr "屈折設定"
-
-msgid "sRefractionTips"
-msgstr "屈折の強さや色の設定ができます"
-
-msgid "sRefraction"
-msgstr "屈折"
-
-msgid "sRefractionFresnel"
-msgstr "フレネル"
-
 msgid "sColorFromMain"
 msgstr "メインカラーから色を取得"
-
-msgid "sFurSetting"
-msgstr "ファー設定"
-
-msgid "sFurTips"
-msgstr "ファーの長さや向き、質感の設定ができます"
-
-msgid "sFur"
-msgstr "ファー"
 
 msgid "sAntiLight"
 msgstr "Anti Light"
@@ -1048,54 +1003,6 @@ msgstr "環境光の色"
 
 msgid "sParticleLoop"
 msgstr "パーティクルループ数"
-
-msgid "sHairSetting"
-msgstr "髪設定"
-
-msgid "sHair"
-msgstr "髪"
-
-msgid "sHairLobe"
-msgstr "ローブ"
-
-msgid "sHairLobeCount"
-msgstr "ローブ数"
-
-msgid "sHairMask"
-msgstr "髪マスク"
-
-msgid "sHairShiftMap"
-msgstr "髪シフトマップ"
-
-msgid "sHairTangentMode"
-msgstr "タンジェントモード|メッシュ|タンジェントマップ|UV"
-
-msgid "sHairTangentMap"
-msgstr "タンジェントマップ"
-
-msgid "sHairTangentStrength"
-msgstr "タンジェント強度"
-
-msgid "sHairSpecularAA"
-msgstr "スペキュラAA"
-
-msgid "sHairLobeModel"
-msgstr "モデル|オフ|Kajiya|Scheuermann|Marschner R|Marschner TRT|異方性 GGX"
-
-msgid "sHairShift"
-msgstr "シフト"
-
-msgid "sHairShiftScale"
-msgstr "シフトスケール"
-
-msgid "sHairWidthT"
-msgstr "横方向の幅"
-
-msgid "sHairWidthB"
-msgstr "縦方向の幅"
-
-msgid "sHairPower"
-msgstr "スペキュラ指数"
 
 msgid "sSpace"
 msgstr "空間"
@@ -1448,15 +1355,6 @@ msgstr "輪郭線カラー"
 msgid "sPresetOutlineWidth"
 msgstr "輪郭線の幅"
 
-msgid "sPresetFurNormal"
-msgstr "ファーノーマルマップ"
-
-msgid "sPresetFurNoise"
-msgstr "ファーノイズ"
-
-msgid "sPresetFurMask"
-msgstr "ファーマスク"
-
 msgid "sShaderSetting"
 msgstr "シェーダー設定 (全マテリアル共通)"
 
@@ -1579,12 +1477,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorRefraction"
-msgstr "advanced/refraction"
-
-msgid "sAnchorFur"
-msgstr "advanced/fur"
 
 msgid "sAnchorOptimization"
 msgstr "other?id=最適化"

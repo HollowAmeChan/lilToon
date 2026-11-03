@@ -3,8 +3,7 @@
 
 // Infrastructure must not leave depth/identity/surface records for an
 // invisible ordinary transparent fragment. Match Forward's cutoff, and also
-// reject exactly zero alpha when cutoff is zero. Opaque alpha is not opacity;
-// refraction can remain visible at zero colour alpha, so neither is discarded.
+// reject exactly zero alpha when cutoff is zero. Opaque alpha is not opacity.
 void lilHoClipTransparentInfrastructure(float alpha)
 {
     #if LIL_RENDER == 2

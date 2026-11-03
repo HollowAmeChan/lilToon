@@ -151,3 +151,12 @@
 用户另行要求测量编译时间，已增加 `tools/shader-compile-benchmark/` 并在独立副本上实际运行。结果与完整边界见 `07-editor-compile-timing-results.md`：基础首次请求 75.531 秒；按实际 Forward+ 关键字规则配置后，71 个可用请求首次合计 234.806 秒，缓存重复请求合计约 3.312 毫秒。不是裁剪前后比较，也不是主场景异步等待时间。
 
 该配置同时覆盖 APV L2、阴影、Cookies、Light Layers 与反射探针时，Cutout + GD 张力复现 65/64 texture parameter 限制，编译状态完成但 SetPass 失败；四轮同一组合均失败，单独记录，未为计时关闭效果。此前默认 Pass 验证不能推及所有管线关键字组合。主工程实际材质/场景是否使用该组合，以及是否早于本轮裁剪存在，尚未验证；需作为后续资源绑定排查项。
+
+## 退役家族收尾检查（2026-11-03）
+
+- 清除公共 fragment include 中已失效的 Fur / Refraction 预处理路径、Fur 专用 UV 与 Distance Fade 分支；移除 FakeShadow 生成优化例外、未使用的 Hair Inspector 字段与五种语言对应文案。
+- 删除唯一仍引用已退役 `lts_ref` GUID 的 Inorganic-Glass 预设；BREAK_URP 资源扫描未发现该预设 GUID 的引用。旧材质保持缺失 Shader，不做迁移、修复或额外标记。
+- 主色 3 保留；Opaque、Cutout、Transparent、TwoPass Transparent、常规 Outline 和普通 OIT 路径保留。当前生成目录为 **15 个 Shader / 195 个 HLSLPROGRAM**。
+- Unity 6000.3.15f1 在独立临时 URP 工程中完成 lilToon 包导入与脚本编译；ShaderImporter 导入保留 Shader 时无 C# / Shader 错误，批处理退出码 0。随后以 `-force-d3d11` 启动同工程，URP 切换到 Direct3D11，退出码 0。`CurrentRP.txt` 已恢复仓库原值 `URP / Direct3D11`。
+- BREAK_URP 的批处理验收另被无关的 `HoUnityTools/Runtime/FaceTracking/HoVtsIrController.cs:97` CS0136 阻断；测试前后核对的 1,335 个 `.mat` 哈希均未变化，项目原有 Git 状态也未变化。该错误不属于 lilToon，本轮未修改 HoUnityTools。
+- HLSL / 模板预处理指令配平检查通过（76 个文件）；退役家族的源码入口扫描无残留。未据此宣称实际场景编译时间下降比例，也未删减 Main3rd 等未确认功能。

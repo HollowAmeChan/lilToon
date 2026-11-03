@@ -323,24 +323,6 @@ msgstr "镂空"
 msgid "sRenderingModeTransparent"
 msgstr "透明"
 
-msgid "sRenderingModeRefraction"
-msgstr "[高负载] 折射"
-
-msgid "sRenderingModeRefractionBlur"
-msgstr "[高负载] 折射模糊"
-
-msgid "sRenderingModeFur"
-msgstr "[高负载] 毛发"
-
-msgid "sRenderingModeFurCutout"
-msgstr "[高负载] 毛发 (镂空)"
-
-msgid "sRenderingModeFurTwoPass"
-msgstr "[高负载] 毛发 (2 pass)"
-
-msgid "sRenderingModeHair"
-msgstr "头发"
-
 msgid "sTransparentMode"
 msgstr "透明模式"
 
@@ -500,14 +482,8 @@ msgstr "半单色"
 msgid "sHelpRenderingTransparent"
 msgstr "当两个透明材质重叠时，其中一个可能会变得不可见。这种情况下，通过提高前面显示的材质的“Render Queue”值来修正。"
 
-msgid "sHelpRenderingFur"
-msgstr "由于性能原因，应用于毛发的功能受到限制。"
-
 msgid "sHelpTransparentForWorld"
 msgstr "将透明材质的 Render Queue 设置为 2999 或更低，会使后面的其他材质不可见，造成衣服和头发消失等问题。对于 World 项目，推荐设定为 3000 以上或关闭 ZWrite 设定。"
-
-msgid "sHelpGrabPass"
-msgstr "反射和宝石使用 GrabPass，因此可能对移动端 GPU 产生很大的性能影响。"
 
 msgid "sHelpGeometryShader"
 msgstr "由于几何体着色器在 iOS 或 Mac 上不起作用，因此建议将其更改为其他渲染模式。"
@@ -740,29 +716,8 @@ msgstr "删除宽度为 0 的顶点"
 msgid "sDisableInVR"
 msgstr "在 VR 中禁用"
 
-msgid "sRefractionSetting"
-msgstr "折射设置"
-
-msgid "sRefractionTips"
-msgstr "您可以在此设置折射强度和主色。"
-
-msgid "sRefraction"
-msgstr "折射"
-
-msgid "sRefractionFresnel"
-msgstr "菲涅尔"
-
 msgid "sColorFromMain"
 msgstr "从主色获取纹理"
-
-msgid "sFurSetting"
-msgstr "毛发设置"
-
-msgid "sFurTips"
-msgstr "您可以在此设置毛发的长度和方向。"
-
-msgid "sFur"
-msgstr "毛发"
 
 msgid "sAntiLight"
 msgstr "Anti Light"
@@ -1048,54 +1003,6 @@ msgstr "环境光主色"
 
 msgid "sParticleLoop"
 msgstr "粒子循环数"
-
-msgid "sHairSetting"
-msgstr "头发设置"
-
-msgid "sHair"
-msgstr "头发"
-
-msgid "sHairLobe"
-msgstr "发束"
-
-msgid "sHairLobeCount"
-msgstr "发束数量"
-
-msgid "sHairMask"
-msgstr "发束蒙版"
-
-msgid "sHairShiftMap"
-msgstr "发束偏移贴图"
-
-msgid "sHairTangentMode"
-msgstr "切线模式|网格|切线贴图|UV"
-
-msgid "sHairTangentMap"
-msgstr "切线贴图"
-
-msgid "sHairTangentStrength"
-msgstr "切线强度"
-
-msgid "sHairSpecularAA"
-msgstr "高光抗锯齿"
-
-msgid "sHairLobeModel"
-msgstr "模型|关闭|Kajiya|Scheuermann|Marschner R|Marschner TRT|各向异性 GGX"
-
-msgid "sHairShift"
-msgstr "偏移"
-
-msgid "sHairShiftScale"
-msgstr "偏移强度"
-
-msgid "sHairWidthT"
-msgstr "横向宽度"
-
-msgid "sHairWidthB"
-msgstr "纵向宽度"
-
-msgid "sHairPower"
-msgstr "高光指数"
 
 msgid "sSpace"
 msgstr "空间"
@@ -1448,15 +1355,6 @@ msgstr "轮廓纹理"
 msgid "sPresetOutlineWidth"
 msgstr "轮廓宽度"
 
-msgid "sPresetFurNormal"
-msgstr "毛发法线"
-
-msgid "sPresetFurNoise"
-msgstr "毛发噪点"
-
-msgid "sPresetFurMask"
-msgstr "毛发蒙版"
-
 msgid "sShaderSetting"
 msgstr "着色器设置 (用于所有材质)"
 
@@ -1579,12 +1477,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorRefraction"
-msgstr "advanced/refraction"
-
-msgid "sAnchorFur"
-msgstr "advanced/fur"
 
 msgid "sAnchorOptimization"
 msgstr "other?id=Optimization"
@@ -2155,9 +2047,6 @@ msgstr "主 Pass"
 
 msgid "Transparent backface"
 msgstr "透明背面"
-
-msgid "Fur Pre"
-msgstr "毛发 PrePass"
 
 msgid "Select All"
 msgstr "全选"

@@ -323,24 +323,6 @@ msgstr "컷아웃"
 msgid "sRenderingModeTransparent"
 msgstr "투명한"
 
-msgid "sRenderingModeRefraction"
-msgstr "[과부하] 굴절"
-
-msgid "sRenderingModeRefractionBlur"
-msgstr "[과부하] 굴절 흐리게"
-
-msgid "sRenderingModeFur"
-msgstr "[과부하] 퍼"
-
-msgid "sRenderingModeFurCutout"
-msgstr "[과부하] 퍼 (컷아웃)"
-
-msgid "sRenderingModeFurTwoPass"
-msgstr "[과부하] 퍼 (2 pass)"
-
-msgid "sRenderingModeHair"
-msgstr "머리카락"
-
 msgid "sTransparentMode"
 msgstr "투명 모드"
 
@@ -500,14 +482,8 @@ msgstr "세미 모노크롬"
 msgid "sHelpRenderingTransparent"
 msgstr "투명 Material끼리 겹친 때 한쪽이 보이지 않을 수 있습니다. 이 경우는 앞에 표시되는 머티리얼의 "Render Queue" 값을 올림으로써 수정됩니다."
 
-msgid "sHelpRenderingFur"
-msgstr "퍼포먼스를 위해 퍼에 적용되는 기능이 제한되어 있습니다."
-
 msgid "sHelpTransparentForWorld"
 msgstr "투과머티리얼에서 Render Queue 2999 이하로 설정하면 안쪽에 있는 다른 머티리얼을 볼 수 없어 옷이나 머리카락이 사라지는 등의 문제가 발생할 수 있습니다. 월드 용도라면 3000 이상으로 설정하거나 ZWrite를 끄거나 하는 설정을 추천합니다."
-
-msgid "sHelpGrabPass"
-msgstr "굴절·보석은 GrabPass를 사용하기 때문에 모바일 GPU에서 성능에 큰 영향을 미칠 수 있습니다."
 
 msgid "sHelpGeometryShader"
 msgstr "지오메트리셰이더는 iOS나 Mac에서 작동하지 않으므로 타 렌더링 모드로 변경하는 것이 좋습니다."
@@ -740,29 +716,8 @@ msgstr "굵기 0의 꼭짓점 삭제"
 msgid "sDisableInVR"
 msgstr "VR에서 사용 안 함"
 
-msgid "sRefractionSetting"
-msgstr "굴절 설정"
-
-msgid "sRefractionTips"
-msgstr "굴절의 강도나 색을 설정할 수 있습니다"
-
-msgid "sRefraction"
-msgstr "굴절"
-
-msgid "sRefractionFresnel"
-msgstr "프레넬"
-
 msgid "sColorFromMain"
 msgstr "메인 컬러에서 색상 가져 오기"
-
-msgid "sFurSetting"
-msgstr "퍼 설정"
-
-msgid "sFurTips"
-msgstr "퍼의 길이와 방향, 질감을 설정할 수 있습니다"
-
-msgid "sFur"
-msgstr "퍼"
 
 msgid "sAntiLight"
 msgstr "Anti Light"
@@ -1048,54 +1003,6 @@ msgstr "환경광 색상"
 
 msgid "sParticleLoop"
 msgstr "파티클 루프 수"
-
-msgid "sHairSetting"
-msgstr "머리카락 설정"
-
-msgid "sHair"
-msgstr "머리카락"
-
-msgid "sHairLobe"
-msgstr "로브"
-
-msgid "sHairLobeCount"
-msgstr "로브 수"
-
-msgid "sHairMask"
-msgstr "머리카락 마스크"
-
-msgid "sHairShiftMap"
-msgstr "머리카락 시프트 맵"
-
-msgid "sHairTangentMode"
-msgstr "탄젠트 모드|메시|탄젠트 맵|UV"
-
-msgid "sHairTangentMap"
-msgstr "탄젠트 맵"
-
-msgid "sHairTangentStrength"
-msgstr "탄젠트 강도"
-
-msgid "sHairSpecularAA"
-msgstr "스페큘러 AA"
-
-msgid "sHairLobeModel"
-msgstr "모델|끄기|Kajiya|Scheuermann|Marschner R|Marschner TRT|이방성 GGX"
-
-msgid "sHairShift"
-msgstr "시프트"
-
-msgid "sHairShiftScale"
-msgstr "시프트 스케일"
-
-msgid "sHairWidthT"
-msgstr "가로 너비"
-
-msgid "sHairWidthB"
-msgstr "세로 너비"
-
-msgid "sHairPower"
-msgstr "스페큘러 지수"
 
 msgid "sSpace"
 msgstr "공간"
@@ -1448,15 +1355,6 @@ msgstr "윤곽선 색상"
 msgid "sPresetOutlineWidth"
 msgstr "윤곽선의 폭"
 
-msgid "sPresetFurNormal"
-msgstr "퍼 노멀 맵"
-
-msgid "sPresetFurNoise"
-msgstr "파 노이즈"
-
-msgid "sPresetFurMask"
-msgstr "퍼 마스크"
-
 msgid "sShaderSetting"
 msgstr "쉐이더 설정 (전체 재료 공통)"
 
@@ -1579,12 +1477,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorRefraction"
-msgstr "advanced/refraction"
-
-msgid "sAnchorFur"
-msgstr "advanced/fur"
 
 msgid "sAnchorOptimization"
 msgstr "other?id=Optimization"

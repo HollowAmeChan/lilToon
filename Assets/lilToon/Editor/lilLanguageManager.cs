@@ -73,9 +73,6 @@ namespace lilToon
         public static GUIContent triMaskContent;
         public static GUIContent cubemapContent;
         public static GUIContent gradationMapContent;
-        public static GUIContent hairMaskContent;
-        public static GUIContent hairShiftMapContent;
-        public static GUIContent hairTangentMapContent;
         public static LanguageSettings langSet { get { return LanguageSettings.instance; } }
 
         public class LanguageSettings : ScriptableSingleton<LanguageSettings>
@@ -167,8 +164,6 @@ namespace lilToon
             loc["sScrollRotates"]            = BuildParams(GetLoc("sAngle"), GetLoc("sUVAnimation"), GetLoc("sScroll"), GetLoc("sRotate"));
             loc["sDecalAnimations"]          = BuildParams(GetLoc("sAnimation"), GetLoc("sXFrames"), GetLoc("sYFrames"), GetLoc("sFrames"), GetLoc("sFPS"));
             loc["sDecalSubParams"]           = BuildParams(GetLoc("sXRatio"), GetLoc("sYRatio"), GetLoc("sFixBorder"));
-            loc["sFakeShadowVectors"] = BuildParams(GetLoc("sVector"), GetLoc("sOffset"));
-            loc["sFurVectors"] = BuildParams(GetLoc("sVector"), GetLoc("sLength"));
             loc["sPreOutTypes"] = BuildParams(GetLoc("sOutType"), GetLoc("sOutTypeNormal"), GetLoc("sOutTypeFlat"), GetLoc("sOutTypeMono"));
             loc["sLightDirectionOverrides"] = BuildParams(GetLoc("sLightDirectionOverride"), GetLoc("sObjectFollowing"));
 
@@ -221,10 +216,6 @@ namespace lilToon
             triMaskContent                  = new GUIContent(GetLoc("sTriMask"),                            GetLoc("sTriMaskRGB"));
             cubemapContent                  = new GUIContent(GetLoc("Cubemap Fallback"));
             gradationMapContent             = new GUIContent(GetLoc("sGradationMap"));
-            hairMaskContent                 = new GUIContent(GetLoc("sHairMask"),                           GetLoc("sTextureRGBA"));
-            hairShiftMapContent             = new GUIContent(GetLoc("sHairShiftMap"),                       GetLoc("sTextureRGBA"));
-            hairTangentMapContent           = new GUIContent(GetLoc("sHairTangentMap"),                     GetLoc("sNormalRGB"));
-
         }
 
         public static string GetDisplayLabel(MaterialProperty prop)

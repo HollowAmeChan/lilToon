@@ -88,7 +88,7 @@ namespace lilToon
 
             // 分组键是"属性名集合"，不是 Shader 对象。
             // lilToon 的材质常常各自用不同的 Hidden/lilToon* 变体 shader（Cutout / Transparent /
-            // Outline / Fur …），按 shader 分会把 30 个材质拆成 30 组、每组 1 个，于是"批量改"
+            // Outline …），按 shader 分会把 30 个材质拆成 30 组、每组 1 个，于是"批量改"
             // 退化成"只能改第一个"。属性集合相同 = 这些材质能安全地一起编辑。
             // 组内只拿第一个材质当"代表"去取属性列表和画控件；真正的写入由 SpreadChanges 逐个材质做。
             var signatureToMaterials = new Dictionary<string, List<Material>>();

@@ -196,9 +196,6 @@ namespace lilToon
         protected static GUIContent triMaskContent                  { get { return lilLanguageManager.triMaskContent                ; } private set { lilLanguageManager.triMaskContent                 = value; } }
         protected static GUIContent cubemapContent                  { get { return lilLanguageManager.cubemapContent                ; } private set { lilLanguageManager.cubemapContent                 = value; } }
         protected static GUIContent gradationMapContent             { get { return lilLanguageManager.gradationMapContent           ; } private set { lilLanguageManager.gradationMapContent            = value; } }
-        protected static GUIContent hairMaskContent                 { get { return lilLanguageManager.hairMaskContent               ; } private set { lilLanguageManager.hairMaskContent                = value; } }
-        protected static GUIContent hairShiftMapContent             { get { return lilLanguageManager.hairShiftMapContent           ; } private set { lilLanguageManager.hairShiftMapContent            = value; } }
-        protected static GUIContent hairTangentMapContent           { get { return lilLanguageManager.hairTangentMapContent         ; } private set { lilLanguageManager.hairTangentMapContent          = value; } }
     }
 }
 #endif

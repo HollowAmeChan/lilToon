@@ -323,24 +323,6 @@ msgstr "Cutout"
 msgid "sRenderingModeTransparent"
 msgstr "Transparent"
 
-msgid "sRenderingModeRefraction"
-msgstr "[high-load] Refraction"
-
-msgid "sRenderingModeRefractionBlur"
-msgstr "[high-load] Refraction Blur"
-
-msgid "sRenderingModeFur"
-msgstr "[high-load] Fur"
-
-msgid "sRenderingModeFurCutout"
-msgstr "[high-load] Fur (Cutout)"
-
-msgid "sRenderingModeFurTwoPass"
-msgstr "[high-load] Fur (2 pass)"
-
-msgid "sRenderingModeHair"
-msgstr "Hair"
-
 msgid "sTransparentMode"
 msgstr "Transparent Mode"
 
@@ -500,14 +482,8 @@ msgstr "Semi-monochrome"
 msgid "sHelpRenderingTransparent"
 msgstr "When two transparent materials overlap, one of them may become invisible. In this case, increase the "Render Queue" value of the material in the foreground to fix the problem."
 
-msgid "sHelpRenderingFur"
-msgstr "Limited features applied to fur parts for performance."
-
 msgid "sHelpTransparentForWorld"
 msgstr "Setting Render Queue to 2999 or lower for transparent materials can make other materials in the back invisible, causing problems such as clothes and hair to disappear. For world projects, it is recommended to set it above 3000 or turn off ZWrite."
-
-msgid "sHelpGrabPass"
-msgstr "Reflection and gem use GrabPass, which can have a significant impact on performance on mobile GPUs."
 
 msgid "sHelpGeometryShader"
 msgstr "Geometry shaders do not work on iOS or Mac, so it is recommended to change to another rendering mode."
@@ -740,29 +716,8 @@ msgstr "Remove zero width vertices"
 msgid "sDisableInVR"
 msgstr "Disable in VR"
 
-msgid "sRefractionSetting"
-msgstr "Refraction"
-
-msgid "sRefractionTips"
-msgstr "You can set the refraction strength and color."
-
-msgid "sRefraction"
-msgstr "Refraction"
-
-msgid "sRefractionFresnel"
-msgstr "Fresnel"
-
 msgid "sColorFromMain"
 msgstr "Get color from Main"
-
-msgid "sFurSetting"
-msgstr "Fur"
-
-msgid "sFurTips"
-msgstr "You can set the length and direction of the fur."
-
-msgid "sFur"
-msgstr "Fur"
 
 msgid "sAntiLight"
 msgstr "Anti Light"
@@ -1048,54 +1003,6 @@ msgstr "Environment Color"
 
 msgid "sParticleLoop"
 msgstr "Particle Loop"
-
-msgid "sHairSetting"
-msgstr "Hair Settings"
-
-msgid "sHair"
-msgstr "Hair"
-
-msgid "sHairLobe"
-msgstr "Lobe"
-
-msgid "sHairLobeCount"
-msgstr "Lobe Count"
-
-msgid "sHairMask"
-msgstr "Hair Mask"
-
-msgid "sHairShiftMap"
-msgstr "Hair Shift Map"
-
-msgid "sHairTangentMode"
-msgstr "Tangent Mode|Mesh|Tangent Map|UV"
-
-msgid "sHairTangentMap"
-msgstr "Tangent Map"
-
-msgid "sHairTangentStrength"
-msgstr "Tangent Strength"
-
-msgid "sHairSpecularAA"
-msgstr "Specular AA"
-
-msgid "sHairLobeModel"
-msgstr "Model|Off|Kajiya|Scheuermann|Marschner R|Marschner TRT|Aniso GGX"
-
-msgid "sHairShift"
-msgstr "Shift"
-
-msgid "sHairShiftScale"
-msgstr "Shift Scale"
-
-msgid "sHairWidthT"
-msgstr "Width T"
-
-msgid "sHairWidthB"
-msgstr "Width B"
-
-msgid "sHairPower"
-msgstr "Power"
 
 msgid "sSpace"
 msgstr "Space"
@@ -1448,15 +1355,6 @@ msgstr "Outline Texture"
 msgid "sPresetOutlineWidth"
 msgstr "Outline Width"
 
-msgid "sPresetFurNormal"
-msgstr "Fur Normal"
-
-msgid "sPresetFurNoise"
-msgstr "Fur Noise"
-
-msgid "sPresetFurMask"
-msgstr "Fur Mask"
-
 msgid "sShaderSetting"
 msgstr "Shader Setting (for all materials)"
 
@@ -1579,12 +1477,6 @@ msgstr "advanced/stencil"
 
 msgid "sAnchorRendering"
 msgstr "advanced/rendering"
-
-msgid "sAnchorRefraction"
-msgstr "advanced/refraction"
-
-msgid "sAnchorFur"
-msgstr "advanced/fur"
 
 msgid "sAnchorOptimization"
 msgstr "other?id=Optimization"
@@ -2155,9 +2047,6 @@ msgstr "Main"
 
 msgid "Transparent backface"
 msgstr "Transparent backface"
-
-msgid "Fur Pre"
-msgstr "Fur Pre"
 
 msgid "Select All"
 msgstr "Select All"

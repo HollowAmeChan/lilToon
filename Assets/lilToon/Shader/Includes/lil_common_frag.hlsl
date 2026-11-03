@@ -31,10 +31,6 @@
     #define BEFORE_OUTLINE_COLOR
 #endif
 
-#if !defined(BEFORE_FUR)
-    #define BEFORE_FUR
-#endif
-
 #if !defined(BEFORE_ALPHAMASK)
     #define BEFORE_ALPHAMASK
 #endif
@@ -81,10 +77,6 @@
 
 #if !defined(BEFORE_SSS)
     #define BEFORE_SSS
-#endif
-
-#if !defined(BEFORE_REFRACTION)
-    #define BEFORE_REFRACTION
 #endif
 
 #if !defined(BEFORE_REFLECTION)
@@ -254,13 +246,10 @@
         #define OVERRIDE_ANIMATE_MAIN_UV \
             fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
             fd.uvMain = lilCalcUV(fd.uvMain, _MainTex_ST, _MainTex_ScrollRotate);
-    #elif !defined(LIL_PASS_FORWARD_FUR_INCLUDED)
+    #else
         #define OVERRIDE_ANIMATE_MAIN_UV \
             fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
             fd.uvMain = lilCalcUV(fd.uvMain, _MainTex_ST);
-    #else
-        #define OVERRIDE_ANIMATE_MAIN_UV \
-            fd.uvMain = lilCalcUV(fd.uv0, _MainTex_ST);
     #endif
 #endif
 
@@ -901,7 +890,10 @@
 
             // Shadow
             #if (defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK) || defined(LIL_USE_HO_CAST)) && defined(LIL_FEATURE_RECEIVE_SHADOW)
-                float calculatedShadow = saturate(fd.attenuation + distance(fd.L, fd.origL));
+                // Cast visibility belongs to the light/shadow provider. The artistic Toon
+                // direction may differ from the real light direction and must not erase a
+                // valid occluder by turning that direction delta into visibility.
+                float calculatedShadow = saturate(fd.attenuation);
                 lns.x *= lerp(1.0, calculatedShadow, _ShadowReceive * shadowReceiveMask);
                 lns.y *= lerp(1.0, calculatedShadow, _Shadow2ndReceive * shadowReceiveMask);
                 #if defined(LIL_FEATURE_SHADOW_3RD)
@@ -1121,8 +1113,8 @@
             // Factor
             float backlightFactor = pow(saturate(-fd.hl * 0.5 + 0.5), _BacklightDirectivity);
             float backlightLN = dot(normalize(-fd.headV * _BacklightViewStrength + fd.L), N) * 0.5 + 0.5;
-            #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK)
-                if(_BacklightReceiveShadow) backlightLN *= saturate(fd.attenuation + distance(fd.L, fd.origL));
+            #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK) || defined(LIL_USE_HO_CAST)
+                if(_BacklightReceiveShadow) backlightLN *= saturate(fd.attenuation);
             #endif
             backlightLN = lilTooningScale(_AAStrength, backlightLN, _BacklightBorder, _BacklightBlur);
             float backlight = saturate(backlightFactor * backlightLN);
@@ -1167,8 +1159,8 @@
             float sssVL = pow(saturate(dot(-fd.L, fd.V) * 0.5 + 0.5), _SSSPower);
             float sss = saturate(sssLN * sssVL) * thickness * _SSSStrength;
 
-            #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK)
-                if(_SSSReceiveShadow) sss *= saturate(fd.attenuation + distance(fd.L, fd.origL));
+            #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK) || defined(LIL_USE_HO_CAST)
+                if(_SSSReceiveShadow) sss *= saturate(fd.attenuation);
             #endif
 
             float3 sssColor = lerp(_SSSColor.rgb, _SSSColor.rgb * fd.albedo, _SSSMainStrength);
@@ -1836,7 +1828,7 @@
     {
         float depth = _DistanceFadeMode ? fd.depthObject : fd.depth;
         float distFade = saturate((depth - _DistanceFade.x) / (_DistanceFade.y - _DistanceFade.x));
-        #if defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED)
+        #if defined(LIL_OUTLINE)
             distFade = distFade * _DistanceFade.z;
         #else
             distFade = fd.facing < (_DistanceFade.w-1.0) ? _DistanceFade.z : distFade * _DistanceFade.z;
@@ -1850,7 +1842,7 @@
     {
         float depth = _DistanceFadeMode ? fd.depthObject : fd.depth;
         float distFade = saturate((depth - _DistanceFade.x) / (_DistanceFade.y - _DistanceFade.x));
-        #if defined(LIL_OUTLINE) || defined(LIL_PASS_FORWARD_FUR_INCLUDED)
+        #if defined(LIL_OUTLINE)
             distFade = distFade * _DistanceFade.z;
         #else
             distFade = fd.facing < (_DistanceFade.w-1.0) ? _DistanceFade.z : distFade * _DistanceFade.z;
