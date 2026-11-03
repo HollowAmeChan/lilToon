@@ -463,13 +463,9 @@ namespace lilToon
                     foreach(var material in meshRenderer.sharedMaterials.Where(m => lilMaterialUtils.CheckShaderIslilToon(m) && shaderSetting != null))
                     {
                         Undo.RecordObject(material, "[lilToon] Fix lighting");
-                        material.SetFloat("_AsUnlit", shaderSetting.defaultAsUnlit);
-                        material.SetFloat("_VertexLightStrength", shaderSetting.defaultVertexLightStrength);
                         material.SetFloat("_LightMinLimit", shaderSetting.defaultLightMinLimit);
                         material.SetFloat("_LightMaxLimit", shaderSetting.defaultLightMaxLimit);
-                        material.SetFloat("_BeforeExposureLimit", shaderSetting.defaultBeforeExposureLimit);
                         material.SetFloat("_MonochromeLighting", shaderSetting.defaultMonochromeLighting);
-                        material.SetFloat("_lilDirectionalLightStrength", shaderSetting.defaultlilDirectionalLightStrength);
                         EditorUtility.SetDirty(material);
                     }
 
@@ -493,13 +489,9 @@ namespace lilToon
                     foreach(var material in skinnedMeshRenderer.sharedMaterials.Where(m => lilMaterialUtils.CheckShaderIslilToon(m) && shaderSetting != null))
                     {
                         Undo.RecordObject(material, "[lilToon] Fix lighting");
-                        material.SetFloat("_AsUnlit", shaderSetting.defaultAsUnlit);
-                        material.SetFloat("_VertexLightStrength", shaderSetting.defaultVertexLightStrength);
                         material.SetFloat("_LightMinLimit", shaderSetting.defaultLightMinLimit);
                         material.SetFloat("_LightMaxLimit", shaderSetting.defaultLightMaxLimit);
-                        material.SetFloat("_BeforeExposureLimit", shaderSetting.defaultBeforeExposureLimit);
                         material.SetFloat("_MonochromeLighting", shaderSetting.defaultMonochromeLighting);
-                        material.SetFloat("_lilDirectionalLightStrength", shaderSetting.defaultlilDirectionalLightStrength);
                         EditorUtility.SetDirty(material);
                     }
 

@@ -90,8 +90,8 @@ namespace lilToon.Tests
         }
 
         [TestCase("_HoRPShadowMode", "照明")]
-        [TestCase("_MultiLightIntensity", "照明")]
-        [TestCase("_MultiLightCastShadowStrength", "照明")]
+        [TestCase("_HoAdditionalLightIntensity", "照明")]
+        [TestCase("_HoAdditionalLightShadowStrength", "照明")]
         [TestCase("_AODarkStrength", "阴影")]
         [TestCase("_UseHair", "头发")]
         [TestCase("_HairLobe1Strength", "头发")]
@@ -149,8 +149,10 @@ namespace lilToon.Tests
             var second = CreateMaterial("Hidden/lilToon/Tests/ManagerInputs");
             first.SetFloat("_HoRPShadowMode", 1);
             second.SetFloat("_HoRPShadowMode", 2);
-            first.SetFloat("_MultiLightIntensity", .25f);
-            second.SetFloat("_MultiLightIntensity", 3.75f);
+            first.SetFloat("_HoAdditionalLightIntensity", .25f);
+            second.SetFloat("_HoAdditionalLightIntensity", 3.75f);
+            first.SetFloat("_HoAdditionalLightShadowStrength", .25f);
+            second.SetFloat("_HoAdditionalLightShadowStrength", .75f);
             Select(first, second);
             var groups = (IList)PaneType.GetField("groups", InstanceMembers).GetValue(pane);
             Assert.Greater(groups.Count, 1, "Exercise the cross-group write path.");
@@ -161,8 +163,10 @@ namespace lilToon.Tests
             Assert.AreEqual(2, applied);
             Assert.AreEqual(2, first.GetFloat("_HoRPShadowMode"));
             Assert.AreEqual(2, second.GetFloat("_HoRPShadowMode"));
-            Assert.AreEqual(.25f, first.GetFloat("_MultiLightIntensity"));
-            Assert.AreEqual(3.75f, second.GetFloat("_MultiLightIntensity"));
+            Assert.AreEqual(.25f, first.GetFloat("_HoAdditionalLightIntensity"));
+            Assert.AreEqual(3.75f, second.GetFloat("_HoAdditionalLightIntensity"));
+            Assert.AreEqual(.25f, first.GetFloat("_HoAdditionalLightShadowStrength"));
+            Assert.AreEqual(.75f, second.GetFloat("_HoAdditionalLightShadowStrength"));
         }
 
         [TestCase("_HoTesionEnabled", "_HO_GD_TENSION")]

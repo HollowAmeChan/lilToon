@@ -60,11 +60,8 @@ namespace lilToon
             res = res || name == "_LightMinLimit";
             res = res || name == "_LightMaxLimit";
             res = res || name == "_MonochromeLighting";
-            res = res || name == "_AsUnlit";
-            res = res || name == "_VertexLightStrength";
-            res = res || name == "_BeforeExposureLimit";
-            res = res || name == "_AlphaBoostFA";
-            res = res || name == "_lilDirectionalLightStrength";
+            res = res || name == "_HoAdditionalLightIntensity";
+            res = res || name == "_HoAdditionalLightShadowStrength";
             res = res || name == "_LightDirectionOverride";
             return res;
         }

@@ -3,6 +3,23 @@
 
 #include "lil_common_functions_thirdparty.hlsl"
 
+// Material properties are declared by lil_common_input.hlsl after the macro
+// include. Keep their lighting wrappers here so every pass sees the CBUFFER first.
+#if !defined(LIL_BAKER)
+void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength, inout float3 lightColor, inout float3 lightDirection)
+{
+    lilGetAdditionalLightsBase(positionWS, positionCS, strength, _HoAdditionalLightIntensity, _HoAdditionalLightShadowStrength, lightColor, lightDirection);
+}
+
+float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength)
+{
+    float3 lightColor = 0.0;
+    float3 lightDirection = 0.0;
+    lilGetAdditionalLights(positionWS, positionCS, strength, lightColor, lightDirection);
+    return lightColor;
+}
+#endif
+
 //------------------------------------------------------------------------------------------------------------------------------
 // Math
 

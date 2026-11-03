@@ -34,14 +34,9 @@ namespace lilToon
         private readonly lilMaterialProperty envRimBorder           = new lilMaterialProperty("_EnvRimBorder", PropertyBlock.Base);
         private readonly lilMaterialProperty envRimBlur             = new lilMaterialProperty("_EnvRimBlur", PropertyBlock.Base);
 
-        private readonly lilMaterialProperty asUnlit                        = new lilMaterialProperty("_AsUnlit", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty vertexLightStrength            = new lilMaterialProperty("_VertexLightStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty lightMinLimit                  = new lilMaterialProperty("_LightMinLimit", PropertyBlock.Lighting);
         private readonly lilMaterialProperty lightMaxLimit                  = new lilMaterialProperty("_LightMaxLimit", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty beforeExposureLimit            = new lilMaterialProperty("_BeforeExposureLimit", PropertyBlock.Lighting, PropertyBlock.Rendering);
         private readonly lilMaterialProperty monochromeLighting             = new lilMaterialProperty("_MonochromeLighting", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty alphaBoostFA                   = new lilMaterialProperty("_AlphaBoostFA", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty lilDirectionalLightStrength    = new lilMaterialProperty("_lilDirectionalLightStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty lightDirectionOverride         = new lilMaterialProperty("_LightDirectionOverride", PropertyBlock.Lighting);
 
         private readonly lilMaterialProperty baseColor      = new lilMaterialProperty("_BaseColor");
@@ -166,8 +161,8 @@ namespace lilToon
         private readonly lilMaterialProperty shadowFlatBorder           = new lilMaterialProperty("_ShadowFlatBorder", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBlur             = new lilMaterialProperty("_ShadowFlatBlur", PropertyBlock.Shadow);
         private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
-        private readonly lilMaterialProperty multiLightIntensity        = new lilMaterialProperty("_MultiLightIntensity", PropertyBlock.Lighting);
-        private readonly lilMaterialProperty multiLightCastShadowStrength = new lilMaterialProperty("_MultiLightCastShadowStrength", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty hoAdditionalLightIntensity = new lilMaterialProperty("_HoAdditionalLightIntensity", PropertyBlock.Lighting);
+        private readonly lilMaterialProperty hoAdditionalLightShadowStrength = new lilMaterialProperty("_HoAdditionalLightShadowStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty hoRPShadowMode             = new lilMaterialProperty("_HoRPShadowMode", PropertyBlock.Lighting);
         // Ho 表面 / 语义：SB 的材质侧输入。**标签（属于哪几类）由物体侧的 Ho-ObjectBuffer 组件决定**，
         // 这里只说"数值"与"权重"。归到 PropertyBlock.HoSurface —— 这几个参数之前没归任何块，
@@ -475,7 +470,6 @@ namespace lilToon
         private readonly lilMaterialProperty dstBlendFA             = new lilMaterialProperty("_DstBlendFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty srcBlendAlphaFA        = new lilMaterialProperty("_SrcBlendAlphaFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty dstBlendAlphaFA        = new lilMaterialProperty("_DstBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty blendOpFA              = new lilMaterialProperty("_BlendOpFA", PropertyBlock.Rendering, PropertyBlock.Lighting);
         private readonly lilMaterialProperty blendOpAlphaFA         = new lilMaterialProperty("_BlendOpAlphaFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty zclip                  = new lilMaterialProperty("_ZClip", PropertyBlock.Rendering);
         private readonly lilMaterialProperty zwrite                 = new lilMaterialProperty("_ZWrite", PropertyBlock.Rendering, PropertyBlock.Base);
@@ -552,14 +546,9 @@ namespace lilToon
                 envRimBorder,
                 envRimBlur,
 
-                asUnlit,
-                vertexLightStrength,
                 lightMinLimit,
                 lightMaxLimit,
-                beforeExposureLimit,
                 monochromeLighting,
-                alphaBoostFA,
-                lilDirectionalLightStrength,
                 lightDirectionOverride,
 
                 baseColor,
@@ -682,8 +671,8 @@ namespace lilToon
                 shadowFlatBorder,
                 shadowFlatBlur,
                 lilShadowCasterBias,
-                multiLightIntensity,
-                multiLightCastShadowStrength,
+                hoAdditionalLightIntensity,
+                hoAdditionalLightShadowStrength,
                 hoRPShadowMode,
                 hoSurfaceThickness,
                 hoSurfaceCurvature,
@@ -987,7 +976,6 @@ namespace lilToon
                 dstBlendFA,
                 srcBlendAlphaFA,
                 dstBlendAlphaFA,
-                blendOpFA,
                 blendOpAlphaFA,
                 zclip,
                 zwrite,

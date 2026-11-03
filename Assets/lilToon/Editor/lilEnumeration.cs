@@ -30,12 +30,6 @@ namespace lilToon
         TwoPass = 2
     }
 
-    public enum LightingPreset
-    {
-        Default,
-        SemiMonochrome
-    }
-
     public enum PropertyBlock
     {
         Base,

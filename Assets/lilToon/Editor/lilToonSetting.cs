@@ -126,13 +126,9 @@ public class lilToonSetting : ScriptableObject
     public bool isOptimizeInNDMF = false;
     public bool isMigrateInStartUp = true;
 
-    public float defaultAsUnlit = 0.0f;
-    public float defaultVertexLightStrength = 0.0f;
     public float defaultLightMinLimit = 0.05f;
     public float defaultLightMaxLimit = 1.0f;
-    public float defaultBeforeExposureLimit = 10000.0f;
     public float defaultMonochromeLighting = 0.0f;
-    public float defaultlilDirectionalLightStrength = 1.0f;
 
     public string mainLightModeName = "";
     public string outlineLightModeName = "";
@@ -1186,12 +1182,6 @@ public class lilToonSetting : ScriptableObject
             }
         }
 
-        if(!shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT && material.HasProperty("_VertexLightStrength") && material.GetFloat("_VertexLightStrength") != 0.0f)
-        {
-            logs.Add("[lilToon] LIL_OPTIMIZE_USE_VERTEXLIGHT : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = true;
-        }
-
         // Texture
         CheckTextures(ref shaderSetting, material);
     }
@@ -1254,8 +1244,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV || propname.Contains("_OutlineTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");
             shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW || propname.Contains("_OutlineLitShadowReceive") || propname.Contains("_OutlineShadowStrength");
-
-            shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT || propname.Contains("_VertexLightStrength");
 
             // Texture
             CheckTextures(ref shaderSetting, propname);

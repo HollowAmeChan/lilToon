@@ -874,7 +874,7 @@ float4 URPShadowPos(float4 positionOS, float3 normalOS, float bias)
 #endif
 
 // Additional Light
-void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength, inout float3 lightColor, inout float3 lightDirection)
+void lilGetAdditionalLightsBase(float3 positionWS, float4 positionCS, float strength, float intensity, float shadowStrength, inout float3 lightColor, inout float3 lightDirection)
 {
     uint renderingLayers = lilGetRenderingLayer();
     float3 objPositionWS = lilGetObjectPosition();
@@ -896,8 +896,12 @@ void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength
                 if((light.layerMask & renderingLayers) != 0)
             #endif
             {
-                lightColor += light.color.rgb * light.distanceAttenuation * strength;
-                lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * strength * light.direction;
+                // Additional lights are one direct-light path. Use the light's own
+                // URP visibility here; do not add a second global HDR pool later.
+                float lightShadow = lerp(1.0, light.shadowAttenuation, saturate(shadowStrength));
+                float3 lightContribution = light.color.rgb * light.distanceAttenuation * lightShadow * strength * max(intensity, 0.0);
+                lightColor += lightContribution;
+                lightDirection += dot(lightContribution, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.direction;
             }
 
         #if defined(LIGHT_LOOP_END)
@@ -918,18 +922,14 @@ void lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength
             #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
                 if((light.layerMask & renderingLayers) != 0)
             #endif
-            lightColor += light.color.rgb * light.distanceAttenuation * strength;
-            lightDirection += dot(light.color.rgb, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.distanceAttenuation * strength * light.direction;
+            {
+                float lightShadow = lerp(1.0, light.shadowAttenuation, saturate(shadowStrength));
+                float3 lightContribution = light.color.rgb * light.distanceAttenuation * lightShadow * strength * max(intensity, 0.0);
+                lightColor += lightContribution;
+                lightDirection += dot(lightContribution, float3(1.0/3.0, 1.0/3.0, 1.0/3.0)) * light.direction;
+            }
         }
     #endif
-}
-
-float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float strength)
-{
-    float3 lightColor = 0.0;
-    float3 lightDirection = 0.0;
-    lilGetAdditionalLights(positionWS, positionCS, strength, lightColor, lightDirection);
-    return lightColor;
 }
 
 // Lightmap
@@ -995,68 +995,6 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 #if defined(LIL_URP)
     #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/ShadowCast/Shaders/HoShadowCastSampling.hlsl"
     #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/CharacterShadow/Shaders/HoCharacterShadowSampling.hlsl"
-    #define LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(positionWS) HoShadowCastAttenuation(positionWS, _HoRPShadowMode)
-    void lilGetAdditionalLightHDR(float3 positionWS, float4 positionCS, inout float3 lightColor, inout float minShadow)
-    {
-        uint renderingLayers = lilGetRenderingLayer();
-
-        #if defined(_ADDITIONAL_LIGHTS) || defined(_ADDITIONAL_LIGHTS_VERTEX)
-            uint lightsCount = GetAdditionalLightsCount();
-            #if defined(LIGHT_LOOP_BEGIN)
-                InputData inputData = (InputData)0;
-                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(positionCS);
-                inputData.positionWS = positionWS;
-                LIGHT_LOOP_BEGIN(lightsCount)
-            #else
-                for(uint lightIndex = 0; lightIndex < lightsCount; lightIndex++)
-                {
-            #endif
-
-                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, inputData);
-                #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
-                    if((light.layerMask & renderingLayers) != 0)
-                #endif
-                {
-                    lightColor += light.color.rgb * light.distanceAttenuation;
-                }
-
-            #if defined(LIGHT_LOOP_END)
-                LIGHT_LOOP_END
-            #else
-                }
-            #endif
-        #endif
-
-        #if defined(_ADDITIONAL_LIGHTS) && (defined(USE_CLUSTER_LIGHT_LOOP) && USE_CLUSTER_LIGHT_LOOP || defined(USE_CLUSTERED_LIGHTING) && USE_CLUSTERED_LIGHTING || defined(USE_FORWARD_PLUS) && USE_FORWARD_PLUS)
-            #if defined(URP_FP_DIRECTIONAL_LIGHTS_COUNT)
-                for(uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
-            #else
-                for(uint lightIndex = 0; lightIndex < min(_AdditionalLightsDirectionalCount, MAX_VISIBLE_LIGHTS); lightIndex++)
-            #endif
-            {
-                Light light = LIL_GET_ADDITIONAL_LIGHT(lightIndex, positionWS, (InputData)0);
-                #if LIL_SRP_VERSION_GREATER_EQUAL(12, 0) && defined(_LIGHT_LAYERS)
-                    if((light.layerMask & renderingLayers) != 0)
-                #endif
-                {
-                    lightColor += light.color.rgb * light.distanceAttenuation;
-                }
-            }
-        #endif
-    }
-
-    #define LIL_APPLY_ADDITIONAL_LIGHT_HDR(input,fd) \
-        { \
-            float3 lilAdditionalLightHDR = 0.0; \
-            float lilAdditionalLightMinShadow = 1.0; \
-            lilGetAdditionalLightHDR(input.positionWS, input.positionCS, lilAdditionalLightHDR, lilAdditionalLightMinShadow); \
-            lilAdditionalLightHDR *= HoShadowCastAttenuation(input.positionWS, _HoRPShadowMode); \
-            fd.col.rgb += fd.albedo * lilAdditionalLightHDR * _MultiLightIntensity; \
-            fd.col.rgb *= lerp(1.0, lilAdditionalLightMinShadow, _MultiLightCastShadowStrength); \
-        }
-#else
-    #define LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(positionWS) 1.0
-    #define LIL_APPLY_ADDITIONAL_LIGHT_HDR(input,fd)
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1196,13 +1134,11 @@ struct lilLightData
     #define LIL_CORRECT_LIGHTCOLOR_VS(lightColor)
     #define LIL_CORRECT_LIGHTCOLOR_PS(lightColor) \
         lightColor = clamp(lightColor, _LightMinLimit, _LightMaxLimit); \
-        lightColor = lerp(lightColor, lilGray(lightColor), _MonochromeLighting); \
-        lightColor = lerp(lightColor, 1.0, _AsUnlit)
+        lightColor = lerp(lightColor, lilGray(lightColor), _MonochromeLighting)
 #else
     #define LIL_CORRECT_LIGHTCOLOR_VS(lightColor) \
         lightColor = clamp(lightColor, _LightMinLimit, _LightMaxLimit); \
-        lightColor = lerp(lightColor, lilGray(lightColor), _MonochromeLighting); \
-        lightColor = lerp(lightColor, 1.0, _AsUnlit)
+        lightColor = lerp(lightColor, lilGray(lightColor), _MonochromeLighting)
     #define LIL_CORRECT_LIGHTCOLOR_PS(lightColor)
 #endif
 
@@ -1231,8 +1167,7 @@ struct lilLightData
     #define LIL_GET_MAINLIGHT(input,lc,ld,atten) \
         ld = lilGetLightDirection(input.positionWS); \
         lc = min(LIL_MAINLIGHT_COLOR * atten, _LightMaxLimit); \
-        lc = lerp(lc, lilGray(lc), _MonochromeLighting); \
-        lc = lerp(lc, 0.0, _AsUnlit)
+        lc = lerp(lc, lilGray(lc), _MonochromeLighting)
 #elif defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SHADOWMASK)
     // Mixed Lightmap (Shadowmask)
     #define LIL_GET_MAINLIGHT(input,lc,ld,atten) \
@@ -1340,8 +1275,7 @@ struct lilLightData
 #if defined(LIL_USE_ADDITIONALLIGHT_VS)
     #define LIL_CALC_VERTEXLIGHT(i,o) \
         o.vlf.rgb = lilGetAdditionalLights(i.positionWS, i.positionCS/float4(i.positionCS.www,1.0)*float4(LIL_SCREENPARAMS.xy,1.0,1.0), LIL_ADDITIONAL_LIGHT_STRENGTH); \
-        o.vlf.rgb = lerp(o.vlf.rgb, lilGray(o.vlf.rgb), _MonochromeLighting); \
-        o.vlf.rgb = lerp(o.vlf.rgb, 0.0, _AsUnlit)
+        o.vlf.rgb = lerp(o.vlf.rgb, lilGray(o.vlf.rgb), _MonochromeLighting)
 #elif defined(LIL_USE_ADDITIONALLIGHT_MAIN)
     #define LIL_CALC_VERTEXLIGHT(i,o)
 #else
@@ -1352,12 +1286,10 @@ struct lilLightData
 #if defined(LIL_USE_ADDITIONALLIGHT_PS)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
         o = lilGetAdditionalLights(i.positionWS, i.positionCS, LIL_ADDITIONAL_LIGHT_STRENGTH); \
-        o *= LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(i.positionWS); \
-        o = lerp(o, lilGray(o), _MonochromeLighting); \
-        o = lerp(o, 0.0, _AsUnlit)
+        o = lerp(o, lilGray(o), _MonochromeLighting)
 #elif defined(LIL_USE_ADDITIONALLIGHT_VS)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
-        o = i.vlf.rgb * LIL_HO_SHADOW_CAST_BRIGHTENING_ATTENUATION(i.positionWS)
+        o = i.vlf.rgb
 #elif defined(LIL_USE_ADDITIONALLIGHT_MAIN)
     #define LIL_GET_ADDITIONALLIGHT(i,o) \
         o = 0

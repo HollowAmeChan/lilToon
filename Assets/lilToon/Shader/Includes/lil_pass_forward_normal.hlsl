@@ -450,8 +450,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             fd.col.rgb += fd.albedo * fd.addLightColor;
             fd.col.rgb = min(fd.col.rgb, fd.albedo * _LightMaxLimit);
 
-            LIL_APPLY_ADDITIONAL_LIGHT_HDR(input, fd)
-
             #if defined(LIL_FEATURE_MAIN2ND)
                 if(_UseMain2ndTex) fd.col.rgb = lilBlendColor(fd.col.rgb, color2nd.rgb, color2nd.a - color2nd.a * _Main2ndEnableLighting, _Main2ndTexBlendMode);
             #endif

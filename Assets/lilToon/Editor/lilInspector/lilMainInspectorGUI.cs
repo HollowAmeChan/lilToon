@@ -700,7 +700,6 @@ namespace lilToon
                             lilEditorGUI.DrawLine();
                             BlendSettingGUI(ref edSet.isShowBlend, GetLoc("sForward"), srcBlend, dstBlend, srcBlendAlpha, dstBlendAlpha, blendOp, blendOpAlpha);
                             lilEditorGUI.DrawLine();
-                            BlendSettingGUI(ref edSet.isShowBlendAdd, GetLoc("sForwardAdd"), srcBlendFA, dstBlendFA, srcBlendAlphaFA, dstBlendAlphaFA, blendOpFA, blendOpAlphaFA);
                             lilEditorGUI.DrawLine();
                             if(!isCustomEditor) EnableInstancingField();
                             RenderQueueField();

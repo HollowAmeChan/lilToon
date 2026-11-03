@@ -295,32 +295,6 @@ namespace lilToon
             ResetProperties((PropertyBlock)obj);
         }
 
-        private void ApplyLightingPreset(LightingPreset lightingPreset)
-        {
-            switch(lightingPreset)
-            {
-                case LightingPreset.Default:
-                    if(asUnlit.p != null) asUnlit.floatValue = shaderSetting.defaultAsUnlit;
-                    if(vertexLightStrength.p != null) vertexLightStrength.floatValue = shaderSetting.defaultVertexLightStrength;
-                    if(lightMinLimit.p != null) lightMinLimit.floatValue = shaderSetting.defaultLightMinLimit;
-                    if(lightMaxLimit.p != null) lightMaxLimit.floatValue = shaderSetting.defaultLightMaxLimit;
-                    if(beforeExposureLimit.p != null) beforeExposureLimit.floatValue = shaderSetting.defaultBeforeExposureLimit;
-                    if(monochromeLighting.p != null) monochromeLighting.floatValue = shaderSetting.defaultMonochromeLighting;
-                    if(shadowEnvStrength.p != null) shadowEnvStrength.floatValue = 0.0f;
-                    if(lilDirectionalLightStrength.p != null) lilDirectionalLightStrength.floatValue = shaderSetting.defaultlilDirectionalLightStrength;
-                    break;
-                case LightingPreset.SemiMonochrome:
-                    if(asUnlit.p != null) asUnlit.floatValue = 0.0f;
-                    if(vertexLightStrength.p != null) vertexLightStrength.floatValue = 0.0f;
-                    if(lightMinLimit.p != null) lightMinLimit.floatValue = 0.05f;
-                    if(lightMaxLimit.p != null) lightMaxLimit.floatValue = 1.0f;
-                    if(beforeExposureLimit.p != null) beforeExposureLimit.floatValue = 10000.0f;
-                    if(monochromeLighting.p != null) monochromeLighting.floatValue = 0.5f;
-                    if(shadowEnvStrength.p != null) shadowEnvStrength.floatValue = 0.0f;
-                    if(lilDirectionalLightStrength.p != null) lilDirectionalLightStrength.floatValue = 1.0f;
-                    break;
-            }
-        }
         #endregion
 
     }

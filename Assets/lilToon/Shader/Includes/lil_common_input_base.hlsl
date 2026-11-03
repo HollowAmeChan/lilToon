@@ -237,7 +237,6 @@ float4  _PlanarReflectionTint;
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Float
-float   _AsUnlit;
 float   _Cutoff;
 #if LIL_RENDER == 2
     float   _PreCutoff;
@@ -245,12 +244,11 @@ float   _Cutoff;
 float   _SubpassCutoff;
 float   _FlipNormal;
 float   _ShiftBackfaceUV;
-float   _VertexLightStrength;
 float   _LightMinLimit;
 float   _LightMaxLimit;
 float   _MonochromeLighting;
-float   _MultiLightIntensity;
-float   _MultiLightCastShadowStrength;
+float   _HoAdditionalLightIntensity;
+float   _HoAdditionalLightShadowStrength;
 float   _HoRPShadowMode;
 // AO: realtime source + offline AO Map, driving the shadow grade and the final
 // AO multiply. Declared unconditionally because the offline AO Map path can be

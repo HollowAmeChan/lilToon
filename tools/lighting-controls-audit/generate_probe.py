@@ -61,10 +61,9 @@ assert sss, "SSS must consume Ho-only Cast without direction compensation."
 captured = "\n".join([
     function(functions, "float lilGray(float3 rgb)"),
     function(functions, "float3 lilGetCustomLightDirection(float4 lightDirectionOverride)"),
-    function(macro, "void lilGetAdditionalLights("),
-    function(macro, "void lilGetAdditionalLightHDR("),
+    function(macro, "void lilGetAdditionalLightsBase("),
+    function(functions, "void lilGetAdditionalLights("),
     continued_define(macro, "LIL_CORRECT_LIGHTCOLOR_VS"),
-    continued_define(macro, "LIL_APPLY_ADDITIONAL_LIGHT_HDR"),
 ])
 
 shader = r'''Shader "Hidden/HoRP/Audit/LightingControls"
@@ -82,9 +81,8 @@ shader = r'''Shader "Hidden/HoRP/Audit/LightingControls"
         _LightMinLimit ("Minimum", Float) = 0
         _LightMaxLimit ("Maximum", Float) = 10
         _MonochromeLighting ("Monochrome", Float) = 0
-        _AsUnlit ("Unlit", Float) = 0
-        _MultiLightIntensity ("HDR boost", Float) = 1
-        _MultiLightCastShadowStrength ("Additional cast strength", Float) = 0
+        _HoAdditionalLightIntensity ("Additional light intensity", Float) = 1
+        _HoAdditionalLightShadowStrength ("Additional light shadow strength", Float) = 1
         _HoRPShadowMode ("Mode", Float) = 1
     }
     SubShader { Pass {
@@ -102,14 +100,15 @@ shader = r'''Shader "Hidden/HoRP/Audit/LightingControls"
         float _AuditOperation, _AuditIncludeBaseAdditional, _AuditCast;
         float4 _AuditLightColor, _AuditExtraColor, _AuditDirection, _AuditOriginalDirection, _AuditOverride;
         float4x4 _AuditObjectMatrix;
-        float _LightMinLimit, _LightMaxLimit, _MonochromeLighting, _AsUnlit;
-        float _MultiLightIntensity, _MultiLightCastShadowStrength, _HoRPShadowMode;
-        struct Light { float3 color, direction; float distanceAttenuation; uint layerMask; };
+        float _LightMinLimit, _LightMaxLimit, _MonochromeLighting;
+        float _HoAdditionalLightIntensity, _HoAdditionalLightShadowStrength, _HoRPShadowMode;
+        struct Light { float3 color, direction; float distanceAttenuation, shadowAttenuation; uint layerMask; };
         Light AuditGetLight() {
             Light result;
             result.color = _AuditExtraColor.rgb;
             result.direction = float3(0,1,0);
             result.distanceAttenuation = 1;
+            result.shadowAttenuation = _AuditCast;
             result.layerMask = 0xffffffffu;
             return result;
         }
@@ -137,18 +136,15 @@ shader = r'''Shader "Hidden/HoRP/Audit/LightingControls"
                 CAPTURED_CAST
                 return float4(calculatedShadow.xxx, 1);
             }
-            float3 corrected = _AuditLightColor.rgb;
-            if(_AuditIncludeBaseAdditional > .5) {
-                float3 direction = 0;
-                lilGetAdditionalLights(input.positionWS, input.positionCS, LIL_ADDITIONAL_LIGHT_STRENGTH, corrected, direction);
+            if(_AuditOperation > .5) {
+                float3 additional = 0;
+                float3 additionalDirection = 0;
+                lilGetAdditionalLights(input.positionWS, input.positionCS, 1.0, additional, additionalDirection);
+                return float4(additional, 1);
             }
+            float3 corrected = _AuditLightColor.rgb;
             LIL_CORRECT_LIGHTCOLOR_VS(corrected);
-            if(_AuditOperation < .5) return float4(corrected, 1);
-            AuditData fd = (AuditData)0;
-            fd.col = float4(corrected, 1);
-            fd.albedo = 1;
-            LIL_APPLY_ADDITIONAL_LIGHT_HDR(input, fd);
-            return fd.col;
+            return float4(corrected, 1);
         }
         ENDHLSL
     }}

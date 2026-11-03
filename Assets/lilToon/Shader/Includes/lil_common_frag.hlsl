@@ -479,7 +479,7 @@
 #if LIL_RENDER != 2
     #define LIL_PREMULTIPLY
 #elif defined(LIL_PASS_FORWARDADD)
-    #define LIL_PREMULTIPLY fd.col.rgb *= saturate(fd.col.a * _AlphaBoostFA);
+    #define LIL_PREMULTIPLY fd.col.rgb *= fd.col.a;
 #else
     #define LIL_PREMULTIPLY fd.col.rgb *= fd.col.a;
 #endif

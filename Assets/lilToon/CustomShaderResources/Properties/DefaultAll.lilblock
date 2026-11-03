@@ -13,20 +13,17 @@
         //----------------------------------------------------------------------------------------------------------------------
         // Base
         [lilToggle]     _Invisible                  ("sInvisible", Int) = 0
-                        _AsUnlit                    ("sAsUnlit", Range(0, 1)) = 0
                         _Cutoff                     ("sCutoff", Range(-0.001,1.001)) = 0.5
                         _SubpassCutoff              ("sSubpassCutoff", Range(0,1)) = 0.5
         [lilToggle]     _FlipNormal                 ("sFlipBackfaceNormal", Int) = 0
         [lilToggle]     _ShiftBackfaceUV            ("sShiftBackfaceUV", Int) = 0
                         _BackfaceForceShadow        ("sBackfaceForceShadow", Range(0,1)) = 0
         [lilHDR]        _BackfaceColor              ("sColor", Color) = (0,0,0,0)
-                        _VertexLightStrength        ("sVertexLightStrength", Range(0,1)) = 0
                         _LightMinLimit              ("sLightMinLimit", Range(0,1)) = 0.05
                         _LightMaxLimit              ("sLightMaxLimit", Range(0,10)) = 1
-                        _BeforeExposureLimit        ("sBeforeExposureLimit", Float) = 10000
                         _MonochromeLighting         ("sMonochromeLighting", Range(0,1)) = 0
-                        _MultiLightIntensity        ("sMultiLightIntensity", Range(0, 5)) = 0
-                        _MultiLightCastShadowStrength ("sMultiLightCastShadowStrength", Range(0, 1)) = 0
+                        _HoAdditionalLightIntensity ("附加光强度", Range(0, 4)) = 1
+                        _HoAdditionalLightShadowStrength ("附加光阴影", Range(0, 1)) = 1
         [Enum(Main, 1, Full, 2)] _HoRPShadowMode ("HoRP阴影模式", Float) = 1
         [lilToggle]     _UseRealtimeAO              ("Realtime AO", Int) = 1
                         _AOLevel                     ("AO Level", Range(-1, 1)) = 0
@@ -70,8 +67,6 @@
                         _PlanarReflectionTint       ("颜色", Color) = (1,1,1,1)
         [lilToggle]     _PlanarReflectionFlipY      ("垂直翻转", Int) = 0
         [HideInInspector][NoScaleOffset] _LILPBRPlanarReflectionTexture ("平面反射纹理", 2D) = "black" {}
-                        _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10
-                        _lilDirectionalLightStrength ("sDirectionalLightStrength", Range(0,1)) = 1
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)
                         _AAStrength                 ("sAAShading", Range(0, 1)) = 1
         [lilToggle]     _UseDither                  ("sDither", Int) = 0

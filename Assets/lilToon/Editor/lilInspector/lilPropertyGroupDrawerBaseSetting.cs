@@ -398,27 +398,14 @@ namespace lilToon
                     LocalizedProperty(lightMaxLimit);
                     LocalizedProperty(monochromeLighting);
                     if(shadowEnvStrength != null) LocalizedProperty(shadowEnvStrength);
-                    var button = lilEditorGUI.Buttons(GetLoc("sLightingPreset"), GetLoc("sLightingPresetDefault"), GetLoc("sLightingPresetSemiMonochrome"));
-                    if(button[0]) ApplyLightingPreset(LightingPreset.Default);
-                    if(button[1]) ApplyLightingPreset(LightingPreset.SemiMonochrome);
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.LabelField(GetLoc("sAdvanced"));
                 EditorGUILayout.BeginVertical(customBox);
-                    LocalizedProperty(asUnlit);
-                    if(asUnlit.floatValue != 0 && lilEditorGUI.AutoFixHelpBox(GetLoc("sAsUnlitWarn")))
-                    {
-                        asUnlit.floatValue = 0.0f;
-                    }
-                    LocalizedProperty(vertexLightStrength);
-                    if(multiLightIntensity.p != null) LocalizedProperty(multiLightIntensity, GetLoc("Multi Light Intensity"));
-                    if(multiLightCastShadowStrength.p != null) LocalizedProperty(multiLightCastShadowStrength, GetLoc("Multi Light Cast Shadow Strength"));
+                    if(hoAdditionalLightIntensity.p != null) LocalizedProperty(hoAdditionalLightIntensity, "附加光强度");
+                    if(hoAdditionalLightShadowStrength.p != null) LocalizedProperty(hoAdditionalLightShadowStrength, "附加光阴影");
                     DrawHoRPShadowMode();
                     LocalizedProperty(lightDirectionOverride);
-                    if(isTransparent) LocalizedProperty(alphaBoostFA);
-                    BlendOpFASetting();
-                    LocalizedProperty(beforeExposureLimit);
-                    LocalizedProperty(lilDirectionalLightStrength);
                 EditorGUILayout.EndVertical();
             }
         }
@@ -464,20 +451,6 @@ namespace lilToon
             }
         }
 
-        private void BlendOpFASetting()
-        {
-            if(blendOpFA == null) return;
-            int selecting = blendOpFA.floatValue == 0 ? 0 : (blendOpFA.floatValue == 4 ? 1 : 2);
-            EditorGUI.BeginChangeCheck();
-            EditorGUI.showMixedValue = blendOpFA.hasMixedValue;
-            selecting = lilEditorGUI.Popup(Event.current.alt ? blendOpFA.name : GetLoc("sLightBlending"), selecting, new string[]{GetLoc("sBlendingAdd"), GetLoc("sBlendingMax")});
-            EditorGUI.showMixedValue = false;
-
-            if(EditorGUI.EndChangeCheck())
-            {
-                blendOpFA.floatValue = selecting == 0 ? 0 : (selecting == 1 ? 4 : blendOpFA.floatValue);
-            }
-        }
     }
 }
 #endif

@@ -72,72 +72,32 @@ public sealed class HoLightingControlsAudit
     }
 
     [Test]
-    public void UnlitMakesTheBaseLightWhite()
-    {
-        material.SetVector("_AuditLightColor", new Vector4(.1f, .2f, .3f, 1));
-        material.SetFloat("_AsUnlit", 1);
-        Expect(Read(), 1, 1, 1);
-    }
-
-    [Test]
-    public void HDRBoostBypassesMaximum()
+    public void AdditionalLightIntensityControlsDirectColor()
     {
         material.SetFloat("_AuditOperation", 1);
-        material.SetVector("_AuditLightColor", Vector4.one);
-        material.SetVector("_AuditExtraColor", new Vector4(2, 0, 0, 1));
-        material.SetFloat("_LightMaxLimit", 1);
-        Expect(Read(), 3, 1, 1);
+        material.SetVector("_AuditExtraColor", new Vector4(.1f, .2f, .3f, 1));
+        material.SetFloat("_HoAdditionalLightIntensity", 2);
+        Expect(Read(), .2f, .4f, .6f);
     }
 
-    [Test]
-    public void HDRBoostBypassesMonochrome()
+    [TestCase(1f, .5f, .25f, .125f)]
+    [TestCase(.25f, .125f, .0625f, .03125f)]
+    public void AdditionalLightUsesNativeVisibilityExactlyOnce(float visibility, float r, float g, float b)
     {
         material.SetFloat("_AuditOperation", 1);
-        material.SetVector("_AuditLightColor", new Vector4(.9f, .3f, 0, 1));
-        material.SetVector("_AuditExtraColor", new Vector4(1, 0, 0, 1));
-        material.SetFloat("_MonochromeLighting", 1);
-        Expect(Read(), 1.4f, .4f, .4f);
-    }
-
-    [Test]
-    public void HDRBoostBypassesUnlit()
-    {
-        material.SetFloat("_AuditOperation", 1);
-        material.SetVector("_AuditExtraColor", new Vector4(1, 0, 0, 1));
-        material.SetFloat("_AsUnlit", 1);
-        Expect(Read(), 2, 1, 1);
-    }
-
-    [Test]
-    public void AdditionalCastStrengthDoesNotControlTheCastMultiplier()
-    {
-        material.SetFloat("_AuditOperation", 1);
-        material.SetVector("_AuditLightColor", new Vector4(.2f, .2f, .2f, 1));
-        material.SetVector("_AuditExtraColor", new Vector4(1, 0, 0, 1));
-        material.SetFloat("_AuditCast", .25f);
-        material.SetFloat("_MultiLightCastShadowStrength", 0);
-        Expect(Read(), .45f, .2f, .2f);
-        material.SetFloat("_MultiLightCastShadowStrength", 1);
-        Expect(Read(), .45f, .2f, .2f);
-    }
-
-    [Test]
-    public void ZeroHDRStrengthStillHasTheBaseAdditionalLight()
-    {
-        material.SetFloat("_AuditOperation", 1);
-        material.SetFloat("_AuditIncludeBaseAdditional", 1);
-        material.SetFloat("_MultiLightIntensity", 0);
         material.SetVector("_AuditExtraColor", new Vector4(.5f, .25f, .125f, 1));
+        material.SetFloat("_AuditCast", visibility);
+        Expect(Read(), r, g, b);
+    }
+
+    [Test]
+    public void AdditionalLightNoLongerUsesTheRemovedGlobalHdrPool()
+    {
+        material.SetFloat("_AuditOperation", 1);
+        material.SetVector("_AuditExtraColor", new Vector4(.5f, .25f, .125f, 1));
+        material.SetFloat("_HoAdditionalLightIntensity", 1);
+        material.SetFloat("_HoAdditionalLightShadowStrength", 1);
         Expect(Read(), .5f, .25f, .125f);
-    }
-
-    [Test]
-    public void AdditionalLightCanContributeThroughBothRoutes()
-    {
-        material.SetFloat("_AuditOperation", 1);
-        material.SetFloat("_AuditIncludeBaseAdditional", 1);
-        material.SetVector("_AuditExtraColor", new Vector4(.5f, .25f, .125f, 1));
-        Expect(Read(), 1, .5f, .25f);
     }
 
     [TestCase(0, 0)]
