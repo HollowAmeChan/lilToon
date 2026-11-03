@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Outline
-#if defined(LIL_OUTLINE) || defined(LIL_ONEPASS_OUTLINE)
+#if defined(LIL_OUTLINE)
 {
     float4 lilOutlineCorrectionColor = input.color;
     uint lilOutlineCorrectionSource = _OutlineVertexR2Width;

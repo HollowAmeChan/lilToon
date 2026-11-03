@@ -51,14 +51,6 @@ struct v2f
     LIL_VERTEX_OUTPUT_STEREO
 };
 
-#if defined(LIL_ONEPASS_OUTLINE)
-    struct v2g
-    {
-        v2f base;
-        float4 positionCSOL : TEXCOORD5;
-    };
-#endif
-
 //------------------------------------------------------------------------------------------------------------------------------
 // Shader
 #include "lil_common_vert.hlsl"

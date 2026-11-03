@@ -139,10 +139,12 @@
 - 材质使用率只按 `D:/Unity_Project/BREAK_URP` 统计；隔壁项目不纳入判断。
 - 旧材质无需迁移、修复或额外标注，保留缺失 Shader 的状态即可。本轮没有改写 BREAK_URP 的 `.mat`。
 - 用户确认保留 Opaque、Cutout、Transparent、TwoPass Transparent 和常规 Outline 路径；已授权删除 Multi、OnePass、Overlay、OutlineOnly、Refraction、Hair、Fur、FakeShadow 等家族。
+- OnePass 透明模式的旧序列化值不再路由到普通 Transparent；枚举值 `1` 仍作为 `ReservedOnePass` 占位以保持编号。删除了未使用的 OnePass 本地化文案，以及无定义/无消费者的 HDRP `LIL_ONEPASS_OUTLINE` geometry-shader 分支；`LIL_OUTLINE` 常规描边分支保留。
 - Overlay 与 OverlayOnePass 的生成模板、专用 OIT/UsePass 模板、编辑器查找/转换/Inspector 特判及本地化已移除；两个生成 Shader 和 sidecar meta 也已删除。普通 Transparent/OIT 与常规 Outline 模板保留。
 - BREAK_URP 中 Overlay 两个 Shader GUID 在材质、Prefab、Scene、Asset 文本扫描中均无引用。Unity 6000.3.15f1 批处理成功退出，Editor 脚本编译 0 错误；本地 `CurrentRP.txt` 保持 `URP / Direct3D11`。此时 `Assets/lilToon/Shader` 有 18 个 Shader、201 个 HLSLPROGRAM。
 - OutlineOnly 的三个生成入口、专用 Pass、编辑器 Shader 查找/转换/类型识别及生成 `.shader` 已删除。普通 Outline、OutlineOIT、OutlineTwoSide 和 OutlineTwoSideOIT 模板中的四个 `HoGeometryBufferOutlineNormalDepth` Pass 保留；共享 `lil_pass_outline_normal_depth.hlsl` 未删除。
 - BREAK_URP 中 OutlineOnly 三个 Shader GUID 在材质、Prefab、Scene、Asset 文本扫描中均无引用。Unity 6000.3.15f1 批处理成功退出，Editor 脚本编译 0 错误；本地 `CurrentRP.txt` 保持 `URP / Direct3D11`。此时 `Assets/lilToon/Shader` 有 15 个 Shader、195 个 HLSLPROGRAM，附近无 `.mat` 写入。
+- OnePass HLSL 清理后，Unity 6000.3.15f1 再次完成 BREAK_URP 导入/Shader 编译并退出，日志无 C# 或 Shader 编译错误；HLSL 预处理指令配平通过，`CurrentRP.txt` 未改变，附近无 `.mat` 写入。
 
 ## 后续专项计时（2026-10-05）
 

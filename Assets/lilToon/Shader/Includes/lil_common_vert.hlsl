@@ -11,15 +11,9 @@
     #undef LIL_V2F_TYPE
 #endif
 
-#if defined(LIL_ONEPASS_OUTLINE)
-    #define LIL_V2F_OUT_BASE output.base
-    #define LIL_V2F_OUT output
-    #define LIL_V2F_TYPE v2g
-#else
-    #define LIL_V2F_OUT_BASE output
-    #define LIL_V2F_OUT output
-    #define LIL_V2F_TYPE v2f
-#endif
+#define LIL_V2F_OUT_BASE output
+#define LIL_V2F_OUT output
+#define LIL_V2F_TYPE v2f
 
 #if !defined(LIL_CUSTOM_VERT_COPY)
     #define LIL_CUSTOM_VERT_COPY
@@ -57,12 +51,6 @@ LIL_V2F_TYPE vert(appdata input)
 
     LIL_V2F_TYPE LIL_V2F_OUT;
     LIL_INITIALIZE_STRUCT(v2f, LIL_V2F_OUT_BASE);
-    #if defined(LIL_ONEPASS_OUTLINE)
-        LIL_V2F_OUT.positionCSOL = 0.0;
-        #if defined(LIL_PASS_MOTIONVECTOR_INCLUDED)
-            LIL_V2F_OUT.previousPositionCSOL = 0.0;
-        #endif
-    #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Invisible
@@ -112,9 +100,7 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Vertex Modification
-    #if !defined(LIL_ONEPASS_OUTLINE)
-        #include "lil_vert_outline.hlsl"
-    #endif
+    #include "lil_vert_outline.hlsl"
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Previous Position (for HDRP)
@@ -144,15 +130,6 @@ LIL_V2F_TYPE vert(appdata input)
         lilCustomVertexWS(input, uvMain, previousVertexInput, previousVertexNormalInput);
         LIL_V2F_OUT_BASE.previousPositionCS = mul(LIL_MATRIX_PREV_VP, float4(previousVertexInput.positionWS, 1.0));
 
-        #if defined(LIL_ONEPASS_OUTLINE)
-            #define LIL_MODIFY_PREVPOS
-            #include "lil_vert_outline.hlsl"
-            #undef LIL_MODIFY_PREVPOS
-            LIL_VERTEX_POSITION_INPUTS(input.previousPositionOS, previousOLVertexInput);
-            previousOLVertexInput.positionWS = lilTransformPreviousObjectToWorld(input.previousPositionOS.xyz);
-            lilCustomVertexWS(input, uvMain, previousOLVertexInput, previousVertexNormalInput);
-            LIL_V2F_OUT.previousPositionCSOL = mul(LIL_MATRIX_PREV_VP, float4(previousOLVertexInput.positionWS, 1.0));
-        #endif
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
@@ -295,46 +272,6 @@ LIL_V2F_TYPE vert(appdata input)
     #endif
 
     //------------------------------------------------------------------------------------------------------------------------------
-    // One Pass Outline (for HDRP)
-    #if defined(LIL_ONEPASS_OUTLINE)
-        #include "lil_vert_outline.hlsl"
-        vertexInput = lilGetVertexPositionInputs(input.positionOS);
-        lilCustomVertexWS(input, uvMain, vertexInput, vertexNormalInput);
-        #if defined(LIL_CUSTOM_VERTEX_WS)
-            LIL_RE_VERTEX_POSITION_INPUTS(vertexInput);
-        #endif
-        LIL_V2F_OUT.positionCSOL = vertexInput.positionCS;
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Clipping Canceller
-        #if defined(LIL_FEATURE_CLIPPING_CANCELLER) && !defined(LIL_PASS_SHADOWCASTER_INCLUDED) && !defined(LIL_PASS_META_INCLUDED)
-            #if defined(UNITY_REVERSED_Z)
-                // DirectX
-                if(LIL_V2F_OUT.positionCSOL.w < _ProjectionParams.y * 1.01 && LIL_V2F_OUT.positionCSOL.w > 0 && _ProjectionParams.y < LIL_NEARCLIP_THRESHOLD && !LIL_IS_MIRROR)
-                {
-                    LIL_V2F_OUT.positionCSOL.z = LIL_V2F_OUT.positionCSOL.z * 0.0001 + LIL_V2F_OUT.positionCSOL.w * 0.999;
-                }
-            #else
-                // OpenGL
-                if(LIL_V2F_OUT.positionCSOL.w < _ProjectionParams.y * 1.01 && LIL_V2F_OUT.positionCSOL.w > 0 && _ProjectionParams.y < LIL_NEARCLIP_THRESHOLD && !LIL_IS_MIRROR)
-                {
-                    LIL_V2F_OUT.positionCSOL.z = LIL_V2F_OUT.positionCSOL.z * 0.0001 - LIL_V2F_OUT.positionCSOL.w * 0.999;
-                }
-            #endif
-        #endif
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Offset z for Less ZTest
-        #if defined(UNITY_REVERSED_Z)
-            // DirectX
-            LIL_V2F_OUT.positionCSOL.z -= 0.0001;
-        #else
-            // OpenGL
-            LIL_V2F_OUT.positionCSOL.z += 0.0001;
-        #endif
-    #endif
-
-    //------------------------------------------------------------------------------------------------------------------------------
     // Offset z for Less ZTest
     #if defined(SHADERPASS) && SHADERPASS == SHADERPASS_DEPTH_ONLY && defined(LIL_OUTLINE)
         #if defined(UNITY_REVERSED_Z)
@@ -348,10 +285,7 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Remove Outline
-    #if defined(LIL_ONEPASS_OUTLINE) && defined(LIL_PASS_FORWARD_INCLUDED)
-        float width = lilGetOutlineWidth(uvMain, input.color, _OutlineWidth, _OutlineWidthMask, _OutlineVertexR2Width LIL_SAMP_IN(lil_sampler_linear_repeat));
-        if(width > -0.000001 && width < 0.000001 && _OutlineDeleteMesh) LIL_V2F_OUT.positionCSOL = 0.0/0.0;
-    #elif defined(LIL_OUTLINE) && defined(LIL_PASS_FORWARD_INCLUDED)
+    #if defined(LIL_OUTLINE) && defined(LIL_PASS_FORWARD_INCLUDED)
         float width = lilGetOutlineWidth(uvMain, input.color, _OutlineWidth, _OutlineWidthMask, _OutlineVertexR2Width LIL_SAMP_IN(lil_sampler_linear_repeat));
         if(width > -0.000001 && width < 0.000001 && _OutlineDeleteMesh) LIL_V2F_OUT_BASE.positionCS = 0.0/0.0;
     #endif
@@ -368,79 +302,6 @@ LIL_V2F_TYPE vert(appdata input)
 
     return LIL_V2F_OUT;
 }
-
-//------------------------------------------------------------------------------------------------------------------------------
-// Geometry shader (for HDRP)
-#if defined(LIL_ONEPASS_OUTLINE)
-    [maxvertexcount(12)]
-    void geom(triangle v2g input[3], inout TriangleStream<v2f> outStream)
-    {
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Invisible
-        if(_Invisible) return;
-
-        v2f output[3];
-        LIL_INITIALIZE_STRUCT(v2f, output[0]);
-        LIL_INITIALIZE_STRUCT(v2f, output[1]);
-        LIL_INITIALIZE_STRUCT(v2f, output[2]);
-
-        LIL_SETUP_INSTANCE_ID(input[0].base);
-        LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input[0].base);
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Copy
-        for(uint i = 0; i < 3; i++)
-        {
-            output[i] = input[i].base;
-        }
-
-        // Front
-        if(_Cull != 1)
-        {
-            outStream.Append(output[0]);
-            outStream.Append(output[1]);
-            outStream.Append(output[2]);
-            outStream.RestartStrip();
-        }
-
-        // Back
-        if(_Cull != 2)
-        {
-            outStream.Append(output[2]);
-            outStream.Append(output[1]);
-            outStream.Append(output[0]);
-            outStream.RestartStrip();
-        }
-
-        //------------------------------------------------------------------------------------------------------------------------------
-        // Outline
-        for(uint j = 0; j < 3; j++)
-        {
-            output[j].positionCS = input[j].positionCSOL;
-            #if defined(LIL_PASS_MOTIONVECTOR_INCLUDED)
-                output[j].previousPositionCS = input[j].previousPositionCSOL;
-            #endif
-        }
-
-        // Front
-        if(_OutlineCull != 1)
-        {
-            outStream.Append(output[0]);
-            outStream.Append(output[1]);
-            outStream.Append(output[2]);
-            outStream.RestartStrip();
-        }
-
-        // Back
-        if(_OutlineCull != 2)
-        {
-            outStream.Append(output[2]);
-            outStream.Append(output[1]);
-            outStream.Append(output[0]);
-            outStream.RestartStrip();
-        }
-    }
-#endif
 
 #undef LIL_V2F_OUT_BASE
 #undef LIL_V2F_OUT

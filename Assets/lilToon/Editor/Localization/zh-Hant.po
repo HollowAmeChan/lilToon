@@ -347,9 +347,6 @@ msgstr "透明模式"
 msgid "sTransparentModeNormal"
 msgstr "Normal"
 
-msgid "sTransparentModeOnePass"
-msgstr "One Pass"
-
 msgid "sTransparentModeTwoPass"
 msgstr "Two Pass"
 
@@ -514,9 +511,6 @@ msgstr "折射和寶石使用 GrabPass，因此在移動端 GPU 中可能對性�
 
 msgid "sHelpGeometryShader"
 msgstr "由於幾何體著色器在 iOS 或 Mac 上不起作用，因此建議將其更改為其他渲染模式。"
-
-msgid "sHelpOnePassVertexLight"
-msgstr "使用 One Pass Transparent 時推薦將頂點燈強度設定為 1.0。"
 
 msgid "sHelpCullMode"
 msgstr "如果材質看起來不正確，請將剔除模式設定為 Off 或 Back。"

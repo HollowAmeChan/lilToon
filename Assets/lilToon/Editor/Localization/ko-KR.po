@@ -347,9 +347,6 @@ msgstr "투명 모드"
 msgid "sTransparentModeNormal"
 msgstr "Normal"
 
-msgid "sTransparentModeOnePass"
-msgstr "One Pass"
-
 msgid "sTransparentModeTwoPass"
 msgstr "Two Pass"
 
@@ -514,9 +511,6 @@ msgstr "굴절·보석은 GrabPass를 사용하기 때문에 모바일 GPU에서
 
 msgid "sHelpGeometryShader"
 msgstr "지오메트리셰이더는 iOS나 Mac에서 작동하지 않으므로 타 렌더링 모드로 변경하는 것이 좋습니다."
-
-msgid "sHelpOnePassVertexLight"
-msgstr "One Pass Transparent 사용 시에는 Vertex Light Strength를 1.0으로 설정할 것을 권장합니다."
 
 msgid "sHelpCullMode"
 msgstr "표시가 이상한 경우는 CullMode을 Off 또는 Back합니다"

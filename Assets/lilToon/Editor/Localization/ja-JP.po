@@ -347,9 +347,6 @@ msgstr "透過モード"
 msgid "sTransparentModeNormal"
 msgstr "通常"
 
-msgid "sTransparentModeOnePass"
-msgstr "1パス"
-
 msgid "sTransparentModeTwoPass"
 msgstr "2パス"
 
@@ -514,9 +511,6 @@ msgstr "屈折・宝石はGrabPassを利用するため、モバイル環境に�
 
 msgid "sHelpGeometryShader"
 msgstr "ジオメトリシェーダーはiOSやMacで動作しないため、他レンダリングモードに置き換えることを推奨します。"
-
-msgid "sHelpOnePassVertexLight"
-msgstr "1パス使用時は頂点ライトの強度を1.0にしておくことをオススメします。"
 
 msgid "sHelpCullMode"
 msgstr "表示がおかしい場合はCullModeをOffもしくはBackにしてください"

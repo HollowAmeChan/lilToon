@@ -54,7 +54,7 @@
     #define LIL_APP_TEXCOORD7
 #endif
 
-#if defined(LIL_REQUIRE_APP_COLOR) || defined(LIL_OUTLINE) || defined(LIL_ONEPASS_OUTLINE)
+#if defined(LIL_REQUIRE_APP_COLOR) || defined(LIL_OUTLINE)
     #define LIL_APP_COLOR
 #endif
 

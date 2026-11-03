@@ -46,7 +46,6 @@ namespace lilToon
                     switch (transparentMode)
                     {
                         case TransparentMode.Normal:
-                        case TransparentMode.ReservedOnePass:
                             {
                                 if(isoutl)  material.shader = lilShaderManager.ltsto;
                                 else        material.shader = lilShaderManager.ltst;

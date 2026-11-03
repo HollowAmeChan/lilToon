@@ -347,9 +347,6 @@ msgstr "透明模式"
 msgid "sTransparentModeNormal"
 msgstr "普通"
 
-msgid "sTransparentModeOnePass"
-msgstr "One Pass"
-
 msgid "sTransparentModeTwoPass"
 msgstr "Two Pass"
 
@@ -514,9 +511,6 @@ msgstr "反射和宝石使用 GrabPass，因此可能对移动端 GPU 产生很�
 
 msgid "sHelpGeometryShader"
 msgstr "由于几何体着色器在 iOS 或 Mac 上不起作用，因此建议将其更改为其他渲染模式。"
-
-msgid "sHelpOnePassVertexLight"
-msgstr "透明模式使用 One Pass 时，建议将顶点灯强度设定为 1.0。"
 
 msgid "sHelpCullMode"
 msgstr "如果材质看起来不正确，请将 CullMode 设置为 Off 或 Back。"

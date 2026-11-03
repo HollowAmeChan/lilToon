@@ -347,9 +347,6 @@ msgstr "Transparent Mode"
 msgid "sTransparentModeNormal"
 msgstr "Normal"
 
-msgid "sTransparentModeOnePass"
-msgstr "One Pass"
-
 msgid "sTransparentModeTwoPass"
 msgstr "Two Pass"
 
@@ -514,9 +511,6 @@ msgstr "Reflection and gem use GrabPass, which can have a significant impact on 
 
 msgid "sHelpGeometryShader"
 msgstr "Geometry shaders do not work on iOS or Mac, so it is recommended to change to another rendering mode."
-
-msgid "sHelpOnePassVertexLight"
-msgstr "When using One Pass Transparent, it is recommended to set Vertex Light Strength to 1.0."
 
 msgid "sHelpCullMode"
 msgstr "If the material does not look right, set the CullMode to Off or Back."
