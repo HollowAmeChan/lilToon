@@ -141,15 +141,26 @@ public sealed class HoLightingControlsAudit
     }
 
     [TestCase(0, 0)]
-    [TestCase(30, .5176381f)]
-    [TestCase(60, 1)]
-    public void DirectionDeviationRelaxesCast(int degrees, float expected)
+    [TestCase(30, 0)]
+    [TestCase(60, 0)]
+    public void DirectionDeviationDoesNotChangeCastVisibility(int degrees, float expected)
     {
         material.SetFloat("_AuditOperation", 2);
         material.SetFloat("_AuditCast", 0);
         float angle = degrees * Mathf.Deg2Rad;
         material.SetVector("_AuditDirection", new Vector4(Mathf.Sin(angle), Mathf.Cos(angle), 0, 0));
         Expect(Read(), expected, expected, expected);
+    }
+
+    [TestCase(.35f)]
+    [TestCase(.75f)]
+    public void DirectionDeviationPreservesPartialCastVisibility(float providerVisibility)
+    {
+        material.SetFloat("_AuditOperation", 2);
+        material.SetFloat("_AuditCast", providerVisibility);
+        float angle = 60 * Mathf.Deg2Rad;
+        material.SetVector("_AuditDirection", new Vector4(Mathf.Sin(angle), Mathf.Cos(angle), 0, 0));
+        Expect(Read(), providerVisibility, providerVisibility, providerVisibility);
     }
 
     [TestCase(0, 0, 1)]

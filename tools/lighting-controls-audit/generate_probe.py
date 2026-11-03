@@ -42,8 +42,22 @@ def continued_define(source, name):
 
 strengths = re.findall(r"^\s*#define LIL_ADDITIONAL_LIGHT_STRENGTH\s+(.+)$", macro, re.M)
 assert strengths and all(x.strip() == "1" for x in strengths), strengths
-cast = re.search(r"float calculatedShadow = saturate\(fd\.attenuation \+ distance\(fd\.L, fd\.origL\)\);", fragment)
-assert cast
+cast = re.search(r"float calculatedShadow = saturate\(fd\.attenuation\);", fragment)
+assert cast, "Toon Cast receiver must use provider visibility directly."
+backlight = re.search(
+    r"#if\s+defined\(LIL_USE_SHADOW\)\s*\|\|\s*defined\(LIL_LIGHTMODE_SHADOWMASK\)"
+    r"\s*\|\|\s*defined\(LIL_USE_HO_CAST\)\s*"
+    r"if\(_BacklightReceiveShadow\) backlightLN \*= saturate\(fd\.attenuation\);",
+    fragment,
+)
+sss = re.search(
+    r"#if\s+defined\(LIL_USE_SHADOW\)\s*\|\|\s*defined\(LIL_LIGHTMODE_SHADOWMASK\)"
+    r"\s*\|\|\s*defined\(LIL_USE_HO_CAST\)\s*"
+    r"if\(_SSSReceiveShadow\) sss \*= saturate\(fd\.attenuation\);",
+    fragment,
+)
+assert backlight, "Backlight must consume Ho-only Cast without direction compensation."
+assert sss, "SSS must consume Ho-only Cast without direction compensation."
 captured = "\n".join([
     function(functions, "float lilGray(float3 rgb)"),
     function(functions, "float3 lilGetCustomLightDirection(float4 lightDirectionOverride)"),
@@ -146,6 +160,12 @@ manifest = {
     "sources": {str(root / name): hashlib.sha256((root / name).read_bytes()).hexdigest()
                 for name in ("lil_common_macro.hlsl", "lil_common_functions.hlsl", "lil_common_frag.hlsl")},
     "additional_strength_definitions": strengths,
+    "cast_receiver_contract": {
+        "toon_ramp": "direct provider visibility",
+        "backlight": "direct provider visibility; includes Ho-only cast",
+        "sss": "direct provider visibility; includes Ho-only cast",
+        "artistic_direction_affects_cast": False,
+    },
 }
 (output / "kernel-sources.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 print(json.dumps(manifest, indent=2))
