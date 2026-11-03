@@ -65,9 +65,6 @@ namespace lilToon
             else if(shader == ltsco)         { ReplaceToCustomShaders(); shader = ltsco     ;}
             else if(shader == ltsto)         { ReplaceToCustomShaders(); shader = ltsto     ;}
             else if(shader == ltstto)        { ReplaceToCustomShaders(); shader = ltstto    ;}
-            else if(shader == ltsoo)         { ReplaceToCustomShaders(); shader = ltsoo     ;}
-            else if(shader == ltscoo)        { ReplaceToCustomShaders(); shader = ltscoo    ;}
-            else if(shader == ltstoo)        { ReplaceToCustomShaders(); shader = ltstoo    ;}
             if(material.shader != shader && shader != null)
             {
                 int renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);

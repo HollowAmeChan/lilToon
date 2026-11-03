@@ -29,16 +29,6 @@ namespace lilToon
                 return true;
             }
 
-            // For following custom shader names.
-            // - *LIL_SHADER_NAME*/[Optional] OutlineOnly/Opaque
-            // - *LIL_SHADER_NAME*/[Optional] OutlineOnly/Cutout
-            // - *LIL_SHADER_NAME*/[Optional] OutlineOnly/Transparent
-            var partIndex = shaderName.LastIndexOf("/[Optional] OutlineOnly/");
-            if (partIndex != -1 && partIndex + 23 == separatorIndex)
-            {
-                return true;
-            }
-
             return false;
         }
 
