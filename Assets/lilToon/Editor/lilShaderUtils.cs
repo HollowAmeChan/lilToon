@@ -16,11 +16,6 @@ namespace lilToon
             return ContainsAfterLastSeparator(shaderName, "Transparent");
         }
 
-        public static bool IsOverlayShaderName(string shaderName)
-        {
-            return ContainsAfterLastSeparator(shaderName, "Overlay");
-        }
-
         public static bool IsOutlineShaderName(string shaderName)
         {
             var separatorIndex = shaderName.LastIndexOf('/');

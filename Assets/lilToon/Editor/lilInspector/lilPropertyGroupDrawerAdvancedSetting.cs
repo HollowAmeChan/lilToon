@@ -18,7 +18,7 @@ namespace lilToon
         private void DrawOutlineSettings(Material material)
         {
             if(!ShouldDrawBlock(PropertyBlock.Outline)) return;
-            if(isMultiVariants || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants) return;
             edSet.isShowOutline = lilEditorGUI.Foldout(GetLoc("sOutlineSetting"), edSet.isShowOutline);
             DrawMenuButton(GetLoc("sAnchorOutline"), PropertyBlock.Outline);
             if(edSet.isShowOutline)

@@ -23,9 +23,6 @@ msgstr "프리셋"
 msgid "sEditorModeShaderSetting"
 msgstr "쉐이더 설정"
 
-msgid "sHelpSelectOverlay"
-msgstr "현재 lilToonOverray가 선택되어있습니다.일반 용도에서는 lilToon으로 변경해주세요."
-
 msgid "sColor"
 msgstr "색"
 
@@ -364,9 +361,6 @@ msgstr "Normal"
 
 msgid "sColorTypeLUT"
 msgstr "LUT"
-
-msgid "sAsOverlay"
-msgstr "As Overlay"
 
 msgid "sCutoff"
 msgstr "Cutoff"

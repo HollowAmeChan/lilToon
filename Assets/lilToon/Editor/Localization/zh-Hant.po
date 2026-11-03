@@ -23,9 +23,6 @@ msgstr "預設"
 msgid "sEditorModeShaderSetting"
 msgstr "著色器設定"
 
-msgid "sHelpSelectOverlay"
-msgstr "目前選擇的是 lilToonOverray。若為一般用途，請改用 lilToon。"
-
 msgid "Mode"
 msgstr "模式"
 
@@ -364,9 +361,6 @@ msgstr "Normal"
 
 msgid "sColorTypeLUT"
 msgstr "LUT"
-
-msgid "sAsOverlay"
-msgstr "As Overlay"
 
 msgid "sCutoff"
 msgstr "Cutoff"

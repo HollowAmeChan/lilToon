@@ -288,7 +288,7 @@ namespace lilToon
 
         private void DrawNextOutline(Material material)
         {
-            if(isMultiVariants || material == null || lilShaderUtils.IsOverlayShaderName(material.shader.name)) return;
+            if(isMultiVariants || material == null) return;
             if(isShowRenderMode && material.parent == null && !isMultiVariants)
             {
                 bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);

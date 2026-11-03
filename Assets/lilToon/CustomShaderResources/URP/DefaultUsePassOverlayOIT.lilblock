@@ -1,9 +1,0 @@
-    SubShader
-    {
-        Tags {*LIL_SUBSHADER_TAGS* "RenderPipeline" = "UniversalPipeline"}
-        *LIL_INSERT_USEPASS_PRE*
-        UsePass "*LIL_PASS_SHADER_NAME*/FORWARD"
-        UsePass "*LIL_PASS_SHADER_NAME*/LILTOON_OIT"
-        *LIL_INSERT_USEPASS_POST*
-    }
-    Fallback "Universal Render Pipeline/Unlit"

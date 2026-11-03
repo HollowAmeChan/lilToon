@@ -23,9 +23,6 @@ msgstr "Preset"
 msgid "sEditorModeShaderSetting"
 msgstr "Shader Setting"
 
-msgid "sHelpSelectOverlay"
-msgstr "Currently lilToonOverray is selected. Change to lilToon for normal use."
-
 msgid "Mode"
 msgstr "Mode"
 
@@ -364,9 +361,6 @@ msgstr "Normal"
 
 msgid "sColorTypeLUT"
 msgstr "LUT"
-
-msgid "sAsOverlay"
-msgstr "As Overlay"
 
 msgid "sCutoff"
 msgstr "Cutoff"

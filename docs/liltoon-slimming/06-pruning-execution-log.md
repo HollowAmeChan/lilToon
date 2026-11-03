@@ -4,7 +4,7 @@
 
 - 用户已授权目标模式执行，每一步验证后单独提交。只提交本任务的文件，不混入 Extensions 当前未提交的 GeometryData / 张力工作。
 - 保留现役效果、动画、GD、OB/SB/GB、CharacterCapture、OIT、APV 和平面反射；不新增性能分层，不强制材质烘焙转换。
-- 2026-10-05 用户最终决定“fur就暂时不删了”：旧 Fur 全族和 Alue/TAIL 资产保留，Fur 退出从本轮执行范围撤回，不能按早期四族目标自动继续删除。
+- 2026-10-05 曾决定暂时保留 Fur；该决定于 2026-11-03 被用户后续授权撤销，见本文末尾当前范围更新。
 - 五小时额度在 2026-10-05 北京时间 12:37:05 重置，本聊天 12:40 续作自动化 ID 为 `liltoon`。额度不足时留检查点，重置后续作，不使用重置券。
 - Unity 实际验证使用已有的独立项目 `D:/Unity_Fork/lilToon-URP-Extensions/.codex-research/CharacterShadowValidation`；不关闭或操作用户正在打开的 BREAK_URP。
 
@@ -113,19 +113,19 @@
 - Roslyn 编译 0 错误，原有两条警告不变。独立 Unity `PruningValidation.RunToolRemoval` 验证旧页状态在两种 UI 正确回退、TextureControl 正常选择/回退、Preset/Settings 编号不变、共享烘焙及编译优化器仍存在，全部 PASS，进程退出码 0。日志：Extensions `.codex-research/pruning-manual-tools.log`。
 - 源引用审计确认优化页/旧烘焙/0–3 烘焙 UI 调用归零；不改 HLSL，也未修改项目材质。程序块数量仍为 367，不把这次工具删减宣称为 GPU Shader 编译加速。
 
-## 本轮结果与未完成项
+## 此前阶段结果与未完成项（截至 2026-10-05）
 
 - 已逐步提交调查、缓存、增量生成、Liquid、Gem、手动转换、Lite、无用 Pass 和 GD 关键字范围。当前本地产物 **54 → 36 个 Shader，701 → 367 个程序块**，少 334 个程序块（约 47.6%），不是实测时间缩减比例。
 - lilToon 工作区提交后应无本任务未提交代码；Extensions 的张力工作和 UnityGLTF 的 .vscode 属于其他工作，始终未 stage。
-- 用户已确认暂时保留 Fur；TAIL 的真实 FBX 引用、旧 Shader 和视觉效果均未改动。lilPBR/WaterFlowmap 的整体删除按用户后续退役安排，不再为它们局部改实现。
+- 当时按暂缓决定保留 Fur/TAIL；该范围已被 2026-11-03 的用户决定取代。lilPBR/WaterFlowmap 的整体删除仍按其独立退役安排处理。
 - 缓存、生成 no-op、实际 Forward+ Pass/变体、枚举映射和 Renderer 副本加载均已验证。用户正在打开的工程 GUI 延迟、完整场景效果和全量 Player 构建仍未做实测，不以静态结构数据代替它们。
 
-## Fur 保留决定
+## Fur 暂缓决定（历史，已于 2026-11-03 撤销）
 
-- Fur 的 TAIL.mat（GUID 13bab63c4242ce74ebcc71bc5a5c035b）仍被 Alue.fbx.meta 的 Tail external material 映射引用。不能照搬 Liquid/Gem 的无引用归档操作。
-- 用户已回复暂时不删 Fur，本轮不迁移或归档 Alue/TAIL，也不创建 Fur 删除工作树。七个 Fur 基础模板、Shader 查询和 Fur/FurOnly 导入路由均保留。
+- 2026-10-05 因 Fur 的 TAIL.mat 被 Alue.fbx.meta 引用，决定暂不删除或归档。
+- 2026-11-03 用户明确授权直接删除 Fur，并说明无需迁移、修复或标记旧材质/引用；旧链接可以保持失效。lilToon 内 Fur 家族已在 `2ede8bf` 删除。
 
-## 最终验收与后续边界
+## 历史阶段验收与后续边界（截至 2026-10-05）
 
 1. 当前源与本地产物核对：36 个 Shader / 367 个 HLSLPROGRAM；Gem/Liquid/Lite 入口不复生，Fur 七个入口仍存在。无用 GBuffer/Universal2D 的实际模板/实现已退出，历史注释不算功能残留。
 2. GUI 缓存、生成 no-op、真实 Forward+ 的 58 个默认 Pass 和 GD 消费变体、模式编号、手动工具状态回退、MPB 显式扫描均有上述实际验证记录；Shader 改动后已经完成相应同步编译，后两步只改 Editor。保留的外观/动画与 Buffer/Capture/OIT/APV/平面反射路径没有作为减速项关闭。
@@ -133,6 +133,15 @@
 4. 本轮按用户最终范围完成。Fur 与 lilPBR/WaterFlowmap 的整包退役均属后续安排；完整场景视觉、GUI 实际耗时及全量 Player 构建未做实测，不声称五分钟等待已缩短到某个数值。
 
 家族删除必须通过 C# 编译、模板/include 静态检查与 Unity 实际导入/必要 Pass 验证；无法完成的验证需明确记录，不把静态检查当成渲染验收。
+
+## 当前范围更新（2026-11-03）
+
+- 材质使用率只按 `D:/Unity_Project/BREAK_URP` 统计；隔壁项目不纳入判断。
+- 旧材质无需迁移、修复或额外标注，保留缺失 Shader 的状态即可。本轮没有改写 BREAK_URP 的 `.mat`。
+- 用户确认保留 Opaque、Cutout、Transparent、TwoPass Transparent 和常规 Outline 路径；已授权删除 Multi、OnePass、Overlay、OutlineOnly、Refraction、Hair、Fur、FakeShadow 等家族。
+- Overlay 与 OverlayOnePass 的生成模板、专用 OIT/UsePass 模板、编辑器查找/转换/Inspector 特判及本地化已移除；两个生成 Shader 和 sidecar meta 也已删除。普通 Transparent/OIT 与常规 Outline 模板保留。
+- BREAK_URP 中 Overlay 两个 Shader GUID 在材质、Prefab、Scene、Asset 文本扫描中均无引用。Unity 6000.3.15f1 批处理成功退出，Editor 脚本编译 0 错误；本地 `CurrentRP.txt` 保持 `URP / Direct3D11`。此时 `Assets/lilToon/Shader` 有 18 个 Shader、201 个 HLSLPROGRAM。
+- OutlineOnly 的三个模板仍待本轮下一阶段删除；其专用输出中的 `HoGeometryBufferOutlineNormalDepth` 必须从常规 Outline Shader 保留的同名 Pass 中区分，不能误删共享普通 Outline 路径。
 
 ## 后续专项计时（2026-10-05）
 

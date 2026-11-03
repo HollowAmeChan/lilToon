@@ -23,9 +23,6 @@ msgstr "プリセット"
 msgid "sEditorModeShaderSetting"
 msgstr "シェーダー設定"
 
-msgid "sHelpSelectOverlay"
-msgstr "現在lilToonOverrayが選択されています。通常の用途で使う場合はlilToonに変更してください。"
-
 msgid "sColor"
 msgstr "色"
 
@@ -364,9 +361,6 @@ msgstr "通常"
 
 msgid "sColorTypeLUT"
 msgstr "LUT"
-
-msgid "sAsOverlay"
-msgstr "Overlayマテリアル"
 
 msgid "sCutoff"
 msgstr "Cutoff (完全透明にする範囲)"

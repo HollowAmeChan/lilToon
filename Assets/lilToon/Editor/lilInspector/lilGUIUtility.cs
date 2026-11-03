@@ -81,14 +81,6 @@ namespace lilToon
             }
         }
 
-        private static void DrawShaderTypeWarn(Material material)
-        {
-            if(material.parent == null && !isMultiVariants && lilShaderUtils.IsOverlayShaderName(material.shader.name) && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpSelectOverlay")))
-            {
-                material.shader = lts;
-            }
-        }
-
         private static void DrawMaterialVariantInfo(Material material)
         {
             if(material.parent == null) return;
@@ -167,7 +159,7 @@ namespace lilToon
             var shaderName = material.shader.name;
 
             isCutout        = lilShaderUtils.IsCutoutShaderName(shaderName);
-            isTransparent   = lilShaderUtils.IsTransparentShaderName(shaderName) || lilShaderUtils.IsOverlayShaderName(shaderName);
+            isTransparent   = lilShaderUtils.IsTransparentShaderName(shaderName);
             isOutl          = !isMultiVariants && lilShaderUtils.IsOutlineShaderName(shaderName);
             isTwoPass       = lilShaderUtils.IsTwoPassShaderName(shaderName);
             isCustomShader  = lilShaderUtils.IsOptionalShaderName(shaderName);

@@ -28,8 +28,6 @@ namespace lilToon
         protected static Shader ltsoo       { get { return lilShaderManager.ltsoo     ; } set { lilShaderManager.ltsoo      = value; } }
         protected static Shader ltscoo      { get { return lilShaderManager.ltscoo    ; } set { lilShaderManager.ltscoo     = value; } }
         protected static Shader ltstoo      { get { return lilShaderManager.ltstoo    ; } set { lilShaderManager.ltstoo     = value; } }
-        protected static Shader ltsover     { get { return lilShaderManager.ltsover   ; } set { lilShaderManager.ltsover    = value; } }
-        protected static Shader ltsoover    { get { return lilShaderManager.ltsoover  ; } set { lilShaderManager.ltsoover   = value; } }
         protected static Shader ltsbaker    { get { return lilShaderManager.ltsbaker  ; } set { lilShaderManager.ltsbaker   = value; } }
         protected static Shader ltspo       { get { return lilShaderManager.ltspo     ; } set { lilShaderManager.ltspo      = value; } }
         protected static Shader ltspc       { get { return lilShaderManager.ltspc     ; } set { lilShaderManager.ltspc      = value; } }

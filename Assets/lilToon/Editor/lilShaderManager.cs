@@ -42,9 +42,6 @@ namespace lilToon
 
 
 
-        public static Shader ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
-        public static Shader ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");
-
         public static Shader ltsbaker    = FindShader("Hidden/ltsother_baker");
         public static Shader ltspo       = FindShader("Hidden/ltspass_opaque");
         public static Shader ltspc       = FindShader("Hidden/ltspass_cutout");
@@ -67,9 +64,6 @@ namespace lilToon
             ltstoo      = FindShader("_lil/[Optional] lilToonOutlineOnlyTransparent");
 
 
-
-            ltsover     = FindShader("_lil/[Optional] lilToonOverlay");
-            ltsoover    = FindShader("_lil/[Optional] lilToonOverlayOnePass");
 
             ltsbaker    = FindShader("Hidden/ltsother_baker");
             ltspo       = FindShader("Hidden/ltspass_opaque");
