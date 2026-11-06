@@ -323,6 +323,9 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 fd.uvRim = float2(fd.nvabs,fd.nvabs);
             #endif
             fd.origN = normalize(input.normalWS);
+            // Per-effect normal-map strengths interpolate from this mesh normal.
+            // Match fd.N's facing policy so they do not also blend backface flipping.
+            fd.origN = fd.facing < (_FlipNormal-1.0) ? -fd.origN : fd.origN;
             fd.uvMat = mul(fd.cameraMatrix, fd.N).xy * 0.5 + 0.5;
         #endif
         fd.reflectionN = fd.N;
