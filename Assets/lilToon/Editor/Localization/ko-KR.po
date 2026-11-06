@@ -371,9 +371,6 @@ msgstr "뒷면의 UV를 드티다"
 msgid "sBackfaceForceShadow"
 msgstr "뒷면에 그림자를 드리우다"
 
-msgid "sAAShading"
-msgstr "Anti-aliasing shading"
-
 msgid "[VRCLV] Rim Border"
 msgstr "[VRCLV] Rim Border"
 

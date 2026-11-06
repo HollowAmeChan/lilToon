@@ -371,9 +371,6 @@ msgstr "裏面のUVをずらす"
 msgid "sBackfaceForceShadow"
 msgstr "裏面を影にする"
 
-msgid "sAAShading"
-msgstr "アンチエイリアスシェーディング"
-
 msgid "[VRCLV] Rim Border"
 msgstr "[VRCLV] Rim Border"
 

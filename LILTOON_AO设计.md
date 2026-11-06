@@ -31,7 +31,7 @@ fd.aoVis = aoVis                                       // 1 = 无遮挡；lilFra
 | 输出 | 公式 | 位置 |
 |---|---|---|
 | ① 整体压暗 | `fd.col.rgb *= lerp(1.0, _AOColor.rgb, saturate(1.0 - fd.aoVis) * _AODarkStrength)` | 光照结果之后、SSS / Rim / MatCap / Emission 之前；只在非 FORWARDADD 分支 |
-| ② ramp 偏移 | `lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)` | 三层 `lilTooningScale` 与 `lns.w = lns.x` 之前（= legacy AO Map 乘算的位置） |
+| ② ramp 偏移 | `lns.xyz *= lerp(1.0, fd.aoVis, _AOStrength)` | 三层 `lilTooning` 与 `lns.w = lns.x` 之前（= legacy AO Map 乘算的位置） |
 
 - ① 是"乘向 `_AOColor`"：`_AOColor` 默认黑 → 纯压暗；给颜色就是染色（未遮挡处 `occ = 0`，恒等）。它是纯乘算，**可以比最深的 toon 阴影色更暗**。
 - ② 只改"像素落在三段 ramp 的哪一段"，**最深不超过材质自己定义的最深阴影色**。
@@ -61,7 +61,7 @@ fd.aoVis = aoVis                                       // 1 = 无遮挡；lilFra
 | `_AODarkStrength = 0` / `_AOStrength = 0` | 只剩 ramp 偏移 / 只剩压暗；两者都 0 = 完全无操作 |
 | 实时源关闭或生产端关闭 | `_HoAOTexture` 为 white → `aoScreen = 1` → 只剩 AO Map |
 | `_UseShadow = 0` | 压暗照常，ramp 偏移无对象 |
-| `_ShadowMaskType = 2`（SDF） | 两条输出都成立（`aastrencth = 0` 只影响 AA） |
+| `_ShadowMaskType = 2`（SDF） | 两条输出都成立；Toon 分段只使用材质的 Border / Blur |
 | 新属性未重新生成 shader | `_AODarkStrength` / `_AOColor` 读作 0 → 压暗失效或变黑，**必须重新生成** |
 
 ### 1.6 描边

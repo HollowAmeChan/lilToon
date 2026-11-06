@@ -371,9 +371,6 @@ msgstr "移动背面 UV"
 msgid "sBackfaceForceShadow"
 msgstr "背面强制阴影"
 
-msgid "sAAShading"
-msgstr "抗锯齿阴影"
-
 msgid "[VRCLV] Rim Border"
 msgstr "[VRCLV] 光照边界宽度"
 

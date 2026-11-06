@@ -48,7 +48,6 @@ namespace lilToon
             res = res || name == "_BackfaceForceShadow";
             res = res || name == "_BackfaceColor";
             res = res || name == "_TriMask";
-            res = res || name == "_AAStrength";
             res = res || name == "_UseDither";
             res = res || name.Contains("_Dither");
             return res;

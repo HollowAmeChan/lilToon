@@ -259,7 +259,6 @@ float   _AOLevel;
 float   _AOContrast;
 float   _AODarkStrength;
 float4  _AOColor;
-float   _AAStrength;
 float   _EnvRimBorder;
 float   _EnvRimBlur;
 #if defined(LIL_FEATURE_MAIN_GRADATION_MAP)

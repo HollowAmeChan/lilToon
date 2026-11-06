@@ -371,9 +371,6 @@ msgstr "Shift Backface UV"
 msgid "sBackfaceForceShadow"
 msgstr "Backface Force Shadow"
 
-msgid "sAAShading"
-msgstr "Anti-aliasing shading"
-
 msgid "[VRCLV] Rim Border"
 msgstr "[VRCLV] Rim Border"
 

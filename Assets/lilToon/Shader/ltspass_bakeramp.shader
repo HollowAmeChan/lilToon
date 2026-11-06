@@ -60,18 +60,20 @@ Shader "Hidden/ltsother_bakeramp"
                 return o;
             }
 
-            float lilTooningScale(float aascale, float value, float border, float blur)
+            float lilTooning(float value, float border, float blur)
             {
                 float borderMin = saturate(border - blur * 0.5);
                 float borderMax = saturate(border + blur * 0.5);
-                return saturate((value - borderMin) / saturate(borderMax - borderMin));
+                if(borderMax <= borderMin) return step(borderMin, value);
+                return saturate((value - borderMin) / (borderMax - borderMin));
             }
 
-            float lilTooningScale(float aascale, float value, float border, float blur, float borderRange)
+            float lilTooning(float value, float border, float blur, float borderRange)
             {
                 float borderMin = saturate(border - blur * 0.5 - borderRange);
                 float borderMax = saturate(border + blur * 0.5);
-                return saturate((value - borderMin) / saturate(borderMax - borderMin));
+                if(borderMax <= borderMin) return step(borderMin, value);
+                return saturate((value - borderMin) / (borderMax - borderMin));
             }
 
             float4 frag(v2f i) : SV_Target
@@ -86,10 +88,10 @@ Shader "Hidden/ltsother_bakeramp"
 
                 // AO Map & Toon
                 lns.w = lns.x;
-                lns.x = lilTooningScale(0, lns.x, _ShadowBorder, shadowBlur);
-                lns.y = lilTooningScale(0, lns.y, _Shadow2ndBorder, shadow2ndBlur);
-                lns.z = lilTooningScale(0, lns.z, _Shadow3rdBorder, shadow3rdBlur);
-                lns.w = lilTooningScale(0, lns.w, _ShadowBorder, shadowBlur, _ShadowBorderRange);
+                lns.x = lilTooning(lns.x, _ShadowBorder, shadowBlur);
+                lns.y = lilTooning(lns.y, _Shadow2ndBorder, shadow2ndBlur);
+                lns.z = lilTooning(lns.z, _Shadow3rdBorder, shadow3rdBlur);
+                lns.w = lilTooning(lns.w, _ShadowBorder, shadowBlur, _ShadowBorderRange);
 
                 // Strength
                 float shadowStrength = _ShadowStrength;

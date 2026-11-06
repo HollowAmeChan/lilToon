@@ -107,7 +107,6 @@ namespace lilToon
                     {
                         zwrite.floatValue = 1.0f;
                     }
-                    LocalizedProperty(aaStrength);
                     LocalizedProperty(envRimBorder);
                     LocalizedProperty(envRimBlur);
                     if (renderingModeBuf == RenderingMode.Cutout)

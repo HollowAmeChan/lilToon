@@ -15,11 +15,6 @@
 // 1 : Dither
 #define LIL_SUBPASS_TRANSPARENT_MODE 0
 
-// Antialias mode (Default : 1)
-// 0 : Off
-// 1 : On
-#define LIL_ANTIALIAS_MODE 1
-
 // Light Probe Proxy Volumes (Default : 0)
 #define LIL_LPPV_MODE 0
 // 0 : Off
@@ -237,11 +232,6 @@
     #define LIL_CENTROID centroid
 #endif
 #define LIL_VECTOR_INTERPOLATION
-
-#if defined(SHADER_API_D3D9)
-    #undef LIL_ANTIALIAS_MODE
-    #define LIL_ANTIALIAS_MODE 0
-#endif
 
 #if defined(SHADER_API_D3D11_9X)
     #define LIL_VFACE(facing)

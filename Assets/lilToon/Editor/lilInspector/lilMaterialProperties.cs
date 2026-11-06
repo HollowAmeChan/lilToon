@@ -27,7 +27,6 @@ namespace lilToon
         private readonly lilMaterialProperty flipNormal             = new lilMaterialProperty("_FlipNormal", PropertyBlock.Base);
         private readonly lilMaterialProperty backfaceForceShadow    = new lilMaterialProperty("_BackfaceForceShadow", PropertyBlock.Base);
         private readonly lilMaterialProperty backfaceColor          = new lilMaterialProperty("_BackfaceColor", PropertyBlock.Base);
-        private readonly lilMaterialProperty aaStrength             = new lilMaterialProperty("_AAStrength", PropertyBlock.Base);
         private readonly lilMaterialProperty useDither              = new lilMaterialProperty("_UseDither", PropertyBlock.Base);
         private readonly lilMaterialProperty ditherTex              = new lilMaterialProperty("_DitherTex", PropertyBlock.Base);
         private readonly lilMaterialProperty ditherMaxValue         = new lilMaterialProperty("_DitherMaxValue", PropertyBlock.Base);
@@ -539,7 +538,6 @@ namespace lilToon
                 flipNormal,
                 backfaceForceShadow,
                 backfaceColor,
-                aaStrength,
                 useDither,
                 ditherTex,
                 ditherMaxValue,

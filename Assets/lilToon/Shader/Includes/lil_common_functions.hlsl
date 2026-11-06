@@ -23,8 +23,8 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 //------------------------------------------------------------------------------------------------------------------------------
 // Math
 
-// Tooning
-#if LIL_ANTIALIAS_MODE == 0
+// Decal bounds retain their own edge coverage, independently of toon ramps.
+#if defined(SHADER_API_D3D9)
     float lilIsIn0to1(float f)
     {
         return saturate(f) == f;
@@ -35,24 +35,6 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
         return saturate(f) == f;
     }
 
-    float lilTooningNoSaturateScale(float aascale, float value, float border)
-    {
-        return step(border, value);
-    }
-
-    float lilTooningNoSaturateScale(float aascale, float value, float border, float blur)
-    {
-        float borderMin = saturate(border - blur * 0.5);
-        float borderMax = saturate(border + blur * 0.5);
-        return (value - borderMin) / saturate(borderMax - borderMin);
-    }
-
-    float lilTooningNoSaturateScale(float aascale, float value, float border, float blur, float borderRange)
-    {
-        float borderMin = saturate(border - blur * 0.5 - borderRange);
-        float borderMax = saturate(border + blur * 0.5);
-        return (value - borderMin) / saturate(borderMax - borderMin);
-    }
 #else
     float lilIsIn0to1(float f)
     {
@@ -66,54 +48,28 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
         return saturate(value / clamp(fwidth(value), 0.0001, nv));
     }
 
-    float lilTooningNoSaturateScale(float aascale, float value, float border)
-    {
-        return (value - border) / clamp(fwidth(value) * aascale, 0.0001, 1.0);
-    }
-
-    float lilTooningNoSaturateScale(float aascale, float value, float border, float blur)
-    {
-        float borderMin = saturate(border - blur * 0.5);
-        float borderMax = saturate(border + blur * 0.5);
-        return (value - borderMin) / saturate(borderMax - borderMin + fwidth(value) * aascale);
-    }
-
-    float lilTooningNoSaturateScale(float aascale, float value, float border, float blur, float borderRange)
-    {
-        float borderMin = saturate(border - blur * 0.5 - borderRange);
-        float borderMax = saturate(border + blur * 0.5);
-        return (value - borderMin) / saturate(borderMax - borderMin + fwidth(value) * aascale);
-    }
 #endif
 
-float lilTooningScale(float aascale, float value, float border)
-{
-    return saturate(lilTooningNoSaturateScale(aascale, value, border));
-}
-
-float lilTooningScale(float aascale, float value, float border, float blur)
-{
-    return saturate(lilTooningNoSaturateScale(aascale, value, border, blur));
-}
-
-float lilTooningScale(float aascale, float value, float border, float blur, float borderRange)
-{
-    return saturate(lilTooningNoSaturateScale(aascale, value, border, blur, borderRange));
-}
-
+// Tooning uses only the material's border and blur, not screen-space derivatives.
 float lilTooningNoSaturate(float value, float border)
 {
-    return lilTooningNoSaturateScale(1.0, value, border);
+    return step(border, value);
 }
 
 float lilTooningNoSaturate(float value, float border, float blur)
 {
-    return lilTooningNoSaturateScale(1.0, value, border, blur);
+    float borderMin = saturate(border - blur * 0.5);
+    float borderMax = saturate(border + blur * 0.5);
+    if(borderMax <= borderMin) return step(borderMin, value);
+    return (value - borderMin) / (borderMax - borderMin);
 }
 
 float lilTooningNoSaturate(float value, float border, float blur, float borderRange)
 {
-    return lilTooningNoSaturateScale(1.0, value, border, blur, borderRange);
+    float borderMin = saturate(border - blur * 0.5 - borderRange);
+    float borderMax = saturate(border + blur * 0.5);
+    if(borderMax <= borderMin) return step(borderMin, value);
+    return (value - borderMin) / (borderMax - borderMin);
 }
 
 float lilTooning(float value, float border)

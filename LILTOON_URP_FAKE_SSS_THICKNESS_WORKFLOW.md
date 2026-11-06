@@ -206,7 +206,7 @@ float3 sssN = fd.N;
 
 float3 sssL = normalize(lerp(fd.L, -fd.V, _SSSViewStrength));
 float sssLN = dot(sssN, sssL) * 0.5 + 0.5;
-sssLN = lilTooningScale(_AAStrength, sssLN, _SSSBorder, _SSSBlur);
+sssLN = lilTooning(sssLN, _SSSBorder, _SSSBlur);
 
 float sssVL = pow(saturate(dot(-fd.L, fd.V) * 0.5 + 0.5), _SSSPower);
 float sss = saturate(sssLN * sssVL) * thickness * _SSSStrength;

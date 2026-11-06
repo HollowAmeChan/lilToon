@@ -32,7 +32,6 @@ Shader "Hidden/ltspass_transparent"
                         _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10
                         _lilDirectionalLightStrength ("sDirectionalLightStrength", Range(0,1)) = 1
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)
-                        _AAStrength                 ("sAAShading", Range(0, 1)) = 1
         [lilToggle]     _UseDither                  ("sDither", Int) = 0
         [NoScaleOffset] _DitherTex                  ("Dither", 2D) = "white" {}
                         _DitherMaxValue             ("Max Value", Float) = 255
