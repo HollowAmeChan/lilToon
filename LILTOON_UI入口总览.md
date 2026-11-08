@@ -2,7 +2,9 @@
 
 > 用途：这份文档汇总 **当前 fork 里用户在 Unity 编辑器里"能点到"的全部位置**。改动 UI 之前先查这里，改完必须回来同步。
 >
-> 代码基准：`f39c752`（本工作区当前 HEAD）。**代码是唯一事实来源**，本文与代码冲突时以代码为准。
+> 基础清单基准：`f39c752`；2026-11-08 同步本机 HoURP 裁剪入口，旧行号仅供定位参考。**代码是唯一事实来源**，本文与代码冲突时以代码为准。
+>
+> 本机专用版本：VRCLV、MatCap / Rim 的 VR 视差、VR 禁用描边及 NDMF 设置已移除。闪粉保留实际单目效果，界面改名“视线方向混合”，存储键仍为 `_GlitterVRParallaxStrength`。完整范围见 [HoURP 专用版本契约](docs/ho-urp-support-contract.md)。
 >
 > 收录范围：材质 Inspector、Unity 菜单栏、独立窗口、shader 属性行内 Drawer、以及"看起来存在但其实点不到"的残留入口。
 > 不收录：单个 shader 属性的逐项说明（那由 shader property 列表 + 本地化表自动生成，见 §3.5 与 §15）。
@@ -275,14 +277,13 @@ Tesion 现在使用与相邻组分相同的 `DrawNextSection`：24px 灰色标�
 
 ### 4.3 Blend 子折叠
 
-渲染设置页里成对出现（`BlendSettingGUI`，`lilEditorGUI.cs:690`），展开后是 6 个 Blend 因子下拉：
+渲染设置页使用 `BlendSettingGUI`，展开后是 6 个 Blend 因子下拉；旧 ForwardAdd 混合组已移除：
 
 | 位置 | 折叠栏标题 |
 | --- | --- |
-| 渲染设置 | `Forward`、`ForwardAdd` |
-| 渲染设置 → PrePass | `Forward`、（Lite 才有第二个 `ForwardAdd`） |
-| 渲染设置 → 轮廓 | `Forward`、`ForwardAdd` |
-| 渲染设置 → 毛发 | `Forward`、`ForwardAdd` |
+| 渲染设置 | `Forward` |
+| 渲染设置 → PrePass | `Forward`（TwoPassTransparent） |
+| 渲染设置 → 轮廓 | `Forward` |
 | 基本设置 → PrePass | `sPresets`（上面那 5 个按钮） |
 
 ### 4.4 自动修复按钮（`AutoFixHelpBox`）
@@ -334,7 +335,7 @@ Tesion 现在使用与相邻组分相同的 `DrawNextSection`：24px 灰色标�
 | 溶解 | 溶解模式下拉 → 遮罩行 + 位置/向量 + 噪波行 | `_DissolveParams` | `:899-912` |
 | 基本设置 | 抖动 勾选 → 抖动贴图行 + X2/X4/X8/X16 | `_UseDither` | `:1075-1094` |
 | 基本设置 | PrePass 区 `sPresets` 子折叠（仅 Two Pass 透明） | — | `:1147` |
-| 渲染设置 | Forward / ForwardAdd / PrePass(Forward, ForwardAdd) / 轮廓(Forward, ForwardAdd) / 毛发(Forward, ForwardAdd) 共 **8 个 Blend 子折叠** | 各 `_SrcBlend*` 等 | `:958-1022` |
+| 渲染设置 | Forward / PrePass(Forward) / 轮廓(Forward)；按当前变体显示 | 各 `_SrcBlend*` 等，FA 参数已移除 | `DrawRenderingSettings` |
 | 平面反射 | `_UsePlanarReflection` 勾选 → 展开强度/颜色等 7 项 | `_UsePlanarReflection` | `:835-844` |
 
 > ⚠️ **`色调校正`（`sColorAdjust`）折叠栏只在旧版 UI 存在**（`lilPropertyGroupDrawerColorSetting.cs:21`）。新版 UI 把 HSVG 校正与渐变烘焙直接平铺在主色块里，没有这个折叠，但 HSVG 的 **[重置]** 按钮在新旧版都有（`lilEditorGUI.cs:565`）。
@@ -410,15 +411,14 @@ Tesion 现在使用与相邻组分相同的 `DrawNextSection`：24px 灰色标�
 | 可点位置 | 中文 | 说明 |
 | --- | --- | --- |
 | Toggle | 锁定 / `sSettingLock` | 存在锁文件时禁止改动设置；勾选即写锁文件，取消即删 |
-| Toggle | Optimize in NDMF (Apply on Play) | `isOptimizeInNDMF` |
 | Toggle | `sShaderSettingOptimizeInEditor` | 编辑器内即时优化 |
 | Toggle | Migrate materials in startup | 启动时自动迁移材质 |
 | 折叠栏 | 着色器设置 (用于所有材质) / `sShaderSetting` | 内含 `距离裁剪消除器` toggle（`?` 帮助按钮打开手册） |
 | 折叠栏 | 优化构建大小 (用于所有材质) / `sSettingBuildSizeOptimization` | 内含：`使用光照贴图`、`使用自适应探针体积 (APV)`；APV 是项目级变体编译选项，不是单材质 GI 强度或有效性调试开关 |
 | 折叠栏 | 初始值 (用于"Fix Lighting"以及照明预设) / `sSettingDefaultValue` | 内含下面 4 组 |
-| ↳ 滑条组 | `GameObject/lilToon/[GameObject] 修正光照` | `_AsUnlit`、顶点光强度、光照上下限、单色照明、曝光前上限、方向光强度 |
+| ↳ 滑条组 | `GameObject/lilToon/[GameObject] 修正光照` | 光照上下限、单色照明 |
 | ↳ 对象槽 | `HoLil/[模型] 从 FBX 初始化材质` | Face / Skin / Hair / Cloth 四个预设槽 |
-| ↳ 文本框 | `[Shader] LightMode Override` | Main / Outline / Transparent backface / Fur / Fur Pre / Gem Pre |
+| ↳ 文本框 | `[Shader] LightMode Override` | Main / Outline / Transparent backface |
 | ↳ 按钮 | **[Apply]** | 应用 LightMode 覆盖并重建 shader 设置 |
 
 - 所有开关改动会立刻重算 shader 设置（`:63-74`）。

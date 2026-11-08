@@ -1,0 +1,10 @@
+{
+  "name": "HoSpecialization.Tests",
+  "references": [
+    "lilToon.Editor",
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.Universal.Runtime"
+  ],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}
