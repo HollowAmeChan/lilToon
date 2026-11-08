@@ -30,8 +30,6 @@ namespace lilToon
         private readonly lilMaterialProperty useDither              = new lilMaterialProperty("_UseDither", PropertyBlock.Base);
         private readonly lilMaterialProperty ditherTex              = new lilMaterialProperty("_DitherTex", PropertyBlock.Base);
         private readonly lilMaterialProperty ditherMaxValue         = new lilMaterialProperty("_DitherMaxValue", PropertyBlock.Base);
-        private readonly lilMaterialProperty envRimBorder           = new lilMaterialProperty("_EnvRimBorder", PropertyBlock.Base);
-        private readonly lilMaterialProperty envRimBlur             = new lilMaterialProperty("_EnvRimBlur", PropertyBlock.Base);
 
         private readonly lilMaterialProperty lightMinLimit                  = new lilMaterialProperty("_LightMinLimit", PropertyBlock.Lighting);
         private readonly lilMaterialProperty lightMaxLimit                  = new lilMaterialProperty("_LightMaxLimit", PropertyBlock.Lighting);
@@ -541,8 +539,6 @@ namespace lilToon
                 useDither,
                 ditherTex,
                 ditherMaxValue,
-                envRimBorder,
-                envRimBlur,
 
                 lightMinLimit,
                 lightMaxLimit,

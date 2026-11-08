@@ -37,7 +37,6 @@ namespace lilToon
             }
 
             EditorGUI.BeginChangeCheck();
-            ToggleGUI(GetLoc("Optimize in NDMF (Apply on Play)"), ref shaderSetting.isOptimizeInNDMF);
             ToggleGUI(GetLoc("sShaderSettingOptimizeInEditor"), ref shaderSetting.isDebugOptimize);
             ToggleGUI(GetLoc("Migrate materials in startup"), ref shaderSetting.isMigrateInStartUp);
             edSet.isShowShaderSetting = lilEditorGUI.Foldout(GetLoc("sShaderSetting"), edSet.isShowShaderSetting);

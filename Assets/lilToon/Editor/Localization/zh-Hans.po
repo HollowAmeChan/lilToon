@@ -371,12 +371,6 @@ msgstr "移动背面 UV"
 msgid "sBackfaceForceShadow"
 msgstr "背面强制阴影"
 
-msgid "[VRCLV] Rim Border"
-msgstr "[VRCLV] 光照边界宽度"
-
-msgid "[VRCLV] Rim Blur"
-msgstr "[VRCLV] 光照边界模糊"
-
 msgid "sDither"
 msgstr "Dither"
 
@@ -2017,9 +2011,6 @@ msgstr "材质变体从父材质继承渲染模式，因为 lilToon 是通过切
 
 msgid "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
 msgstr "材质变体从父材质继承着色器。要开启或关闭轮廓，请修改父材质。"
-
-msgid "Optimize in NDMF (Apply on Play)"
-msgstr "在 NDMF 中优化 (播放时应用)"
 
 msgid "Migrate materials in startup"
 msgstr "启动时迁移材质"

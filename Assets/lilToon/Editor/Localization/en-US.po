@@ -371,12 +371,6 @@ msgstr "Shift Backface UV"
 msgid "sBackfaceForceShadow"
 msgstr "Backface Force Shadow"
 
-msgid "[VRCLV] Rim Border"
-msgstr "[VRCLV] Rim Border"
-
-msgid "[VRCLV] Rim Blur"
-msgstr "[VRCLV] Rim Blur"
-
 msgid "sDither"
 msgstr "Dither"
 
@@ -2017,9 +2011,6 @@ msgstr "Material Variant inherits rendering mode from the parent material becaus
 
 msgid "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
 msgstr "Material Variant inherits its shader from the parent material. Change the parent material to enable or disable outline."
-
-msgid "Optimize in NDMF (Apply on Play)"
-msgstr "Optimize in NDMF (Apply on Play)"
 
 msgid "Migrate materials in startup"
 msgstr "Migrate materials in startup"

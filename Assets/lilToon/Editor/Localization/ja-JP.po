@@ -371,12 +371,6 @@ msgstr "裏面のUVをずらす"
 msgid "sBackfaceForceShadow"
 msgstr "裏面を影にする"
 
-msgid "[VRCLV] Rim Border"
-msgstr "[VRCLV] Rim Border"
-
-msgid "[VRCLV] Rim Blur"
-msgstr "[VRCLV] Rim Blur"
-
 msgid "sDither"
 msgstr "Dither"
 
