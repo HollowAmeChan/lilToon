@@ -54,13 +54,7 @@ LIL_V2F_TYPE vert(appdata input)
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Invisible
-    #if defined(LIL_OUTLINE) && !defined(LIL_PASS_SHADOWCASTER) && defined(USING_STEREO_MATRICES)
-        #define LIL_VERTEX_CONDITION (_Invisible || _OutlineDisableInVR)
-    #elif defined(LIL_OUTLINE) && !defined(LIL_PASS_SHADOWCASTER)
-        #define LIL_VERTEX_CONDITION (_Invisible || _OutlineDisableInVR && (abs(LIL_MATRIX_P._m02) > 0.000001))
-    #else
-        #define LIL_VERTEX_CONDITION (_Invisible)
-    #endif
+    #define LIL_VERTEX_CONDITION (_Invisible)
 
     #if !defined(SHADER_STAGE_VERTEX) || defined(LIL_CUSTOM_SAFEVERT)
         if(!LIL_VERTEX_CONDITION)
@@ -75,7 +69,6 @@ LIL_V2F_TYPE vert(appdata input)
     // Single Pass Instanced rendering
     LIL_SETUP_INSTANCE_ID(input);
     LIL_TRANSFER_INSTANCE_ID(input, LIL_V2F_OUT_BASE);
-    LIL_INITIALIZE_VERTEX_OUTPUT_STEREO(LIL_V2F_OUT_BASE);
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Set up light color
@@ -103,7 +96,7 @@ LIL_V2F_TYPE vert(appdata input)
     #include "lil_vert_outline.hlsl"
 
     //------------------------------------------------------------------------------------------------------------------------------
-    // Previous Position (for HDRP)
+    // Previous position and precomputed velocity
     #if defined(LIL_PASS_MOTIONVECTOR_INCLUDED)
         input.previousPositionOS = lilSelectPreviousPosition(input.previousPositionOS, input.positionOS.xyz);
         #if defined(_ADD_PRECOMPUTED_VELOCITY)
@@ -149,7 +142,6 @@ LIL_V2F_TYPE vert(appdata input)
         LIL_RE_VERTEX_POSITION_INPUTS(vertexInput);
     #endif
     float3 viewDirection = normalize(lilViewDirection(lilToAbsolutePositionWS(vertexInput.positionWS)));
-    float3 headDirection = normalize(lilHeadDirection(lilToAbsolutePositionWS(vertexInput.positionWS)));
 
     //------------------------------------------------------------------------------------------------------------------------------
     // Copy
@@ -179,7 +171,7 @@ LIL_V2F_TYPE vert(appdata input)
         LIL_V2F_OUT_BASE.uv23.zw        = input.uv3;
     #endif
     #if defined(LIL_V2F_UVMAT)
-        LIL_V2F_OUT_BASE.uvMat          = lilCalcMatCapUV(input.uv1, vertexNormalInput.normalWS, viewDirection, headDirection, _MatCapTex_ST, _MatCapBlendUV1.xy, _MatCapZRotCancel, _MatCapPerspective, _MatCapVRParallaxStrength);
+        LIL_V2F_OUT_BASE.uvMat          = lilCalcMatCapUV(input.uv1, vertexNormalInput.normalWS, viewDirection, _MatCapTex_ST, _MatCapBlendUV1.xy, _MatCapZRotCancel, _MatCapPerspective);
     #endif
 
     // Position
@@ -229,7 +221,6 @@ LIL_V2F_TYPE vert(appdata input)
     //------------------------------------------------------------------------------------------------------------------------------
     // Fog & Lighting
     lilFragData fd = lilInitFragData();
-    LIL_GET_HDRPDATA(vertexInput,fd);
     #if defined(LIL_V2F_LIGHTCOLOR) || defined(LIL_V2F_LIGHTDIRECTION) || defined(LIL_V2F_INDLIGHTCOLOR) || defined(LIL_V2F_NDOTL)
         LIL_CALC_MAINLIGHT(vertexInput, lightdataInput);
     #endif

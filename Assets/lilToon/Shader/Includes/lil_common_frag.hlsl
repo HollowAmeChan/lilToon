@@ -192,19 +192,13 @@
 #endif
 
 #if defined(LIL_V2F_POSITION_CS)
-    #if defined(UNITY_SINGLE_PASS_STEREO)
-        #define LIL_SCREEN_UV_STEREO_FIX(i,o) o.uvScn.x *= 0.5;
-    #else
-        #define LIL_SCREEN_UV_STEREO_FIX(i,o)
-    #endif
 
     #define LIL_RES_XY (LIL_SCREENPARAMS.xy)
 
     #define LIL_UNPACK_POSITION_CS(i,o) \
         o.positionCS = i.positionCS; \
         o.positionSS = lilTransformCStoSSFrag(i.positionCS); \
-        o.uvScn = i.positionCS.xy / LIL_RES_XY; \
-        LIL_SCREEN_UV_STEREO_FIX(i,o)
+        o.uvScn = i.positionCS.xy / LIL_RES_XY;
 #else
     #define LIL_UNPACK_POSITION_CS(i,o)
 #endif
@@ -447,7 +441,6 @@
 //------------------------------------------------------------------------------------------------------------------------------
 // Dither
 #if !defined(OVERRIDE_DITHER)
-    #if !defined(SHADER_API_GLES)
         #if defined(LIL_FEATURE_DISTANCE_FADE) && defined(LIL_PASS_SHADOWCASTER_INCLUDED)
             #define OVERRIDE_DITHER \
                 if(_UseDither == 1) \
@@ -469,17 +462,12 @@
                     fd.col.a = fd.col.a >= (lilSamplePointRepeat(_DitherTex, input.positionCS.xy, _DitherTex_TexelSize.zw).r * 255 + 1) / (_DitherMaxValue+2); \
                 }
         #endif
-    #else
-        #define OVERRIDE_DITHER
-    #endif
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Premultiply
 #if LIL_RENDER != 2
     #define LIL_PREMULTIPLY
-#elif defined(LIL_PASS_FORWARDADD)
-    #define LIL_PREMULTIPLY fd.col.rgb *= fd.col.a;
 #else
     #define LIL_PREMULTIPLY fd.col.rgb *= fd.col.a;
 #endif
@@ -752,7 +740,7 @@
 // The shared visibility is composed once per fragment by lilCalcAO() and stored in
 // fd.aoVis, so both outputs consume the same value and the same AO Mask gate.
 // NOTE: this has to stay above lilGetShading, which consumes fd.aoVis.
-#if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP)
+#if defined(LIL_FEATURE_REALTIMEAO)
     float lilSampleRealtimeAO(float2 screenUV)
     {
         // _HoAOTexture.r is 0..1 visibility (1 = unoccluded).
@@ -789,7 +777,7 @@
             #endif
             aoVis *= lerp(1.0, aoMap.rgb, aoMask);
         #endif
-        #if defined(LIL_FEATURE_REALTIMEAO) && defined(LIL_URP)
+        #if defined(LIL_FEATURE_REALTIMEAO)
             if(_UseRealtimeAO)
             {
                 aoVis *= lerp(1.0, lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS)), aoMask);
@@ -1037,10 +1025,8 @@
             // Apply Light
             float3 directCol = fd.albedo * fd.lightColor;
             indirectCol = indirectCol * fd.lightColor;
-            #if !defined(LIL_PASS_FORWARDADD)
                 // Environment Light
                 indirectCol = lerp(indirectCol, fd.albedo, saturate(fd.indLightColor * _ShadowEnvStrength));
-            #endif
             // Fix
             indirectCol = min(indirectCol, directCol);
             // Gradation
@@ -1072,7 +1058,7 @@
             #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
                 N = lerp(fd.origN, fd.N, _RimShadeNormalStrength);
             #endif
-            float nvabs = abs(dot(N,fd.headV));
+            float nvabs = abs(dot(N,fd.V));
             float rim = pow(saturate(1.0 - nvabs), _RimShadeFresnelPower);
             rim = lilTooning(rim, _RimShadeBorder, _RimShadeBlur);
             rim *= _RimShadeColor.a;
@@ -1110,7 +1096,7 @@
 
             // Factor
             float backlightFactor = pow(saturate(-fd.hl * 0.5 + 0.5), _BacklightDirectivity);
-            float backlightLN = dot(normalize(-fd.headV * _BacklightViewStrength + fd.L), N) * 0.5 + 0.5;
+            float backlightLN = dot(normalize(-fd.V * _BacklightViewStrength + fd.L), N) * 0.5 + 0.5;
             #if defined(LIL_USE_SHADOW) || defined(LIL_LIGHTMODE_SHADOWMASK) || defined(LIL_USE_HO_CAST)
                 if(_BacklightReceiveShadow) backlightLN *= saturate(fd.attenuation);
             #endif
@@ -1261,11 +1247,7 @@
             ggx = r2 / (d * d + 1e-7f);
         }
 
-        #if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
-            sjggx = 0.5 / (lambdaV + lambdaL + 1e-4f);
-        #else
-            sjggx = 0.5 / (lambdaV + lambdaL + 1e-5f);
-        #endif
+        sjggx = 0.5 / (lambdaV + lambdaL + 1e-5f);
 
         float specularTerm = sjggx * ggx;
         #ifdef LIL_COLORSPACE_GAMMA
@@ -1282,11 +1264,7 @@
 
     void lilReflection(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
-        #if defined(LIL_PASS_FORWARDADD)
-            if(_UseReflection && _ApplySpecular && _ApplySpecularFA)
-        #else
             if(_UseReflection)
-        #endif
         {
             float3 reflectCol = 0;
             // Smoothness
@@ -1313,20 +1291,11 @@
                 if(_ReflectionApplyTransparency) reflectionColor.a *= fd.col.a;
             #endif
             // Specular
-            #if !defined(LIL_PASS_FORWARDADD)
                 if(_ApplySpecular)
-            #endif
             {
-                #if 1
                     float3 lightDirectionSpc = fd.L;
                     float3 lightColorSpc = fd.lightColor;
-                #else
-                    float3 lightDirectionSpc = lilGetLightDirection(fd.positionWS);
-                    float3 lightColorSpc = LIL_MAINLIGHT_COLOR;
-                #endif
-                #if defined(LIL_PASS_FORWARDADD)
-                    reflectCol = lilCalcSpecular(fd, lightDirectionSpc, specular, fd.shadowmix * fd.attenuation LIL_SAMP_IN(samp));
-                #elif defined(SHADOWS_SCREEN)
+                #if defined(SHADOWS_SCREEN)
                     reflectCol = lilCalcSpecular(fd, lightDirectionSpc, specular, fd.shadowmix LIL_SAMP_IN(samp));
                 #else
                     reflectCol = lilCalcSpecular(fd, lightDirectionSpc, specular, 1.0 LIL_SAMP_IN(samp));
@@ -1334,7 +1303,6 @@
                 fd.col.rgb = lilBlendColor(fd.col.rgb, reflectionColor.rgb * lightColorSpc, reflectCol * reflectionColor.a, _ReflectionBlendMode);
             }
             // Reflection
-            #if !defined(LIL_PASS_FORWARDADD)
                 if(_ApplyReflection)
                 {
                     float3 N = fd.reflectionN;
@@ -1355,7 +1323,6 @@
                     reflectCol = surfaceReduction * envReflectionColor * lilFresnelLerp(specular, grazingTerm, fd.nv);
                     fd.col.rgb = lilBlendColor(fd.col.rgb, reflectionColor.rgb, reflectCol * reflectionColor.a, _ReflectionBlendMode);
                 }
-            #endif
         }
     }
 #endif
@@ -1388,20 +1355,15 @@
             #endif
 
             // UV
-            float2 matUV = lilCalcMatCapUV(fd.uv1, normalize(N), fd.V, fd.headV, _MatCapTex_ST, _MatCapBlendUV1.xy, _MatCapZRotCancel, _MatCapPerspective, _MatCapVRParallaxStrength);
+            float2 matUV = lilCalcMatCapUV(fd.uv1, normalize(N), fd.V, _MatCapTex_ST, _MatCapBlendUV1.xy, _MatCapZRotCancel, _MatCapPerspective);
 
             // Color
             float4 matCapColor = _MatCapColor;
             #if defined(LIL_FEATURE_MatCapTex)
                 matCapColor *= LIL_SAMPLE_2D_LOD(_MatCapTex, lil_sampler_linear_repeat, matUV, _MatCapLod);
             #endif
-            #if !defined(LIL_PASS_FORWARDADD)
                 matCapColor.rgb = lerp(matCapColor.rgb, matCapColor.rgb * fd.lightColor, _MatCapEnableLighting);
                 matCapColor.a = lerp(matCapColor.a, matCapColor.a * fd.shadowmix, _MatCapShadowMask);
-            #else
-                if(_MatCapBlendMode < 3) matCapColor.rgb *= fd.lightColor * _MatCapEnableLighting;
-                matCapColor.a = lerp(matCapColor.a, matCapColor.a * fd.shadowmix, _MatCapShadowMask);
-            #endif
             #if LIL_RENDER == 2
                 if(_MatCapApplyTransparency) matCapColor.a *= fd.col.a;
             #endif
@@ -1446,20 +1408,15 @@
             #endif
 
             // UV
-            float2 mat2ndUV = lilCalcMatCapUV(fd.uv1, N, fd.V, fd.headV, _MatCap2ndTex_ST, _MatCap2ndBlendUV1.xy, _MatCap2ndZRotCancel, _MatCap2ndPerspective, _MatCap2ndVRParallaxStrength);
+            float2 mat2ndUV = lilCalcMatCapUV(fd.uv1, N, fd.V, _MatCap2ndTex_ST, _MatCap2ndBlendUV1.xy, _MatCap2ndZRotCancel, _MatCap2ndPerspective);
 
             // Color
             float4 matCap2ndColor = _MatCap2ndColor;
             #if defined(LIL_FEATURE_MatCap2ndTex)
                 matCap2ndColor *= LIL_SAMPLE_2D_LOD(_MatCap2ndTex, lil_sampler_linear_repeat, mat2ndUV, _MatCap2ndLod);
             #endif
-            #if !defined(LIL_PASS_FORWARDADD)
                 matCap2ndColor.rgb = lerp(matCap2ndColor.rgb, matCap2ndColor.rgb * fd.lightColor, _MatCap2ndEnableLighting);
                 matCap2ndColor.a = lerp(matCap2ndColor.a, matCap2ndColor.a * fd.shadowmix, _MatCap2ndShadowMask);
-            #else
-                if(_MatCap2ndBlendMode < 3) matCap2ndColor.rgb *= fd.lightColor * _MatCap2ndEnableLighting;
-                matCap2ndColor.a = lerp(matCap2ndColor.a, matCap2ndColor.a * fd.shadowmix, _MatCap2ndShadowMask);
-            #endif
             #if LIL_RENDER == 2
                 if(_MatCap2ndApplyTransparency) matCap2ndColor.a *= fd.col.a;
             #endif
@@ -1500,7 +1457,7 @@
                 rimColor.rgb = lerp(rimColor.rgb, rimColor.rgb * fd.albedo, _RimMainStrength);
 
                 // View direction
-                float3 V = lilBlendVRParallax(fd.headV, fd.V, _RimVRParallaxStrength);
+                float3 V = fd.V;
 
                 // Normal
                 float3 N = fd.N;
@@ -1532,11 +1489,7 @@
                 #endif
 
                 // Blend
-                #if !defined(LIL_PASS_FORWARDADD)
                     float3 rimLightMul = 1 - _RimEnableLighting + fd.lightColor * _RimEnableLighting;
-                #else
-                    float3 rimLightMul = _RimBlendMode < 3 ? fd.lightColor * _RimEnableLighting : 1;
-                #endif
                 fd.col.rgb = lilBlendColor(fd.col.rgb, rimColor.rgb * rimLightMul, rimDir * rimColor.a, _RimBlendMode);
                 fd.col.rgb = lilBlendColor(fd.col.rgb, rimIndirColor.rgb * rimLightMul, rimIndir * rimIndirColor.a, _RimBlendMode);
             #else
@@ -1564,11 +1517,7 @@
                 rim = lerp(rim, rim * fd.shadowmix, _RimShadowMask);
 
                 // Blend
-                #if !defined(LIL_PASS_FORWARDADD)
                     rimColor.rgb = lerp(rimColor.rgb, rimColor.rgb * fd.lightColor, _RimEnableLighting);
-                #else
-                    if(_RimBlendMode < 3) rimColor.rgb *= fd.lightColor * _RimEnableLighting;
-                #endif
                 fd.col.rgb = lilBlendColor(fd.col.rgb, rimColor.rgb, rim * rimColor.a, _RimBlendMode);
             #endif
         }
@@ -1588,7 +1537,9 @@
         if(_UseGlitter)
         {
             // View direction
-            float3 glitterViewDirection = lilBlendVRParallax(fd.headV, fd.V, _GlitterVRParallaxStrength);
+            float3 glitterViewDirection = fd.V;
+            // Historical storage key preserves authored material/animation values.
+            // In Mono this blends camera-forward and the pixel's view ray.
             float3 glitterCameraDirection = lerp(fd.cameraFront, fd.V, _GlitterVRParallaxStrength);
 
             // Normal
@@ -1619,14 +1570,9 @@
             glitterColor.a = fd.facing < (_GlitterBackfaceMask-1.0) ? 0.0 : glitterColor.a;
 
             // Blend
-            #if !defined(LIL_PASS_FORWARDADD)
                 glitterColor.a = lerp(glitterColor.a, glitterColor.a * fd.shadowmix, _GlitterShadowMask);
                 glitterColor.rgb = lerp(glitterColor.rgb, glitterColor.rgb * fd.lightColor, _GlitterEnableLighting);
                 fd.col.rgb += glitterColor.rgb * glitterColor.a;
-            #else
-                glitterColor.a = lerp(glitterColor.a, glitterColor.a * fd.shadowmix, _GlitterShadowMask);
-                fd.col.rgb += glitterColor.a * _GlitterEnableLighting * glitterColor.rgb * fd.lightColor;
-            #endif
         }
     }
 #endif
@@ -1848,14 +1794,12 @@
 
         float3 fadeColor = _DistanceFadeColor.rgb;
         #if defined(LIL_V2F_NORMAL_WS)
-            float nvabs = abs(dot(fd.origN,fd.headV));
+            float nvabs = abs(dot(fd.origN,fd.V));
             float fadeRim = pow(saturate(1.0 - nvabs), _DistanceFadeRimFresnelPower);
             fadeColor = lerp(fadeColor, _DistanceFadeRimColor.rgb * fd.col.rgb, fadeRim * _DistanceFadeRimColor.a);
         #endif
 
-        #if defined(LIL_PASS_FORWARDADD)
-            fd.col.rgb = lerp(fd.col.rgb, 0.0, distFade);
-        #elif LIL_RENDER == 2
+        #if LIL_RENDER == 2
             fd.col.rgb = lerp(fd.col.rgb, fadeColor * _DistanceFadeColor.a, distFade);
             fd.col.a = lerp(fd.col.a, fd.col.a * _DistanceFadeColor.a, distFade);
         #else
@@ -1871,7 +1815,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Planar Reflection
-#if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION)
+#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION)
 void lilPlanarReflection(inout lilFragData fd)
 {
     if(_UseReflection == 0 || _UsePlanarReflection == 0 || _PlanarReflectionStrength <= 0.0 || _LILPBRPlanarReflectionParams.x <= 0.5)
@@ -1941,7 +1885,7 @@ void lilPlanarReflection(inout lilFragData fd)
 #endif
 
 #if !defined(OVERRIDE_PLANAR_REFLECTION)
-    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION)
+    #if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) && defined(LIL_FEATURE_REFLECTION)
         #define OVERRIDE_PLANAR_REFLECTION \
             lilPlanarReflection(fd);
     #else

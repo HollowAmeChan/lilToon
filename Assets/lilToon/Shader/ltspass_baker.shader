@@ -101,20 +101,16 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_RIMLIGHT_DIRECTION
             #define LIL_FEATURE_GLITTER
             #define LIL_FEATURE_BACKLIGHT
+            #define LIL_FEATURE_REALTIMEAO
+            #define LIL_FEATURE_SSS
             #define LIL_FEATURE_PARALLAX
             #define LIL_FEATURE_POM
             #define LIL_FEATURE_DISTANCE_FADE
-            #define LIL_FEATURE_AUDIOLINK
-            #define LIL_FEATURE_AUDIOLINK_VERTEX
-            #define LIL_FEATURE_AUDIOLINK_LOCAL
             #define LIL_FEATURE_DISSOLVE
             #define LIL_FEATURE_DITHER
-            #define LIL_FEATURE_IDMASK
-            #define LIL_FEATURE_UDIMDISCARD
             #define LIL_FEATURE_OUTLINE_TONE_CORRECTION
             #define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW
             #define LIL_FEATURE_ANIMATE_OUTLINE_UV
-            #define LIL_FEATURE_FUR_COLLISION
             #define LIL_FEATURE_MainGradationTex
             #define LIL_FEATURE_MainColorAdjustMask
             #define LIL_FEATURE_Main2ndTex
@@ -138,8 +134,11 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_ShadowColorTex
             #define LIL_FEATURE_Shadow2ndColorTex
             #define LIL_FEATURE_Shadow3rdColorTex
+            #define LIL_FEATURE_ShadowReceiveMask
+            #define LIL_FEATURE_AOMask
             #define LIL_FEATURE_RimShadeMask
             #define LIL_FEATURE_BacklightColorTex
+            #define LIL_FEATURE_SSSThicknessMap
             #define LIL_FEATURE_SmoothnessTex
             #define LIL_FEATURE_MetallicGlossMap
             #define LIL_FEATURE_ReflectionColorTex
@@ -160,20 +159,14 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_Emission2ndBlendMask
             #define LIL_FEATURE_Emission2ndGradTex
             #define LIL_FEATURE_ParallaxMap
-            #define LIL_FEATURE_AudioLinkMask
-            #define LIL_FEATURE_AudioLinkLocalMap
             #define LIL_FEATURE_DissolveMask
             #define LIL_FEATURE_DissolveNoiseMask
             #define LIL_FEATURE_OutlineTex
             #define LIL_FEATURE_OutlineWidthMask
+            #define LIL_FEATURE_OutlineZBiasMask
             #define LIL_FEATURE_OutlineVectorTex
-            #define LIL_FEATURE_FurNoiseMask
-            #define LIL_FEATURE_FurMask
-            #define LIL_FEATURE_FurLengthMask
-            #define LIL_FEATURE_FurVectorTex
-            #define LIL_OPTIMIZE_APPLY_SHADOW_FA
-            #define LIL_OPTIMIZE_USE_FORWARDADD
             #define LIL_OPTIMIZE_USE_VERTEXLIGHT
+            #define LIL_OPTIMIZE_USE_PROBEVOLUMES
             #pragma skip_variants LIGHTMAP_ON DYNAMICLIGHTMAP_ON LIGHTMAP_SHADOW_MIXING SHADOWS_SHADOWMASK DIRLIGHTMAP_COMBINED _MIXED_LIGHTING_SUBTRACTIVE
         ENDHLSL
 
@@ -191,7 +184,7 @@ Shader "Hidden/ltsother_baker"
             // Shader
             #define LIL_BAKER
             #define LIL_WITHOUT_ANIMATION
-            #include "Includes/lil_pipeline_brp.hlsl"
+            #include "Includes/lil_pipeline_urp.hlsl"
             #include "Includes/lil_common.hlsl"
             #include "Includes/lil_common_appdata.hlsl"
 

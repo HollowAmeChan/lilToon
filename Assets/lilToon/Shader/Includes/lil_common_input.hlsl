@@ -3,9 +3,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Variables from Unity
-#if !defined(SHADER_API_GLES)
     TEXTURE3D(_DitherMaskLOD);
-#endif
 
 SAMPLER(lil_sampler_trilinear_repeat);
 SAMPLER(lil_sampler_linear_clamp);
@@ -150,7 +148,7 @@ TEXTURE2D(_Shadow3rdColorTex);
 TEXTURE2D(_ShadowReceiveMask);
 TEXTURE2D(_AOMask);
 // _HoAOTexture is a screen-space texture published by Ho-GTAO, so it follows the
-// same XR convention as _CameraOpaqueTexture (a texture array in stereo).
+// same Mono screen domain as _CameraOpaqueTexture.
 TEXTURE2D_SCREEN(_HoAOTexture);
 TEXTURE2D(_LILPBRPlanarReflectionTexture);
 TEXTURE2D(_RimShadeMask);

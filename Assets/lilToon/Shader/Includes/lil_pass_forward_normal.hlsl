@@ -19,12 +19,10 @@
     #endif
     #define LIL_V2F_POSITION_WS
     #define LIL_V2F_NORMAL_WS
-    #if !defined(LIL_PASS_FORWARDADD)
         #define LIL_V2F_LIGHTCOLOR
         #if defined(LIL_FEATURE_OUTLINE_RECEIVE_SHADOW)
             #define LIL_V2F_SHADOW
         #endif
-    #endif
     #define LIL_V2F_VERTEXLIGHT_FOG
 
     struct v2f
@@ -51,7 +49,6 @@
             float4 gdTension : TEXCOORD19;
         #endif
         LIL_VERTEX_INPUT_INSTANCE_ID
-        LIL_VERTEX_OUTPUT_STEREO
     };
 #else
     #define LIL_V2F_POSITION_CS
@@ -65,13 +62,11 @@
     #if defined(LIL_V2F_FORCE_TANGENT) || defined(LIL_SHOULD_TBN)
         #define LIL_V2F_TANGENT_WS
     #endif
-    #if !defined(LIL_PASS_FORWARDADD)
         #define LIL_V2F_LIGHTCOLOR
         #define LIL_V2F_LIGHTDIRECTION
         #if defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_BACKLIGHT)
             #define LIL_V2F_SHADOW
         #endif
-    #endif
     #define LIL_V2F_VERTEXLIGHT_FOG
 
     struct v2f
@@ -103,7 +98,6 @@
             float4 gdTension : TEXCOORD19;
         #endif
         LIL_VERTEX_INPUT_INSTANCE_ID
-        LIL_VERTEX_OUTPUT_STEREO
     };
 #endif
 
@@ -127,22 +121,20 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
     BEFORE_UNPACK_V2F
     OVERRIDE_UNPACK_V2F
     LIL_COPY_VFACE(fd.facing);
-    LIL_GET_HDRPDATA(input,fd);
     #if defined(LIL_OIT_PASS)
         clip(_lilOITEnabled - 0.5);
         #elif LIL_RENDER == 2 && !defined(LIL_OUTLINE)
         clip(0.5 - _lilOITEnabled * _lilOITActive);
     #endif
-    #if defined(LIL_V2F_SHADOW) || defined(LIL_PASS_FORWARDADD) || defined(LIL_USE_HO_CAST)
+    #if defined(LIL_V2F_SHADOW) || defined(LIL_USE_HO_CAST)
         LIL_LIGHT_ATTENUATION(fd.attenuation, input);
     #endif
-    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
+    #if defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
         if(_HoRTShadowConsumerDebugMode==8) fd.attenuation=1;
         if(_HoRTShadowConsumerDebugMode==9) fd.attenuation=0;
     #endif
@@ -242,9 +234,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Lighting
-        #if defined(LIL_PASS_FORWARDADD)
-            fd.col.rgb = fd.col.rgb * fd.lightColor * _OutlineEnableLighting;
-        #else
             fd.col.rgb = lerp(fd.col.rgb, fd.col.rgb * min(fd.lightColor + fd.addLightColor, _LightMaxLimit), _OutlineEnableLighting);
             // Toon shadow is opt-in through _OutlineShadowStrength. When it is on, the
             // outline runs the same lighting model as the main colour first and then the
@@ -266,7 +255,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                     OVERRIDE_AODARK
                 }
             #endif
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Premultiply
@@ -437,7 +425,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Lighting
         BEFORE_SHADOW
-        #if !defined(LIL_PASS_FORWARDADD)
             #if defined(LIL_FEATURE_SHADOW)
                 OVERRIDE_SHADOW
             #else
@@ -469,20 +456,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             #if defined(LIL_FEATURE_SSS)
                 OVERRIDE_SSS
             #endif
-        #else
-            #if defined(LIL_FEATURE_SHADOW) && defined(LIL_OPTIMIZE_APPLY_SHADOW_FA)
-                OVERRIDE_SHADOW
-            #else
-                fd.col.rgb *= fd.lightColor;
-            #endif
-
-            #if defined(LIL_FEATURE_MAIN2ND)
-                if(_UseMain2ndTex) fd.col.rgb = lerp(fd.col.rgb, 0, color2nd.a - color2nd.a * _Main2ndEnableLighting);
-            #endif
-            #if defined(LIL_FEATURE_MAIN3RD)
-                if(_UseMain3rdTex) fd.col.rgb = lerp(fd.col.rgb, 0, color3rd.a - color3rd.a * _Main3rdEnableLighting);
-            #endif
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Rim Shade
@@ -494,11 +467,9 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Backlight
         BEFORE_BACKLIGHT
-        #if !defined(LIL_PASS_FORWARDADD)
             #if defined(LIL_FEATURE_BACKLIGHT)
                 OVERRIDE_BACKLIGHT
             #endif
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Premultiply
@@ -511,9 +482,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_REFLECTION
         #endif
 
-        #ifndef LIL_PASS_FORWARDADD
             OVERRIDE_PLANAR_REFLECTION
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // MatCap
@@ -541,7 +510,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_GLITTER
         #endif
 
-        #ifndef LIL_PASS_FORWARDADD
             //------------------------------------------------------------------------------------------------------------------------------
             // Emission
             BEFORE_EMISSION_1ST
@@ -572,7 +540,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
 
             BEFORE_BLEND_EMISSION
             OVERRIDE_BLEND_EMISSION
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Backface Color
@@ -591,7 +558,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
     BEFORE_FOG
     OVERRIDE_FOG
 
-    #if defined(LIL_URP) && defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
+    #if defined(LIL_PASS_FORWARD) && !defined(LIL_OUTLINE)
         if(_HoRTShadowConsumerDebugMode==7)
         {
             #if defined(LIL_USE_HO_CAST)

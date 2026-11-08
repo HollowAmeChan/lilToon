@@ -266,9 +266,6 @@ msgstr "プロパティを有効にするには不透明度の値を上げて下
 msgid "sApplyTransparency"
 msgstr "透明度を適用"
 
-msgid "sVRParallaxStrength"
-msgstr "VR時の視差の強さ"
-
 msgid "sShadowMask"
 msgstr "影部分で無効化"
 
@@ -704,9 +701,6 @@ msgstr "Z Bias"
 msgid "sDeleteMesh0"
 msgstr "太さ0の頂点を削除"
 
-msgid "sDisableInVR"
-msgstr "VR時に非表示"
-
 msgid "sColorFromMain"
 msgstr "メインカラーから色を取得"
 
@@ -1043,9 +1037,6 @@ msgstr "AlphaToMask"
 msgid "sForward"
 msgstr "Forward"
 
-msgid "sForwardAdd"
-msgstr "ForwardAdd"
-
 msgid "sSrcBlendRGB"
 msgstr "SrcBlend RGB"
 
@@ -1373,15 +1364,6 @@ msgstr "初期値 (Fix Lightingやライティングプリセットに使用)"
 msgid "sSettingBuildSizeOptimization"
 msgstr "ビルドサイズの最適化 (全マテリアル共通)"
 
-msgid "sSettingApplyShadowFA"
-msgstr "ForwardAddパスで影を有効化"
-
-msgid "sSettingUseForwardAdd"
-msgstr "ForwardAddパスを使用"
-
-msgid "sSettingUseForwardAddShadow"
-msgstr "ForwardAddパスで影を受け取り"
-
 msgid "sSettingUseVertexLight"
 msgstr "頂点ライトを使用"
 
@@ -1568,3 +1550,5 @@ msgstr "表示できるテクスチャスロットがありません。"
 msgid "sTextureSearchUndo"
 msgstr "lilToon テクスチャ検索結果を適用"
 
+msgid "sGlitterViewDirectionBlend"
+msgstr "視線方向ブレンド"

@@ -306,7 +306,6 @@
         [lilVec2R]      _MatCapBlendUV1             ("sBlendUV1", Vector) = (0,0,0,0)
         [lilToggle]     _MatCapZRotCancel           ("sMatCapZRotCancel", Int) = 1
         [lilToggle]     _MatCapPerspective          ("sFixPerspective", Int) = 1
-                        _MatCapVRParallaxStrength   ("sVRParallaxStrength", Range(0, 1)) = 1
                         _MatCapBlend                ("Blend", Range(0, 1)) = 1
         [NoScaleOffset] _MatCapBlendMask            ("Mask", 2D) = "white" {}
                         _MatCapEnableLighting       ("sEnableLighting", Range(0, 1)) = 1
@@ -329,7 +328,6 @@
         [lilVec2R]      _MatCap2ndBlendUV1          ("sBlendUV1", Vector) = (0,0,0,0)
         [lilToggle]     _MatCap2ndZRotCancel        ("sMatCapZRotCancel", Int) = 1
         [lilToggle]     _MatCap2ndPerspective       ("sFixPerspective", Int) = 1
-                        _MatCap2ndVRParallaxStrength ("sVRParallaxStrength", Range(0, 1)) = 1
                         _MatCap2ndBlend             ("Blend", Range(0, 1)) = 1
         [NoScaleOffset] _MatCap2ndBlendMask         ("Mask", 2D) = "white" {}
                         _MatCap2ndEnableLighting    ("sEnableLighting", Range(0, 1)) = 1
@@ -356,7 +354,6 @@
                         _RimEnableLighting          ("sEnableLighting", Range(0, 1)) = 1
                         _RimShadowMask              ("sShadowMask", Range(0, 1)) = 0.5
         [lilToggle]     _RimBackfaceMask            ("sBackfaceMask", Int) = 1
-                        _RimVRParallaxStrength      ("sVRParallaxStrength", Range(0, 1)) = 1
         [lilToggle]     _RimApplyTransparency       ("sApplyTransparency", Int) = 1
                         _RimDirStrength             ("sRimLightDirection", Range(0, 1)) = 0
                         _RimDirRange                ("sRimDirectionRange", Range(-1, 1)) = 0
@@ -388,7 +385,7 @@
                         _GlitterShadowMask          ("sShadowMask", Range(0, 1)) = 0
         [lilToggle]     _GlitterBackfaceMask        ("sBackfaceMask", Int) = 0
         [lilToggle]     _GlitterApplyTransparency   ("sApplyTransparency", Int) = 1
-                        _GlitterVRParallaxStrength  ("sVRParallaxStrength", Range(0, 1)) = 0
+                        _GlitterVRParallaxStrength  ("sGlitterViewDirectionBlend", Range(0, 1)) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Emmision
@@ -515,7 +512,6 @@
                         _OutlineShadowStrength      ("sOutlineShadowStrength", Range(0, 1)) = 0
         [NoScaleOffset] _OutlineZBiasMask           ("Mask", 2D) = "white" {}
                         _OutlineZBias               ("Z Bias", Float) = 0
-        [lilToggle]     _OutlineDisableInVR         ("sDisableInVR", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Save (Unused)

@@ -8,9 +8,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-#if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
     using System.Text.RegularExpressions;
-#endif
 
 public class lilToonSetting : ScriptableObject
 {
@@ -110,9 +108,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_OutlineZBiasMask = true;
     public bool LIL_FEATURE_OutlineVectorTex = true;
 
-    public bool LIL_OPTIMIZE_APPLY_SHADOW_FA = true;
-    public bool LIL_OPTIMIZE_USE_FORWARDADD = true;
-    public bool LIL_OPTIMIZE_USE_FORWARDADD_SHADOW = false;
     public bool LIL_OPTIMIZE_USE_VERTEXLIGHT = true;
     public bool LIL_OPTIMIZE_USE_LIGHTMAP = false;
     // Project-wide APV compile option. This adds PROBE_VOLUMES_L1/L2 variants
@@ -122,7 +117,6 @@ public class lilToonSetting : ScriptableObject
 
     public bool isLocked = false;
     public bool isDebugOptimize = false;
-    public bool isOptimizeInTestBuild = false;
     public bool isMigrateInStartUp = true;
 
     public float defaultLightMinLimit = 0.05f;
@@ -158,13 +152,9 @@ public class lilToonSetting : ScriptableObject
         if(File.Exists(path))
         {
             JsonUtility.FromJsonOverwrite(File.ReadAllText(path), lockedSetting);
-            shaderSetting.LIL_OPTIMIZE_APPLY_SHADOW_FA       = lockedSetting.LIL_OPTIMIZE_APPLY_SHADOW_FA;
-            shaderSetting.LIL_OPTIMIZE_USE_FORWARDADD        = lockedSetting.LIL_OPTIMIZE_USE_FORWARDADD;
-            shaderSetting.LIL_OPTIMIZE_USE_FORWARDADD_SHADOW = lockedSetting.LIL_OPTIMIZE_USE_FORWARDADD_SHADOW;
             shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP          = lockedSetting.LIL_OPTIMIZE_USE_LIGHTMAP;
             shaderSetting.LIL_OPTIMIZE_USE_PROBEVOLUMES      = lockedSetting.LIL_OPTIMIZE_USE_PROBEVOLUMES;
             shaderSetting.isDebugOptimize                    = lockedSetting.isDebugOptimize;
-            shaderSetting.isOptimizeInTestBuild              = lockedSetting.isOptimizeInTestBuild;
             shaderSetting.isMigrateInStartUp                 = lockedSetting.isMigrateInStartUp;
             shaderSetting.mainLightModeName                  = lockedSetting.mainLightModeName;
             shaderSetting.outlineLightModeName               = lockedSetting.outlineLightModeName;
@@ -508,9 +498,6 @@ public class lilToonSetting : ScriptableObject
     private static string BuildShaderOptimizationDefines(lilToonSetting shaderSetting)
     {
         var sb = new StringBuilder();
-        if (shaderSetting.LIL_OPTIMIZE_APPLY_SHADOW_FA) sb.AppendLine("#define LIL_OPTIMIZE_APPLY_SHADOW_FA");
-        if (shaderSetting.LIL_OPTIMIZE_USE_FORWARDADD) sb.AppendLine("#define LIL_OPTIMIZE_USE_FORWARDADD");
-        if (shaderSetting.LIL_OPTIMIZE_USE_FORWARDADD_SHADOW) sb.AppendLine("#define LIL_OPTIMIZE_USE_FORWARDADD_SHADOW");
         if (shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT) sb.AppendLine("#define LIL_OPTIMIZE_USE_VERTEXLIGHT");
         if (shaderSetting.LIL_OPTIMIZE_USE_LIGHTMAP) sb.AppendLine("#define LIL_OPTIMIZE_USE_LIGHTMAP");
         if (shaderSetting.LIL_OPTIMIZE_USE_PROBEVOLUMES) sb.AppendLine("#define LIL_OPTIMIZE_USE_PROBEVOLUMES");
@@ -807,44 +794,19 @@ public class lilToonSetting : ScriptableObject
         shaderSettingText = BuildShaderSettingString(shaderSetting, false);
     }
 
-    #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
-    private static bool WorkaroundForUsePassBug()
-    {
-        // Normally, there is no problem if you update Unity.
-        // This workaround exists for unusual cases.
-        // https://issuetracker.unity3d.com/issues/crash-on-malloc-internal-when-recompiling-a-shadergraph-used-by-another-shader-via-usepass
-        var regex = new Regex(@"(\d*)\.(\d*)\.(\d*)");
-        var match = regex.Match(Application.unityVersion);
-
-        if(!match.Success) return true;
-        var major = int.Parse(match.Groups[1].Value);
-        var minor = int.Parse(match.Groups[2].Value);
-        var patch = int.Parse(match.Groups[3].Value);
-
-        if(major == 2022 && (minor < 3 || patch < 14)) return true;
-        if(major == 2023 && patch < 20) return true;
-
-        return false;
-    }
-    #endif
 
     internal static void SetShaderSettingBeforeBuild(Material[] materials, AnimationClip[] clips)
     {
         #if !LILTOON_DISABLE_OPTIMIZATION
-        #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
-            if(WorkaroundForUsePassBug()){ Debug.Log("[lilToon] Skip Optimization"); return; }
-        #endif
         try
         {
             logs.Clear();
-            #if UNITY_2022_1_OR_NEWER
                 var materialParents = new HashSet<Material>();
                 foreach(var m in materials)
                 {
                     GetMaterialParents(materialParents, m);
                 }
                 materials = materials.Union(materialParents).ToArray();
-            #endif
             if(!ShouldOptimization()) return;
             var shaders = GetShaderListFromGameObject(materials, clips);
             if(shaders.Count() == 0) return;
@@ -882,7 +844,6 @@ public class lilToonSetting : ScriptableObject
         #endif
     }
 
-    #if UNITY_2022_1_OR_NEWER
     private static void GetMaterialParents(HashSet<Material> parents, Material material)
     {
         if(!material || !material.parent) return;
@@ -890,14 +851,10 @@ public class lilToonSetting : ScriptableObject
         parents.Add(p);
         GetMaterialParents(parents, p);
     }
-    #endif
 
     internal static void SetShaderSettingBeforeBuild(bool loadBuildScene = true)
     {
         #if !LILTOON_DISABLE_OPTIMIZATION
-        #if UNITY_2022_1_OR_NEWER || (UNITY_2023_1_OR_NEWER && !UNITY_2023_2_OR_NEWER)
-            if(WorkaroundForUsePassBug()){ Debug.Log("[lilToon] Skip Optimization"); return; }
-        #endif
         try
         {
             if(!ShouldOptimization()) return;

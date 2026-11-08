@@ -313,7 +313,6 @@ namespace lilToon
         private readonly lilMaterialProperty matcapBlendUV1             = new lilMaterialProperty("_MatCapBlendUV1", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty matcapZRotCancel           = new lilMaterialProperty("_MatCapZRotCancel", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty matcapPerspective          = new lilMaterialProperty("_MatCapPerspective", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapVRParallaxStrength   = new lilMaterialProperty("_MatCapVRParallaxStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty matcapBlend                = new lilMaterialProperty("_MatCapBlend", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty matcapBlendMask            = new lilMaterialProperty("_MatCapBlendMask", true, PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
         private readonly lilMaterialProperty matcapEnableLighting       = new lilMaterialProperty("_MatCapEnableLighting", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
@@ -334,7 +333,6 @@ namespace lilToon
         private readonly lilMaterialProperty matcap2ndBlendUV1              = new lilMaterialProperty("_MatCap2ndBlendUV1", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
         private readonly lilMaterialProperty matcap2ndZRotCancel            = new lilMaterialProperty("_MatCap2ndZRotCancel", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
         private readonly lilMaterialProperty matcap2ndPerspective           = new lilMaterialProperty("_MatCap2ndPerspective", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndVRParallaxStrength    = new lilMaterialProperty("_MatCap2ndVRParallaxStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
         private readonly lilMaterialProperty matcap2ndBlend                 = new lilMaterialProperty("_MatCap2ndBlend", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
         private readonly lilMaterialProperty matcap2ndBlendMask             = new lilMaterialProperty("_MatCap2ndBlendMask", true, PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
         private readonly lilMaterialProperty matcap2ndEnableLighting        = new lilMaterialProperty("_MatCap2ndEnableLighting", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
@@ -359,7 +357,6 @@ namespace lilToon
         private readonly lilMaterialProperty rimEnableLighting      = new lilMaterialProperty("_RimEnableLighting", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimShadowMask          = new lilMaterialProperty("_RimShadowMask", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimBackfaceMask        = new lilMaterialProperty("_RimBackfaceMask", PropertyBlock.RimLight);
-        private readonly lilMaterialProperty rimVRParallaxStrength  = new lilMaterialProperty("_RimVRParallaxStrength", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimApplyTransparency   = new lilMaterialProperty("_RimApplyTransparency", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimDirStrength         = new lilMaterialProperty("_RimDirStrength", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimDirRange            = new lilMaterialProperty("_RimDirRange", PropertyBlock.RimLight);
@@ -388,7 +385,7 @@ namespace lilToon
         private readonly lilMaterialProperty glitterShadowMask          = new lilMaterialProperty("_GlitterShadowMask", PropertyBlock.Glitter);
         private readonly lilMaterialProperty glitterBackfaceMask        = new lilMaterialProperty("_GlitterBackfaceMask", PropertyBlock.Glitter);
         private readonly lilMaterialProperty glitterApplyTransparency   = new lilMaterialProperty("_GlitterApplyTransparency", PropertyBlock.Glitter);
-        private readonly lilMaterialProperty glitterVRParallaxStrength  = new lilMaterialProperty("_GlitterVRParallaxStrength", PropertyBlock.Glitter);
+        private readonly lilMaterialProperty glitterViewDirectionBlend  = new lilMaterialProperty("_GlitterVRParallaxStrength", PropertyBlock.Glitter);
         private readonly lilMaterialProperty glitterNormalStrength      = new lilMaterialProperty("_GlitterNormalStrength", PropertyBlock.Glitter);
 
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
@@ -412,7 +409,6 @@ namespace lilToon
         private readonly lilMaterialProperty outlineShadowStrength      = new lilMaterialProperty("_OutlineShadowStrength", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineZBiasMask           = new lilMaterialProperty("_OutlineZBiasMask", true, PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineZBias               = new lilMaterialProperty("_OutlineZBias", PropertyBlock.Outline);
-        private readonly lilMaterialProperty outlineDisableInVR         = new lilMaterialProperty("_OutlineDisableInVR", PropertyBlock.Outline);
 
         private readonly lilMaterialProperty useParallax    = new lilMaterialProperty("_UseParallax", PropertyBlock.Parallax);
         private readonly lilMaterialProperty usePOM         = new lilMaterialProperty("_UsePOM", PropertyBlock.Parallax);
@@ -463,11 +459,6 @@ namespace lilToon
         private readonly lilMaterialProperty dstBlendAlpha          = new lilMaterialProperty("_DstBlendAlpha", PropertyBlock.Rendering);
         private readonly lilMaterialProperty blendOp                = new lilMaterialProperty("_BlendOp", PropertyBlock.Rendering);
         private readonly lilMaterialProperty blendOpAlpha           = new lilMaterialProperty("_BlendOpAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty srcBlendFA             = new lilMaterialProperty("_SrcBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty dstBlendFA             = new lilMaterialProperty("_DstBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty srcBlendAlphaFA        = new lilMaterialProperty("_SrcBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty dstBlendAlphaFA        = new lilMaterialProperty("_DstBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty blendOpAlphaFA         = new lilMaterialProperty("_BlendOpAlphaFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty zclip                  = new lilMaterialProperty("_ZClip", PropertyBlock.Rendering);
         private readonly lilMaterialProperty zwrite                 = new lilMaterialProperty("_ZWrite", PropertyBlock.Rendering, PropertyBlock.Base);
         private readonly lilMaterialProperty ztest                  = new lilMaterialProperty("_ZTest", PropertyBlock.Rendering);
@@ -483,12 +474,6 @@ namespace lilToon
         private readonly lilMaterialProperty preDstBlendAlpha       = new lilMaterialProperty("_PreDstBlendAlpha", PropertyBlock.Rendering);
         private readonly lilMaterialProperty preBlendOp             = new lilMaterialProperty("_PreBlendOp", PropertyBlock.Rendering);
         private readonly lilMaterialProperty preBlendOpAlpha        = new lilMaterialProperty("_PreBlendOpAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preSrcBlendFA          = new lilMaterialProperty("_PreSrcBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preDstBlendFA          = new lilMaterialProperty("_PreDstBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preSrcBlendAlphaFA     = new lilMaterialProperty("_PreSrcBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preDstBlendAlphaFA     = new lilMaterialProperty("_PreDstBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preBlendOpFA           = new lilMaterialProperty("_PreBlendOpFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty preBlendOpAlphaFA      = new lilMaterialProperty("_PreBlendOpAlphaFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty preZclip               = new lilMaterialProperty("_PreZClip", PropertyBlock.Rendering);
         private readonly lilMaterialProperty preZwrite              = new lilMaterialProperty("_PreZWrite", PropertyBlock.Rendering);
         private readonly lilMaterialProperty preZtest               = new lilMaterialProperty("_PreZTest", PropertyBlock.Rendering);
@@ -504,12 +489,6 @@ namespace lilToon
         private readonly lilMaterialProperty outlineDstBlendAlpha   = new lilMaterialProperty("_OutlineDstBlendAlpha", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineBlendOp         = new lilMaterialProperty("_OutlineBlendOp", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineBlendOpAlpha    = new lilMaterialProperty("_OutlineBlendOpAlpha", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineSrcBlendFA      = new lilMaterialProperty("_OutlineSrcBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineDstBlendFA      = new lilMaterialProperty("_OutlineDstBlendFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineSrcBlendAlphaFA = new lilMaterialProperty("_OutlineSrcBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineDstBlendAlphaFA = new lilMaterialProperty("_OutlineDstBlendAlphaFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineBlendOpFA       = new lilMaterialProperty("_OutlineBlendOpFA", PropertyBlock.Rendering);
-        private readonly lilMaterialProperty outlineBlendOpAlphaFA  = new lilMaterialProperty("_OutlineBlendOpAlphaFA", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineZclip           = new lilMaterialProperty("_OutlineZClip", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineZwrite          = new lilMaterialProperty("_OutlineZWrite", PropertyBlock.Rendering);
         private readonly lilMaterialProperty outlineZtest           = new lilMaterialProperty("_OutlineZTest", PropertyBlock.Rendering);
@@ -816,7 +795,6 @@ namespace lilToon
                 matcapBlendUV1,
                 matcapZRotCancel,
                 matcapPerspective,
-                matcapVRParallaxStrength,
                 matcapBlend,
                 matcapBlendMask,
                 matcapEnableLighting,
@@ -837,7 +815,6 @@ namespace lilToon
                 matcap2ndBlendUV1,
                 matcap2ndZRotCancel,
                 matcap2ndPerspective,
-                matcap2ndVRParallaxStrength,
                 matcap2ndBlend,
                 matcap2ndBlendMask,
                 matcap2ndEnableLighting,
@@ -862,7 +839,6 @@ namespace lilToon
                 rimEnableLighting,
                 rimShadowMask,
                 rimBackfaceMask,
-                rimVRParallaxStrength,
                 rimApplyTransparency,
                 rimDirStrength,
                 rimDirRange,
@@ -891,7 +867,7 @@ namespace lilToon
                 glitterShadowMask,
                 glitterBackfaceMask,
                 glitterApplyTransparency,
-                glitterVRParallaxStrength,
+                glitterViewDirectionBlend,
                 glitterNormalStrength,
 
                 outlineColor,
@@ -915,7 +891,6 @@ namespace lilToon
                 outlineShadowStrength,
                 outlineZBiasMask,
                 outlineZBias,
-                outlineDisableInVR,
 
                 useParallax,
                 usePOM,
@@ -966,11 +941,6 @@ namespace lilToon
                 dstBlendAlpha,
                 blendOp,
                 blendOpAlpha,
-                srcBlendFA,
-                dstBlendFA,
-                srcBlendAlphaFA,
-                dstBlendAlphaFA,
-                blendOpAlphaFA,
                 zclip,
                 zwrite,
                 ztest,
@@ -986,12 +956,6 @@ namespace lilToon
                 preDstBlendAlpha,
                 preBlendOp,
                 preBlendOpAlpha,
-                preSrcBlendFA,
-                preDstBlendFA,
-                preSrcBlendAlphaFA,
-                preDstBlendAlphaFA,
-                preBlendOpFA,
-                preBlendOpAlphaFA,
                 preZclip,
                 preZwrite,
                 preZtest,
@@ -1007,12 +971,6 @@ namespace lilToon
                 outlineDstBlendAlpha,
                 outlineBlendOp,
                 outlineBlendOpAlpha,
-                outlineSrcBlendFA,
-                outlineDstBlendFA,
-                outlineSrcBlendAlphaFA,
-                outlineDstBlendAlphaFA,
-                outlineBlendOpFA,
-                outlineBlendOpAlphaFA,
                 outlineZclip,
                 outlineZwrite,
                 outlineZtest,
@@ -1032,11 +990,7 @@ namespace lilToon
         private void SetProperties(MaterialProperty[] propsSource)
         {
             var allProps = AllProperties();
-#if UNITY_2022_3_OR_NEWER
             var dictonary = UnityEngine.Pool.DictionaryPool<string, MaterialProperty>.Get();
-#else
-            var dictonary = new Dictionary<string,MaterialProperty>();
-#endif
             for (var i = 0; propsSource.Length > i; i += 1)
             {
                 var p = propsSource[i];
@@ -1053,9 +1007,7 @@ namespace lilToon
                     lilPorp.p = null;
             }
 
-#if UNITY_2022_3_OR_NEWER
             UnityEngine.Pool.DictionaryPool<string, MaterialProperty>.Release(dictonary);
-#endif
         }
 
         private Dictionary<PropertyBlock, List<lilMaterialProperty>> block2Propertes;

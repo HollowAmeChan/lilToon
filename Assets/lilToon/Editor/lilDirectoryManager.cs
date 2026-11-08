@@ -10,7 +10,6 @@ namespace lilToon
     {
         public const string editorSettingTempPath           = "Temp/lilToonEditorSetting";
         public const string languageSettingTempPath         = "Temp/lilToonLanguageSetting";
-        public const string versionInfoTempPath             = "Temp/lilToonVersion";
         public const string packageListTempPath             = "Temp/lilToonPackageList";
         public const string forceOptimizeBuildTempPath      = "Temp/lilToonForceOptimizeBuild";
         public const string postBuildTempPath               = "Temp/lilToonPostBuild";

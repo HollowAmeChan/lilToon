@@ -294,7 +294,6 @@ namespace lilToon
         private static bool ShouldLinear(Shader shader, string name)
         {
             if(PlayerSettings.colorSpace != ColorSpace.Linear) return false;
-            #if UNITY_2019_3_OR_NEWER
                 int id = shader.FindPropertyIndex(name);
                 if(id == -1) return false;
                 var flag = shader.GetPropertyFlags(id);
@@ -304,10 +303,6 @@ namespace lilToon
                     return flag != UnityEngine.Rendering.ShaderPropertyFlags.HDR;
                 }
                 return flag == UnityEngine.Rendering.ShaderPropertyFlags.Gamma;
-            #else
-                //int id = shader.PropertyToID(name);
-                return false;
-            #endif
         }
 
         internal static void ResetInputHLSL()

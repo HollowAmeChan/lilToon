@@ -1,20 +1,17 @@
 {
   "name": "jp.lilxyzw.liltoon",
   "version": "2.3.2",
-  "displayName": "lilToon",
-  "description": "Feature-rich toon shader.",
-  "unity": "6000.0",
-  "documentationUrl": "https://lilxyzw.github.io/lilToon/",
-  "changelogUrl": "https://lilxyzw.github.io/lilToon/#/en-us/other/changelog",
+  "displayName": "Ho lilToon",
+  "description": "Desktop Mono NPR shaders specialized for Unity 6000.3+ and HoURP.",
+  "unity": "6000.3",
   "licensesUrl": "https://github.com/lilxyzw/lilToon/blob/master/Assets/lilToon/LICENSE",
   "license": "MIT",
   "author": {
     "name": "Hollow"
   },
-  "keywords": ["Toon", "Shader", "Material"],
-  "url" : "https://github.com/lilxyzw/lilToon/releases/download/2.3.2/jp.lilxyzw.liltoon-2.3.2.zip?",
-  "repo" : "https://lilxyzw.github.io/vpm-repos/vpm.json",
-  "legacyFolders" : {
-    "Assets\\lilToon" : "05d1d116436047941ad97d1b9064ee05"
-  }
+  "keywords": [
+    "Toon",
+    "Shader",
+    "Material"
+  ]
 }

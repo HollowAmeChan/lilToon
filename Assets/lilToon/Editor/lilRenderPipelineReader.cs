@@ -19,13 +19,9 @@ namespace lilToon
 
         private static PackageVersionInfos GetURPVersion()
         {
-            string path = AssetDatabase.GUIDToAssetPath("30648b8d550465f4bb77f1e1afd0b37d");
-            var package = File.Exists(path) ? JsonUtility.FromJson<PackageInfos>(File.ReadAllText(path)) : new PackageInfos();
-            string guid =
-                package.displayName.Contains("SLZ") ?
-                "753d1ac2429a21a44ac5f937cbbb409f" : // Core
-                "30648b8d550465f4bb77f1e1afd0b37d";  // URP
-            var version = ReadVersion(guid);
+            var version = ReadVersion("30648b8d550465f4bb77f1e1afd0b37d");
+            if(version.Major < 17 || (version.Major == 17 && version.Minor < 3))
+                throw new System.NotSupportedException("Ho lilToon requires Unity 6000.3+ and HoURP 17.3+. Check the installed pipeline package.");
             version.RP = lilRenderPipeline.URP;
             return version;
         }

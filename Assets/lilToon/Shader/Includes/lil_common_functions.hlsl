@@ -24,18 +24,6 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
 // Math
 
 // Decal bounds retain their own edge coverage, independently of toon ramps.
-#if defined(SHADER_API_D3D9)
-    float lilIsIn0to1(float f)
-    {
-        return saturate(f) == f;
-    }
-
-    float lilIsIn0to1(float f, float nv)
-    {
-        return saturate(f) == f;
-    }
-
-#else
     float lilIsIn0to1(float f)
     {
         float value = 0.5 - abs(f-0.5);
@@ -48,7 +36,6 @@ float3 lilGetAdditionalLights(float3 positionWS, float4 positionCS, float streng
         return saturate(value / clamp(fwidth(value), 0.0001, nv));
     }
 
-#endif
 
 // Tooning uses only the material's border and blur, not screen-space derivatives.
 float lilTooningNoSaturate(float value, float border)
@@ -247,7 +234,7 @@ lilVertexNormalInputs lilGetVertexNormalInputsFromWS(float3 normalWS)
 #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/GeometryData/Shaders/HoGeometryTension.hlsl"
 #endif
 
-#if defined(LIL_URP) && defined(_HO_GD_OUTLINE)
+#if defined(_HO_GD_OUTLINE)
     #include "Packages/jp.lilxyzw.liltoon.urp.extensions/Runtime/GeometryData/Shaders/HoGeometryOutline.hlsl"
 #endif
 float lilGetOutlineWidth(float2 uv, float4 color, float outlineWidth, TEXTURE2D(outlineWidthMask), uint outlineVertexR2Width LIL_SAMP_IN_FUNC(samp))
@@ -264,7 +251,7 @@ float lilGetOutlineWidth(float2 uv, float4 color, float outlineWidth, TEXTURE2D(
 float lilGetOutlineWidth(float3 positionOS, float3 positionWS, float2 uv, float4 color, float outlineWidth, TEXTURE2D(outlineWidthMask), uint outlineVertexR2Width, float outlineFixWidth LIL_SAMP_IN_FUNC(samp))
 {
     outlineWidth = lilGetOutlineWidth(uv, color, outlineWidth, outlineWidthMask, outlineVertexR2Width LIL_SAMP_IN(samp));
-    outlineWidth *= lerp(1.0, saturate(length(lilHeadDirection(positionWS))), outlineFixWidth);
+    outlineWidth *= lerp(1.0, saturate(length(lilViewDirection(positionWS))), outlineFixWidth);
     return outlineWidth;
 }
 
@@ -306,16 +293,6 @@ void lilCalcOutlinePosition(inout float3 positionOS, float2 uvs[4], float4 color
     positionOS -= normalize(V) * lilGetOutlineZBias(uvs[0], outlineZBias, outlineZBiasMask LIL_SAMP_IN(samp));
 }
 
-void lilCalcOutlinePositionLite(inout float3 positionOS, float2 uv, float4 color, float3 normalOS, float3x3 tbnOS, float outlineWidth, TEXTURE2D(outlineWidthMask), uint outlineVertexR2Width, float outlineFixWidth, float outlineZBias, TEXTURE2D(outlineZBiasMask) LIL_SAMP_IN_FUNC(samp))
-{
-    float3 positionWS = lilToAbsolutePositionWS(lilOptMul(LIL_MATRIX_M, positionOS).xyz);
-    float width = lilGetOutlineWidth(positionOS, positionWS, uv, color, outlineWidth, outlineWidthMask, outlineVertexR2Width, outlineFixWidth LIL_SAMP_IN(samp));
-    float3 outlineN = normalOS;
-    if(outlineVertexR2Width == 2) outlineN = lilGetOutlineVertexColorVector(color, normalOS, tbnOS);
-    positionOS += outlineN * width;
-    float3 V = lilIsPerspective() ? lilViewDirectionOS(positionOS) : mul((float3x3)LIL_MATRIX_I_M, LIL_MATRIX_V._m20_m21_m22);
-    positionOS -= normalize(V) * lilGetOutlineZBias(uv, outlineZBias, outlineZBiasMask LIL_SAMP_IN(samp));
-}
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Color
@@ -544,11 +521,11 @@ float2 lilCalcAtlasAnimation(float2 uv, float4 decalAnimation, float4 decalSubPa
 }
 
 // MatCap
-float2 lilCalcMatCapUV(float2 uv1, float3 normalWS, float3 viewDirection, float3 headDirection, float4 matcap_ST, float2 matcapBlendUV1, bool zRotCancel, bool matcapPerspective, float matcapVRParallaxStrength)
+float2 lilCalcMatCapUV(float2 uv1, float3 normalWS, float3 viewDirection, float4 matcap_ST, float2 matcapBlendUV1, bool zRotCancel, bool matcapPerspective)
 {
     // Simple
     //return mul((float3x3)LIL_MATRIX_V, normalWS).xy * 0.5 + 0.5;
-    float3 normalVD = lilBlendVRParallax(headDirection, viewDirection, matcapVRParallaxStrength);
+    float3 normalVD = viewDirection;
     normalVD = lilIsPerspective() && matcapPerspective ? normalVD : lilCameraDirection();
     float3 bitangentVD = zRotCancel ? float3(0,1,0) : LIL_MATRIX_V._m10_m11_m12;
     bitangentVD = lilOrthoNormalize(bitangentVD, normalVD);
@@ -865,65 +842,19 @@ float3 lilShadeSH9(float3 normalWS)
     return lilShadeSH9(float4(normalWS,1.0));
 }
 
-float3 lilShadeSH9LPPV(float4 normalWS, float3 positionWS)
-{
-    float4 SHAr = unity_SHAr;
-    float4 SHAg = unity_SHAg;
-    float4 SHAb = unity_SHAb;
-    #if defined(LIL_USE_LPPV)
-        if(unity_ProbeVolumeParams.x == 1.0)
-        {
-            float3 position = (unity_ProbeVolumeParams.y == 1.0) ? lilOptMul(unity_ProbeVolumeWorldToObject, positionWS).xyz : positionWS;
-            float3 texCoord = (position - unity_ProbeVolumeMin.xyz) * unity_ProbeVolumeSizeInv.xyz;
-            texCoord.x = texCoord.x * 0.25;
-            float texCoordX = clamp(texCoord.x, 0.5 * unity_ProbeVolumeParams.z, 0.25 - 0.5 * unity_ProbeVolumeParams.z);
-            texCoord.x = texCoordX;
-            SHAr = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-            texCoord.x = texCoordX + 0.25;
-            SHAg = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-            texCoord.x = texCoordX + 0.5;
-            SHAb = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-        }
-    #endif
-    float3 res;
-    res.r = dot(SHAr,normalWS);
-    res.g = dot(SHAg,normalWS);
-    res.b = dot(SHAb,normalWS);
-    float4 vB = normalWS.xyzz * normalWS.yzzx;
-    res.r += dot(unity_SHBr,vB);
-    res.g += dot(unity_SHBg,vB);
-    res.b += dot(unity_SHBb,vB);
-    res += unity_SHC.rgb * (normalWS.x * normalWS.x - normalWS.y * normalWS.y);
-    #ifdef LIL_COLORSPACE_GAMMA
-        res = lilLinearToSRGB(res);
-    #endif
-    return res;
-}
 
-float3 lilShadeSH9LPPV(float3 normalWS, float3 positionWS)
-{
-    return lilShadeSH9LPPV(float4(normalWS,1.0), positionWS);
-}
 
 float3 lilGetSHToon()
 {
     return lilShadeSH9(lilGetLightDirectionForSH9() * 0.666666);
 }
 
-float3 lilGetSHToon(float3 positionWS)
-{
-    return lilShadeSH9LPPV(lilGetLightDirectionForSH9() * 0.666666, positionWS);
-}
 
 float3 lilGetSHToonMin()
 {
     return lilShadeSH9(-lilGetLightDirectionForSH9() * 0.666666);
 }
 
-float3 lilGetSHToonMin(float3 positionWS)
-{
-    return lilShadeSH9LPPV(-lilGetLightDirectionForSH9() * 0.666666, positionWS);
-}
 
 void lilGetToonSHDouble(float3 lightDirection, out float3 shMax, out float3 shMin)
 {
@@ -948,46 +879,6 @@ void lilGetToonSHDouble(float3 lightDirection, out float3 shMax, out float3 shMi
     #endif
 }
 
-void lilGetToonSHDoubleLPPV(float3 lightDirection, float3 positionWS, out float3 shMax, out float3 shMin)
-{
-    float4 SHAr = unity_SHAr;
-    float4 SHAg = unity_SHAg;
-    float4 SHAb = unity_SHAb;
-    #if defined(LIL_USE_LPPV)
-        if(unity_ProbeVolumeParams.x == 1.0)
-        {
-            float3 position = (unity_ProbeVolumeParams.y == 1.0) ? lilOptMul(unity_ProbeVolumeWorldToObject, positionWS).xyz : positionWS;
-            float3 texCoord = (position - unity_ProbeVolumeMin.xyz) * unity_ProbeVolumeSizeInv.xyz;
-            texCoord.x = texCoord.x * 0.25;
-            float texCoordX = clamp(texCoord.x, 0.5 * unity_ProbeVolumeParams.z, 0.25 - 0.5 * unity_ProbeVolumeParams.z);
-            texCoord.x = texCoordX;
-            SHAr = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-            texCoord.x = texCoordX + 0.25;
-            SHAg = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-            texCoord.x = texCoordX + 0.5;
-            SHAb = LIL_SAMPLE_3D(unity_ProbeVolumeSH, samplerunity_ProbeVolumeSH, texCoord);
-        }
-    #endif
-    float3 N = lightDirection * 0.666666;
-    float4 vB = N.xyzz * N.yzzx;
-    // L0 L2
-    float3 res = float3(SHAr.w,SHAg.w,SHAb.w);
-    res.r += dot(unity_SHBr, vB);
-    res.g += dot(unity_SHBg, vB);
-    res.b += dot(unity_SHBb, vB);
-    res += unity_SHC.rgb * (N.x * N.x - N.y * N.y);
-    // L1
-    float3 l1;
-    l1.r = dot(SHAr.rgb, N);
-    l1.g = dot(SHAg.rgb, N);
-    l1.b = dot(SHAb.rgb, N);
-    shMax = res + l1;
-    shMin = res - l1;
-    #ifdef LIL_COLORSPACE_GAMMA
-        shMax = lilLinearToSRGB(shMax);
-        shMin = lilLinearToSRGB(shMin);
-    #endif
-}
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Lighting
@@ -996,20 +887,12 @@ float3 lilGetLightColor()
     return LIL_MAINLIGHT_COLOR + lilGetSHToon();
 }
 
-float3 lilGetLightColor(float3 positionWS)
-{
-    return LIL_MAINLIGHT_COLOR + lilGetSHToon(positionWS);
-}
 
 float3 lilGetIndirLightColor()
 {
     return saturate(lilGetSHToonMin());
 }
 
-float3 lilGetIndirLightColor(float3 positionWS)
-{
-    return saturate(lilGetSHToonMin(positionWS));
-}
 
 void lilGetLightColorDouble(out float3 lightColor, out float3 indLightColor)
 {
@@ -1159,23 +1042,8 @@ float3 lilCustomReflection(TEXTURECUBE(tex), float4 hdr, float3 viewDirection, f
 // Glitter
 float4 lilVoronoi(float2 pos, out float2 nearoffset, float scaleRandomize)
 {
-    #if defined(SHADER_API_D3D9) || defined(SHADER_API_D3D11_9X)
-        #define M1 46203.4357
-        #define M2 21091.5327
-        #define M3 35771.1966
-        float2 q = trunc(pos);
-        float4 q2 = float4(q.x, q.y, q.x+1, q.y+1);
-        float3 noise0 = frac(sin(dot(q2.xy,float2(12.9898,78.233))) * float3(M1, M2, M3));
-        float3 noise1 = frac(sin(dot(q2.zy,float2(12.9898,78.233))) * float3(M1, M2, M3));
-        float3 noise2 = frac(sin(dot(q2.xw,float2(12.9898,78.233))) * float3(M1, M2, M3));
-        float3 noise3 = frac(sin(dot(q2.zw,float2(12.9898,78.233))) * float3(M1, M2, M3));
-        #undef M1
-        #undef M2
-        #undef M3
-    #else
         float3 noise0, noise1, noise2, noise3;
         lilHashRGB4(pos, noise0, noise1, noise2, noise3);
-    #endif
 
     // Get the nearest position
     float4 fracpos = frac(pos).xyxy + float4(0.5,0.5,-0.5,-0.5);

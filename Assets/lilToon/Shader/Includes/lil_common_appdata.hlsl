@@ -11,7 +11,7 @@
     #define LIL_APP_PREVEL
 #endif
 
-#if defined(LIL_URP) && (defined(_HO_GD_OUTLINE) || defined(LIL_GD_TENSION))
+#if (defined(_HO_GD_OUTLINE) || defined(LIL_GD_TENSION))
     #define LIL_APP_VERTEXID
 #endif
 
@@ -70,7 +70,7 @@
     #define LIL_APP_TANGENT
 #endif
 
-#if !defined(LIL_NOT_SUPPORT_VERTEXID) && defined(LIL_REQUIRE_APP_VERTEXID)
+#if defined(LIL_REQUIRE_APP_VERTEXID)
     #define LIL_APP_VERTEXID
 #endif
 

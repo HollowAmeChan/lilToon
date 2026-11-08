@@ -44,7 +44,6 @@ struct v2f
         float4 gdTension : TEXCOORD14;
     #endif
     LIL_VERTEX_INPUT_INSTANCE_ID
-    LIL_VERTEX_OUTPUT_STEREO
 };
 
 #include "lil_common_vert.hlsl"
@@ -56,7 +55,6 @@ struct v2f
 LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
 {
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
     BEFORE_UNPACK_V2F

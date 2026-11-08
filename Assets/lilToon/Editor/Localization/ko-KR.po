@@ -266,9 +266,6 @@ msgstr "속성을 유효하게 하려면 알파 값을 올려 주십시오."
 msgid "sApplyTransparency"
 msgstr "투명도 적용"
 
-msgid "sVRParallaxStrength"
-msgstr "VR Parallax Strength"
-
 msgid "sShadowMask"
 msgstr "그림자 속에서 무효화"
 
@@ -704,9 +701,6 @@ msgstr "Z Bias"
 msgid "sDeleteMesh0"
 msgstr "굵기 0의 꼭짓점 삭제"
 
-msgid "sDisableInVR"
-msgstr "VR에서 사용 안 함"
-
 msgid "sColorFromMain"
 msgstr "메인 컬러에서 색상 가져 오기"
 
@@ -1043,9 +1037,6 @@ msgstr "AlphaToMask"
 msgid "sForward"
 msgstr "Forward"
 
-msgid "sForwardAdd"
-msgstr "ForwardAdd"
-
 msgid "sSrcBlendRGB"
 msgstr "SrcBlend RGB"
 
@@ -1373,15 +1364,6 @@ msgstr "초기값 (Fix Lighting이나 라이팅 프리셋에 사용)"
 msgid "sSettingBuildSizeOptimization"
 msgstr "빌드 사이즈 최적화 (전체 재료 공통)"
 
-msgid "sSettingApplyShadowFA"
-msgstr "ForwardAdd로 그림자 활성화"
-
-msgid "sSettingUseForwardAdd"
-msgstr "ForwardAdd 사용"
-
-msgid "sSettingUseForwardAddShadow"
-msgstr "ForwardAdd 패스로 그림자를 받아"
-
 msgid "sSettingUseVertexLight"
 msgstr "꼭지점 라이트 사용"
 
@@ -1568,3 +1550,5 @@ msgstr "표시할 수 있는 텍스처 슬롯이 없습니다."
 msgid "sTextureSearchUndo"
 msgstr "lilToon 텍스처 검색 결과 적용"
 
+msgid "sGlitterViewDirectionBlend"
+msgstr "시선 방향 혼합"

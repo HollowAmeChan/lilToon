@@ -266,9 +266,6 @@ msgstr "增加透明度的值以啟用該屬性。"
 msgid "sApplyTransparency"
 msgstr "應用透明度"
 
-msgid "sVRParallaxStrength"
-msgstr "VR 視差強度"
-
 msgid "sShadowMask"
 msgstr "陰影遮罩"
 
@@ -704,9 +701,6 @@ msgstr "Z Bias"
 msgid "sDeleteMesh0"
 msgstr "刪除寬度為 0 的頂點"
 
-msgid "sDisableInVR"
-msgstr "在 VR 中禁用"
-
 msgid "sColorFromMain"
 msgstr "從主色獲取顏色"
 
@@ -1043,9 +1037,6 @@ msgstr "AlphaToMask"
 msgid "sForward"
 msgstr "Forward"
 
-msgid "sForwardAdd"
-msgstr "ForwardAdd"
-
 msgid "sSrcBlendRGB"
 msgstr "SrcBlend RGB"
 
@@ -1373,15 +1364,6 @@ msgstr "初始值 (用於 Fix Lighting 和照明預設)"
 msgid "sSettingBuildSizeOptimization"
 msgstr "優化構建大小 (用於所有材質)"
 
-msgid "sSettingApplyShadowFA"
-msgstr "通過 ForwardAdd 啟用陰影"
-
-msgid "sSettingUseForwardAdd"
-msgstr "使用 ForwardAdd"
-
-msgid "sSettingUseForwardAddShadow"
-msgstr "在 ForwardAdd 路徑中接收陰影"
-
 msgid "sSettingUseVertexLight"
 msgstr "使用頂點燈"
 
@@ -1568,3 +1550,5 @@ msgstr "目前材質沒有可顯示的貼圖槽。"
 msgid "sTextureSearchUndo"
 msgstr "套用 lilToon 貼圖搜尋結果"
 
+msgid "sGlitterViewDirectionBlend"
+msgstr "視線方向混合"

@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Networking;
 using System;
 using System.IO;
 using System.Collections;
@@ -120,13 +119,6 @@ namespace lilToon
             }
 
             //------------------------------------------------------------------------------------------------------------------------------
-            // Version check
-            if(string.IsNullOrEmpty(lilEditorParameters.instance.versionInfo))
-            {
-                CoroutineHandler.StartStaticCoroutine(GetLatestVersionInfo());
-            }
-
-            //------------------------------------------------------------------------------------------------------------------------------
             // Update
             if(shaderSetting.previousVersion != lilConstants.currentVersionValue)
             {
@@ -135,7 +127,6 @@ namespace lilToon
                 shaderSetting.previousVersion = lilConstants.currentVersionValue;
                 lilToonSetting.SaveShaderSetting(shaderSetting);
 
-                #if UNITY_2019_4_OR_NEWER
                     // Update custom shaders
                     var folders = new List<string>();
                     foreach(var shaderPath in lilDirectoryManager.FindAssetsPath("t:shader").Where(p => p.Contains(".lilcontainer")))
@@ -155,7 +146,6 @@ namespace lilToon
                     {
                         AssetDatabase.ImportAsset(folder, ImportAssetOptions.ImportRecursive);
                     }
-                #endif
             }
 
             //------------------------------------------------------------------------------------------------------------------------------
@@ -175,21 +165,6 @@ namespace lilToon
             }
         }
 
-        private static IEnumerator GetLatestVersionInfo()
-        {
-            using(UnityWebRequest webRequest = UnityWebRequest.Get(lilConstants.versionInfoURL))
-            {
-                yield return webRequest.SendWebRequest();
-                #if UNITY_2020_2_OR_NEWER
-                    if(webRequest.result != UnityWebRequest.Result.ConnectionError)
-                #else
-                    if(!webRequest.isNetworkError)
-                #endif
-                {
-                    lilEditorParameters.instance.versionInfo = webRequest.downloadHandler.text;
-                }
-            }
-        }
 
         internal static void MigrateMaterials()
         {

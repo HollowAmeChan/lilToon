@@ -8,27 +8,18 @@ using UnityEditor;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Linq;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-    using UnityEditor.Experimental.AssetImporters;
-#endif
 
 namespace lilToon
 {
     #if LILTOON_DISABLE_ASSET_MODIFICATION == false
-    #if UNITY_2019_4_OR_NEWER
         [ScriptedImporter(0, "lilcontainer")]
         public class lilShaderContainerImporter : ScriptedImporter
         {
             public override void OnImportAsset(AssetImportContext ctx)
             {
                 var source = lilShaderContainer.UnpackContainer(ctx.assetPath, ctx);
-                #if UNITY_2019_4_0 || UNITY_2019_4_1 || UNITY_2019_4_2 || UNITY_2019_4_3 || UNITY_2019_4_4 || UNITY_2019_4_5 || UNITY_2019_4_6 || UNITY_2019_4_7 || UNITY_2019_4_8 || UNITY_2019_4_9 || UNITY_2019_4_10
-                    var shader = ShaderUtil.CreateShaderAsset(source, false);
-                #else
                     var shader = ShaderUtil.CreateShaderAsset(ctx, source, false);
-                #endif
 
                 var text = new TextAsset(source);
                 text.name = "Shader Source";
@@ -73,13 +64,11 @@ namespace lilToon
                 }
             }
         }
-    #endif
     #endif //LILTOON_DISABLE_ASSET_MODIFICATION
 
     public class lilShaderContainer
     {
         private const string MULTI_COMPILE_FORWARD          = "#pragma lil_multi_compile_forward";
-        private const string MULTI_COMPILE_FORWARDADD       = "#pragma lil_multi_compile_forwardadd";
         private const string MULTI_COMPILE_SHADOWCASTER     = "#pragma lil_multi_compile_shadowcaster";
         private const string MULTI_COMPILE_DEPTHONLY        = "#pragma lil_multi_compile_depthonly";
         private const string MULTI_COMPILE_DEPTHNORMALS     = "#pragma lil_multi_compile_depthnormals";
@@ -120,17 +109,9 @@ namespace lilToon
         private const string LIL_LIGHTMODE_FORWARD_1        = "*LIL_LIGHTMODE_FORWARD_1*";
         private const string LIL_LIGHTMODE_FORWARD_2        = "*LIL_LIGHTMODE_FORWARD_2*";
 
-        private const string LIL_LIGHTMODE_URP_7_FORWARD_0  = "UniversalForward";
-        private const string LIL_LIGHTMODE_URP_7_FORWARD_1  = "LightweightForward";
-        private const string LIL_LIGHTMODE_URP_7_FORWARD_2  = "SRPDefaultUnlit";
-
-        private const string LIL_LIGHTMODE_URP_8_FORWARD_0  = "SRPDefaultUnlit";
-        private const string LIL_LIGHTMODE_URP_8_FORWARD_1  = "UniversalForward";
-        private const string LIL_LIGHTMODE_URP_8_FORWARD_2  = "LightweightForward";
-
-        private const string LIL_LIGHTMODE_URP_9_FORWARD_0  = "SRPDefaultUnlit";
-        private const string LIL_LIGHTMODE_URP_9_FORWARD_1  = "UniversalForward";
-        private const string LIL_LIGHTMODE_URP_9_FORWARD_2  = "UniversalForwardOnly";
+        private const string HO_LIGHTMODE_FORWARD_0  = "SRPDefaultUnlit";
+        private const string HO_LIGHTMODE_FORWARD_1  = "UniversalForward";
+        private const string HO_LIGHTMODE_FORWARD_2  = "UniversalForwardOnly";
 
         private const string csdShaderNameTag                   = "ShaderName";
         private const string csdEditorNameTag                   = "EditorName";
@@ -260,24 +241,9 @@ namespace lilToon
             LightModeOverride(ref sb, "FORWARD_OUTLINE",    GetStringField("outlineLightModeName"));
             LightModeOverride(ref sb, "FORWARD_BACK",       GetStringField("preLightModeName"));
 
-            if(version.Major == 8)
-            {
-                sb.Replace(LIL_LIGHTMODE_FORWARD_0, LIL_LIGHTMODE_URP_8_FORWARD_0);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_1, LIL_LIGHTMODE_URP_8_FORWARD_1);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_2, LIL_LIGHTMODE_URP_8_FORWARD_2);
-            }
-            else if(version.Major == 7)
-            {
-                sb.Replace(LIL_LIGHTMODE_FORWARD_0, LIL_LIGHTMODE_URP_7_FORWARD_0);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_1, LIL_LIGHTMODE_URP_7_FORWARD_1);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_2, LIL_LIGHTMODE_URP_7_FORWARD_2);
-            }
-            else
-            {
-                sb.Replace(LIL_LIGHTMODE_FORWARD_0, LIL_LIGHTMODE_URP_9_FORWARD_0);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_1, LIL_LIGHTMODE_URP_9_FORWARD_1);
-                sb.Replace(LIL_LIGHTMODE_FORWARD_2, LIL_LIGHTMODE_URP_9_FORWARD_2);
-            }
+            sb.Replace(LIL_LIGHTMODE_FORWARD_0, HO_LIGHTMODE_FORWARD_0);
+            sb.Replace(LIL_LIGHTMODE_FORWARD_1, HO_LIGHTMODE_FORWARD_1);
+            sb.Replace(LIL_LIGHTMODE_FORWARD_2, HO_LIGHTMODE_FORWARD_2);
 
             if(assetName.Contains("trans"))
             {
@@ -291,8 +257,6 @@ namespace lilToon
             {
                 sb.Replace(FixNewlineCode(replace.Key), FixNewlineCode(replace.Value));
             }
-
-            FixIncludeForOldUnity(ref sb);
 
             if(
                 doOptimize &&
@@ -326,9 +290,6 @@ namespace lilToon
                 sb.Replace("/SHADOW_CASTER_OUTLINE", "/SHADOW_CASTER");
             }
 
-            #if !UNITY_2019_4_OR_NEWER
-                sb.Replace("shader_feature_local", "shader_feature");
-            #endif
 
             sb.Replace("\r\n", "\r");
             sb.Replace("\n", "\r");
@@ -755,39 +716,6 @@ namespace lilToon
             return text.Replace("\\r", "\r").Replace("\\n", "\n");
         }
 
-        private static void FixIncludeForOldUnity(ref StringBuilder sb)
-        {
-            #if UNITY_2019_4_0 || UNITY_2019_4_1 || UNITY_2019_4_2 || UNITY_2019_4_3 || UNITY_2019_4_4 || UNITY_2019_4_5 || UNITY_2019_4_6 || UNITY_2019_4_7 || UNITY_2019_4_8 || UNITY_2019_4_9 || UNITY_2019_4_10
-                string additionalPath = assetFolderPath.Replace("\\", "/");
-                var escapes = Environment.NewLine.ToCharArray();
-                var text = sb.ToString().Split(escapes[0]);
-                sb.Clear();
-
-                if(escapes.Length >= 1)
-                {
-                    foreach(var escape in escapes)
-                    {
-                        for(int i = 0; i < text.Length; i++)
-                        {
-                            text[i] = text[i].Replace(escape.ToString(), "");
-                        }
-                    }
-                }
-
-                foreach(var line in text)
-                {
-                    if(line.Contains("#include \"") && !line.Contains("\"Assets/") && !line.Contains("\"Packages/"))
-                    {
-                        sb.AppendLine(line.Replace("#include \"", "#include \"" + additionalPath));
-                    }
-                    else
-                    {
-                        sb.AppendLine(line);
-                    }
-                }
-            #endif
-        }
-
         private static void AddHLSLDependency(string assetFolderPath, AssetImportContext ctx)
         {
             if(ctx == null) return;
@@ -842,67 +770,7 @@ namespace lilToon
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
-        // ForwardAdd
-        public static void RewriteForwardAdd(ref StringBuilder sb)
-        {
-            bool enable = GetBoolField("LIL_OPTIMIZE_USE_FORWARDADD", true);
 
-            if(enable)
-            {
-                sb.Replace(
-                    "        // ForwardAdd Start" + Environment.NewLine + "        /*",
-                    "        // ForwardAdd Start" + Environment.NewLine + "        //");
-                sb.Replace(
-                    "        */" + Environment.NewLine + "        // ForwardAdd End",
-                    "        //" + Environment.NewLine + "        // ForwardAdd End");
-            }
-            else
-            {
-                sb.Replace(
-                    "        // ForwardAdd Start" + Environment.NewLine + "        //",
-                    "        // ForwardAdd Start" + Environment.NewLine + "        /*");
-                sb.Replace(
-                    "        //" + Environment.NewLine + "        // ForwardAdd End",
-                    "        */" + Environment.NewLine + "        // ForwardAdd End");
-            }
-
-            var lines = sb.ToString().Split('\n');
-            sb = new StringBuilder();
-            for(int i = 0; i < lines.Length; i++)
-            {
-                string line = lines[i];
-                line = line.Replace("\r", "");
-
-                if(line.Contains("UsePass") && line.Contains("FORWARD_ADD"))
-                {
-                    if(enable)
-                    {
-                        line = line.Replace(
-                            "        //UsePass",
-                            "        UsePass");
-                    }
-                    else
-                    {
-                        line = line.Replace(
-                            "        UsePass",
-                            "        //UsePass");
-                    }
-                }
-                sb.AppendLine(line);
-            }
-        }
-
-        public static void RewriteForwardAddShadow(ref StringBuilder sb)
-        {
-            bool enable = GetBoolField("LIL_OPTIMIZE_USE_FORWARDADD_SHADOW");
-
-            if(enable)
-            {
-                sb.Replace(
-                    "#pragma multi_compile_fragment POINT DIRECTIONAL SPOT POINT_COOKIE DIRECTIONAL_COOKIE",
-                    "#pragma multi_compile_fwdadd_fullshadows");
-            }
-        }
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Multi Compile
@@ -983,7 +851,8 @@ namespace lilToon
 
         private static void ReplaceMultiCompiles(ref string sb, PackageVersionInfos version, int indent, bool isDots)
         {
-            sb = sb.Replace(MULTI_COMPILE_FORWARDADD, GetMultiCompileForwardAdd(version, indent));
+            if(Regex.IsMatch(sb, @"(?m)^\s*#pragma\s+lil_multi_compile_forwardadd\b"))
+                throw new System.NotSupportedException("Ho lilToon supports HoURP Forward/Forward+; the retired ForwardAdd pragma is not supported.");
             sb = ReplaceForwardMultiCompiles(sb, version, indent);
             sb = sb.Replace(MULTI_COMPILE_SHADOWCASTER, GetMultiCompileShadowCaster(version, indent))
                    .Replace(MULTI_COMPILE_DEPTHONLY, GetMultiCompileDepthOnly(version, indent))
@@ -1036,177 +905,50 @@ namespace lilToon
 
         private static string GetMultiCompileForward(PackageVersionInfos version, int indent, MultiCompileOptions options)
         {
-            if(version.Major >= 17)
-            {
-                var pragmas = new List<string>();
+            var pragmas = new List<string>();
 
-                if(!options.skipMainLightShadows) pragmas.Add("#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN");
-                pragmas.Add("#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS");
-                pragmas.Add("#pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX");
-                if(!options.skipAdditionalLightShadows) pragmas.Add("#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS");
-                if(!options.skipReflections)
-                {
-                    pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING");
-                    pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION");
-                }
-                pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS");
-                pragmas.Add("#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH");
-                pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_IRRADIANCE");
-                if(!options.skipDecals) pragmas.Add("#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3");
-                pragmas.Add("#pragma multi_compile_fragment _ _LIGHT_COOKIES");
-                pragmas.Add("#pragma multi_compile _ _LIGHT_LAYERS");
-                pragmas.Add("#pragma multi_compile _ _CLUSTER_LIGHT_LOOP");
-                pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl\"");
-                pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl\"");
+            if(!options.skipMainLightShadows) pragmas.Add("#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN");
+            pragmas.Add("#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS");
+            pragmas.Add("#pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX");
+            if(!options.skipAdditionalLightShadows) pragmas.Add("#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS");
+            if(!options.skipReflections)
+            {
+                pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING");
+                pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION");
+            }
+            pragmas.Add("#pragma multi_compile_fragment _ _REFLECTION_PROBE_ATLAS");
+            pragmas.Add("#pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH");
+            pragmas.Add("#pragma multi_compile_fragment _ _SCREEN_SPACE_IRRADIANCE");
+            if(!options.skipDecals) pragmas.Add("#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3");
+            pragmas.Add("#pragma multi_compile_fragment _ _LIGHT_COOKIES");
+            pragmas.Add("#pragma multi_compile _ _LIGHT_LAYERS");
+            pragmas.Add("#pragma multi_compile _ _CLUSTER_LIGHT_LOOP");
+            pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl\"");
 
-                if(!options.skipLightmaps)
-                {
-                    pragmas.Add("#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING");
-                    pragmas.Add("#pragma multi_compile _ SHADOWS_SHADOWMASK");
-                    pragmas.Add("#pragma multi_compile _ DIRLIGHTMAP_COMBINED");
-                    pragmas.Add("#pragma multi_compile _ LIGHTMAP_ON");
-                    pragmas.Add("#pragma multi_compile_fragment _ LIGHTMAP_BICUBIC_SAMPLING");
-                    pragmas.Add("#pragma multi_compile_fragment _ REFLECTION_PROBE_ROTATION");
-                    pragmas.Add("#pragma multi_compile _ DYNAMICLIGHTMAP_ON");
-                    pragmas.Add("#pragma multi_compile _ USE_LEGACY_LIGHTMAPS");
-                }
+            if(!options.skipLightmaps)
+            {
+                pragmas.Add("#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING");
+                pragmas.Add("#pragma multi_compile _ SHADOWS_SHADOWMASK");
+                pragmas.Add("#pragma multi_compile _ DIRLIGHTMAP_COMBINED");
+                pragmas.Add("#pragma multi_compile _ LIGHTMAP_ON");
+                pragmas.Add("#pragma multi_compile_fragment _ LIGHTMAP_BICUBIC_SAMPLING");
+                pragmas.Add("#pragma multi_compile_fragment _ REFLECTION_PROBE_ROTATION");
+                pragmas.Add("#pragma multi_compile _ DYNAMICLIGHTMAP_ON");
+                pragmas.Add("#pragma multi_compile _ USE_LEGACY_LIGHTMAPS");
+            }
 
-                if(!options.skipProbeVolumes) pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/ProbeVolumeVariants.hlsl\"");
-                pragmas.Add("#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2");
-                pragmas.Add("#pragma multi_compile_instancing");
-                pragmas.Add("#define LIL_PASS_FORWARD");
-                return GenerateIndentText(indent, pragmas.ToArray());
-            }
-            if(version.Major >= 16)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN",
-                    "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                    // Always calculate in vertex shader
-                    //"#pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX",
-                    "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
-                    "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
-                    "#pragma multi_compile _ _LIGHT_LAYERS",
-                    "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
-                    "#pragma multi_compile _ _FORWARD_PLUS",
-                    "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                    "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                    "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                    "#pragma multi_compile _ LIGHTMAP_ON",
-                    "#pragma multi_compile _ DYNAMICLIGHTMAP_ON",
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_FORWARD");
-            }
-            if(version.Major >= 14)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN",
-                    "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                    "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
-                    "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
-                    "#pragma multi_compile _ _LIGHT_LAYERS",
-                    "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
-                    "#pragma multi_compile _ _FORWARD_PLUS",
-                    "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                    "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                    "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                    "#pragma multi_compile _ LIGHTMAP_ON",
-                    "#pragma multi_compile _ DYNAMICLIGHTMAP_ON",
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_FORWARD");
-            }
-            if(version.Major >= 12)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN",
-                    "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                    "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING",
-                    "#pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION",
-                    "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3",
-                    "#pragma multi_compile _ _LIGHT_LAYERS",
-                    "#pragma multi_compile_fragment _ _LIGHT_COOKIES",
-                    "#pragma multi_compile _ _CLUSTERED_RENDERING",
-                    "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                    "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                    "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                    "#pragma multi_compile _ LIGHTMAP_ON",
-                    "#pragma multi_compile _ DYNAMICLIGHTMAP_ON",
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_FORWARD");
-            }
-            if(version.Major >= 11)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN",
-                    "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                    "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                    "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                    "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                    "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                    "#pragma multi_compile _ LIGHTMAP_ON",
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_FORWARD");
-            }
-            if(version.Major >= 10)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS",
-                    "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE",
-                    "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                    "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                    "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                    "#pragma multi_compile _ LIGHTMAP_SHADOW_MIXING",
-                    "#pragma multi_compile _ SHADOWS_SHADOWMASK",
-                    "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                    "#pragma multi_compile _ LIGHTMAP_ON",
-                    "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_FORWARD");
-            }
-            return GenerateIndentText(indent,
-                "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS",
-                "#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE",
-                "#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS",
-                "#pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS",
-                "#pragma multi_compile_fragment _ _SHADOWS_SOFT",
-                "#pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE",
-                "#pragma multi_compile _ DIRLIGHTMAP_COMBINED",
-                "#pragma multi_compile _ LIGHTMAP_ON",
-                "#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2",
-                "#pragma multi_compile_instancing",
-                "#define LIL_PASS_FORWARD");
+            if(!options.skipProbeVolumes) pragmas.Add("#include_with_pragmas \"Packages/com.unity.render-pipelines.universal/ShaderLibrary/ProbeVolumeVariants.hlsl\"");
+            pragmas.Add("#pragma multi_compile_vertex _ FOG_LINEAR FOG_EXP FOG_EXP2");
+            pragmas.Add("#pragma multi_compile_instancing");
+            pragmas.Add("#define LIL_PASS_FORWARD");
+            return GenerateIndentText(indent, pragmas.ToArray());
         }
 
-        private static string GetMultiCompileForwardAdd(PackageVersionInfos version, int indent)
-        {
-            return GenerateIndentText(indent,
-                "#pragma multi_compile_instancing",
-                "#define LIL_PASS_FORWARDADD");
-        }
 
         private static string GetMultiCompileShadowCaster(PackageVersionInfos version, int indent)
         {
-            if(version.Major >= 11)
-            {
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW",
-                    "#pragma multi_compile_instancing",
-                    "#define LIL_PASS_SHADOWCASTER");
-            }
             return GenerateIndentText(indent,
+                "#pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW",
                 "#pragma multi_compile_instancing",
                 "#define LIL_PASS_SHADOWCASTER");
         }
@@ -1248,32 +990,16 @@ namespace lilToon
 
         private static string GetMultiCompileInstancingLayer(PackageVersionInfos version, int indent, bool isDots = false)
         {
-            if(version.Major >= 12)
+            if(isDots)
             {
-                if(isDots)
-                {
-                    return GenerateIndentText(indent,
-                        "#pragma multi_compile _ DOTS_INSTANCING_ON",
-                        "#pragma multi_compile_instancing",
-                        "#pragma instancing_options renderinglayer");
-                }
                 return GenerateIndentText(indent,
+                    "#pragma multi_compile _ DOTS_INSTANCING_ON",
                     "#pragma multi_compile_instancing",
                     "#pragma instancing_options renderinglayer");
             }
-            if(version.Major >= 9)
-            {
-                if(isDots)
-                {
-                    return GenerateIndentText(indent,
-                        "#pragma multi_compile _ DOTS_INSTANCING_ON",
-                        "#pragma multi_compile_instancing");
-                }
-                return GenerateIndentText(indent,
-                    "#pragma multi_compile_instancing");
-            }
             return GenerateIndentText(indent,
-                "#pragma multi_compile_instancing");
+                "#pragma multi_compile_instancing",
+                "#pragma instancing_options renderinglayer");
         }
 
         //------------------------------------------------------------------------------------------------------------------------------
@@ -1380,9 +1106,7 @@ namespace lilToon
 
         private static void AddDependency(AssetImportContext ctx, string path)
         {
-            #if UNITY_2018_2_OR_NEWER
                 if(ctx != null) ctx.DependsOnSourceAsset(path);
-            #endif
         }
     }
 }

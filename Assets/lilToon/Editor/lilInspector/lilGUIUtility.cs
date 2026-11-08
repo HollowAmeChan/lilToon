@@ -34,14 +34,8 @@ namespace lilToon
 
         private static void DrawWebPages()
         {
-            VersionCheck();
             var labelStyle = new GUIStyle(GUI.skin.label){fontStyle = FontStyle.Bold};
-            string versionLabel = "lilToon " + lilConstants.currentVersionName;
-            if(latestVersion != null && latestVersion.semver > lilConstants.Version.semver)
-            {
-                versionLabel = "[Update] lilToon " + lilConstants.currentVersionName + " -> " + latestVersion.version;
-                labelStyle.normal.textColor = Color.red;
-            }
+            string versionLabel = "Ho lilToon " + lilConstants.currentVersionName;
 
             edSet.isShowWebPages = lilEditorGUI.DrawSimpleFoldout(versionLabel, edSet.isShowWebPages, labelStyle, isCustomEditor);
             if(edSet.isShowWebPages)
@@ -53,22 +47,6 @@ namespace lilToon
             }
         }
 
-        private static void VersionCheck()
-        {
-            if(string.IsNullOrEmpty(latestVersion.version))
-            {
-                if (!string.IsNullOrEmpty(lilEditorParameters.instance.versionInfo) && lilEditorParameters.instance.versionInfo.Contains("version"))
-                {
-                    EditorJsonUtility.FromJsonOverwrite(lilEditorParameters.instance.versionInfo, latestVersion);
-                }
-                else
-                {
-                    latestVersion.version = lilConstants.currentVersionName;
-                }
-                latestVersion.semver = new SemVerParser(latestVersion.version);
-                return;
-            }
-        }
 
         private static void DrawHelpPages()
         {
@@ -141,9 +119,7 @@ namespace lilToon
                 menu.AddItem(new GUIContent(GetLoc("sCopy")),               false, CopyProperties,  propertyBlock);
                 menu.AddItem(new GUIContent(GetLoc("sPaste")),              false, PasteProperties, new PropertyBlockData{propertyBlock = propertyBlock, shouldCopyTex = false});
                 menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")),   false, PasteProperties, new PropertyBlockData{propertyBlock = propertyBlock, shouldCopyTex = true});
-                #if UNITY_2019_3_OR_NEWER
                     menu.AddItem(new GUIContent(GetLoc("sReset")),              false, ResetProperties, propertyBlock);
-                #endif
                 menu.AddItem(new GUIContent(GetLoc("sOpenManual")),         false, OpenHelpPage,    helpAnchor);
                 menu.ShowAsContext();
             }
@@ -228,7 +204,6 @@ namespace lilToon
         private void ResetProperties(PropertyBlock propertyBlock)
         {
             if (propertyBlock == PropertyBlock.Tesion) m_MaterialEditor.RegisterPropertyChangeUndo("Reset Tesion");
-            #if UNITY_2019_3_OR_NEWER
             foreach(var p in AllProperties().Where(p =>
                 p.p != null &&
                 p.blocks.Contains(propertyBlock) &&
@@ -252,7 +227,6 @@ namespace lilToon
             }
             if (propertyBlock == PropertyBlock.Tesion) SynchronizeTesionMaterials();
             if (propertyBlock == PropertyBlock.HoSurface) SynchronizeHoSurfaceMaterials();
-            #endif
         }
 
         private bool ShouldDrawBlock(PropertyBlock propertyBlock)

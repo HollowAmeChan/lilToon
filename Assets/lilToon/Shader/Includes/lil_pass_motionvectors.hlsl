@@ -12,9 +12,7 @@
 
 #define LIL_V2F_POSITION_CS
 #define LIL_V2F_PREV_POSITION_CS
-#if defined(LIL_URP) && LIL_SRP_VERSION_GREATER_EQUAL(16, 0)
     #define LIL_V2F_POSITION_CS_NO_JITTER
-#endif
 #if defined(LIL_V2F_FORCE_TEXCOORD0) || (LIL_RENDER > 0)
     #define LIL_V2F_PACKED_TEXCOORD01
     #define LIL_V2F_PACKED_TEXCOORD23
@@ -56,7 +54,6 @@ struct v2f
     #endif
     LIL_CUSTOM_V2F_MEMBER(9,10,11,12,13,14,15,16)
     LIL_VERTEX_INPUT_INSTANCE_ID
-    LIL_VERTEX_OUTPUT_STEREO
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -85,7 +82,6 @@ void frag(v2f input
 )
 {
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
     BEFORE_UNPACK_V2F

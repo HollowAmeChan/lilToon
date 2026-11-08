@@ -357,26 +357,19 @@ float   _PlanarReflectionFadeEnd;
     float   _Anisotropy2ndShiftNoiseScale;
     float   _Anisotropy2ndSpecularStrength;
 #endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Reflectance;
     float   _SpecularNormalStrength;
     float   _SpecularBorder;
     float   _SpecularBlur;
     float   _ReflectionNormalStrength;
     float   _ReflectionCubeEnableLighting;
-#endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Smoothness;
-#endif
-#if defined(LIL_FEATURE_REFLECTION) || defined(LIL_URP)
     float   _Metallic;
     float   _GSAAStrength;
-#endif
 #if defined(LIL_FEATURE_MATCAP)
     float   _MatCapBlend;
     float   _MatCapEnableLighting;
     float   _MatCapShadowMask;
-    float   _MatCapVRParallaxStrength;
     float   _MatCapBackfaceMask;
     float   _MatCapLod;
     float   _MatCapNormalStrength;
@@ -389,7 +382,6 @@ float   _PlanarReflectionFadeEnd;
     float   _MatCap2ndBlend;
     float   _MatCap2ndEnableLighting;
     float   _MatCap2ndShadowMask;
-    float   _MatCap2ndVRParallaxStrength;
     float   _MatCap2ndBackfaceMask;
     float   _MatCap2ndLod;
     float   _MatCap2ndNormalStrength;
@@ -405,7 +397,6 @@ float   _PlanarReflectionFadeEnd;
     float   _RimFresnelPower;
     float   _RimEnableLighting;
     float   _RimShadowMask;
-    float   _RimVRParallaxStrength;
     float   _RimBackfaceMask;
     float   _RimMainStrength;
     #if defined(LIL_FEATURE_RIMLIGHT_DIRECTION)
@@ -653,7 +644,6 @@ lilBool _PlanarReflectionFlipY;
     lilBool _OutlineLitApplyTex;
     lilBool _OutlineLitShadowReceive;
     lilBool _OutlineDeleteMesh;
-    lilBool _OutlineDisableInVR;
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Ho 扩展的**材质参数**（SB / MB / 角色特化共用那一批）

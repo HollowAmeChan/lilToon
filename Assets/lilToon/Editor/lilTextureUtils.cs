@@ -19,19 +19,7 @@ namespace lilToon
         #region
         internal static void GradientEditor(Material material, Gradient ingrad, MaterialProperty texprop, bool setLinear = false)
         {
-            #if UNITY_2018_3_OR_NEWER
                 ingrad = EditorGUILayout.GradientField(lilLanguageManager.GetLoc("sGradColor"), ingrad);
-            #else
-                var setMethod = typeof(EditorGUILayout).GetMethod(
-                    "GradientField",
-                    BindingFlags.NonPublic | BindingFlags.Static,
-                    null,
-                    new [] {typeof(string), typeof(Gradient), typeof(GUILayoutOption[])},
-                    null);
-                if(setMethod != null) {
-                    ingrad = (Gradient)setMethod.Invoke(null, new object[]{lilLanguageManager.GetLoc("sGradColor"), ingrad, null});;
-                }
-            #endif
             GUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 16);
             if(GUILayout.Button(lilLanguageManager.GetLoc("Test")))
@@ -51,19 +39,7 @@ namespace lilToon
         internal static void GradientEditor(Material material, string emissionName, Gradient ingrad, MaterialProperty texprop, bool setLinear = false)
         {
             ingrad = MaterialToGradient(material, emissionName);
-            #if UNITY_2018_3_OR_NEWER
                 ingrad = EditorGUILayout.GradientField(lilLanguageManager.GetLoc("sGradColor"), ingrad);
-            #else
-                var setMethod = typeof(EditorGUILayout).GetMethod(
-                    "GradientField",
-                    BindingFlags.NonPublic | BindingFlags.Static,
-                    null,
-                    new [] {typeof(string), typeof(Gradient), typeof(GUILayoutOption[])},
-                    null);
-                if(setMethod != null) {
-                    ingrad = (Gradient)setMethod.Invoke(null, new object[]{lilLanguageManager.GetLoc("sGradColor"), ingrad, null});;
-                }
-            #endif
             GradientToMaterial(material, emissionName, ingrad);
             GUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 16);
@@ -150,9 +126,7 @@ namespace lilToon
         {
             if(tex == null) return;
 
-            #if UNITY_2018_3_OR_NEWER
             if(!tex.isReadable)
-            #endif
             {
                 var bufRT = RenderTexture.active;
                 var texR = RenderTexture.GetTemporary(tex.width, tex.height);

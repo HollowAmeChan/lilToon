@@ -255,9 +255,7 @@ namespace lilToon
             menu.AddItem(new GUIContent(GetLoc("sCopy")), false, CopyProperties, block);
             menu.AddItem(new GUIContent(GetLoc("sPaste")), false, PasteProperties, new PropertyBlockData { propertyBlock = block, shouldCopyTex = false });
             menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, PasteProperties, new PropertyBlockData { propertyBlock = block, shouldCopyTex = true });
-#if UNITY_2019_3_OR_NEWER
             menu.AddItem(new GUIContent(GetLoc("sReset")), false, ResetProperties, block);
-#endif
             menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, OpenNextHelpPage, title);
             menu.ShowAsContext();
         }
@@ -344,7 +342,6 @@ namespace lilToon
                 LocalizedProperty(outlineDeleteMesh);
                 if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
                 else LocalizedProperty(outlineZBias);
-                LocalizedProperty(outlineDisableInVR);
                 EditorGUI.indentLevel--;
                 LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
                 LocalizedProperty(outlineVectorUVMode, 2);
@@ -948,7 +945,6 @@ namespace lilToon
                         lilEditorGUI.DrawLine();
                         BlendSettingGUI(ref edSet.isShowBlendOutline, GetLoc("sForward"), outlineSrcBlend, outlineDstBlend, outlineSrcBlendAlpha, outlineDstBlendAlpha, outlineBlendOp, outlineBlendOpAlpha);
                         lilEditorGUI.DrawLine();
-                        BlendSettingGUI(ref edSet.isShowBlendAddOutline, GetLoc("sForwardAdd"), outlineSrcBlendFA, outlineDstBlendFA, outlineSrcBlendAlphaFA, outlineDstBlendAlphaFA, outlineBlendOpFA, outlineBlendOpAlphaFA);
                         EditorGUI.indentLevel--;
                     }
                 }, false);
@@ -1172,7 +1168,6 @@ namespace lilToon
                 }
                 LocalizedProperty(rimNormalStrength);
                 LocalizedProperty(rimFresnelPower);
-                LocalizedProperty(rimVRParallaxStrength);
             }
         }
 
@@ -1195,7 +1190,7 @@ namespace lilToon
 
             if(second)
             {
-                MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndColor, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective, matcap2ndVRParallaxStrength);
+                MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndColor, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective);
                 LocalizedPropertyAlpha(matcap2ndColor);
                 LocalizedProperty(matcap2ndMainStrength);
                 LocalizedProperty(matcap2ndNormalStrength);
@@ -1217,7 +1212,7 @@ namespace lilToon
             }
             else
             {
-                MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapColor, matcapBlendUV1, matcapZRotCancel, matcapPerspective, matcapVRParallaxStrength);
+                MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapColor, matcapBlendUV1, matcapZRotCancel, matcapPerspective);
                 LocalizedPropertyAlpha(matcapColor);
                 LocalizedProperty(matcapMainStrength);
                 LocalizedProperty(matcapNormalStrength);
@@ -1287,7 +1282,7 @@ namespace lilToon
                 glitterSensitivity.floatValue = Mathf.Max(sensitivity * density, 0.25f);
             }
             LocalizedProperty(glitterParams2);
-            LocalizedProperty(glitterVRParallaxStrength);
+            LocalizedProperty(glitterViewDirectionBlend);
             LocalizedProperty(glitterNormalStrength);
             LocalizedProperty(glitterPostContrast);
         }

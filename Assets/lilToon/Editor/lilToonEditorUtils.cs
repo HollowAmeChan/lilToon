@@ -230,11 +230,7 @@ namespace lilToon
                 if(!path.EndsWith(".fbx", StringComparison.OrdinalIgnoreCase)) continue;
 
                 var importer = (ModelImporter)AssetImporter.GetAtPath(path);
-                #if UNITY_2019_3_OR_NEWER
                     importer.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
-                #else
-                    importer.importMaterials = true;
-                #endif
 
                 string dirPath = Path.GetDirectoryName(path);
                 string materialFolder = dirPath + "/Materials";
@@ -576,13 +572,8 @@ namespace lilToon
 
             var buildTarget = EditorUserBuildSettings.activeBuildTarget;
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
-            #if UNITY_2021_3_OR_NEWER
                 var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
                 var scriptingDefineSymbols = PlayerSettings.GetScriptingDefineSymbols(namedBuildTarget);
-            #else
-                var namedBuildTarget = buildTargetGroup;
-                var scriptingDefineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            #endif
 
             sb.AppendLine("# Player Settings");
             sb.AppendLine("Color Space: " + PlayerSettings.colorSpace.ToString());
@@ -605,17 +596,10 @@ namespace lilToon
             sb.AppendLine();
 
             sb.AppendLine("# SRP Information");
-#if UNITY_6000_0_OR_NEWER
             if (GraphicsSettings.defaultRenderPipeline != null)
             {
                 sb.AppendLine("Current RP: " + GraphicsSettings.defaultRenderPipeline.ToString());
             }
-#else
-            if (GraphicsSettings.renderPipelineAsset != null)
-            {
-                sb.AppendLine("Current RP: " + GraphicsSettings.renderPipelineAsset.ToString());
-            }
-#endif
             else
             {
                 sb.AppendLine("Current RP: " + "Built-in Render Pipeline");

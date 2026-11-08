@@ -28,7 +28,6 @@ struct v2f
     #endif
     LIL_CUSTOM_V2F_MEMBER(4,5,6,7,8,9,10,11)
     LIL_VERTEX_INPUT_INSTANCE_ID
-    LIL_VERTEX_OUTPUT_STEREO
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -42,7 +41,6 @@ float4 frag(v2f input) : SV_Target
     //------------------------------------------------------------------------------------------------------------------------------
     // Initialize
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
     BEFORE_UNPACK_V2F

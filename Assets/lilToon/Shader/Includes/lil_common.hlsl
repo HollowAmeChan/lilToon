@@ -18,10 +18,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Common
-#if defined(LIL_IGNORE_SHADERSETTING)
-    #define LIL_OPTIMIZE_APPLY_SHADOW_FA
-#endif
-#if defined(LIL_URP) && defined(_HO_GD_TENSION) && !defined(LIL_OUTLINE) && (defined(LIL_PASS_FORWARD) || defined(LIL_PASS_FORWARDADD) || defined(LIL_PASS_GEOMETRY_BUFFER) || defined(LIL_PASS_HO_CHARACTER_CAPTURE))
+#if defined(_HO_GD_TENSION) && !defined(LIL_OUTLINE) && (defined(LIL_PASS_FORWARD) || defined(LIL_PASS_GEOMETRY_BUFFER) || defined(LIL_PASS_HO_CHARACTER_CAPTURE))
     #define LIL_GD_TENSION
     #define LIL_REQUIRE_APP_NORMAL
     #define LIL_REQUIRE_APP_TANGENT
@@ -85,7 +82,6 @@ struct lilFragData
     float3 L;
     float3 origN;
     float3 origL;
-    float3 headV;
     float3 reflectionN;
     float3 matcapN;
     float3 matcap2ndN;
@@ -109,10 +105,6 @@ struct lilFragData
     float shadowmix;
     float3 aoVis;
 
-    // HDRP Data
-    uint renderingLayers;
-    uint featureFlags;
-    uint2 tileIndex;
 };
 
 lilFragData lilInitFragData()
@@ -166,7 +158,6 @@ lilFragData lilInitFragData()
     fd.L = float3(0.0, 1.0, 0.0);
     fd.origN = 0.0;
     fd.origL = float3(0.0, 1.0, 0.0);
-    fd.headV = 0.0;
     fd.reflectionN = 0.0;
     fd.matcapN = 0.0;
     fd.matcap2ndN = 0.0;
@@ -188,9 +179,6 @@ lilFragData lilInitFragData()
     fd.shadowmix = 1.0;
     fd.aoVis = 1.0;
 
-    fd.renderingLayers = 0;
-    fd.featureFlags = 0;
-    fd.tileIndex = 0;
 
     return fd;
 }

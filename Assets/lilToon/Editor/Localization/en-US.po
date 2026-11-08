@@ -266,9 +266,6 @@ msgstr "To enable the property, increase the alpha value."
 msgid "sApplyTransparency"
 msgstr "Apply Transparency"
 
-msgid "sVRParallaxStrength"
-msgstr "VR Parallax Strength"
-
 msgid "sShadowMask"
 msgstr "Shadow Mask"
 
@@ -704,9 +701,6 @@ msgstr "Z Bias"
 msgid "sDeleteMesh0"
 msgstr "Remove zero width vertices"
 
-msgid "sDisableInVR"
-msgstr "Disable in VR"
-
 msgid "sColorFromMain"
 msgstr "Get color from Main"
 
@@ -1043,9 +1037,6 @@ msgstr "AlphaToMask"
 msgid "sForward"
 msgstr "Forward"
 
-msgid "sForwardAdd"
-msgstr "ForwardAdd"
-
 msgid "sSrcBlendRGB"
 msgstr "SrcBlend RGB"
 
@@ -1372,15 +1363,6 @@ msgstr "Default Value (used for "Fix Lighting" and lighting presets)"
 
 msgid "sSettingBuildSizeOptimization"
 msgstr "Build size optimization (for all materials)"
-
-msgid "sSettingApplyShadowFA"
-msgstr "Enable shadow in ForwardAdd"
-
-msgid "sSettingUseForwardAdd"
-msgstr "Use ForwardAdd"
-
-msgid "sSettingUseForwardAddShadow"
-msgstr "Receive shadow in ForwardAdd"
 
 msgid "sSettingUseVertexLight"
 msgstr "Use vertex light"
@@ -2086,3 +2068,6 @@ msgstr "This MaterialPropertyBlock does not contain any property of the current 
 
 msgid "This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."
 msgstr "This Unity version has no MaterialPropertyBlock.HasProperty, so the overridden parameters cannot be listed."
+
+msgid "sGlitterViewDirectionBlend"
+msgstr "View Direction Blend"

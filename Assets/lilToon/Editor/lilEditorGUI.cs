@@ -788,9 +788,9 @@ namespace lilToon
             }
         }
 
-        public static void MatCapTextureGUI(MaterialEditor m_MaterialEditor, bool isCustomEditor, ref bool isShow, GUIContent guiContent, MaterialProperty textureName, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective, MaterialProperty vrParallaxStrength)
+        public static void MatCapTextureGUI(MaterialEditor m_MaterialEditor, bool isCustomEditor, ref bool isShow, GUIContent guiContent, MaterialProperty textureName, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective)
         {
-            if(!CheckPropertyToDraw(guiContent) && !CheckPropertyToDraw(blendUV1, zRotCancel, perspective, vrParallaxStrength)) return;
+            if(!CheckPropertyToDraw(guiContent) && !CheckPropertyToDraw(blendUV1, zRotCancel, perspective)) return;
             isShow = DrawSimpleFoldout(m_MaterialEditor, guiContent, textureName, isShow, isCustomEditor);
             if(isShow)
             {
@@ -799,14 +799,13 @@ namespace lilToon
                 LocalizedProperty(m_MaterialEditor, blendUV1);
                 LocalizedProperty(m_MaterialEditor, zRotCancel);
                 LocalizedProperty(m_MaterialEditor, perspective);
-                LocalizedProperty(m_MaterialEditor, vrParallaxStrength);
                 EditorGUI.indentLevel--;
             }
         }
 
-        public static void MatCapTextureGUI(MaterialEditor m_MaterialEditor, bool isCustomEditor, ref bool isShow, GUIContent guiContent, MaterialProperty textureName, MaterialProperty rgba, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective, MaterialProperty vrParallaxStrength)
+        public static void MatCapTextureGUI(MaterialEditor m_MaterialEditor, bool isCustomEditor, ref bool isShow, GUIContent guiContent, MaterialProperty textureName, MaterialProperty rgba, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective)
         {
-            if(!CheckPropertyToDraw(guiContent) && !CheckPropertyToDraw(blendUV1, zRotCancel, perspective, vrParallaxStrength)) return;
+            if(!CheckPropertyToDraw(guiContent) && !CheckPropertyToDraw(blendUV1, zRotCancel, perspective)) return;
             isShow = DrawSimpleFoldout(m_MaterialEditor, guiContent, textureName, rgba, isShow, isCustomEditor);
             if(isShow)
             {
@@ -815,30 +814,27 @@ namespace lilToon
                 LocalizedProperty(m_MaterialEditor, blendUV1);
                 LocalizedProperty(m_MaterialEditor, zRotCancel);
                 LocalizedProperty(m_MaterialEditor, perspective);
-                LocalizedProperty(m_MaterialEditor, vrParallaxStrength);
 
                 var buttons = Buttons(GetLoc("UV Preset"), "MatCap", "AngelRing");
-                if(buttons[0]) ApplyMatCapUVPreset(false, blendUV1, zRotCancel, perspective, vrParallaxStrength);
-                if(buttons[1]) ApplyMatCapUVPreset(true, blendUV1, zRotCancel, perspective, vrParallaxStrength);
+                if(buttons[0]) ApplyMatCapUVPreset(false, blendUV1, zRotCancel, perspective);
+                if(buttons[1]) ApplyMatCapUVPreset(true, blendUV1, zRotCancel, perspective);
                 EditorGUI.indentLevel--;
             }
         }
 
-        public static void ApplyMatCapUVPreset(bool isAngelRing, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective, MaterialProperty vrParallaxStrength)
+        public static void ApplyMatCapUVPreset(bool isAngelRing, MaterialProperty blendUV1, MaterialProperty zRotCancel, MaterialProperty perspective)
         {
             if(isAngelRing)
             {
                 blendUV1.vectorValue = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
                 zRotCancel.floatValue = 1.0f;
                 perspective.floatValue = 0.0f;
-                vrParallaxStrength.floatValue = 0.0f;
             }
             else
             {
                 blendUV1.vectorValue = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
                 zRotCancel.floatValue = 1.0f;
                 perspective.floatValue = 1.0f;
-                vrParallaxStrength.floatValue = 1.0f;
             }
         }
 
@@ -931,11 +927,7 @@ namespace lilToon
         public static void LightmapEmissionFlagsProperty(MaterialEditor materialEditor)
         {
             if(!CheckPropertyToDraw(GetLoc("Global Illumination"))) return;
-            #if UNITY_2019_1_OR_NEWER
                 materialEditor.LightmapEmissionFlagsProperty(0, true, true);
-            #else
-                materialEditor.LightmapEmissionFlagsProperty(0, true);
-            #endif
         }
 
         private static int IntClamp(int val, int min, int max)

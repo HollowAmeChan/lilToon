@@ -44,7 +44,6 @@ struct v2f
     #endif
     LIL_CUSTOM_V2F_MEMBER(5,6,7,8,9,10,11,12)
     LIL_VERTEX_INPUT_INSTANCE_ID
-    LIL_VERTEX_OUTPUT_STEREO
 };
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -56,13 +55,12 @@ struct v2f
 void frag(
     v2f input LIL_VFACE(facing),
     out float4 outNormalWS : SV_Target0
-    #if defined(LIL_URP) && defined(_WRITE_RENDERING_LAYERS)
+    #if defined(_WRITE_RENDERING_LAYERS)
         , out uint outRenderingLayers : SV_Target1
     #endif
 )
 {
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
 
     BEFORE_UNPACK_V2F
@@ -71,20 +69,16 @@ void frag(
 
     #include "lil_common_frag_alpha.hlsl"
 
-    #if LIL_SRP_VERSION_GREATER_EQUAL(10, 1)
         float3 normalDirection = normalize(input.normalWS);
         normalDirection = fd.facing < (_FlipNormal-1.0) ? -normalDirection : normalDirection;
         normalDirection = normalize(normalDirection);
-        #if !(LIL_SRP_VERSION_GREATER_EQUAL(12, 1)) || defined(_GBUFFER_NORMALS_OCT)
+        #if !(1) || defined(_GBUFFER_NORMALS_OCT)
             outNormalWS = float4(PackNormalOctRectEncode(normalDirection), 0.0, 0.0);
         #else
             outNormalWS = float4(normalDirection, 0.0);
         #endif
-    #else
-        outNormalWS = 0;
-    #endif
 
-    #if defined(LIL_URP) && defined(_WRITE_RENDERING_LAYERS)
+    #if defined(_WRITE_RENDERING_LAYERS)
         outRenderingLayers = EncodeMeshRenderingLayer();
     #endif
 }

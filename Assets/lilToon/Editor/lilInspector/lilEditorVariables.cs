@@ -76,11 +76,8 @@ namespace lilToon
             public bool isShowRendering                 = false;
             public bool isShowLightBake                 = false;
             public bool isShowBlend                     = false;
-            public bool isShowBlendAdd                  = false;
             public bool isShowBlendPre                  = false;
-            public bool isShowBlendAddPre               = false;
             public bool isShowBlendOutline              = false;
-            public bool isShowBlendAddOutline           = false;
             public bool isShowWebPages                  = false;
             public bool isShowHelpPages                 = false;
             public bool isShowLightingSettings          = false;
@@ -127,7 +124,6 @@ namespace lilToon
 
         private Material[] materials;
         private static lilToonSetting shaderSetting;
-        private static readonly lilToonVersion latestVersion = new() { version = "" };
         private static readonly Dictionary<string, MaterialProperty> copiedProperties = new Dictionary<string, MaterialProperty>();
         private static bool isCustomEditor = false;
         private static bool isMultiVariants = false;

@@ -1,3 +1,4 @@
+#pragma skip_variants STEREO_INSTANCING_ON STEREO_MULTIVIEW_ON
 #define LIL_URP
 #include_with_pragmas "lil_gd_outline_pragmas.hlsl"
 #include_with_pragmas "lil_gd_tension_pragmas.hlsl"

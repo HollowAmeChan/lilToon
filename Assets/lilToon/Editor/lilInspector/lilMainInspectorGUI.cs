@@ -23,11 +23,7 @@ namespace lilToon
                 return;
             }
 
-            #if UNITY_2019_1_OR_NEWER
             edSet.searchKeyWord = EditorGUILayout.TextField(edSet.searchKeyWord, EditorStyles.toolbarSearchField);
-            #else
-            edSet.searchKeyWord = EditorGUILayout.TextField(edSet.searchKeyWord);
-            #endif
             DrawTextureSearchGUI(material);
             {
                 //------------------------------------------------------------------------------------------------------------------------------
@@ -746,7 +742,6 @@ namespace lilToon
                             lilEditorGUI.DrawLine();
                             BlendSettingGUI(ref edSet.isShowBlendOutline, GetLoc("sForward"), outlineSrcBlend, outlineDstBlend, outlineSrcBlendAlpha, outlineDstBlendAlpha, outlineBlendOp, outlineBlendOpAlpha);
                             lilEditorGUI.DrawLine();
-                            BlendSettingGUI(ref edSet.isShowBlendAddOutline, GetLoc("sForwardAdd"), outlineSrcBlendFA, outlineDstBlendFA, outlineSrcBlendAlphaFA, outlineDstBlendAlphaFA, outlineBlendOpFA, outlineBlendOpAlphaFA);
                             EditorGUILayout.EndVertical();
                             EditorGUILayout.EndVertical();
                         }

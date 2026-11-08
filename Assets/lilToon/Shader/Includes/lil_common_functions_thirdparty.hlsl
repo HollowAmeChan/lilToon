@@ -6,15 +6,10 @@
 // https://seblagarde.wordpress.com/2014/12/01/inverse-trigonometric-functions-gpu-optimization-for-amd-gcn-architecture/
 float lilAcos(float x)
 {
-    #if 0
-        float res = sqrt(1.0 - abs(x)) * LIL_HALF_PI;
-        return (x >= 0.0) ? res : LIL_PI - res;
-    #else
         float ox = abs(x);
         float res = -0.156583 * ox + LIL_HALF_PI;
         res *= sqrt(1.0 - ox);
         return (x >= 0.0) ? res : LIL_PI - res;
-    #endif
 }
 
 float lilAsin(float x)
@@ -24,19 +19,9 @@ float lilAsin(float x)
 
 float lilAtanPos(float x)
 {
-    #if 1
         float t0 = (x < 1.0f) ? x : 1.0f / x;
         float t1 = (-0.269408 * t0 + 1.05863) * t0;
         return (x < 1.0f) ? t1 : LIL_HALF_PI - t1;
-    #else
-        float t0 = (x < 1.0) ? x : 1.0 / x;
-        float t1 = t0 * t0;
-        float poly = 0.0872929;
-        poly = -0.301895 + poly * t1;
-        poly = 1.0f + poly * t1;
-        poly = poly * t0;
-        return (x < 1.0) ? poly : LIL_HALF_PI - poly;
-    #endif
 }
 
 float lilAtan(float x)

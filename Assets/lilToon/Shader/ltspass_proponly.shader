@@ -17,20 +17,60 @@ Shader "Hidden/ltspass_proponly"
         //----------------------------------------------------------------------------------------------------------------------
         // Base
         [lilToggle]     _Invisible                  ("sInvisible", Int) = 0
-                        _AsUnlit                    ("sAsUnlit", Range(0, 1)) = 0
                         _Cutoff                     ("sCutoff", Range(-0.001,1.001)) = 0.5
                         _SubpassCutoff              ("sSubpassCutoff", Range(0,1)) = 0.5
         [lilToggle]     _FlipNormal                 ("sFlipBackfaceNormal", Int) = 0
         [lilToggle]     _ShiftBackfaceUV            ("sShiftBackfaceUV", Int) = 0
                         _BackfaceForceShadow        ("sBackfaceForceShadow", Range(0,1)) = 0
         [lilHDR]        _BackfaceColor              ("sColor", Color) = (0,0,0,0)
-                        _VertexLightStrength        ("sVertexLightStrength", Range(0,1)) = 0
                         _LightMinLimit              ("sLightMinLimit", Range(0,1)) = 0.05
                         _LightMaxLimit              ("sLightMaxLimit", Range(0,10)) = 1
-                        _BeforeExposureLimit        ("sBeforeExposureLimit", Float) = 10000
                         _MonochromeLighting         ("sMonochromeLighting", Range(0,1)) = 0
-                        _AlphaBoostFA               ("sAlphaBoostFA", Range(1,100)) = 10
-                        _lilDirectionalLightStrength ("sDirectionalLightStrength", Range(0,1)) = 1
+                        _HoAdditionalLightIntensity ("附加光强度", Range(0, 4)) = 1
+                        _HoAdditionalLightShadowStrength ("附加光阴影", Range(0, 1)) = 1
+        [Enum(Main, 1, Full, 2)] _HoRPShadowMode ("HoRP阴影模式", Float) = 1
+        [lilToggle]     _UseRealtimeAO              ("Realtime AO", Int) = 1
+                        _AOLevel                     ("AO Level", Range(-1, 1)) = 0
+                        _AOContrast                  ("AO Contrast", Range(0, 4)) = 1
+                        _AODarkStrength              ("AO Dark Strength", Range(0, 1)) = 1
+                        _AOColor                     ("AO Dark Color", Color) = (0,0,0,1)
+                        _AOStrength                  ("AO Strength", Range(0, 1)) = 1
+        [NoScaleOffset] _AOMask                     ("AO Mask", 2D) = "white" {}
+                        _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
+        // Tesion: optional GeometryData tension consumer
+        [Toggle(_HO_GD_TENSION)] _HoTesionEnabled ("Tesion", Float) = 0
+        _HoTesionStrength ("总体强度", Range(0,1)) = 1
+        [HideInInspector] _HoTesionMaps ("Assigned Maps", Vector) = (0,0,0,0)
+        _HoTesionStretchBaseColor ("拉伸 BaseColor", 2D) = "white" {}
+        _HoTesionStretchColor ("拉伸颜色倍率", Color) = (1,1,1,1)
+        [Normal][NoScaleOffset] _HoTesionStretchNormal ("拉伸 NormalMap", 2D) = "bump" {}
+        _HoTesionStretchNormalScale ("拉伸法线强度", Range(0,2)) = 1
+        _HoTesionStretchRange ("拉伸响应范围", Vector) = (0.02,0.2,0,0)
+        _HoTesionStretchStrength ("拉伸混合强度", Range(0,1)) = 1
+        _HoTesionCompressionBaseColor ("挤压 BaseColor", 2D) = "white" {}
+        _HoTesionCompressionColor ("挤压颜色倍率", Color) = (1,1,1,1)
+        [Normal][NoScaleOffset] _HoTesionCompressionNormal ("挤压 NormalMap", 2D) = "bump" {}
+        _HoTesionCompressionNormalScale ("挤压法线强度", Range(0,2)) = 1
+        _HoTesionCompressionRange ("挤压响应范围", Vector) = (0.02,0.2,0,0)
+        _HoTesionCompressionStrength ("挤压混合强度", Range(0,1)) = 1
+                        // 显示名直接用中文：这几个参数只在 lilToon 面板的「Ho 表面语义」一节里出现，
+                        // 走 lilToon 的 GetLoc 反而要改十几个语言文件。
+                        _HoSurfaceThickness         ("表面厚度（SB）", Range(0,1)) = 0
+                        _HoSurfaceCurvature         ("表面曲率（SB）", Range(-1,1)) = 0
+                        _HoSurfaceTransmittanceHint ("透射提示（SB）", Range(0,1)) = 0
+                        _HoSurfaceMaterialClassId   ("材质类 ID（SB）", Range(0,255)) = 0
+                        _HoSemanticWeight           ("语义权重（0~1）", Range(0,1)) = 1
+        [Toggle(_HO_SEMANTIC_MASK)] _HoSemanticMaskOn ("使用语义遮罩", Float) = 0
+        [NoScaleOffset] _HoSemanticWeightTex        ("语义遮罩（R 通道）", 2D) = "white" {}
+        [lilToggle]     _UsePlanarReflection        ("平面反射", Int) = 0
+                        _PlanarReflectionStrength   ("强度", Range(0, 1)) = 1
+                        _PlanarReflectionMinSmoothness ("最小光滑度", Range(0, 1)) = 0
+                        _PlanarReflectionEdgeFade   ("边缘淡出", Range(0, 32)) = 0
+                        _PlanarReflectionFadeStart  ("距离淡出开始", Float) = 0
+                        _PlanarReflectionFadeEnd    ("距离淡出结束", Float) = 0
+                        _PlanarReflectionTint       ("颜色", Color) = (1,1,1,1)
+        [lilToggle]     _PlanarReflectionFlipY      ("垂直翻转", Int) = 0
+        [HideInInspector][NoScaleOffset] _LILPBRPlanarReflectionTexture ("平面反射纹理", 2D) = "black" {}
         [lilVec3B]      _LightDirectionOverride     ("sLightDirectionOverrides", Vector) = (0.001,0.002,0.001,0)
         [lilToggle]     _UseDither                  ("sDither", Int) = 0
         [NoScaleOffset] _DitherTex                  ("Dither", 2D) = "white" {}
@@ -165,6 +205,25 @@ Shader "Hidden/ltspass_proponly"
         [lilToggle]     _BacklightBackfaceMask      ("sBackfaceMask", Int) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
+        // SSS
+        [lilToggleLeft] _UseSSS                     ("SSS", Int) = 0
+        [lilHDR]        _SSSColor                   ("sColor", Color) = (1.0,0.42,0.32,1.0)
+        [NoScaleOffset] _SSSThicknessMap            ("Thickness", 2D) = "white" {}
+                        _SSSStrength                ("sStrength", Range(0, 2)) = 0.35
+                        _HoSSSProfileId             ("Ho-SSS Profile ID", Range(0, 255)) = 1
+                        _HoSSSThicknessScale        ("Ho-SSS Thickness Scale", Range(0, 4)) = 1
+                        _HoSSSTransmissionStrength  ("Ho-SSS Transmission Strength", Range(0, 2)) = 1
+                        _HoSSSTransmissionRadius    ("Ho-SSS Transmission Radius", Range(0, 2)) = 1
+                        _SSSPower                   ("Power", Range(0.1, 8)) = 2.0
+                        _SSSBorder                  ("sBorder", Range(0, 1)) = 0.35
+                        _SSSBlur                    ("sBlur", Range(0, 1)) = 0.35
+                        _SSSMainStrength            ("sMainColorPower", Range(0, 1)) = 0.45
+                        _SSSNormalStrength          ("sNormalStrength", Range(0, 1)) = 0.5
+                        _SSSViewStrength            ("sViewDirectionStrength", Range(0, 1)) = 0.5
+        [lilToggle]     _SSSReceiveShadow           ("sReceiveShadow", Int) = 1
+        [lilToggle]     _SSSThicknessInvert         ("Invert Thickness", Int) = 0
+
+        //----------------------------------------------------------------------------------------------------------------------
         // Shadow
         [lilToggleLeft] _UseShadow                  ("sShadow", Int) = 0
                         _ShadowStrength             ("sStrength", Range(0, 1)) = 1
@@ -174,15 +233,13 @@ Shader "Hidden/ltspass_proponly"
         [lilLOD]        _ShadowBorderMaskLOD        ("LOD", Range(0, 1)) = 0
         [NoScaleOffset] _ShadowBlurMask             ("sBlur", 2D) = "white" {}
         [lilLOD]        _ShadowBlurMaskLOD          ("LOD", Range(0, 1)) = 0
-        [lilFFFF]       _ShadowAOShift              ("1st Scale|1st Offset|2nd Scale|2nd Offset", Vector) = (1,0,1,0)
-        [lilFF]         _ShadowAOShift2             ("3rd Scale|3rd Offset", Vector) = (1,0,1,0)
-        [lilToggle]     _ShadowPostAO               ("sIgnoreBorderProperties", Int) = 0
         [lilEnum]       _ShadowColorType            ("sShadowColorTypes", Int) = 0
                         _ShadowColor                ("sColor", Color) = (0.82,0.76,0.85,1.0)
         [NoScaleOffset] _ShadowColorTex             ("sColor", 2D) = "black" {}
                         _ShadowNormalStrength       ("sNormalStrength", Range(0, 1)) = 1.0
                         _ShadowBorder               ("sBorder", Range(0, 1)) = 0.5
                         _ShadowBlur                 ("sBlur", Range(0, 1)) = 0.1
+        [NoScaleOffset] _ShadowReceiveMask          ("sMask", 2D) = "white" {}
                         _ShadowReceive              ("sReceiveShadow", Range(0, 1)) = 0
                         _Shadow2ndColor             ("sColor", Color) = (0.68,0.66,0.79,1)
         [NoScaleOffset] _Shadow2ndColorTex          ("sColor", 2D) = "black" {}
@@ -253,7 +310,6 @@ Shader "Hidden/ltspass_proponly"
         [lilVec2R]      _MatCapBlendUV1             ("sBlendUV1", Vector) = (0,0,0,0)
         [lilToggle]     _MatCapZRotCancel           ("sMatCapZRotCancel", Int) = 1
         [lilToggle]     _MatCapPerspective          ("sFixPerspective", Int) = 1
-                        _MatCapVRParallaxStrength   ("sVRParallaxStrength", Range(0, 1)) = 1
                         _MatCapBlend                ("Blend", Range(0, 1)) = 1
         [NoScaleOffset] _MatCapBlendMask            ("Mask", 2D) = "white" {}
                         _MatCapEnableLighting       ("sEnableLighting", Range(0, 1)) = 1
@@ -276,7 +332,6 @@ Shader "Hidden/ltspass_proponly"
         [lilVec2R]      _MatCap2ndBlendUV1          ("sBlendUV1", Vector) = (0,0,0,0)
         [lilToggle]     _MatCap2ndZRotCancel        ("sMatCapZRotCancel", Int) = 1
         [lilToggle]     _MatCap2ndPerspective       ("sFixPerspective", Int) = 1
-                        _MatCap2ndVRParallaxStrength ("sVRParallaxStrength", Range(0, 1)) = 1
                         _MatCap2ndBlend             ("Blend", Range(0, 1)) = 1
         [NoScaleOffset] _MatCap2ndBlendMask         ("Mask", 2D) = "white" {}
                         _MatCap2ndEnableLighting    ("sEnableLighting", Range(0, 1)) = 1
@@ -303,7 +358,6 @@ Shader "Hidden/ltspass_proponly"
                         _RimEnableLighting          ("sEnableLighting", Range(0, 1)) = 1
                         _RimShadowMask              ("sShadowMask", Range(0, 1)) = 0.5
         [lilToggle]     _RimBackfaceMask            ("sBackfaceMask", Int) = 1
-                        _RimVRParallaxStrength      ("sVRParallaxStrength", Range(0, 1)) = 1
         [lilToggle]     _RimApplyTransparency       ("sApplyTransparency", Int) = 1
                         _RimDirStrength             ("sRimLightDirection", Range(0, 1)) = 0
                         _RimDirRange                ("sRimDirectionRange", Range(-1, 1)) = 0
@@ -335,7 +389,7 @@ Shader "Hidden/ltspass_proponly"
                         _GlitterShadowMask          ("sShadowMask", Range(0, 1)) = 0
         [lilToggle]     _GlitterBackfaceMask        ("sBackfaceMask", Int) = 0
         [lilToggle]     _GlitterApplyTransparency   ("sApplyTransparency", Int) = 1
-                        _GlitterVRParallaxStrength  ("sVRParallaxStrength", Range(0, 1)) = 0
+                        _GlitterVRParallaxStrength  ("sGlitterViewDirectionBlend", Range(0, 1)) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Emmision
@@ -430,31 +484,6 @@ Shader "Hidden/ltspass_proponly"
         [PowerSlider(3.0)]_DistanceFadeRimFresnelPower ("sFresnelPower", Range(0.01, 50)) = 5.0
 
         //----------------------------------------------------------------------------------------------------------------------
-        // AudioLink
-        [lilToggleLeft] _UseAudioLink               ("sAudioLink", Int) = 0
-        [lilFRFR]       _AudioLinkDefaultValue      ("Strength|Blink Strength|Blink Speed|Blink Threshold", Vector) = (0.0,0.0,2.0,0.75)
-        [lilEnum]       _AudioLinkUVMode            ("sAudioLinkUVModes", Int) = 1
-        [lilALUVParams] _AudioLinkUVParams          ("Scale|Offset|sAngle|Band|Bass|Low Mid|High Mid|Treble", Vector) = (0.25,0,0,0.125)
-        [lilVec3]       _AudioLinkStart             ("sAudioLinkStartPosition", Vector) = (0.0,0.0,0.0,0.0)
-                        _AudioLinkMask              ("Mask", 2D) = "blue" {}
-        [lilUVAnim]     _AudioLinkMask_ScrollRotate ("sScrollRotates", Vector) = (0,0,0,0)
-        [lilEnum]       _AudioLinkMask_UVMode       ("UV Mode|UV0|UV1|UV2|UV3", Int) = 0
-        [lilToggle]     _AudioLink2Main2nd          ("sMainColor2nd", Int) = 0
-        [lilToggle]     _AudioLink2Main3rd          ("sMainColor3rd", Int) = 0
-        [lilToggle]     _AudioLink2Emission         ("sEmission", Int) = 0
-        [lilToggle]     _AudioLink2EmissionGrad     ("sEmission+sGradation", Int) = 0
-        [lilToggle]     _AudioLink2Emission2nd      ("sEmission2nd", Int) = 0
-        [lilToggle]     _AudioLink2Emission2ndGrad  ("sEmission2nd+sGradation", Int) = 0
-        [lilToggle]     _AudioLink2Vertex           ("sVertex", Int) = 0
-        [lilEnum]       _AudioLinkVertexUVMode      ("sAudioLinkVertexUVModes", Int) = 1
-        [lilALUVParams] _AudioLinkVertexUVParams    ("Scale|Offset|sAngle|Band|Bass|Low Mid|High Mid|Treble", Vector) = (0.25,0,0,0.125)
-        [lilVec3]       _AudioLinkVertexStart       ("sAudioLinkStartPosition", Vector) = (0.0,0.0,0.0,0.0)
-        [lilVec3Float]  _AudioLinkVertexStrength    ("sAudioLinkVertexStrengths", Vector) = (0.0,0.0,0.0,1.0)
-        [lilToggle]     _AudioLinkAsLocal           ("sAudioLinkAsLocal", Int) = 0
-        [NoScaleOffset] _AudioLinkLocalMap          ("Local Map", 2D) = "black" {}
-        [lilALLocal]    _AudioLinkLocalMapParams    ("sAudioLinkLocalMapParams", Vector) = (120,1,0,0)
-
-        //----------------------------------------------------------------------------------------------------------------------
         // Dissolve
                         _DissolveMask               ("Dissolve Mask", 2D) = "white" {}
                         _DissolveNoiseMask          ("Dissolve Noise Mask", 2D) = "gray" {}
@@ -463,60 +492,6 @@ Shader "Hidden/ltspass_proponly"
         [lilHDR]        _DissolveColor              ("sColor", Color) = (1,1,1,1)
         [lilDissolve]   _DissolveParams             ("sDissolveParamsModes", Vector) = (0,0,0.5,0.1)
         [lilDissolveP]  _DissolvePos                ("Dissolve Position", Vector) = (0,0,0,0)
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // ID Mask
-        [ToggleUI]      _IDMaskCompile              ("_IDMaskCompile", Int) = 0
-        [lilEnum]       _IDMaskFrom                 ("_IDMaskFrom|0: UV0|1: UV1|2: UV2|3: UV3|4: UV4|5: UV5|6: UV6|7: UV7|8: VertexID", Int) = 8
-        [ToggleUI]      _IDMask1                    ("_IDMask1", Int) = 0
-        [ToggleUI]      _IDMask2                    ("_IDMask2", Int) = 0
-        [ToggleUI]      _IDMask3                    ("_IDMask3", Int) = 0
-        [ToggleUI]      _IDMask4                    ("_IDMask4", Int) = 0
-        [ToggleUI]      _IDMask5                    ("_IDMask5", Int) = 0
-        [ToggleUI]      _IDMask6                    ("_IDMask6", Int) = 0
-        [ToggleUI]      _IDMask7                    ("_IDMask7", Int) = 0
-        [ToggleUI]      _IDMask8                    ("_IDMask8", Int) = 0
-        [ToggleUI]      _IDMaskIsBitmap             ("_IDMaskIsBitmap", Int) = 0
-                        _IDMaskIndex1               ("_IDMaskIndex1", Int) = 0
-                        _IDMaskIndex2               ("_IDMaskIndex2", Int) = 0
-                        _IDMaskIndex3               ("_IDMaskIndex3", Int) = 0
-                        _IDMaskIndex4               ("_IDMaskIndex4", Int) = 0
-                        _IDMaskIndex5               ("_IDMaskIndex5", Int) = 0
-                        _IDMaskIndex6               ("_IDMaskIndex6", Int) = 0
-                        _IDMaskIndex7               ("_IDMaskIndex7", Int) = 0
-                        _IDMaskIndex8               ("_IDMaskIndex8", Int) = 0
-
-        [ToggleUI]      _IDMaskControlsDissolve     ("_IDMaskControlsDissolve", Int) = 0
-        [ToggleUI]      _IDMaskPrior1               ("_IDMaskPrior1", Int) = 0
-        [ToggleUI]      _IDMaskPrior2               ("_IDMaskPrior2", Int) = 0
-        [ToggleUI]      _IDMaskPrior3               ("_IDMaskPrior3", Int) = 0
-        [ToggleUI]      _IDMaskPrior4               ("_IDMaskPrior4", Int) = 0
-        [ToggleUI]      _IDMaskPrior5               ("_IDMaskPrior5", Int) = 0
-        [ToggleUI]      _IDMaskPrior6               ("_IDMaskPrior6", Int) = 0
-        [ToggleUI]      _IDMaskPrior7               ("_IDMaskPrior7", Int) = 0
-        [ToggleUI]      _IDMaskPrior8               ("_IDMaskPrior8", Int) = 0
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // UDIM Discard
-        [lilToggleLeft] _UDIMDiscardCompile         ("sUDIMDiscard", Int) = 0
-        [lilEnum]       _UDIMDiscardUV              ("sUDIMDiscardUV|0: UV0|1: UV1|2: UV2|3: UV3", Int) = 0
-        [lilEnum]       _UDIMDiscardMode            ("sUDIMDiscardMode|0: Vertex|1: Pixel (slower)", Int) = 0
-        [lilToggle]     _UDIMDiscardRow3_3          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow3_2          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow3_1          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow3_0          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow2_3          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow2_2          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow2_1          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow2_0          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow1_3          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow1_2          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow1_1          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow1_0          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow0_3          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow0_2          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow0_1          ("", Int) = 0
-        [lilToggle]     _UDIMDiscardRow0_0          ("", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Outline
@@ -538,22 +513,9 @@ Shader "Hidden/ltspass_proponly"
         [lilEnum]       _OutlineVectorUVMode        ("UV Mode|UV0|UV1|UV2|UV3", Int) = 0
                         _OutlineVectorScale         ("Vector scale", Range(-10,10)) = 1
                         _OutlineEnableLighting      ("sEnableLighting", Range(0, 1)) = 1
+                        _OutlineShadowStrength      ("sOutlineShadowStrength", Range(0, 1)) = 0
+        [NoScaleOffset] _OutlineZBiasMask           ("Mask", 2D) = "white" {}
                         _OutlineZBias               ("Z Bias", Float) = 0
-        [lilToggle]     _OutlineDisableInVR         ("sDisableInVR", Int) = 0
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // Tessellation
-                        _TessEdge                   ("sTessellationEdge", Range(1, 100)) = 10
-                        _TessStrength               ("sStrength", Range(0, 1)) = 0.5
-                        _TessShrink                 ("sTessellationShrink", Range(0, 1)) = 0.0
-        [IntRange]      _TessFactorMax              ("sTessellationFactor", Range(1, 8)) = 3
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // For Multi
-        [lilToggleLeft] _UseOutline                 ("Use Outline", Int) = 0
-        [lilEnum]       _TransparentMode            ("Rendering Mode|Opaque|Cutout|Transparent|Refraction|Fur|FurCutout|Gem", Int) = 0
-        [lilToggle]     _UseClippingCanceller       ("sSettingClippingCanceller", Int) = 0
-        [lilToggle]     _AsOverlay                  ("sAsOverlay", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Save (Unused)
@@ -562,9 +524,6 @@ Shader "Hidden/ltspass_proponly"
         [HideInInspector]                               _BaseColorMap       ("Texture", 2D) = "white" {}
         [HideInInspector]                               _lilToonVersion     ("Version", Int) = 45
 
-        //----------------------------------------------------------------------------------------------------------------------
-        // VRChat
-        _Ramp ("Shadow Ramp", 2D) = "white" {}
 
         //----------------------------------------------------------------------------------------------------------------------
         // Advanced
@@ -575,12 +534,6 @@ Shader "Hidden/ltspass_proponly"
         [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlpha      ("sDstBlendAlpha", Int) = 10
         [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOp            ("sBlendOpRGB", Int) = 0
         [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlpha       ("sBlendOpAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendFA         ("sSrcBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendFA         ("sDstBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _SrcBlendAlphaFA    ("sSrcBlendAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _DstBlendAlphaFA    ("sDstBlendAlpha", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpFA          ("sBlendOpRGB", Int) = 4
-        [Enum(UnityEngine.Rendering.BlendOp)]           _BlendOpAlphaFA     ("sBlendOpAlpha", Int) = 4
         [lilToggle]                                     _ZClip              ("sZClip", Int) = 1
         [lilToggle]                                     _ZWrite             ("sZWrite", Int) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)]   _ZTest              ("sZTest", Int) = 4
@@ -606,12 +559,6 @@ Shader "Hidden/ltspass_proponly"
         [Enum(UnityEngine.Rendering.BlendMode)]         _OutlineDstBlendAlpha       ("DstBlendAlpha", Int) = 10
         [Enum(UnityEngine.Rendering.BlendOp)]           _OutlineBlendOp             ("sBlendOpRGB", Int) = 0
         [Enum(UnityEngine.Rendering.BlendOp)]           _OutlineBlendOpAlpha        ("sBlendOpAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _OutlineSrcBlendFA          ("sSrcBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _OutlineDstBlendFA          ("sDstBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _OutlineSrcBlendAlphaFA     ("sSrcBlendAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _OutlineDstBlendAlphaFA     ("sDstBlendAlpha", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendOp)]           _OutlineBlendOpFA           ("sBlendOpRGB", Int) = 4
-        [Enum(UnityEngine.Rendering.BlendOp)]           _OutlineBlendOpAlphaFA      ("sBlendOpAlpha", Int) = 4
         [lilToggle]                                     _OutlineZClip               ("sZClip", Int) = 1
         [lilToggle]                                     _OutlineZWrite              ("sZWrite", Int) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)]   _OutlineZTest               ("sZTest", Int) = 2
@@ -625,77 +572,7 @@ Shader "Hidden/ltspass_proponly"
                                                         _OutlineOffsetFactor        ("sOffsetFactor", Float) = 0
                                                         _OutlineOffsetUnits         ("sOffsetUnits", Float) = 0
         [lilColorMask]                                  _OutlineColorMask           ("sColorMask", Int) = 15
-        [lilToggle]                                     _OutlineAlphaToMask         ("sAlphaToMask", Int) = 0
 
-        //----------------------------------------------------------------------------------------------------------------------
-        // Refraction
-                        _RefractionStrength         ("sStrength", Range(-1,1)) = 0.1
-        [PowerSlider(3.0)]_RefractionFresnelPower   ("sRefractionFresnel", Range(0.01, 10)) = 0.5
-        [lilToggle]     _RefractionColorFromMain    ("sColorFromMain", Int) = 0
-                        _RefractionColor            ("sColor", Color) = (1,1,1,1)
-
-        //----------------------------------------------------------------------------------------------------------------------
-        //Gem
-                        _GemChromaticAberration     ("sChromaticAberration", Range(0, 1)) = 0.02
-                        _GemEnvContrast             ("sContrast", Float) = 2.0
-        [lilHDR]        _GemEnvColor                ("sEnvironmentColor", Color) = (1,1,1,1)
-                        _GemParticleLoop            ("sParticleLoop", Float) = 8
-        [lilHDR]        _GemParticleColor           ("sColor", Color) = (4,4,4,1)
-                        _GemVRParallaxStrength      ("sVRParallaxStrength", Range(0, 1)) = 1
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // Fur
-                        _FurNoiseMask               ("Noise", 2D) = "white" {}
-        [NoScaleOffset] _FurMask                    ("Mask", 2D) = "white" {}
-        [NoScaleOffset] _FurLengthMask              ("Length Mask", 2D) = "white" {}
-        [NoScaleOffset][Normal] _FurVectorTex       ("Vector", 2D) = "bump" {}
-                        _FurVectorScale             ("Vector scale", Range(-10,10)) = 1
-        [lilVec3Float]  _FurVector                  ("sFurVectors", Vector) = (0.0,0.0,1.0,0.02)
-        [lilToggle]     _VertexColor2FurVector      ("sVertexColor2Vector", Int) = 0
-                        _FurGravity                 ("sGravity", Range(0,1)) = 0.25
-                        _FurRandomize               ("sRandomize", Float) = 0
-                        _FurAO                      ("sAO", Range(0,1)) = 0
-        [IntRange]      _FurLayerNum                ("sLayerNum", Range(1, 3)) = 2
-                        _FurRootOffset              ("sRootWidth", Range(-1,0)) = 0
-                        _FurCutoutLength            ("Cutout Length", Float) = 0.8
-                        _FurTouchStrength           ("sTouchStrength", Range(0, 1)) = 0
-                        _FurRimColor                ("sColor", Color) = (0.0,0.0,0.0,1.0)
-        [PowerSlider(3.0)]_FurRimFresnelPower       ("sFresnelPower", Range(0.01, 50)) = 3.0
-                        _FurRimAntiLight            ("sAntiLight", Range(0, 1)) = 0.5
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // Fur Advanced
-        [lilEnum]                                       _FurCull                ("sCullModes", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurSrcBlend            ("sSrcBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurDstBlend            ("sDstBlendRGB", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurSrcBlendAlpha       ("SrcBlendAlpha", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurDstBlendAlpha       ("DstBlendAlpha", Int) = 10
-        [Enum(UnityEngine.Rendering.BlendOp)]           _FurBlendOp             ("sBlendOpRGB", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendOp)]           _FurBlendOpAlpha        ("sBlendOpAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurSrcBlendFA          ("sSrcBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurDstBlendFA          ("sDstBlendRGB", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurSrcBlendAlphaFA     ("sSrcBlendAlpha", Int) = 0
-        [Enum(UnityEngine.Rendering.BlendMode)]         _FurDstBlendAlphaFA     ("sDstBlendAlpha", Int) = 1
-        [Enum(UnityEngine.Rendering.BlendOp)]           _FurBlendOpFA           ("sBlendOpRGB", Int) = 4
-        [Enum(UnityEngine.Rendering.BlendOp)]           _FurBlendOpAlphaFA      ("sBlendOpAlpha", Int) = 4
-        [lilToggle]                                     _FurZClip               ("sZClip", Int) = 1
-        [lilToggle]                                     _FurZWrite              ("sZWrite", Int) = 1
-        [Enum(UnityEngine.Rendering.CompareFunction)]   _FurZTest               ("sZTest", Int) = 4
-        [IntRange]                                      _FurStencilRef          ("Stencil Reference Value", Range(0, 255)) = 0
-        [IntRange]                                      _FurStencilReadMask     ("Stencil ReadMask Value", Range(0, 255)) = 255
-        [IntRange]                                      _FurStencilWriteMask    ("Stencil WriteMask Value", Range(0, 255)) = 255
-        [Enum(UnityEngine.Rendering.CompareFunction)]   _FurStencilComp         ("Stencil Compare Function", Float) = 8
-        [Enum(UnityEngine.Rendering.StencilOp)]         _FurStencilPass         ("Stencil Pass", Float) = 0
-        [Enum(UnityEngine.Rendering.StencilOp)]         _FurStencilFail         ("Stencil Fail", Float) = 0
-        [Enum(UnityEngine.Rendering.StencilOp)]         _FurStencilZFail        ("Stencil ZFail", Float) = 0
-                                                        _FurOffsetFactor        ("sOffsetFactor", Float) = 0
-                                                        _FurOffsetUnits         ("sOffsetUnits", Float) = 0
-        [lilColorMask]                                  _FurColorMask           ("sColorMask", Int) = 15
-        [lilToggle]                                     _FurAlphaToMask         ("sAlphaToMask", Int) = 1
-
-        //----------------------------------------------------------------------------------------------------------------------
-        // Main
-        [lilVec3Float]  _FakeShadowVector           ("sFakeShadowVectors", Vector) = (0,0,0,0.05)
     }
 
     SubShader

@@ -33,7 +33,7 @@ namespace lilToon
                         if(useMatCap.floatValue == 1)
                         {
                             EditorGUILayout.BeginVertical(boxInnerHalf);
-                            MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapColor, matcapBlendUV1, matcapZRotCancel, matcapPerspective, matcapVRParallaxStrength);
+                            MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapColor, matcapBlendUV1, matcapZRotCancel, matcapPerspective);
                             LocalizedPropertyAlpha(matcapColor);
                             LocalizedProperty(matcapMainStrength);
                             LocalizedProperty(matcapNormalStrength);
@@ -70,7 +70,7 @@ namespace lilToon
                         if(useMatCap2nd.floatValue == 1)
                         {
                             EditorGUILayout.BeginVertical(boxInnerHalf);
-                            MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndColor, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective, matcap2ndVRParallaxStrength);
+                            MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndColor, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective);
                             LocalizedPropertyAlpha(matcap2ndColor);
                             LocalizedProperty(matcap2ndMainStrength);
                             LocalizedProperty(matcap2ndNormalStrength);
@@ -145,7 +145,6 @@ namespace lilToon
                         }
                         LocalizedProperty(rimNormalStrength);
                         LocalizedProperty(rimFresnelPower);
-                        LocalizedProperty(rimVRParallaxStrength);
                         EditorGUILayout.EndVertical();
                     }
                 }
@@ -218,7 +217,7 @@ namespace lilToon
 
                     // Other
                     LocalizedProperty(glitterParams2);
-                    LocalizedProperty(glitterVRParallaxStrength);
+                    LocalizedProperty(glitterViewDirectionBlend);
                     LocalizedProperty(glitterNormalStrength);
                     LocalizedProperty(glitterPostContrast);
                     EditorGUILayout.EndVertical();

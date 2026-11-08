@@ -77,23 +77,7 @@ namespace lilToon
 
         public ShaderPropertyType propertyType
         {
-#if UNITY_6000_1_OR_NEWER
             get { return p.propertyType; }
-#else
-            get
-            {
-                return p.type switch
-                {
-                    MaterialProperty.PropType.Color => ShaderPropertyType.Color,
-                    MaterialProperty.PropType.Vector => ShaderPropertyType.Vector,
-                    MaterialProperty.PropType.Float => ShaderPropertyType.Float,
-                    MaterialProperty.PropType.Range => ShaderPropertyType.Range,
-                    MaterialProperty.PropType.Texture => ShaderPropertyType.Texture,
-                    MaterialProperty.PropType.Int => ShaderPropertyType.Int,
-                    _ => ShaderPropertyType.Float,
-                };
-            }
-#endif
             private set { }
         }
 

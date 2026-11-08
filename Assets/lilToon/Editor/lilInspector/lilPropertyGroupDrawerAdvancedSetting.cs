@@ -92,7 +92,6 @@ namespace lilToon
                     LocalizedProperty(outlineDeleteMesh);
                     if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
                     else LocalizedProperty(outlineZBias);
-                    LocalizedProperty(outlineDisableInVR);
                     EditorGUI.indentLevel--;
                     LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
                     LocalizedProperty(outlineVectorUVMode, 2);

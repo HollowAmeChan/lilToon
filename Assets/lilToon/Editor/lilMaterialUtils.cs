@@ -84,12 +84,6 @@ namespace lilToon
             material.SetInt("_DstBlendAlpha", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             material.SetInt("_BlendOp", (int)BlendOp.Add);
             material.SetInt("_BlendOpAlpha", (int)BlendOp.Add);
-            material.SetInt("_SrcBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-            material.SetInt("_DstBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-            material.SetInt("_SrcBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.Zero);
-            material.SetInt("_DstBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.One);
-            material.SetInt("_BlendOpFA", (int)BlendOp.Max);
-            material.SetInt("_BlendOpAlphaFA", (int)BlendOp.Max);
             if(isoutl)
             {
                 material.SetInt("_OutlineCull", 1);
@@ -102,12 +96,6 @@ namespace lilToon
                 material.SetInt("_OutlineDstBlendAlpha", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 material.SetInt("_OutlineBlendOp", (int)BlendOp.Add);
                 material.SetInt("_OutlineBlendOpAlpha", (int)BlendOp.Add);
-                material.SetInt("_OutlineSrcBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_OutlineDstBlendFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_OutlineSrcBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.Zero);
-                material.SetInt("_OutlineDstBlendAlphaFA", (int)UnityEngine.Rendering.BlendMode.One);
-                material.SetInt("_OutlineBlendOpFA", (int)BlendOp.Max);
-                material.SetInt("_OutlineBlendOpAlphaFA", (int)BlendOp.Max);
             }
         }
 

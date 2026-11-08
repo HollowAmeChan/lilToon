@@ -84,7 +84,7 @@
     //------------------------------------------------------------------------------------------------------------------------------
     // Cutout
     clip(fd.col.a - _Cutoff);
-    #if LIL_RENDER == 2 && !defined(SHADER_API_GLES)
+    #if LIL_RENDER == 2 && !0
         // Dither
         float alphaRef = fd.col.a;
         #if LIL_SUBPASS_TRANSPARENT_MODE == 1 || defined(SHADERPASS) && (SHADERPASS ==  SHADERPASS_SHADOWS)

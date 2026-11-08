@@ -66,7 +66,6 @@ struct v2f
     #endif
     LIL_CUSTOM_V2F_MEMBER(6,7,8,9,10,11,12,13)
     LIL_VERTEX_INPUT_INSTANCE_ID
-    LIL_VERTEX_OUTPUT_STEREO
 };
 
 // `_HoSurfaceThickness` / `_HoSurfaceCurvature` / `_HoSurfaceTransmittanceHint` / `_HoSurfaceMaterialClassId`
@@ -103,21 +102,13 @@ float2 lilHoSurfaceOwnerEncoded()
 
 // 共享前半段要拿到 facing 的**值**：`LIL_VFACE(facing)` 是只能写在函数签名上的声明宏
 // （展开成 `, bool isFrontFace : SV_IsFrontFace`），调用点上只能用这里的值宏。
-#if defined(SHADER_API_D3D11_9X)
-    // 这个平台没有 VFACE：`LIL_COPY_VFACE` 展开为空，fd.facing 保持 lilInitFragData 的默认值。
-    #define LIL_HO_SURFACE_VFACE_NONE
-#elif defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES) || defined(SHADER_API_D3D9)
-    #define LIL_HO_SURFACE_VFACE_VALUE facing
-#else
     #define LIL_HO_SURFACE_VFACE_VALUE (isFrontFace ? 1.0 : -1.0)
-#endif
 
 // 几何 → fd（主色链、法线、dissolve、dither、cutout/dissolve 的 clip 全在这里）。
 // 两个 pass 都调它；返回值里的 col.a 已经按 LIL_RENDER 归一。
 lilFragData lilHoSurfaceBuildFrag(v2f input, float facingValue)
 {
     LIL_SETUP_INSTANCE_ID(input);
-    LIL_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     lilFragData fd = lilInitFragData();
     float3 tangentNormal = float3(0.0, 0.0, 1.0);
 
