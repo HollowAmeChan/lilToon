@@ -58,44 +58,30 @@ namespace lilToon
         private const float textureSearchButtonWidth = 48f;
         private const float textureSearchClearWidth = 24f;
 
-        private void DrawTextureSearchGUI(Material material, bool showFoldout = true)
+        private void DrawTextureSearchGUI(Material material)
         {
-            if(showFoldout)
-            {
-                edSet.isShowTextureSearch = lilEditorGUI.Foldout(GetLoc("sTextureSearch"), edSet.isShowTextureSearch);
-                if(!edSet.isShowTextureSearch) return;
-            }
-
             InitializeTextureSearchStyles();
             HandleTexturePickerCommand();
             ResetTextureSearchStateIfMaterialChanged(material);
             RefreshTextureSearchRows();
 
-            if(showFoldout) EditorGUILayout.BeginVertical(customBox);
-
             var materialPath = AssetDatabase.GetAssetPath(material);
-            if(string.IsNullOrEmpty(materialPath))
-            {
-                if(showFoldout) EditorGUILayout.EndVertical();
-                return;
-            }
-
-            if(!showFoldout) DrawTextureSearchToolbar(material, materialPath);
+            if(string.IsNullOrEmpty(materialPath)) return;
+            DrawTextureSearchToolbar(material, materialPath);
 
             if(textureSearchRows.Count == 0)
             {
             }
             else
             {
-                DrawTextureSearchColumnHeaders(!showFoldout);
+                DrawTextureSearchColumnHeaders(true);
                 foreach(var row in textureSearchRows)
                 {
-                    DrawTextureSearchRow(material, materialPath, row, !showFoldout);
+                    DrawTextureSearchRow(material, materialPath, row, true);
                 }
             }
 
-            if(!showFoldout) DrawTextureImportChecks();
-            if(showFoldout) EditorGUILayout.EndVertical();
+            DrawTextureImportChecks();
         }
 
         private void DrawTextureSearchToolbar(Material material, string materialPath)

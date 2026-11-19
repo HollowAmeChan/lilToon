@@ -1553,12 +1553,6 @@ msgstr "距离淡出结束"
 msgid "Flip Y"
 msgstr "垂直翻转"
 
-msgid "Legacy UI"
-msgstr "旧版 UI"
-
-msgid "New UI"
-msgstr "新版 UI"
-
 msgid "HoSSS Profile ID"
 msgstr "HoSSS 配置 ID"
 

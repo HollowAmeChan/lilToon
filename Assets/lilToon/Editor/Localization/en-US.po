@@ -1511,12 +1511,6 @@ msgstr "Distance Fade End"
 msgid "Flip Y"
 msgstr "Flip Y"
 
-msgid "Legacy UI"
-msgstr "Legacy UI"
-
-msgid "New UI"
-msgstr "New UI"
-
 msgid "HoSSS Profile ID"
 msgstr "HoSSS Profile ID"
 

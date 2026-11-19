@@ -88,7 +88,7 @@ public sealed class LilInspectorTiming : EditorWindow
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-qualifyLilLanguage"))
             {
                 Record(LilLanguageQualification.Run());
-                w.QualifyModes(parent, paint);
+                w.QualifyInspectorLanguages(parent, paint);
             }
             Record("complete");
         }
@@ -128,13 +128,10 @@ public sealed class LilInspectorTiming : EditorWindow
 
     }
 
-    private void QualifyModes(object parent, MethodInfo paint)
+    private void QualifyInspectorLanguages(object parent, MethodInfo paint)
     {
         var assembly = Assembly.Load("lilToon.Editor");
         var type = assembly.GetType("lilToon.lilToonInspector", true);
-        var editorSettings = type.GetProperty("edSet").GetValue(null);
-        var useNext = editorSettings.GetType().GetField("useNextInspector");
-        bool originalUi = (bool)useNext.GetValue(editorSettings);
         var settingsType = assembly.GetType("lilToon.Settings", true);
         var settings = settingsType.BaseType.GetProperty("instance").GetValue(null);
         var language = settingsType.GetField("language");
@@ -146,27 +143,22 @@ public sealed class LilInspectorTiming : EditorWindow
         {
             matEditor = Editor.CreateEditor(AssetDatabase.LoadAssetAtPath<Material>("Assets/WTD/Mat/WTD_s_M_Body.mat")) as MaterialEditor;
             drawIcon = false;
-            foreach (bool nextUi in new[] { false, true })
+            foreach (string code in new[] { "en-US", "zh-Hans" })
             {
-                useNext.SetValue(editorSettings, nextUi);
-                foreach (string code in new[] { "en-US", "zh-Hans" })
-                {
-                    language.SetValue(settings, code);
-                    update.Invoke(null, null);
-                    stage = "qualification " + (nextUi ? "next " : "legacy ") + code;
-                    repaintEvents = 0;
-                    paint.Invoke(parent, null);
-                    if (repaintEvents == 0) throw new InvalidOperationException("No repaint for " + stage);
-                }
+                language.SetValue(settings, code);
+                update.Invoke(null, null);
+                stage = "qualification " + code;
+                repaintEvents = 0;
+                paint.Invoke(parent, null);
+                if (repaintEvents == 0) throw new InvalidOperationException("No repaint for " + stage);
             }
             if (fonts.Any(pair => pair.Key.getFontFeatures != pair.Value))
                 throw new InvalidOperationException("Shared font feature settings changed");
-            Record("verified 4 language/UI combinations, per-event font restoration, shared font settings");
+            Record("verified both Inspector languages, per-event font restoration, shared font settings");
         }
         finally
         {
             stage = null;
-            useNext.SetValue(editorSettings, originalUi);
             language.SetValue(settings, originalLanguage);
             update.Invoke(null, null);
             if (matEditor != null) DestroyImmediate(matEditor);

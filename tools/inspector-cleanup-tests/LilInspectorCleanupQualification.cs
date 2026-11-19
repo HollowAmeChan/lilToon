@@ -76,10 +76,8 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                 "pipeline.base", "pipeline.rendering", "pipeline.stencil" })
                 SessionState.SetBool("lilToon.NextInspector." + section, true);
 
-            foreach (bool next in new[] { false, true })
             foreach (string language in new[] { "en-US", "zh-Hans" })
             {
-                editorSettings.GetType().GetField("useNextInspector").SetValue(editorSettings, next);
                 languageField.SetValue(languageSettings, language);
                 updateLanguage.Invoke(null, null);
                 var categoryLabels = (string[])inspector.GetMethod("GetNextInspectorCategoryLabels",
@@ -137,7 +135,7 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                         Check(materialEditor != null && materialEditor.customShaderGUI != null, "MaterialEditor created");
                         UnityEditorInternal.InternalEditorUtility.SetIsInspectorExpanded(material, true);
                         string before = EditorJsonUtility.ToJson(material);
-                        foreach (int page in next ? new[] { 0, 1, 2 } : new[] { 0 })
+                        foreach (int page in new[] { 0, 1, 2 })
                         {
                             editorSettings.GetType().GetField("nextInspectorPage").SetValue(editorSettings, page);
                             int count = repaints;
@@ -145,9 +143,9 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                             Check(repaints > count, "Inspector repainted");
                             Check(EditorJsonUtility.ToJson(material) == before, "Passive drawing preserves material state");
                             Check(errors.Count == 0, string.Join("\n", errors));
-                            File.AppendAllText(ResultPath, (next ? "next " : "legacy ") + language + " " + shaderName + " page=" + page + " unchanged\n");
+                            File.AppendAllText(ResultPath, language + " " + shaderName + " page=" + page + " unchanged\n");
                         }
-                        if (next && shaderName == "Hidden/lilToonOutline")
+                        if (shaderName == "Hidden/lilToonOutline")
                         {
                             editorSettings.GetType().GetField("nextInspectorPage").SetValue(editorSettings, 0);
                             for (int source = 0; source < 3; source++)

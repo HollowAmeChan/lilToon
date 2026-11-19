@@ -6,8 +6,7 @@ namespace lilToon
         Advanced,
         Preset,
         Settings,
-        TextureControl,
-        Reserved4 = 4
+        TextureControl
     }
 
     public enum RenderingMode

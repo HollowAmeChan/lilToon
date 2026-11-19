@@ -120,14 +120,8 @@ namespace lilToon
 
             //------------------------------------------------------------------------------------------------------------------------------
             // Editor Mode
-            if(edSet.useNextInspector)
-            {
-                DrawNextInspectorHeader(material);
-            }
-            EditorGUILayout.BeginHorizontal();
+            DrawNextInspectorHeader(material);
             SelectEditorMode();
-            DrawInspectorUiSwitcher();
-            EditorGUILayout.EndHorizontal();
             DrawMaterialVariantInfo(material);
             EditorGUILayout.Space();
 
@@ -135,10 +129,8 @@ namespace lilToon
             // Main GUI
             switch(edSet.editorMode)
             {
-                case EditorMode.Advanced:   DrawAdvancedGUI(material); break;
-                case EditorMode.TextureControl:
-                    if(edSet.useNextInspector) DrawNextTextureControlPage(material);
-                    break;
+                case EditorMode.Advanced:       DrawNextInspectorGUI(material); break;
+                case EditorMode.TextureControl: DrawNextTextureControlPage(material); break;
                 case EditorMode.Preset:     DrawPresetGUI(); break;
                 case EditorMode.Settings:   DrawSettingsGUI(); break;
             }

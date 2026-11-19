@@ -26,38 +26,6 @@ namespace lilToon
         public static void DrawLine() { lilEditorGUI.DrawLine(); }
 
         private static void ToggleGUI(string label, ref bool value) { value = EditorGUILayout.ToggleLeft(label, value); }
-        private void OpenHelpPage(object helpAnchor)
-        {
-            if (Equals(helpAnchor, "Tesion")) { OpenTesionHelp(); return; }
-            Application.OpenURL(GetLoc("sManualURL") + helpAnchor);
-        }
-
-        private static void DrawWebPages()
-        {
-            var labelStyle = new GUIStyle(GUI.skin.label){fontStyle = FontStyle.Bold};
-            string versionLabel = "Ho lilToon " + lilConstants.currentVersionName;
-
-            edSet.isShowWebPages = lilEditorGUI.DrawSimpleFoldout(versionLabel, edSet.isShowWebPages, labelStyle, isCustomEditor);
-            if(edSet.isShowWebPages)
-            {
-                EditorGUI.indentLevel++;
-                lilEditorGUI.DrawWebButton("BOOTH", lilConstants.boothURL);
-                lilEditorGUI.DrawWebButton("GitHub", lilConstants.githubURL);
-                EditorGUI.indentLevel--;
-            }
-        }
-
-
-        private static void DrawHelpPages()
-        {
-            edSet.isShowHelpPages = lilEditorGUI.DrawSimpleFoldout(GetLoc("sHelp"), edSet.isShowHelpPages, isCustomEditor);
-            if(edSet.isShowHelpPages)
-            {
-                EditorGUI.indentLevel++;
-                lilEditorGUI.DrawWebButton(GetLoc("sCommonProblems"), GetLoc("sReadmeURL") + GetLoc("sReadmeAnchorProblem"));
-                EditorGUI.indentLevel--;
-            }
-        }
 
         private static void DrawMaterialVariantInfo(Material material)
         {
@@ -77,16 +45,6 @@ namespace lilToon
 
         private static void SelectEditorMode()
         {
-            if(!edSet.useNextInspector)
-            {
-                string[] legacyLabels = {GetLoc("sEditorModeAdvanced"), GetLoc("sEditorModePreset"), GetLoc("sEditorModeShaderSetting")};
-                EditorMode[] legacyModes = {EditorMode.Advanced, EditorMode.Preset, EditorMode.Settings};
-                int legacyIndex = Array.IndexOf(legacyModes, edSet.editorMode);
-                if(legacyIndex < 0) legacyIndex = 0;
-                edSet.editorMode = legacyModes[GUILayout.Toolbar(legacyIndex, legacyLabels)];
-                return;
-            }
-
             EditorMode[] modes =
             {
                 EditorMode.Advanced,
@@ -105,24 +63,6 @@ namespace lilToon
             if(current < 0) current = 0;
             int next = GUILayout.Toolbar(current, labels);
             edSet.editorMode = modes[Mathf.Clamp(next, 0, modes.Length - 1)];
-        }
-
-        private void DrawMenuButton(string helpAnchor, PropertyBlock propertyBlock)
-        {
-            var position = GUILayoutUtility.GetLastRect();
-            position.x += position.width - 24;
-            position.width = 24;
-
-            if(GUI.Button(position, EditorGUIUtility.IconContent("_Popup"), middleButton))
-            {
-                var menu = new GenericMenu();
-                menu.AddItem(new GUIContent(GetLoc("sCopy")),               false, CopyProperties,  propertyBlock);
-                menu.AddItem(new GUIContent(GetLoc("sPaste")),              false, PasteProperties, new PropertyBlockData{propertyBlock = propertyBlock, shouldCopyTex = false});
-                menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")),   false, PasteProperties, new PropertyBlockData{propertyBlock = propertyBlock, shouldCopyTex = true});
-                    menu.AddItem(new GUIContent(GetLoc("sReset")),              false, ResetProperties, propertyBlock);
-                menu.AddItem(new GUIContent(GetLoc("sOpenManual")),         false, OpenHelpPage,    helpAnchor);
-                menu.ShowAsContext();
-            }
         }
 
         #endregion

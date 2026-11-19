@@ -148,7 +148,7 @@ namespace lilToon
         {
             DrawNextPanel(delegate
             {
-                DrawTextureSearchGUI(material, false);
+                DrawTextureSearchGUI(material);
             });
         }
 

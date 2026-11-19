@@ -51,7 +51,7 @@
   -logFile "$project/InspectorBenchmark.log"
 ```
 
-命令完成后退出测试 Editor，写入 `InspectorTiming.txt`。去掉 `-qualifyLilLanguage` 可测旧版本。使用同一工程、相同材质和面板状态比较两份完整包。
+命令完成后退出测试 Editor，写入 `InspectorTiming.txt`。当前 Inspector 始终使用三页新版；`-qualifyLilLanguage` 额外执行语言功能检查。历史对比中的旧版数据来自独立的旧包副本。
 
 完整 Inspector 帧采样使用另一个独立进程。
 
@@ -64,7 +64,7 @@
 
 输出为 `SelectionInspectorProbe.txt` 和三份 `.data` 文件。每次运行后保存结果再开始下一次运行。
 
-功能验证覆盖 16 种语言设置、Assets 和 Packages 两种自定义 TSV 路径、两种语言与两套 UI 的组合、逐次 GUI 事件结束后的字体恢复，以及共享字体特性设置。旧的繁体、港澳台设置映射到简体，旧的日韩文设置映射到英文。自定义 TSV 的简体列继续使用旧偏移量 3。测试只修改进程内语言值，结束时恢复初始值。
+功能验证覆盖 16 种语言设置、Assets 和 Packages 两种自定义 TSV 路径、简体中文与英语下新版 Inspector 的绘制、逐次 GUI 事件结束后的字体恢复，以及共享字体特性设置。旧的繁体、港澳台设置映射到简体，旧的日韩文设置映射到英文。自定义 TSV 的简体列继续使用旧偏移量 3。测试只修改进程内语言值，结束时恢复初始值。
 
 ## 字体来源与重建
 

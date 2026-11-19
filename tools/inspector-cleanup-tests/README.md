@@ -7,9 +7,9 @@ copy of the candidate lilToon package. The runner writes
 Set `HO_LIL_INSPECTOR_REPORT` to a unique absolute result path for each run.
 
 The runner draws real MaterialEditors in an EditorWindow. It covers English and
-Simplified Chinese, both Inspector implementations, and opaque, cutout and
-two-pass transparent outline shaders. All relevant foldouts are expanded. The
-new Inspector's three pages are drawn separately.
+Simplified Chinese and opaque, cutout and two-pass transparent outline shaders.
+All relevant foldouts are expanded, and each of the Inspector's three pages is
+drawn separately.
 
 Each draw compares the complete serialized material before and after viewing.
 Inputs include custom queues, stencil masks, GI flags, main/outline HSV values,
@@ -36,6 +36,7 @@ Optional arguments extend the checks for later cleanup steps.
 | Sampling/transition labels and final combined Inspector | 30 fresh GUI repaints passed; all five sampling labels verified in both languages; material state and GUI font restored |
 | Remove the remaining alpha-mask bake entry and its shader branch | 30 GUI repaints passed; normal-map and LUT conversions through the shared GPU path preserved output colors and dimensions |
 | Consolidate the Inspector into three pages; remove second normal, emission and MatCap; add selectable AO sources | 30 English/Chinese repaints passed without material changes; AO source modes, realtime fallback, mask, independent shadow/darkening, reflection-independent SurfaceBuffer material values and HDR emission passed on D3D12 |
+| Remove the legacy Inspector entry points | 24 English/Chinese repaints passed across all three pages and opaque, cutout and two-pass outline shaders; no material changes or GUI errors |
 
 The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.

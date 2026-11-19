@@ -34,26 +34,7 @@ namespace lilToon
         private void DrawTesionSettings()
         {
             if (!SupportsTesion || !ShouldDrawBlock(PropertyBlock.Tesion)) return;
-            if (edSet.useNextInspector)
-            {
-                DrawNextSection("surface.tesion", "Tesion", PropertyBlock.Tesion, DrawTesionContents, toggle: tesionEnabled);
-                return;
-            }
-            const string stateKey = "lilToon.Tesion.LegacyOpen";
-            bool open = SessionState.GetBool(stateKey, false);
-            bool next = lilEditorGUI.Foldout("Tesion", open);
-            if (next != open) SessionState.SetBool(stateKey, next);
-            if (!next) return;
-            using (new EditorGUILayout.VerticalScope(boxOuter))
-            {
-                EditorGUILayout.LabelField("Tesion", customToggleFont);
-                DrawMenuButton("Tesion", PropertyBlock.Tesion);
-                using (new EditorGUILayout.VerticalScope(boxInnerHalf))
-                {
-                    LocalizedProperty(tesionEnabled.p, "启用", false);
-                    using (new EditorGUI.DisabledScope(!tesionEnabled.hasMixedValue && tesionEnabled.floatValue < 0.5f)) DrawTesionContents();
-                }
-            }
+            DrawNextSection("surface.tesion", "Tesion", PropertyBlock.Tesion, DrawTesionContents, toggle: tesionEnabled);
         }
         private void DrawTesionContents()
         {
