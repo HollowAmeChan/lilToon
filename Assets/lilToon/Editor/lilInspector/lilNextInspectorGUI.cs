@@ -170,7 +170,18 @@ namespace lilToon
             }
         }
 
-        private bool DrawNextSection(string key, string title, PropertyBlock block, Action drawContent, bool defaultOpen = false, string summary = null, bool checkBlock = true, lilMaterialProperty toggle = null)
+        private bool DrawNextSection(
+            string key,
+            string title,
+            PropertyBlock block,
+            Action drawContent,
+            bool defaultOpen = false,
+            string summary = null,
+            bool checkBlock = true,
+            lilMaterialProperty toggle = null,
+            Func<bool> getToggleState = null,
+            Action<bool> setToggleState = null,
+            bool toggleDisabled = false)
         {
             if(checkBlock && !ShouldDrawBlock(block)) return false;
 
@@ -183,22 +194,34 @@ namespace lilToon
             Rect foldoutRect = new Rect(rect.x + 5f, rect.y + 2f, 16f, rect.height - 4f);
             bool nextOpen = EditorGUI.Foldout(foldoutRect, open, GUIContent.none, true);
             Rect toggleRect = new Rect(rect.x + 24f, rect.y + 3f, 18f, 18f);
-            bool hasToggle = toggle != null && toggle.p != null;
-            bool mixed = hasToggle && toggle.p.hasMixedValue;
-            bool enabled = !hasToggle || toggle.floatValue > 0.5f;
+            bool hasPropertyToggle = toggle != null && toggle.p != null;
+            bool hasCallbackToggle = getToggleState != null && setToggleState != null;
+            bool hasToggle = hasPropertyToggle || hasCallbackToggle;
+            bool mixed = hasPropertyToggle && toggle.p.hasMixedValue;
+            bool enabled = hasPropertyToggle ? toggle.floatValue > 0.5f : !hasCallbackToggle || getToggleState();
             if(hasToggle)
             {
                 bool previousMixedValue = EditorGUI.showMixedValue;
                 EditorGUI.showMixedValue = mixed;
-                EditorGUI.BeginChangeCheck();
-                bool nextEnabled = EditorGUI.Toggle(toggleRect, enabled);
-                if(EditorGUI.EndChangeCheck())
+                using(new EditorGUI.DisabledScope(toggleDisabled))
                 {
-                    m_MaterialEditor.RegisterPropertyChangeUndo(title);
-                    toggle.floatValue = nextEnabled ? 1f : 0f;
-                    enabled = nextEnabled;
-                    mixed = false;
-                    GUI.changed = true;
+                    EditorGUI.BeginChangeCheck();
+                    bool nextEnabled = EditorGUI.Toggle(toggleRect, enabled);
+                    if(EditorGUI.EndChangeCheck())
+                    {
+                        if(hasPropertyToggle)
+                        {
+                            m_MaterialEditor.RegisterPropertyChangeUndo(title);
+                            toggle.floatValue = nextEnabled ? 1f : 0f;
+                        }
+                        else
+                        {
+                            setToggleState(nextEnabled);
+                        }
+                        enabled = nextEnabled;
+                        mixed = false;
+                        GUI.changed = true;
+                    }
                 }
                 EditorGUI.showMixedValue = previousMixedValue;
             }
@@ -227,7 +250,10 @@ namespace lilToon
             if(!nextOpen) return false;
 
             EditorGUI.indentLevel++;
-            if(!hasToggle || enabled || mixed) drawContent();
+            using(new EditorGUI.DisabledScope(hasToggle && !enabled && !mixed))
+            {
+                drawContent();
+            }
             EditorGUI.indentLevel--;
             EditorGUILayout.Space(2f);
             return true;
@@ -270,63 +296,56 @@ namespace lilToon
             });
         }
 
-        private void DrawNextOutline(Material material)
+        private void SetNextOutlineEnabled(bool enabled)
         {
-            if(isMultiVariants || material == null) return;
-            if(isShowRenderMode && material.parent == null && !isMultiVariants)
-            {
-                bool next = EditorGUILayout.ToggleLeft(GetLoc("sOutline"), isOutl);
-                if(next != isOutl)
-                {
-                    isOutl = next;
-                    SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                }
-            }
-            if(!isOutl) return;
+            if(enabled == isOutl) return;
+            isOutl = enabled;
+            SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
+        }
 
+        private void DrawNextOutline()
+        {
+            TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor);
+            EditorGUI.indentLevel++;
+            ToneCorrectionGUI(outlineTexHSVG);
+            EditorGUI.indentLevel--;
+            lilEditorGUI.DrawLine();
+            GUILayout.Label(GetLoc("sHighlight"), boldLabel);
+            EditorGUI.indentLevel++;
+            LocalizedPropertyColorWithAlpha(outlineLitColor);
+            if(outlineLitColor.colorValue.a > 0)
             {
-                TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor);
-                EditorGUI.indentLevel++;
-                ToneCorrectionGUI(outlineTexHSVG);
-                EditorGUI.indentLevel--;
-                lilEditorGUI.DrawLine();
-                GUILayout.Label(GetLoc("sHighlight"), boldLabel);
-                EditorGUI.indentLevel++;
-                LocalizedPropertyColorWithAlpha(outlineLitColor);
-                if(outlineLitColor.colorValue.a > 0)
+                LocalizedProperty(outlineLitApplyTex);
+                float min = lilEditorGUI.GetRemapMinValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
+                float max = lilEditorGUI.GetRemapMaxValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.showMixedValue = outlineLitScale.hasMixedValue || outlineLitOffset.hasMixedValue;
+                min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Min"), min, -0.01f, 1.01f);
+                max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Max"), max, -0.01f, 1.01f);
+                EditorGUI.showMixedValue = false;
+                if(EditorGUI.EndChangeCheck())
                 {
-                    LocalizedProperty(outlineLitApplyTex);
-                    float min = lilEditorGUI.GetRemapMinValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
-                    float max = lilEditorGUI.GetRemapMaxValue(outlineLitScale.floatValue, outlineLitOffset.floatValue);
-                    EditorGUI.BeginChangeCheck();
-                    EditorGUI.showMixedValue = outlineLitScale.hasMixedValue || outlineLitOffset.hasMixedValue;
-                    min = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Min"), min, -0.01f, 1.01f);
-                    max = lilEditorGUI.Slider(Event.current.alt ? outlineLitScale.name + ", " + outlineLitOffset.name : GetLoc("Max"), max, -0.01f, 1.01f);
-                    EditorGUI.showMixedValue = false;
-                    if(EditorGUI.EndChangeCheck())
-                    {
-                        if(min == max) max += 0.001f;
-                        outlineLitScale.floatValue = lilEditorGUI.GetRemapScaleValue(min, max);
-                        outlineLitOffset.floatValue = lilEditorGUI.GetRemapOffsetValue(min, max);
-                    }
-                    LocalizedProperty(outlineLitShadowReceive);
+                    if(min == max) max += 0.001f;
+                    outlineLitScale.floatValue = lilEditorGUI.GetRemapScaleValue(min, max);
+                    outlineLitOffset.floatValue = lilEditorGUI.GetRemapOffsetValue(min, max);
                 }
-                EditorGUI.indentLevel--;
-                lilEditorGUI.DrawLine();
-                LocalizedProperty(outlineEnableLighting);
-                LocalizedProperty(outlineShadowStrength);
-                lilEditorGUI.DrawLine();
-                LocalizedPropertyTexture(widthMaskContent, outlineWidthMask, outlineWidth);
-                EditorGUI.indentLevel++;
-                LocalizedProperty(outlineFixWidth);
-                LocalizedProperty(outlineVertexR2Width);
-                LocalizedProperty(outlineDeleteMesh);
-                if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
-                else LocalizedProperty(outlineZBias);
-                EditorGUI.indentLevel--;
-                LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
-                LocalizedProperty(outlineVectorUVMode, 2);
+                LocalizedProperty(outlineLitShadowReceive);
             }
+            EditorGUI.indentLevel--;
+            lilEditorGUI.DrawLine();
+            LocalizedProperty(outlineEnableLighting);
+            LocalizedProperty(outlineShadowStrength);
+            lilEditorGUI.DrawLine();
+            LocalizedPropertyTexture(widthMaskContent, outlineWidthMask, outlineWidth);
+            EditorGUI.indentLevel++;
+            LocalizedProperty(outlineFixWidth);
+            LocalizedProperty(outlineVertexR2Width);
+            LocalizedProperty(outlineDeleteMesh);
+            if(outlineZBiasMask.p != null) LocalizedPropertyTexture(zBiasMaskContent, outlineZBiasMask, outlineZBias);
+            else LocalizedProperty(outlineZBias);
+            EditorGUI.indentLevel--;
+            LocalizedPropertyTexture(normalMapContent, outlineVectorTex, outlineVectorScale);
+            LocalizedProperty(outlineVectorUVMode, 2);
         }
 
         private void DrawNextMainSurface(Material material)
@@ -689,7 +708,14 @@ namespace lilToon
                 DrawNextSection("shading.rimShade", GetLoc("sRimShadeSetting"), PropertyBlock.RimShade, DrawNextRimShade, toggle: useRimShade);
                 DrawNextSection("shading.backlight", GetLoc("sBacklightSetting"), PropertyBlock.Backlight, DrawNextBacklight, toggle: useBacklight);
                 DrawNextSection("shading.sss", GetLoc("SSS"), PropertyBlock.SSS, DrawNextSSS, toggle: useSSS);
-                DrawNextSection("shading.outline", GetLoc("sOutlineSetting"), PropertyBlock.Outline, () => DrawNextOutline(material));
+                DrawNextSection(
+                    "shading.outline",
+                    GetLoc("sOutlineSetting"),
+                    PropertyBlock.Outline,
+                    DrawNextOutline,
+                    getToggleState: () => isOutl,
+                    setToggleState: SetNextOutlineEnabled,
+                    toggleDisabled: material == null || material.parent != null || isMultiVariants || !isShowRenderMode);
                 DrawNextSection("shading.glitter", GetLoc("sGlitterSetting"), PropertyBlock.Glitter, DrawNextGlitter, toggle: useGlitter);
                 DrawNextSection("shading.distance", GetLoc("sDistanceFade"), PropertyBlock.DistanceFade, DrawNextDistanceFade);
             });

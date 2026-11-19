@@ -37,6 +37,7 @@ Optional arguments extend the checks for later cleanup steps.
 | Remove the remaining alpha-mask bake entry and its shader branch | 30 GUI repaints passed; normal-map and LUT conversions through the shared GPU path preserved output colors and dimensions |
 | Consolidate the Inspector into three pages; remove second normal, emission and MatCap; add selectable AO sources | 30 English/Chinese repaints passed without material changes; AO source modes, realtime fallback, mask, independent shadow/darkening, reflection-independent SurfaceBuffer material values and HDR emission passed on D3D12 |
 | Remove the legacy Inspector entry points | 24 English/Chinese repaints passed across all three pages and opaque, cutout and two-pass outline shaders; no material changes or GUI errors |
+| Keep disabled component parameters visible and move the Outline toggle into its section header | 24 repaints passed; the disabled Shadow section still draws its parameters read-only, and the shared header toggle path passes on all three pages |
 
 The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.

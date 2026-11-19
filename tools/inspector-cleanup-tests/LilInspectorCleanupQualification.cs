@@ -16,6 +16,8 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
     private readonly List<string> errors = new List<string>();
     private MaterialEditor materialEditor;
     private int repaints;
+    private bool verifyDisabledSectionContent;
+    private bool disabledSectionContentVerified;
 
     public static void Run()
     {
@@ -115,6 +117,11 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                             "_UseMatCap", "_UseBumpMap", "_UseAnisotropy", "_UseRim", "_UseRimShade", "_UseBacklight",
                             "_UseSSS", "_UseEmission", "_UseAODarkening", "_UseShadow" })
                             if (material.HasProperty(property)) material.SetFloat(property, 1);
+                        if (language == "en-US" && shaderName == "Hidden/lilToonOutline")
+                        {
+                            material.SetFloat("_UseShadow", 0f);
+                            verifyDisabledSectionContent = true;
+                        }
                         material.SetVector("_MainTexHSVG", new Vector4(.12f, .8f, 1.1f, .9f));
                         material.SetVector("_OutlineTexHSVG", new Vector4(.08f, .7f, 1.2f, .9f));
                         material.SetFloat("_UseReflection", 0);
@@ -144,6 +151,8 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                             Check(EditorJsonUtility.ToJson(material) == before, "Passive drawing preserves material state");
                             Check(errors.Count == 0, string.Join("\n", errors));
                             File.AppendAllText(ResultPath, language + " " + shaderName + " page=" + page + " unchanged\n");
+                            if (language == "en-US" && shaderName == "Hidden/lilToonOutline" && page == 1)
+                                Check(disabledSectionContentVerified, "Disabled component parameters remain visible and read-only");
                         }
                         if (shaderName == "Hidden/lilToonOutline")
                         {
@@ -289,6 +298,41 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
         if (materialEditor == null) return;
         var font = GUI.skin.font;
         materialEditor.OnInspectorGUI();
+        if (verifyDisabledSectionContent)
+        {
+            var inspector = materialEditor.customShaderGUI;
+            var inspectorType = Assembly.Load("lilToon.Editor").GetType("lilToon.lilToonInspector", true);
+            var useShadow = inspectorType.GetField("useShadow", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(inspector);
+            var toggle = useShadow.GetType().GetField("p").GetValue(useShadow);
+            var blockType = inspectorType.Assembly.GetType("lilToon.PropertyBlock", true);
+            var drawSection = inspectorType.GetMethod("DrawNextSection", BindingFlags.Instance | BindingFlags.NonPublic);
+            bool contentDrawn = false;
+            Action drawDisabledContent = () =>
+            {
+                Check(!GUI.enabled, "Disabled component content is not editable");
+                contentDrawn = true;
+                EditorGUILayout.LabelField("Disabled section qualification");
+            };
+            drawSection.Invoke(inspector, new object[] {
+                "qualification.disabled",
+                "Disabled section qualification",
+                Enum.Parse(blockType, "Shadow"),
+                drawDisabledContent,
+                true,
+                null,
+                true,
+                useShadow,
+                null,
+                null,
+                false
+            });
+            if (Event.current.type == EventType.Repaint)
+            {
+                Check(contentDrawn, "Disabled component content is drawn");
+                disabledSectionContentVerified = true;
+                verifyDisabledSectionContent = false;
+            }
+        }
         Check(GUI.skin.font == font, "Inspector font restored");
         if (Event.current.type == EventType.Repaint) repaints++;
     }

@@ -71,6 +71,7 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_DECAL
             #define LIL_FEATURE_ANIMATE_DECAL
             #define LIL_FEATURE_LAYER_DISSOLVE
+            #define LIL_FEATURE_ALPHAMASK
             #define LIL_FEATURE_SHADOW
             #define LIL_FEATURE_RECEIVE_SHADOW
             #define LIL_FEATURE_SHADOW_3RD
@@ -107,11 +108,12 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_Main3rdBlendMask
             #define LIL_FEATURE_Main3rdDissolveMask
             #define LIL_FEATURE_Main3rdDissolveNoiseMask
+            #define LIL_FEATURE_AlphaMask
             #define LIL_FEATURE_BumpMap
             #define LIL_FEATURE_AnisotropyTangentMap
             #define LIL_FEATURE_AnisotropyScaleMask
             #define LIL_FEATURE_AnisotropyShiftNoiseMask
-            #define LIL_FEATURE_ShadowBorderMask
+            #define LIL_FEATURE_AOMap
             #define LIL_FEATURE_ShadowBlurMask
             #define LIL_FEATURE_ShadowStrengthMask
             #define LIL_FEATURE_ShadowColorTex
