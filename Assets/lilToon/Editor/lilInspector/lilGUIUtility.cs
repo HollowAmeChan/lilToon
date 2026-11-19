@@ -232,9 +232,10 @@ namespace lilToon
         private bool ShouldDrawBlock(PropertyBlock propertyBlock)
         {
             if(propertyBlock == PropertyBlock.Base && lilEditorGUI.CheckPropertyToDraw("Render Queue")) return true;
-            if(propertyBlock == PropertyBlock.Rendering && lilEditorGUI.CheckPropertyToDraw("Render Queue", "Enable GPU Instancing")) return true;
+            if(propertyBlock == PropertyBlock.Rendering && lilEditorGUI.CheckPropertyToDraw("Enable GPU Instancing")) return true;
 
-            foreach (var p in GetBlock2Properties()[propertyBlock])
+            if(!GetBlock2Properties().TryGetValue(propertyBlock, out var properties)) return false;
+            foreach (var p in properties)
             {
                 if (p.p == null ) { continue; }
                 if (lilEditorGUI.CheckPropertyToDraw(p) is false) { continue; }

@@ -36,28 +36,16 @@ float3 lilHoSurfaceResolveEmission(lilFragData fd)
     fd.uvRim = fd.nvabs.xx;
     float3 result = 0.0;
     #if defined(LIL_FEATURE_EMISSION_1ST)
-        float4 first = lilEmissionComponent(fd LIL_SAMP_IN(sampler_MainTex));
-        result += first.rgb * first.a;
-    #endif
-    #if defined(LIL_FEATURE_EMISSION_2ND)
-        float4 second = lilEmission2ndComponent(fd LIL_SAMP_IN(sampler_MainTex));
-        result += second.rgb * second.a;
+        float4 emission = lilEmissionComponent(fd LIL_SAMP_IN(sampler_MainTex));
+        result = emission.rgb * emission.a;
     #endif
     return max(result, 0.0);
 }
 
 float4 lilHoSurfaceBufferResolveMaterial(lilFragData fd)
 {
-    float smoothness = _Smoothness;
-    #if defined(LIL_FEATURE_SmoothnessTex)
-        smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
-    #endif
-    GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
-
-    float metallic = _Metallic;
-    #if defined(LIL_FEATURE_MetallicGlossMap)
-        metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, sampler_MainTex, fd.uvMain).r;
-    #endif
+    float smoothness = lilGetSurfaceSmoothness(fd LIL_SAMP_IN(sampler_MainTex));
+    float metallic = lilGetSurfaceMetallic(fd LIL_SAMP_IN(sampler_MainTex));
 
     float thickness = saturate(_HoSurfaceThickness);
     #if defined(LIL_FEATURE_SSS)

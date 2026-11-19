@@ -19,7 +19,7 @@ namespace lilToon
         //------------------------------------------------------------------------------------------------------------------------------
         // Material properties
         private readonly lilMaterialProperty invisible              = new lilMaterialProperty("_Invisible", PropertyBlock.Base);
-        private readonly lilMaterialProperty cutoff                 = new lilMaterialProperty("_Cutoff", PropertyBlock.Base);
+        private readonly lilMaterialProperty cutoff                 = new lilMaterialProperty("_Cutoff", PropertyBlock.AlphaMask);
         private readonly lilMaterialProperty lilOITEnabled          = new lilMaterialProperty("_lilOITEnabled", PropertyBlock.Base);
         private readonly lilMaterialProperty preColor               = new lilMaterialProperty("_PreColor", PropertyBlock.Base);
         private readonly lilMaterialProperty preOutType             = new lilMaterialProperty("_PreOutType", PropertyBlock.Base);
@@ -114,20 +114,20 @@ namespace lilToon
         private readonly lilMaterialProperty useShadow                  = new lilMaterialProperty("_UseShadow", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowStrength             = new lilMaterialProperty("_ShadowStrength", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowStrengthMask         = new lilMaterialProperty("_ShadowStrengthMask", true, PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowBorderMask           = new lilMaterialProperty("_ShadowBorderMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBlurMask             = new lilMaterialProperty("_ShadowBlurMask", true, PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowStrengthMaskLOD      = new lilMaterialProperty("_ShadowStrengthMaskLOD", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowBorderMaskLOD        = new lilMaterialProperty("_ShadowBorderMaskLOD", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBlurMaskLOD          = new lilMaterialProperty("_ShadowBlurMaskLOD", PropertyBlock.Shadow);
-        // AO lives under the shadow entry (see DrawShadow). Offline AO Map plus the
-        // realtime AO source, one shared parameter set.
-        private readonly lilMaterialProperty useRealtimeAO              = new lilMaterialProperty("_UseRealtimeAO", PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoSource                   = new lilMaterialProperty("_AOSource", PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty aoMap                      = new lilMaterialProperty("_AOMap", true, PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty aoMapLOD                   = new lilMaterialProperty("_AOMapLOD", PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty aoRealtimeWeight           = new lilMaterialProperty("_AORealtimeWeight", PropertyBlock.SurfaceAO);
         private readonly lilMaterialProperty aoStrength                 = new lilMaterialProperty("_AOStrength", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoLevel                    = new lilMaterialProperty("_AOLevel", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoContrast                 = new lilMaterialProperty("_AOContrast", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoDarkStrength             = new lilMaterialProperty("_AODarkStrength", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoColor                    = new lilMaterialProperty("_AOColor", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty aoMask                     = new lilMaterialProperty("_AOMask", true, PropertyBlock.Shadow);
+        private readonly lilMaterialProperty aoLevel                    = new lilMaterialProperty("_AOLevel", PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty aoContrast                 = new lilMaterialProperty("_AOContrast", PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty aoMask                     = new lilMaterialProperty("_AOMask", true, PropertyBlock.SurfaceAO);
+        private readonly lilMaterialProperty useAODarkening              = new lilMaterialProperty("_UseAODarkening", PropertyBlock.AODarkening);
+        private readonly lilMaterialProperty aoDarkStrength             = new lilMaterialProperty("_AODarkStrength", PropertyBlock.AODarkening);
+        private readonly lilMaterialProperty aoColor                    = new lilMaterialProperty("_AOColor", PropertyBlock.AODarkening);
         private readonly lilMaterialProperty shadowColorType            = new lilMaterialProperty("_ShadowColorType", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColor                = new lilMaterialProperty("_ShadowColor", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowColorTex             = new lilMaterialProperty("_ShadowColorTex", true, PropertyBlock.Shadow);
@@ -145,7 +145,7 @@ namespace lilToon
         private readonly lilMaterialProperty shadow3rdBorder            = new lilMaterialProperty("_Shadow3rdBorder", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadow3rdBlur              = new lilMaterialProperty("_Shadow3rdBlur", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowMainStrength         = new lilMaterialProperty("_ShadowMainStrength", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty shadowEnvStrength          = new lilMaterialProperty("_ShadowEnvStrength", PropertyBlock.Shadow, PropertyBlock.Lighting);
+        private readonly lilMaterialProperty shadowEnvStrength          = new lilMaterialProperty("_ShadowEnvStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty shadowBorderColor          = new lilMaterialProperty("_ShadowBorderColor", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowBorderRange          = new lilMaterialProperty("_ShadowBorderRange", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowReceive              = new lilMaterialProperty("_ShadowReceive", PropertyBlock.Shadow);
@@ -155,7 +155,7 @@ namespace lilToon
         private readonly lilMaterialProperty shadowMaskType             = new lilMaterialProperty("_ShadowMaskType", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBorder           = new lilMaterialProperty("_ShadowFlatBorder", PropertyBlock.Shadow);
         private readonly lilMaterialProperty shadowFlatBlur             = new lilMaterialProperty("_ShadowFlatBlur", PropertyBlock.Shadow);
-        private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Shadow, PropertyBlock.Rendering);
+        private readonly lilMaterialProperty lilShadowCasterBias        = new lilMaterialProperty("_lilShadowCasterBias", PropertyBlock.Rendering);
         private readonly lilMaterialProperty hoAdditionalLightIntensity = new lilMaterialProperty("_HoAdditionalLightIntensity", PropertyBlock.Lighting);
         private readonly lilMaterialProperty hoAdditionalLightShadowStrength = new lilMaterialProperty("_HoAdditionalLightShadowStrength", PropertyBlock.Lighting);
         private readonly lilMaterialProperty hoRPShadowMode             = new lilMaterialProperty("_HoRPShadowMode", PropertyBlock.Lighting);
@@ -188,68 +188,46 @@ namespace lilToon
         private readonly lilMaterialProperty rimShadeBlur           = new lilMaterialProperty("_RimShadeBlur", PropertyBlock.RimShade);
         private readonly lilMaterialProperty rimShadeFresnelPower   = new lilMaterialProperty("_RimShadeFresnelPower", PropertyBlock.RimShade);
 
-        private readonly lilMaterialProperty useEmission                    = new lilMaterialProperty("_UseEmission", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionColor                  = new lilMaterialProperty("_EmissionColor", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionMap                    = new lilMaterialProperty("_EmissionMap", true, PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionMap_ScrollRotate       = new lilMaterialProperty("_EmissionMap_ScrollRotate", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionMap_UVMode             = new lilMaterialProperty("_EmissionMap_UVMode", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionMainStrength           = new lilMaterialProperty("_EmissionMainStrength", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionBlend                  = new lilMaterialProperty("_EmissionBlend", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionBlendMask              = new lilMaterialProperty("_EmissionBlendMask", true, PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionBlendMask_ScrollRotate = new lilMaterialProperty("_EmissionBlendMask_ScrollRotate", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionBlendMode              = new lilMaterialProperty("_EmissionBlendMode", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionBlink                  = new lilMaterialProperty("_EmissionBlink", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionUseGrad                = new lilMaterialProperty("_EmissionUseGrad", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionGradTex                = new lilMaterialProperty("_EmissionGradTex", true, PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionGradSpeed              = new lilMaterialProperty("_EmissionGradSpeed", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionParallaxDepth          = new lilMaterialProperty("_EmissionParallaxDepth", PropertyBlock.Emission, PropertyBlock.Emission1st);
-        private readonly lilMaterialProperty emissionFluorescence           = new lilMaterialProperty("_EmissionFluorescence", PropertyBlock.Emission, PropertyBlock.Emission1st);
+        private readonly lilMaterialProperty useEmission                    = new lilMaterialProperty("_UseEmission", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionColor                  = new lilMaterialProperty("_EmissionColor", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionMap                    = new lilMaterialProperty("_EmissionMap", true, PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionMap_ScrollRotate       = new lilMaterialProperty("_EmissionMap_ScrollRotate", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionMap_UVMode             = new lilMaterialProperty("_EmissionMap_UVMode", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionMainStrength           = new lilMaterialProperty("_EmissionMainStrength", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionBlend                  = new lilMaterialProperty("_EmissionBlend", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionBlendMask              = new lilMaterialProperty("_EmissionBlendMask", true, PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionBlendMask_ScrollRotate = new lilMaterialProperty("_EmissionBlendMask_ScrollRotate", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionBlendMode              = new lilMaterialProperty("_EmissionBlendMode", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionBlink                  = new lilMaterialProperty("_EmissionBlink", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionUseGrad                = new lilMaterialProperty("_EmissionUseGrad", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionGradTex                = new lilMaterialProperty("_EmissionGradTex", true, PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionGradSpeed              = new lilMaterialProperty("_EmissionGradSpeed", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionParallaxDepth          = new lilMaterialProperty("_EmissionParallaxDepth", PropertyBlock.Emission);
+        private readonly lilMaterialProperty emissionFluorescence           = new lilMaterialProperty("_EmissionFluorescence", PropertyBlock.Emission);
 
-        private readonly lilMaterialProperty useEmission2nd                     = new lilMaterialProperty("_UseEmission2nd", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndColor                   = new lilMaterialProperty("_Emission2ndColor", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndMap                     = new lilMaterialProperty("_Emission2ndMap", true, PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndMap_ScrollRotate        = new lilMaterialProperty("_Emission2ndMap_ScrollRotate", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndMap_UVMode              = new lilMaterialProperty("_Emission2ndMap_UVMode", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndMainStrength            = new lilMaterialProperty("_Emission2ndMainStrength", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndBlend                   = new lilMaterialProperty("_Emission2ndBlend", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndBlendMask               = new lilMaterialProperty("_Emission2ndBlendMask", true, PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndBlendMask_ScrollRotate  = new lilMaterialProperty("_Emission2ndBlendMask_ScrollRotate", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndBlendMode               = new lilMaterialProperty("_Emission2ndBlendMode", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndBlink                   = new lilMaterialProperty("_Emission2ndBlink", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndUseGrad                 = new lilMaterialProperty("_Emission2ndUseGrad", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndGradTex                 = new lilMaterialProperty("_Emission2ndGradTex", true, PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndGradSpeed               = new lilMaterialProperty("_Emission2ndGradSpeed", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndParallaxDepth           = new lilMaterialProperty("_Emission2ndParallaxDepth", PropertyBlock.Emission, PropertyBlock.Emission2nd);
-        private readonly lilMaterialProperty emission2ndFluorescence            = new lilMaterialProperty("_Emission2ndFluorescence", PropertyBlock.Emission, PropertyBlock.Emission2nd);
 
-        private readonly lilMaterialProperty useBumpMap = new lilMaterialProperty("_UseBumpMap", PropertyBlock.NormalMap, PropertyBlock.NormalMap1st);
-        private readonly lilMaterialProperty bumpMap    = new lilMaterialProperty("_BumpMap", true, PropertyBlock.NormalMap, PropertyBlock.NormalMap1st);
-        private readonly lilMaterialProperty bumpScale  = new lilMaterialProperty("_BumpScale", PropertyBlock.NormalMap, PropertyBlock.NormalMap1st);
+        private readonly lilMaterialProperty useBumpMap = new lilMaterialProperty("_UseBumpMap", PropertyBlock.NormalMap);
+        private readonly lilMaterialProperty bumpMap    = new lilMaterialProperty("_BumpMap", true, PropertyBlock.NormalMap);
+        private readonly lilMaterialProperty bumpScale  = new lilMaterialProperty("_BumpScale", PropertyBlock.NormalMap);
 
-        private readonly lilMaterialProperty useBump2ndMap      = new lilMaterialProperty("_UseBump2ndMap", PropertyBlock.NormalMap, PropertyBlock.NormalMap2nd);
-        private readonly lilMaterialProperty bump2ndMap         = new lilMaterialProperty("_Bump2ndMap", true, PropertyBlock.NormalMap, PropertyBlock.NormalMap2nd);
-        private readonly lilMaterialProperty bump2ndMap_UVMode  = new lilMaterialProperty("_Bump2ndMap_UVMode", PropertyBlock.NormalMap, PropertyBlock.NormalMap2nd);
-        private readonly lilMaterialProperty bump2ndScale       = new lilMaterialProperty("_Bump2ndScale", PropertyBlock.NormalMap, PropertyBlock.NormalMap2nd);
-        private readonly lilMaterialProperty bump2ndScaleMask   = new lilMaterialProperty("_Bump2ndScaleMask", true, PropertyBlock.NormalMap, PropertyBlock.NormalMap2nd);
 
-        private readonly lilMaterialProperty useAnisotropy                  = new lilMaterialProperty("_UseAnisotropy", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyTangentMap           = new lilMaterialProperty("_AnisotropyTangentMap", true, PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyScale                = new lilMaterialProperty("_AnisotropyScale", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyScaleMask            = new lilMaterialProperty("_AnisotropyScaleMask", true, PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyTangentWidth         = new lilMaterialProperty("_AnisotropyTangentWidth", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyBitangentWidth       = new lilMaterialProperty("_AnisotropyBitangentWidth", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyShift                = new lilMaterialProperty("_AnisotropyShift", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyShiftNoiseScale      = new lilMaterialProperty("_AnisotropyShiftNoiseScale", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropySpecularStrength     = new lilMaterialProperty("_AnisotropySpecularStrength", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2ndTangentWidth      = new lilMaterialProperty("_Anisotropy2ndTangentWidth", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2ndBitangentWidth    = new lilMaterialProperty("_Anisotropy2ndBitangentWidth", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2ndShift             = new lilMaterialProperty("_Anisotropy2ndShift", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2ndShiftNoiseScale   = new lilMaterialProperty("_Anisotropy2ndShiftNoiseScale", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2ndSpecularStrength  = new lilMaterialProperty("_Anisotropy2ndSpecularStrength", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropyShiftNoiseMask       = new lilMaterialProperty("_AnisotropyShiftNoiseMask", true, PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2Reflection          = new lilMaterialProperty("_Anisotropy2Reflection", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2MatCap              = new lilMaterialProperty("_Anisotropy2MatCap", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
-        private readonly lilMaterialProperty anisotropy2MatCap2nd           = new lilMaterialProperty("_Anisotropy2MatCap2nd", PropertyBlock.NormalMap, PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty useAnisotropy                  = new lilMaterialProperty("_UseAnisotropy", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyTangentMap           = new lilMaterialProperty("_AnisotropyTangentMap", true, PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyScale                = new lilMaterialProperty("_AnisotropyScale", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyScaleMask            = new lilMaterialProperty("_AnisotropyScaleMask", true, PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyTangentWidth         = new lilMaterialProperty("_AnisotropyTangentWidth", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyBitangentWidth       = new lilMaterialProperty("_AnisotropyBitangentWidth", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyShift                = new lilMaterialProperty("_AnisotropyShift", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyShiftNoiseScale      = new lilMaterialProperty("_AnisotropyShiftNoiseScale", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropySpecularStrength     = new lilMaterialProperty("_AnisotropySpecularStrength", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2ndTangentWidth      = new lilMaterialProperty("_Anisotropy2ndTangentWidth", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2ndBitangentWidth    = new lilMaterialProperty("_Anisotropy2ndBitangentWidth", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2ndShift             = new lilMaterialProperty("_Anisotropy2ndShift", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2ndShiftNoiseScale   = new lilMaterialProperty("_Anisotropy2ndShiftNoiseScale", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2ndSpecularStrength  = new lilMaterialProperty("_Anisotropy2ndSpecularStrength", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropyShiftNoiseMask       = new lilMaterialProperty("_AnisotropyShiftNoiseMask", true, PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2Reflection          = new lilMaterialProperty("_Anisotropy2Reflection", PropertyBlock.Anisotropy);
+        private readonly lilMaterialProperty anisotropy2MatCap              = new lilMaterialProperty("_Anisotropy2MatCap", PropertyBlock.Anisotropy);
 
         private readonly lilMaterialProperty useBacklight               = new lilMaterialProperty("_UseBacklight", PropertyBlock.Backlight);
         private readonly lilMaterialProperty backlightColor             = new lilMaterialProperty("_BacklightColor", PropertyBlock.Backlight);
@@ -281,14 +259,14 @@ namespace lilToon
         private readonly lilMaterialProperty sssThicknessInvert         = new lilMaterialProperty("_SSSThicknessInvert", PropertyBlock.SSS);
 
         private readonly lilMaterialProperty useReflection                  = new lilMaterialProperty("_UseReflection", PropertyBlock.Reflection);
-        private readonly lilMaterialProperty metallic                       = new lilMaterialProperty("_Metallic", PropertyBlock.Reflection);
-        private readonly lilMaterialProperty metallicGlossMap               = new lilMaterialProperty("_MetallicGlossMap", true, PropertyBlock.Reflection);
-        private readonly lilMaterialProperty smoothness                     = new lilMaterialProperty("_Smoothness", PropertyBlock.Reflection);
-        private readonly lilMaterialProperty smoothnessTex                  = new lilMaterialProperty("_SmoothnessTex", true, PropertyBlock.Reflection);
+        private readonly lilMaterialProperty metallic                       = new lilMaterialProperty("_Metallic", PropertyBlock.MetallicSmoothness);
+        private readonly lilMaterialProperty metallicGlossMap               = new lilMaterialProperty("_MetallicGlossMap", true, PropertyBlock.MetallicSmoothness);
+        private readonly lilMaterialProperty smoothness                     = new lilMaterialProperty("_Smoothness", PropertyBlock.MetallicSmoothness);
+        private readonly lilMaterialProperty smoothnessTex                  = new lilMaterialProperty("_SmoothnessTex", true, PropertyBlock.MetallicSmoothness);
         private readonly lilMaterialProperty reflectance                    = new lilMaterialProperty("_Reflectance", PropertyBlock.Reflection);
         private readonly lilMaterialProperty reflectionColor                = new lilMaterialProperty("_ReflectionColor", PropertyBlock.Reflection);
         private readonly lilMaterialProperty reflectionColorTex             = new lilMaterialProperty("_ReflectionColorTex", true, PropertyBlock.Reflection);
-        private readonly lilMaterialProperty gsaaStrength                   = new lilMaterialProperty("_GSAAStrength", PropertyBlock.Reflection);
+        private readonly lilMaterialProperty gsaaStrength                   = new lilMaterialProperty("_GSAAStrength", PropertyBlock.MetallicSmoothness);
         private readonly lilMaterialProperty applySpecular                  = new lilMaterialProperty("_ApplySpecular", PropertyBlock.Reflection);
         private readonly lilMaterialProperty applySpecularFA                = new lilMaterialProperty("_ApplySpecularFA", PropertyBlock.Reflection);
         private readonly lilMaterialProperty specularNormalStrength         = new lilMaterialProperty("_SpecularNormalStrength", PropertyBlock.Reflection);
@@ -304,45 +282,26 @@ namespace lilToon
         private readonly lilMaterialProperty reflectionCubeEnableLighting   = new lilMaterialProperty("_ReflectionCubeEnableLighting", PropertyBlock.Reflection);
         private readonly lilMaterialProperty reflectionBlendMode            = new lilMaterialProperty("_ReflectionBlendMode", PropertyBlock.Reflection);
 
-        private readonly lilMaterialProperty useMatCap                  = new lilMaterialProperty("_UseMatCap", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapTex                  = new lilMaterialProperty("_MatCapTex", true, PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapColor                = new lilMaterialProperty("_MatCapColor", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapMainStrength         = new lilMaterialProperty("_MatCapMainStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBlendUV1             = new lilMaterialProperty("_MatCapBlendUV1", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapZRotCancel           = new lilMaterialProperty("_MatCapZRotCancel", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapPerspective          = new lilMaterialProperty("_MatCapPerspective", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBlend                = new lilMaterialProperty("_MatCapBlend", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBlendMask            = new lilMaterialProperty("_MatCapBlendMask", true, PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapEnableLighting       = new lilMaterialProperty("_MatCapEnableLighting", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapShadowMask           = new lilMaterialProperty("_MatCapShadowMask", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBackfaceMask         = new lilMaterialProperty("_MatCapBackfaceMask", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapLod                  = new lilMaterialProperty("_MatCapLod", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBlendMode            = new lilMaterialProperty("_MatCapBlendMode", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapApplyTransparency    = new lilMaterialProperty("_MatCapApplyTransparency", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapNormalStrength       = new lilMaterialProperty("_MatCapNormalStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapCustomNormal         = new lilMaterialProperty("_MatCapCustomNormal", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBumpMap              = new lilMaterialProperty("_MatCapBumpMap", true, PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
-        private readonly lilMaterialProperty matcapBumpScale            = new lilMaterialProperty("_MatCapBumpScale", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
+        private readonly lilMaterialProperty useMatCap                  = new lilMaterialProperty("_UseMatCap", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapTex                  = new lilMaterialProperty("_MatCapTex", true, PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapColor                = new lilMaterialProperty("_MatCapColor", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapMainStrength         = new lilMaterialProperty("_MatCapMainStrength", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBlendUV1             = new lilMaterialProperty("_MatCapBlendUV1", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapZRotCancel           = new lilMaterialProperty("_MatCapZRotCancel", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapPerspective          = new lilMaterialProperty("_MatCapPerspective", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBlend                = new lilMaterialProperty("_MatCapBlend", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBlendMask            = new lilMaterialProperty("_MatCapBlendMask", true, PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapEnableLighting       = new lilMaterialProperty("_MatCapEnableLighting", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapShadowMask           = new lilMaterialProperty("_MatCapShadowMask", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBackfaceMask         = new lilMaterialProperty("_MatCapBackfaceMask", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapLod                  = new lilMaterialProperty("_MatCapLod", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBlendMode            = new lilMaterialProperty("_MatCapBlendMode", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapApplyTransparency    = new lilMaterialProperty("_MatCapApplyTransparency", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapNormalStrength       = new lilMaterialProperty("_MatCapNormalStrength", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapCustomNormal         = new lilMaterialProperty("_MatCapCustomNormal", PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBumpMap              = new lilMaterialProperty("_MatCapBumpMap", true, PropertyBlock.MatCaps);
+        private readonly lilMaterialProperty matcapBumpScale            = new lilMaterialProperty("_MatCapBumpScale", PropertyBlock.MatCaps);
 
-        private readonly lilMaterialProperty useMatCap2nd                   = new lilMaterialProperty("_UseMatCap2nd", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndTex                   = new lilMaterialProperty("_MatCap2ndTex", true, PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndColor                 = new lilMaterialProperty("_MatCap2ndColor", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndMainStrength          = new lilMaterialProperty("_MatCap2ndMainStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBlendUV1              = new lilMaterialProperty("_MatCap2ndBlendUV1", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndZRotCancel            = new lilMaterialProperty("_MatCap2ndZRotCancel", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndPerspective           = new lilMaterialProperty("_MatCap2ndPerspective", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBlend                 = new lilMaterialProperty("_MatCap2ndBlend", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBlendMask             = new lilMaterialProperty("_MatCap2ndBlendMask", true, PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndEnableLighting        = new lilMaterialProperty("_MatCap2ndEnableLighting", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndShadowMask            = new lilMaterialProperty("_MatCap2ndShadowMask", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBackfaceMask          = new lilMaterialProperty("_MatCap2ndBackfaceMask", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndLod                   = new lilMaterialProperty("_MatCap2ndLod", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBlendMode             = new lilMaterialProperty("_MatCap2ndBlendMode", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndApplyTransparency     = new lilMaterialProperty("_MatCap2ndApplyTransparency", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndNormalStrength        = new lilMaterialProperty("_MatCap2ndNormalStrength", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndCustomNormal          = new lilMaterialProperty("_MatCap2ndCustomNormal", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBumpMap               = new lilMaterialProperty("_MatCap2ndBumpMap", true, PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
-        private readonly lilMaterialProperty matcap2ndBumpScale             = new lilMaterialProperty("_MatCap2ndBumpScale", PropertyBlock.MatCaps, PropertyBlock.MatCap2nd);
 
         private readonly lilMaterialProperty useRim                 = new lilMaterialProperty("_UseRim", PropertyBlock.RimLight);
         private readonly lilMaterialProperty rimColor               = new lilMaterialProperty("_RimColor", PropertyBlock.RimLight);
@@ -495,7 +454,7 @@ namespace lilToon
         private readonly lilMaterialProperty outlineAlphaToMask     = new lilMaterialProperty("_OutlineAlphaToMask", PropertyBlock.Rendering);
 
         private readonly lilMaterialProperty triMask                = new lilMaterialProperty("_TriMask", true, PropertyBlock.Base);
-        private readonly lilMaterialProperty matcapMul              = new lilMaterialProperty("_MatCapMul", PropertyBlock.MatCaps, PropertyBlock.MatCap1st);
+        private readonly lilMaterialProperty matcapMul              = new lilMaterialProperty("_MatCapMul", PropertyBlock.MatCaps);
 
         private lilMaterialProperty[] allProperty;
         // Shared input catalog for the Inspector and scene material manager.
@@ -599,12 +558,14 @@ namespace lilToon
                 useShadow,
                 shadowStrength,
                 shadowStrengthMask,
-                shadowBorderMask,
                 shadowBlurMask,
                 shadowStrengthMaskLOD,
-                shadowBorderMaskLOD,
                 shadowBlurMaskLOD,
-                useRealtimeAO,
+                aoSource,
+                aoMap,
+                aoMapLOD,
+                aoRealtimeWeight,
+                useAODarkening,
                 aoStrength,
                 aoLevel,
                 aoContrast,
@@ -684,32 +645,11 @@ namespace lilToon
                 emissionParallaxDepth,
                 emissionFluorescence,
 
-                useEmission2nd,
-                emission2ndColor,
-                emission2ndMap,
-                emission2ndMap_ScrollRotate,
-                emission2ndMap_UVMode,
-                emission2ndMainStrength,
-                emission2ndBlend,
-                emission2ndBlendMask,
-                emission2ndBlendMask_ScrollRotate,
-                emission2ndBlendMode,
-                emission2ndBlink,
-                emission2ndUseGrad,
-                emission2ndGradTex,
-                emission2ndGradSpeed,
-                emission2ndParallaxDepth,
-                emission2ndFluorescence,
 
                 useBumpMap,
                 bumpMap,
                 bumpScale,
 
-                useBump2ndMap,
-                bump2ndMap,
-                bump2ndMap_UVMode,
-                bump2ndScale,
-                bump2ndScaleMask,
 
                 useAnisotropy,
                 anisotropyTangentMap,
@@ -728,7 +668,6 @@ namespace lilToon
                 anisotropyShiftNoiseMask,
                 anisotropy2Reflection,
                 anisotropy2MatCap,
-                anisotropy2MatCap2nd,
 
                 useBacklight,
                 backlightColor,
@@ -803,25 +742,6 @@ namespace lilToon
                 matcapBumpMap,
                 matcapBumpScale,
 
-                useMatCap2nd,
-                matcap2ndTex,
-                matcap2ndColor,
-                matcap2ndMainStrength,
-                matcap2ndBlendUV1,
-                matcap2ndZRotCancel,
-                matcap2ndPerspective,
-                matcap2ndBlend,
-                matcap2ndBlendMask,
-                matcap2ndEnableLighting,
-                matcap2ndShadowMask,
-                matcap2ndBackfaceMask,
-                matcap2ndLod,
-                matcap2ndBlendMode,
-                matcap2ndApplyTransparency,
-                matcap2ndNormalStrength,
-                matcap2ndCustomNormal,
-                matcap2ndBumpMap,
-                matcap2ndBumpScale,
 
                 useRim,
                 rimColor,
@@ -997,7 +917,9 @@ namespace lilToon
                 var lilPorp = allProps[i];
                 if (dictonary.TryGetValue(lilPorp.propertyName, out var materialProperty))
                     lilPorp.p = materialProperty;
-                else if (lilPorp.blocks.Contains(PropertyBlock.Tesion) || lilPorp.blocks.Contains(PropertyBlock.HoSurface))
+                else if (lilPorp.blocks.Contains(PropertyBlock.Tesion) || lilPorp.blocks.Contains(PropertyBlock.HoSurface)
+                    || lilPorp.blocks.Contains(PropertyBlock.SurfaceAO) || lilPorp.blocks.Contains(PropertyBlock.AODarkening)
+                    || lilPorp.blocks.Contains(PropertyBlock.MetallicSmoothness))
                     lilPorp.p = null;
             }
 

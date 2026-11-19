@@ -106,19 +106,6 @@ float4  _PlanarReflectionTint;
     #endif
 #endif
 
-// Emission 2nd
-#if defined(LIL_FEATURE_EMISSION_2ND)
-    float4  _Emission2ndColor;
-    float4  _Emission2ndBlink;
-    float4  _Emission2ndMap_ST;
-    #if defined(LIL_FEATURE_ANIMATE_EMISSION_UV)
-        float4  _Emission2ndMap_ScrollRotate;
-    #endif
-    float4  _Emission2ndBlendMask_ST;
-    #if defined(LIL_FEATURE_ANIMATE_EMISSION_MASK_UV)
-        float4  _Emission2ndBlendMask_ScrollRotate;
-    #endif
-#endif
 
 // Normal Map
 #if defined(LIL_FEATURE_NORMAL_1ST)
@@ -126,10 +113,6 @@ float4  _PlanarReflectionTint;
 #endif
 
 // Normal Map 2nd
-#if defined(LIL_FEATURE_NORMAL_2ND)
-    float4  _Bump2ndMap_ST;
-    float4  _Bump2ndScaleMask_ST;
-#endif
 
 // Anisotropy
 #if defined(LIL_FEATURE_ANISOTROPY)
@@ -141,10 +124,12 @@ float4  _PlanarReflectionTint;
 // Reflection
 #if defined(LIL_FEATURE_REFLECTION)
     float4  _ReflectionColor;
-    float4  _MetallicGlossMap_ST;
     float4  _ReflectionColorTex_ST;
 #endif
-#if defined(LIL_FEATURE_REFLECTION)
+#if defined(LIL_FEATURE_MetallicGlossMap)
+    float4  _MetallicGlossMap_ST;
+#endif
+#if defined(LIL_FEATURE_SmoothnessTex)
     float4  _SmoothnessTex_ST;
 #endif
 #if defined(LIL_FEATURE_REFLECTION)
@@ -163,16 +148,6 @@ float4  _PlanarReflectionTint;
     #endif
 #endif
 
-// MatCap 2nd
-#if defined(LIL_FEATURE_MATCAP_2ND)
-    float4  _MatCap2ndColor;
-    float4  _MatCap2ndTex_ST;
-    float4  _MatCap2ndBlendMask_ST;
-    float4  _MatCap2ndBlendUV1;
-    #if defined(LIL_FEATURE_MatCap2ndBumpMap)
-        float4  _MatCap2ndBumpMap_ST;
-    #endif
-#endif
 
 // Rim Light
 #if defined(LIL_FEATURE_RIMLIGHT)
@@ -243,10 +218,11 @@ float   _MonochromeLighting;
 float   _HoAdditionalLightIntensity;
 float   _HoAdditionalLightShadowStrength;
 float   _HoRPShadowMode;
-// AO: realtime source + offline AO Map, driving the shadow grade and the final
-// AO multiply. Declared unconditionally because the offline AO Map path can be
-// used without realtime AO, so lilGetShading references these outside the
-// LIL_FEATURE_REALTIMEAO guard.
+// Surface AO and its independent consumers.
+uint    _AOSource;
+lilBool _UseAODarkening;
+float   _AOMapLOD;
+float   _AORealtimeWeight;
 float   _AOStrength;
 float   _AOLevel;
 float   _AOContrast;
@@ -281,7 +257,6 @@ float4  _AOColor;
     float   _ShadowBorder;
     float   _ShadowBlur;
     float   _ShadowStrengthMaskLOD;
-    float   _ShadowBorderMaskLOD;
     float   _ShadowBlurMaskLOD;
     float   _Shadow2ndNormalStrength;
     float   _Shadow2ndBorder;
@@ -334,9 +309,6 @@ float   _PlanarReflectionFadeEnd;
 #if defined(LIL_FEATURE_NORMAL_1ST)
     float   _BumpScale;
 #endif
-#if defined(LIL_FEATURE_NORMAL_2ND)
-    float   _Bump2ndScale;
-#endif
 #if defined(LIL_FEATURE_ANISOTROPY)
     float   _AnisotropyScale;
     float   _AnisotropyTangentWidth;
@@ -369,18 +341,6 @@ float   _PlanarReflectionFadeEnd;
     float   _MatCapMainStrength;
     #if defined(LIL_FEATURE_MatCapBumpMap)
         float   _MatCapBumpScale;
-    #endif
-#endif
-#if defined(LIL_FEATURE_MATCAP_2ND)
-    float   _MatCap2ndBlend;
-    float   _MatCap2ndEnableLighting;
-    float   _MatCap2ndShadowMask;
-    float   _MatCap2ndBackfaceMask;
-    float   _MatCap2ndLod;
-    float   _MatCap2ndNormalStrength;
-    float   _MatCap2ndMainStrength;
-    #if defined(LIL_FEATURE_MatCap2ndBumpMap)
-        float   _MatCap2ndBumpScale;
     #endif
 #endif
 #if defined(LIL_FEATURE_RIMLIGHT)
@@ -421,15 +381,6 @@ float   _PlanarReflectionFadeEnd;
     float   _EmissionMainStrength;
     #if defined(LIL_FEATURE_EMISSION_GRADATION)
         float   _EmissionGradSpeed;
-    #endif
-#endif
-#if defined(LIL_FEATURE_EMISSION_2ND)
-    float   _Emission2ndBlend;
-    float   _Emission2ndParallaxDepth;
-    float   _Emission2ndFluorescence;
-    float   _Emission2ndMainStrength;
-    #if defined(LIL_FEATURE_EMISSION_GRADATION)
-        float   _Emission2ndGradSpeed;
     #endif
 #endif
 #if defined(LIL_FEATURE_PARALLAX)
@@ -480,17 +431,11 @@ uint    _Cull;
     uint    _ShadowColorType;
     uint    _ShadowMaskType;
 #endif
-#if defined(LIL_FEATURE_NORMAL_2ND)
-    uint    _Bump2ndMap_UVMode;
-#endif
 #if defined(LIL_FEATURE_REFLECTION)
     uint    _ReflectionBlendMode;
 #endif
 #if defined(LIL_FEATURE_MATCAP)
     uint    _MatCapBlendMode;
-#endif
-#if defined(LIL_FEATURE_MATCAP_2ND)
-    uint    _MatCap2ndBlendMode;
 #endif
 #if defined(LIL_FEATURE_RIMLIGHT)
     uint    _RimBlendMode;
@@ -501,10 +446,6 @@ uint    _Cull;
 #if defined(LIL_FEATURE_EMISSION_1ST)
     uint    _EmissionMap_UVMode;
     uint    _EmissionBlendMode;
-#endif
-#if defined(LIL_FEATURE_EMISSION_2ND)
-    uint    _Emission2ndMap_UVMode;
-    uint    _Emission2ndBlendMode;
 #endif
 #if defined(LIL_FEATURE_DISTANCE_FADE)
     uint    _DistanceFadeMode;
@@ -557,22 +498,15 @@ lilBool _Invisible;
     lilBool _SSSReceiveShadow;
     lilBool _SSSThicknessInvert;
 #endif
-#if defined(LIL_FEATURE_REALTIMEAO)
-    lilBool _UseRealtimeAO;
-#endif
 lilBool _UsePlanarReflection;
 lilBool _PlanarReflectionFlipY;
 #if defined(LIL_FEATURE_NORMAL_1ST)
     lilBool _UseBumpMap;
 #endif
-#if defined(LIL_FEATURE_NORMAL_2ND)
-    lilBool _UseBump2ndMap;
-#endif
 #if defined(LIL_FEATURE_ANISOTROPY)
     lilBool _UseAnisotropy;
     lilBool _Anisotropy2Reflection;
     lilBool _Anisotropy2MatCap;
-    lilBool _Anisotropy2MatCap2nd;
 #endif
 #if defined(LIL_FEATURE_REFLECTION)
     lilBool _UseReflection;
@@ -594,15 +528,6 @@ lilBool _PlanarReflectionFlipY;
         lilBool _MatCapCustomNormal;
     #endif
 #endif
-#if defined(LIL_FEATURE_MATCAP_2ND)
-    lilBool _UseMatCap2nd;
-    lilBool _MatCap2ndApplyTransparency;
-    lilBool _MatCap2ndPerspective;
-    lilBool _MatCap2ndZRotCancel;
-    #if defined(LIL_FEATURE_MatCap2ndBumpMap)
-        lilBool _MatCap2ndCustomNormal;
-    #endif
-#endif
 #if defined(LIL_FEATURE_RIMLIGHT)
     lilBool _UseRim;
     lilBool _RimApplyTransparency;
@@ -620,12 +545,6 @@ lilBool _PlanarReflectionFlipY;
     lilBool _UseEmission;
     #if defined(LIL_FEATURE_EMISSION_GRADATION)
         lilBool _EmissionUseGrad;
-    #endif
-#endif
-#if defined(LIL_FEATURE_EMISSION_2ND)
-    lilBool _UseEmission2nd;
-    #if defined(LIL_FEATURE_EMISSION_GRADATION)
-        lilBool _Emission2ndUseGrad;
     #endif
 #endif
 #if defined(LIL_FEATURE_PARALLAX)

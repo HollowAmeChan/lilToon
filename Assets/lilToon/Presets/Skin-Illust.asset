@@ -77,7 +77,7 @@ MonoBehaviour:
     value: 0.75
   - name: _ShadowStrengthMaskLOD
     value: 0
-  - name: _ShadowBorderMaskLOD
+  - name: _AOMapLOD
     value: 0
   - name: _ShadowBlurMaskLOD
     value: 0

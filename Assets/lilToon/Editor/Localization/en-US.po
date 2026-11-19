@@ -287,9 +287,6 @@ msgstr "Outline"
 msgid "sLimEmission"
 msgstr "Emission"
 
-msgid "sLimEmission2nd"
-msgstr "Emission 2nd"
-
 msgid "sBaseSetting"
 msgstr "Base Setting"
 
@@ -740,9 +737,6 @@ msgstr "You can set the color and blinking of the light."
 msgid "sEmission"
 msgstr "Emission"
 
-msgid "sEmission2nd"
-msgstr "Emission 2nd"
-
 msgid "sBlinkStrength"
 msgstr "Blink Strength"
 
@@ -854,9 +848,6 @@ msgstr "You can set the normal map."
 msgid "sNormalMap"
 msgstr "Normal Map"
 
-msgid "sNormalMap2nd"
-msgstr "Normal Map 2nd"
-
 msgid "sNormalRGB"
 msgstr "Normal (RGB)"
 
@@ -916,9 +907,6 @@ msgstr "MatCap"
 
 msgid "sMatCap"
 msgstr "MatCap"
-
-msgid "sMatCap2nd"
-msgstr "MatCap 2nd"
 
 msgid "sBlendUV1"
 msgstr "Blend UV1"
@@ -1649,12 +1637,6 @@ msgstr "AO Dark Strength"
 msgid "AO Level"
 msgstr "AO Level"
 
-msgid "AO Strength"
-msgstr "AO Strength"
-
-msgid "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
-msgstr "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
-
 msgid "Apply Specular"
 msgstr "Apply Specular"
 
@@ -1796,9 +1778,6 @@ msgstr "Realtime AO"
 msgid "Ref"
 msgstr "Ref"
 
-msgid "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
-msgstr "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
-
 msgid "Right Only"
 msgstr "Right Only"
 
@@ -1825,9 +1804,6 @@ msgstr "Use Emission"
 
 msgid "Use Outline"
 msgstr "Use Outline"
-
-msgid "Uses the Shadow section's AO input"
-msgstr "Uses the Shadow section's AO input"
 
 msgid "UV0"
 msgstr "UV0"

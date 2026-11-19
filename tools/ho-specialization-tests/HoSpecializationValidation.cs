@@ -101,7 +101,8 @@ public static class HoSpecializationValidation
                     "_SrcBlendFA", "_OutlineSrcBlendFA", "_PreSrcBlendFA", "_AAStrength" })
                     Check(!material.HasProperty(key), name + " has no " + key);
                 foreach (string key in new[] { "_GlitterVRParallaxStrength", "_GSAAStrength",
-                    "_HoAdditionalLightIntensity", "_HoRPShadowMode", "_UseRealtimeAO", "_HoCharacterCaptureOpacity" })
+                    "_HoAdditionalLightIntensity", "_HoRPShadowMode", "_AOSource", "_AOMap",
+                    "_AORealtimeWeight", "_UseAODarkening", "_HoCharacterCaptureOpacity" })
                     Check(material.HasProperty(key), name + " preserves " + key);
             }
             finally { UnityEngine.Object.DestroyImmediate(material); }

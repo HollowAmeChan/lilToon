@@ -33,8 +33,8 @@ MonoBehaviour:
     value: {r: 0.95, g: 0.8, b: 0.64, a: 0.65}
   vectors: []
   floats:
-  - name: _UseRealtimeAO
-    value: 1
+  - name: _AOSource
+    value: 3
   - name: _UseShadow
     value: 1
   - name: _MultiLightCastShadowStrength
@@ -43,7 +43,7 @@ MonoBehaviour:
     value: 0.92
   - name: _ShadowStrengthMaskLOD
     value: 0
-  - name: _ShadowBorderMaskLOD
+  - name: _AOMapLOD
     value: 0
   - name: _ShadowBlurMaskLOD
     value: 0

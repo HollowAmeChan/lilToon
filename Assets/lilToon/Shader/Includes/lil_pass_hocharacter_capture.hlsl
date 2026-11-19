@@ -81,7 +81,7 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
     OVERRIDE_MAIN
 
     #if defined(LIL_V2F_NORMAL_WS)
-        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_GD_TENSION))
+        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_GD_TENSION))
             float3 normalmap = float3(0.0,0.0,1.0);
 
             BEFORE_NORMAL_1ST
@@ -89,10 +89,6 @@ LilHoCharacterCaptureOutput frag(v2f input LIL_VFACE(facing))
                 OVERRIDE_NORMAL_1ST
             #endif
 
-            BEFORE_NORMAL_2ND
-            #if defined(LIL_FEATURE_NORMAL_2ND)
-                OVERRIDE_NORMAL_2ND
-            #endif
 
             LIL_APPLY_TESION_NORMAL
             fd.N = normalize(mul(normalmap, fd.TBN));

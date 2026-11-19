@@ -34,8 +34,6 @@ namespace lilToon
             res = res || name == "_lilToonVersion";
             res = res || name.Contains("_egc");
             res = res || name.Contains("_ega");
-            res = res || name.Contains("_e2gc");
-            res = res || name.Contains("_e2ga");
             return res;
         }
 
@@ -43,7 +41,6 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_Invisible";
-            res = res || name == "_Cutoff";
             res = res || name == "_FlipNormal";
             res = res || name == "_BackfaceForceShadow";
             res = res || name == "_BackfaceColor";
@@ -61,6 +58,8 @@ namespace lilToon
             res = res || name == "_MonochromeLighting";
             res = res || name == "_HoAdditionalLightIntensity";
             res = res || name == "_HoAdditionalLightShadowStrength";
+            res = res || name == "_HoRPShadowMode";
+            res = res || name == "_ShadowEnvStrength";
             res = res || name == "_LightDirectionOverride";
             return res;
         }
@@ -101,7 +100,7 @@ namespace lilToon
         public static bool IsAlphaMaskProperty(string name)
         {
             bool res = false;
-            res = res || name.Contains("_AlphaMask");
+            res = res || name.Contains("_AlphaMask") || name == "_Cutoff";
             return res;
         }
 
@@ -109,13 +108,21 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_UseShadow";
-            res = res || name == "_lilShadowCasterBias";
-            res = res || name.Contains("_Shadow");
-            // AO lives under the shadow entry (offline AO Map + realtime AO).
-            res = res || name == "_UseRealtimeAO";
-            res = res || name.StartsWith("_AO");
+            res = res || name.StartsWith("_Shadow") && name != "_ShadowEnvStrength";
+            res = res || name == "_AOStrength";
             return res;
         }
+
+        public static bool IsSurfaceAOProperty(string name) =>
+            name == "_AOSource" || name == "_AOMap" || name == "_AOMapLOD" || name == "_AOMask" ||
+            name == "_AORealtimeWeight" || name == "_AOLevel" || name == "_AOContrast";
+
+        public static bool IsAODarkeningProperty(string name) =>
+            name == "_UseAODarkening" || name == "_AODarkStrength" || name == "_AOColor";
+
+        public static bool IsMetallicSmoothnessProperty(string name) =>
+            name == "_Smoothness" || name == "_SmoothnessTex" || name == "_Metallic" ||
+            name == "_MetallicGlossMap" || name == "_GSAAStrength";
 
         public static bool IsRimShadeProperty(string name)
         {
@@ -129,15 +136,7 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_UseEmission";
-            res = res || name.Contains("_Emission") && !name.Contains("2nd");
-            return res;
-        }
-
-        public static bool IsEmission2ndProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_UseEmission2nd";
-            res = res || name.Contains("_Emission2nd");
+            res = res || name.StartsWith("_Emission");
             return res;
         }
 
@@ -147,16 +146,6 @@ namespace lilToon
             res = res || name == "_UseBumpMap";
             res = res || name == "_BumpMap";
             res = res || name == "_BumpScale";
-            return res;
-        }
-
-        public static bool IsNormalMap2ndProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_UseBump2ndMap";
-            res = res || name == "_Bump2ndMap";
-            res = res || name == "_Bump2ndScale";
-            res = res || name == "_Bump2ndScaleMask";
             return res;
         }
 
@@ -192,17 +181,13 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_UseReflection";
-            res = res || name == "_Smoothness";
-            res = res || name == "_SmoothnessTex";
-            res = res || name == "_Metallic";
-            res = res || name == "_MetallicGlossMap";
             res = res || name == "_Reflectance";
-            res = res || name == "_GSAAStrength";
             res = res || name == "_ApplySpecular";
             res = res || name == "_ApplySpecularFA";
             res = res || name == "_ApplyReflection";
             res = res || name.Contains("_Specular");
             res = res || name.Contains("_Reflection");
+            res = res || name == "_UsePlanarReflection" || name.StartsWith("_PlanarReflection");
             return res;
         }
 
@@ -210,15 +195,7 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_UseMatCap";
-            res = res || name.Contains("_MatCap") && !name.Contains("2nd");
-            return res;
-        }
-
-        public static bool IsMatCap2ndProperty(string name)
-        {
-            bool res = false;
-            res = res || name == "_UseMatCap2nd";
-            res = res || name.Contains("_MatCap2nd");
+            res = res || name.StartsWith("_MatCap");
             return res;
         }
 

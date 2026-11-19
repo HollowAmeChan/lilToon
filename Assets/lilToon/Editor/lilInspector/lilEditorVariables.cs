@@ -26,18 +26,17 @@ namespace lilToon
             public bool isShowMain                      = false;
             public bool isShowMainTone                  = false;
             public bool isShowShadow                    = false;
-            public bool isShowShadowAO                  = false;
             public bool isShowAO                        = false;
+            public bool isShowSurfaceAO                 = false;
+            public bool isShowMetallicSmoothness         = false;
             public bool isShowRimShade                  = false;
             public bool isShowBump                      = false;
+            public bool isShowAnisotropy                = false;
             public bool isShowReflections               = false;
             public bool isShowEmission                  = false;
             public bool isShowEmissionMap               = false;
             public bool isShowEmissionBlendMask         = false;
-            public bool isShowEmission2ndMap            = false;
-            public bool isShowEmission2ndBlendMask      = false;
             public bool isShowMatCapUV                  = false;
-            public bool isShowMatCap2ndUV               = false;
             public bool isShowParallax                  = false;
             public bool isShowDistanceFade              = false;
             public bool isShowDissolve                  = false;
@@ -46,8 +45,6 @@ namespace lilToon
             public bool isShowMain3rdDissolveMask       = false;
             public bool isShowMain3rdDissolveNoiseMask  = false;
             public bool isShowBumpMap                   = false;
-            public bool isShowBump2ndMap                = false;
-            public bool isShowBump2ndScaleMask          = false;
             public bool isShowAnisotropyTangentMap      = false;
             public bool isShowAnisotropyScaleMask       = false;
             public bool isShowSmoothnessTex             = false;
@@ -60,8 +57,6 @@ namespace lilToon
             public bool isShowMatCap                    = false;
             public bool isShowMatCapBlendMask           = false;
             public bool isShowMatCapBumpMap             = false;
-            public bool isShowMatCap2ndBlendMask        = false;
-            public bool isShowMatCap2ndBumpMap          = false;
             public bool isShowRim                       = false;
             public bool isShowRimColorTex               = false;
             public bool isShowGlitter                   = false;
@@ -127,7 +122,6 @@ namespace lilToon
         private static bool isMultiVariants = false;
         private readonly Gradient mainGrad  = new Gradient();
         private readonly Gradient emiGrad   = new Gradient();
-        private readonly Gradient emi2Grad  = new Gradient();
 
         protected static GUIStyle boxOuter         { get { return lilEditorGUI.boxOuter        ; } private set { lilEditorGUI.boxOuter         = value; }}
         protected static GUIStyle boxInnerHalf     { get { return lilEditorGUI.boxInnerHalf    ; } private set { lilEditorGUI.boxInnerHalf     = value; }}
@@ -182,7 +176,7 @@ namespace lilToon
         protected static GUIContent shadow2ndColorRGBAContent       { get { return lilLanguageManager.shadow2ndColorRGBAContent     ; } private set { lilLanguageManager.shadow2ndColorRGBAContent      = value; } }
         protected static GUIContent shadow3rdColorRGBAContent       { get { return lilLanguageManager.shadow3rdColorRGBAContent     ; } private set { lilLanguageManager.shadow3rdColorRGBAContent      = value; } }
         protected static GUIContent blurMaskRGBContent              { get { return lilLanguageManager.blurMaskRGBContent            ; } private set { lilLanguageManager.blurMaskRGBContent             = value; } }
-        protected static GUIContent shadowAOContent                 { get { return lilLanguageManager.shadowAOContent               ; } private set { lilLanguageManager.shadowAOContent               = value; } }
+        protected static GUIContent aoMapContent                 { get { return lilLanguageManager.aoMapContent               ; } private set { lilLanguageManager.aoMapContent               = value; } }
         protected static GUIContent aoMaskContent                   { get { return lilLanguageManager.aoMaskContent                 ; } private set { lilLanguageManager.aoMaskContent                 = value; } }
         protected static GUIContent widthMaskContent                { get { return lilLanguageManager.widthMaskContent              ; } private set { lilLanguageManager.widthMaskContent               = value; } }
         protected static GUIContent zBiasMaskContent                { get { return lilLanguageManager.zBiasMaskContent              ; } private set { lilLanguageManager.zBiasMaskContent               = value; } }

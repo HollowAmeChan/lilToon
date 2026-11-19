@@ -65,7 +65,7 @@ namespace lilToon
         public static GUIContent shadow2ndColorRGBAContent;
         public static GUIContent shadow3rdColorRGBAContent;
         public static GUIContent blurMaskRGBContent;
-        public static GUIContent shadowAOContent;
+        public static GUIContent aoMapContent;
         public static GUIContent aoMaskContent;
         public static GUIContent widthMaskContent;
         public static GUIContent zBiasMaskContent;
@@ -214,7 +214,7 @@ namespace lilToon
             shadow2ndColorRGBAContent       = new GUIContent(GetLoc("sShadow2ndColor"),                     GetLoc("sTextureRGBA"));
             shadow3rdColorRGBAContent       = new GUIContent(GetLoc("sShadow3rdColor"),                     GetLoc("sTextureRGBA"));
             blurMaskRGBContent              = new GUIContent(GetLoc("sBlurMask"),                           GetLoc("sBlurRGB"));
-            shadowAOContent                 = new GUIContent("AO",                                          GetLoc("AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime Ho-AO adds screen space occlusion. The AO section reuses this same input for its darkening."));
+            aoMapContent                    = new GUIContent(GetLoc("AO Map"), GetLoc("AO Map RGB drives the three shadow levels. White means unoccluded."));
             aoMaskContent                   = new GUIContent(GetLoc("AO Mask"),                             GetLoc("R: 1 = receive AO. Gates both the realtime AO and the AO Map."));
             widthMaskContent                = new GUIContent(GetLoc("sWidth"),                              GetLoc("sWidthR"));
             zBiasMaskContent                = new GUIContent(GetLoc("sZBiasMask"),                           GetLoc("sZBiasR"));

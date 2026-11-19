@@ -282,7 +282,7 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         //------------------------------------------------------------------------------------------------------------------------------
         // Normal
         #if defined(LIL_V2F_NORMAL_WS)
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_GD_TENSION)
+            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_GD_TENSION)
                 float3 normalmap = float3(0.0,0.0,1.0);
 
                 // 1st
@@ -292,10 +292,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 #endif
 
                 // 2nd
-                BEFORE_NORMAL_2ND
-                #if defined(LIL_FEATURE_NORMAL_2ND)
-                    OVERRIDE_NORMAL_2ND
-                #endif
 
                 LIL_APPLY_TESION_NORMAL
                 fd.N = normalize(mul(normalmap, fd.TBN));
@@ -318,7 +314,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
         #endif
         fd.reflectionN = fd.N;
         fd.matcapN = fd.N;
-        fd.matcap2ndN = fd.N;
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Layer Color
@@ -491,10 +486,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
             OVERRIDE_MATCAP
         #endif
 
-        BEFORE_MATCAP_2ND
-        #if defined(LIL_FEATURE_MATCAP_2ND)
-            OVERRIDE_MATCAP_2ND
-        #endif
 
         //------------------------------------------------------------------------------------------------------------------------------
         // Rim light
@@ -517,11 +508,6 @@ LIL_FORWARD_FRAGMENT_RETURN_TYPE frag(v2f input LIL_VFACE(facing)) LIL_FORWARD_F
                 OVERRIDE_EMISSION_1ST
             #endif
 
-            // Emission2nd
-            BEFORE_EMISSION_2ND
-            #if defined(LIL_FEATURE_EMISSION_2ND)
-                OVERRIDE_EMISSION_2ND
-            #endif
 
             //------------------------------------------------------------------------------------------------------------------------------
             // Dissolve

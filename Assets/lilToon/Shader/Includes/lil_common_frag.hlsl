@@ -47,9 +47,6 @@
     #define BEFORE_NORMAL_1ST
 #endif
 
-#if !defined(BEFORE_NORMAL_2ND)
-    #define BEFORE_NORMAL_2ND
-#endif
 
 #if !defined(BEFORE_ANISOTROPY)
     #define BEFORE_ANISOTROPY
@@ -87,9 +84,6 @@
     #define BEFORE_MATCAP
 #endif
 
-#if !defined(BEFORE_MATCAP_2ND)
-    #define BEFORE_MATCAP_2ND
-#endif
 
 #if !defined(BEFORE_RIMLIGHT)
     #define BEFORE_RIMLIGHT
@@ -103,9 +97,6 @@
     #define BEFORE_EMISSION_1ST
 #endif
 
-#if !defined(BEFORE_EMISSION_2ND)
-    #define BEFORE_EMISSION_2ND
-#endif
 
 #if !defined(BEFORE_DISSOLVE_ADD)
     #define BEFORE_DISSOLVE_ADD
@@ -471,30 +462,6 @@
     #endif
 #endif
 
-#if !defined(OVERRIDE_NORMAL_2ND)
-    #if defined(LIL_FEATURE_Bump2ndScaleMask)
-        #define LIL_SAMPLE_Bump2ndScaleMask bump2ndScale *= LIL_SAMPLE_2D_ST(_Bump2ndScaleMask, sampler_MainTex, fd.uvMain).r
-    #else
-        #define LIL_SAMPLE_Bump2ndScaleMask
-    #endif
-
-    #if defined(LIL_FEATURE_Bump2ndMap)
-        #define OVERRIDE_NORMAL_2ND \
-            if(_UseBump2ndMap) \
-            { \
-                float2 uvBump2nd = fd.uv0; \
-                if(_Bump2ndMap_UVMode == 1) uvBump2nd = fd.uv1; \
-                if(_Bump2ndMap_UVMode == 2) uvBump2nd = fd.uv2; \
-                if(_Bump2ndMap_UVMode == 3) uvBump2nd = fd.uv3; \
-                float4 normal2ndTex = LIL_SAMPLE_2D_ST(_Bump2ndMap, lil_sampler_linear_repeat, uvBump2nd); \
-                float bump2ndScale = _Bump2ndScale; \
-                LIL_SAMPLE_Bump2ndScaleMask; \
-                normalmap = lilBlendNormal(normalmap, lilUnpackNormalScale(normal2ndTex, bump2ndScale)); \
-            }
-    #else
-        #define OVERRIDE_NORMAL_2ND
-    #endif
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Anisotropy
@@ -524,7 +491,6 @@
             float3 anisoNormalWS = lilGetAnisotropyNormalWS(fd.N, fd.T, fd.B, fd.V, fd.anisotropy); \
             if(_Anisotropy2Reflection)  fd.reflectionN  = anisoNormalWS; \
             if(_Anisotropy2MatCap)      fd.matcapN      = anisoNormalWS; \
-            if(_Anisotropy2MatCap2nd)   fd.matcap2ndN   = anisoNormalWS; \
             if(_Anisotropy2Reflection)  fd.perceptualRoughness = saturate(1.2 - abs(fd.anisotropy)); \
         }
 #endif
@@ -716,14 +682,7 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// AO public channel
-// One AO system, one shared colour input, two outputs:
-//   input    : the AO Map (_ShadowBorderMask RGB) and the realtime Ho-AO (_HoAOTexture)
-//   output 1 : overall darkening  fd.col.rgb *= lerp(1, _AOColor.rgb, occ * _AODarkStrength)
-//   output 2 : toon ramp offset   lns.xyz    *= lerp(1, aoVis, _AOStrength)  (inside lilGetShading)
-// The shared visibility is composed once per fragment by lilCalcAO() and stored in
-// fd.aoVis, so both outputs consume the same value and the same AO Mask gate.
-// NOTE: this has to stay above lilGetShading, which consumes fd.aoVis.
+// Shared AO visibility. Baked RGB retains the per-layer shadow input.
 #if defined(LIL_FEATURE_REALTIMEAO)
     float lilSampleRealtimeAO(float2 screenUV)
     {
@@ -740,34 +699,38 @@
     }
 #endif
 
-    // Compose the shared AO visibility (1 = unoccluded).
     void lilCalcAO(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
     {
+        fd.aoVis = 1.0;
+        if(_AOSource == 0) return;
+        bool needsAO = _UseAODarkening != 0 && _AODarkStrength > 0.0;
+        #if defined(LIL_FEATURE_SHADOW)
+            needsAO = needsAO || (_UseShadow != 0 && _AOStrength > 0.0);
+        #endif
+        if(!needsAO) return;
+
         float aoMask = 1.0;
         #if defined(LIL_FEATURE_AOMask)
             aoMask = LIL_SAMPLE_2D(_AOMask, samp, fd.uvMain).r;
         #endif
 
-        float3 aoVis = 1.0;
-        #if defined(LIL_FEATURE_ShadowBorderMask)
-            // The AO Map is the shared colour input: its RGB drives the per-layer ramp
-            // offset and, through the same value, tints the overall darkening.
-            float4 aoMap = 1.0;
-            // _ShadowBorderMaskLOD is present in the standard material CBUFFER.
-            #if defined(LIL_FEATURE_SHADOW)
-                aoMap = LIL_SAMPLE_2D_GRAD(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain, max(fd.ddxMain, _ShadowBorderMaskLOD), max(fd.ddyMain, _ShadowBorderMaskLOD));
-            #else
-                aoMap = LIL_SAMPLE_2D(_ShadowBorderMask, lil_sampler_linear_repeat, fd.uvMain);
-            #endif
-            aoVis *= lerp(1.0, aoMap.rgb, aoMask);
-        #endif
-        #if defined(LIL_FEATURE_REALTIMEAO)
-            if(_UseRealtimeAO)
+        #if defined(LIL_FEATURE_AOMap)
+            if(_AOSource == 1 || _AOSource == 3)
             {
-                aoVis *= lerp(1.0, lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS)), aoMask);
+                float3 baked = LIL_SAMPLE_2D_GRAD(_AOMap, lil_sampler_linear_repeat, fd.uvMain,
+                    max(fd.ddxMain, _AOMapLOD), max(fd.ddyMain, _AOMapLOD)).rgb;
+                fd.aoVis = lerp(1.0, baked, aoMask);
             }
         #endif
-        fd.aoVis = aoVis;
+        #if defined(LIL_FEATURE_REALTIMEAO)
+            // An unavailable texture is neutral before remapping, even with a nonzero AO Level.
+            if(_HoAOAvailable > 0.5 && (_AOSource == 2 || (_AOSource == 3 && _AORealtimeWeight > 0.0)))
+            {
+                float realtime = lilSampleRealtimeAO(GetNormalizedScreenSpaceUV(fd.positionCS));
+                float weight = _AOSource == 3 ? _AORealtimeWeight : 1.0;
+                fd.aoVis *= lerp(1.0, realtime, aoMask * weight);
+            }
+        #endif
     }
 
     // Output 1: overall darkening. The occlusion amount comes from the shared input (the
@@ -776,6 +739,7 @@
     // multiply it can go darker than the deepest shadow colour of the toon ramp.
     void lilApplyAODark(inout lilFragData fd)
     {
+        if(_UseAODarkening == 0 || _AOSource == 0) return;
         float3 aoOcc = saturate(1.0 - fd.aoVis);
         fd.col.rgb *= lerp(1.0, _AOColor.rgb, aoOcc * _AODarkStrength);
     }
@@ -809,7 +773,7 @@
             #if defined(LIL_FEATURE_SHADOW_3RD)
                 float3 N3 = fd.N;
             #endif
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 N1 = lerp(fd.origN, fd.N, _ShadowNormalStrength);
                 N2 = lerp(fd.origN, fd.N, _Shadow2ndNormalStrength);
                 #if defined(LIL_FEATURE_SHADOW_3RD)
@@ -905,7 +869,7 @@
 
             // AO Map & Toon
             // lilTooning() is saturate(lilTooningNoSaturate()), so the old
-            // ShadowBorderMask branch (unsaturate + one final saturate) was equivalent
+            // Previous AO map branch (unsaturate + one final saturate) was equivalent
             // to this one; with AO now folded into aoVis there is only one path left.
             lns.w = lns.x;
             lns.x = lilTooning(lns.x, _ShadowBorder, shadowBlur);
@@ -1039,7 +1003,7 @@
         if(_UseRimShade)
         {
             float3 N = fd.N;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 N = lerp(fd.origN, fd.N, _RimShadeNormalStrength);
             #endif
             float nvabs = abs(dot(N,fd.V));
@@ -1068,7 +1032,7 @@
         {
             // Normal
             float3 N = fd.N;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 N = lerp(fd.origN, fd.N, _BacklightNormalStrength);
             #endif
 
@@ -1116,7 +1080,7 @@
             if(_SSSThicknessInvert) thickness = 1.0 - thickness;
 
             float3 sssN = fd.N;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 sssN = normalize(lerp(fd.origN, fd.N, _SSSNormalStrength));
             #endif
 
@@ -1143,12 +1107,33 @@
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Reflection
+#if defined(LIL_PASS_FORWARD_NORMAL_INCLUDED) || defined(LIL_PASS_SURFACE_COMMON_INCLUDED)
+float lilGetSurfaceSmoothness(lilFragData fd LIL_SAMP_IN_FUNC(samp))
+{
+    float smoothness = _Smoothness;
+    #if defined(LIL_FEATURE_SmoothnessTex)
+        smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, samp, fd.uvMain).r;
+    #endif
+    GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
+    return smoothness;
+}
+
+float lilGetSurfaceMetallic(lilFragData fd LIL_SAMP_IN_FUNC(samp))
+{
+    float metallic = _Metallic;
+    #if defined(LIL_FEATURE_MetallicGlossMap)
+        metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, samp, fd.uvMain).r;
+    #endif
+    return metallic;
+}
+#endif
+
 #if defined(LIL_FEATURE_REFLECTION) && defined(LIL_PASS_FORWARD_NORMAL_INCLUDED)
     float3 lilCalcSpecular(inout lilFragData fd, float3 L, float3 specular, float attenuation LIL_SAMP_IN_FUNC(samp))
     {
         // Normal
         float3 N = fd.N;
-        #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+        #if defined(LIL_FEATURE_NORMAL_1ST)
             N = lerp(fd.origN, fd.N, _SpecularNormalStrength);
         #endif
 
@@ -1252,18 +1237,11 @@
         {
             float3 reflectCol = 0;
             // Smoothness
-            fd.smoothness = _Smoothness;
-            #if defined(LIL_FEATURE_SmoothnessTex)
-                fd.smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, samp, fd.uvMain).r;
-            #endif
-            GSAAForSmoothness(fd.smoothness, fd.N, _GSAAStrength);
+            fd.smoothness = lilGetSurfaceSmoothness(fd LIL_SAMP_IN(samp));
             fd.perceptualRoughness = fd.perceptualRoughness - fd.smoothness * fd.perceptualRoughness;
             fd.roughness = fd.perceptualRoughness * fd.perceptualRoughness;
             // Metallic
-            float metallic = _Metallic;
-            #if defined(LIL_FEATURE_MetallicGlossMap)
-                metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, samp, fd.uvMain).r;
-            #endif
+            float metallic = lilGetSurfaceMetallic(fd LIL_SAMP_IN(samp));
             fd.col.rgb = fd.col.rgb - metallic * fd.col.rgb;
             float3 specular = lerp(_Reflectance, fd.albedo, metallic);
             // Color
@@ -1290,7 +1268,7 @@
                 if(_ApplyReflection)
                 {
                     float3 N = fd.reflectionN;
-                    #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                    #if defined(LIL_FEATURE_NORMAL_1ST)
                         N = lerp(fd.origN, fd.reflectionN, _ReflectionNormalStrength);
                     #endif
 
@@ -1325,7 +1303,7 @@
         {
             // Normal
             float3 N = fd.matcapN;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 N = lerp(fd.origN, fd.matcapN, _MatCapNormalStrength);
             #endif
             #if defined(LIL_FEATURE_MatCapBumpMap)
@@ -1370,57 +1348,7 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// MatCap 2nd
-#if defined(LIL_FEATURE_MATCAP_2ND)
-    void lilGetMatCap2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseMatCap2nd)
-        {
-            // Normal
-            float3 N = fd.matcap2ndN;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
-                N = lerp(fd.origN, fd.matcap2ndN, _MatCap2ndNormalStrength);
-            #endif
-            #if defined(LIL_FEATURE_MatCap2ndBumpMap)
-                if(_MatCap2ndCustomNormal)
-                {
-                    float4 normalTex = LIL_SAMPLE_2D_ST(_MatCap2ndBumpMap, samp, fd.uvMain);
-                    float3 normalmap = lilUnpackNormalScale(normalTex, _MatCap2ndBumpScale);
-                    N = normalize(mul(normalmap, fd.TBN));
-                    N = fd.facing < (_FlipNormal-1.0) ? -N : N;
-                }
-            #endif
 
-            // UV
-            float2 mat2ndUV = lilCalcMatCapUV(fd.uv1, N, fd.V, _MatCap2ndTex_ST, _MatCap2ndBlendUV1.xy, _MatCap2ndZRotCancel, _MatCap2ndPerspective);
-
-            // Color
-            float4 matCap2ndColor = _MatCap2ndColor;
-            #if defined(LIL_FEATURE_MatCap2ndTex)
-                matCap2ndColor *= LIL_SAMPLE_2D_LOD(_MatCap2ndTex, lil_sampler_linear_repeat, mat2ndUV, _MatCap2ndLod);
-            #endif
-                matCap2ndColor.rgb = lerp(matCap2ndColor.rgb, matCap2ndColor.rgb * fd.lightColor, _MatCap2ndEnableLighting);
-                matCap2ndColor.a = lerp(matCap2ndColor.a, matCap2ndColor.a * fd.shadowmix, _MatCap2ndShadowMask);
-            #if LIL_RENDER == 2
-                if(_MatCap2ndApplyTransparency) matCap2ndColor.a *= fd.col.a;
-            #endif
-            matCap2ndColor.a = fd.facing < (_MatCap2ndBackfaceMask-1.0) ? 0.0 : matCap2ndColor.a;
-            float3 matCapMask = 1.0;
-            #if defined(LIL_FEATURE_MatCap2ndBlendMask)
-                matCapMask = LIL_SAMPLE_2D_ST(_MatCap2ndBlendMask, samp, fd.uvMain).rgb;
-            #endif
-
-            // Blend
-            matCap2ndColor.rgb = lerp(matCap2ndColor.rgb, matCap2ndColor.rgb * fd.albedo, _MatCap2ndMainStrength);
-            fd.col.rgb = lilBlendColor(fd.col.rgb, matCap2ndColor.rgb, _MatCap2ndBlend * matCap2ndColor.a * matCapMask, _MatCap2ndBlendMode);
-        }
-    }
-#endif
-
-#if !defined(OVERRIDE_MATCAP_2ND)
-    #define OVERRIDE_MATCAP_2ND \
-        lilGetMatCap2nd(fd LIL_SAMP_IN(sampler_MainTex));
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Rim Light
@@ -1445,7 +1373,7 @@
 
                 // Normal
                 float3 N = fd.N;
-                #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                #if defined(LIL_FEATURE_NORMAL_1ST)
                     N = lerp(fd.origN, fd.N, _RimNormalStrength);
                 #endif
                 float nvabs = abs(dot(N,V));
@@ -1486,7 +1414,7 @@
 
                 // Normal
                 float3 N = fd.N;
-                #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+                #if defined(LIL_FEATURE_NORMAL_1ST)
                     N = lerp(fd.origN, fd.N, _RimNormalStrength);
                 #endif
                 float nvabs = abs(dot(N,fd.V));
@@ -1528,7 +1456,7 @@
 
             // Normal
             float3 N = fd.N;
-            #if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND)
+            #if defined(LIL_FEATURE_NORMAL_1ST)
                 N = lerp(fd.origN, fd.N, _GlitterNormalStrength);
             #endif
 
@@ -1634,68 +1562,7 @@
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// Emission 2nd
-#if defined(LIL_FEATURE_EMISSION_2ND)
-    float4 lilEmission2ndComponent(lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseEmission2nd)
-        {
-            float4 emission2ndColor = _Emission2ndColor;
-            // UV
-            float2 emission2ndUV = fd.uv0;
-            if(_Emission2ndMap_UVMode == 1) emission2ndUV = fd.uv1;
-            if(_Emission2ndMap_UVMode == 2) emission2ndUV = fd.uv2;
-            if(_Emission2ndMap_UVMode == 3) emission2ndUV = fd.uv3;
-            if(_Emission2ndMap_UVMode == 4) emission2ndUV = fd.uvRim;
-            //if(_Emission2ndMap_UVMode == 4) emission2ndUV = fd.uvPanorama;
-            float2 _Emission2ndMapParaTex = emission2ndUV + _Emission2ndParallaxDepth * fd.parallaxOffset;
-            // Texture
-            #if defined(LIL_FEATURE_Emission2ndMap)
-                #if defined(LIL_FEATURE_ANIMATE_EMISSION_UV)
-                    emission2ndColor *= LIL_GET_EMITEX(_Emission2ndMap, _Emission2ndMapParaTex);
-                #else
-                    emission2ndColor *= LIL_SAMPLE_2D_ST(_Emission2ndMap, sampler_Emission2ndMap, _Emission2ndMapParaTex);
-                #endif
-            #endif
-            // Mask
-            #if defined(LIL_FEATURE_Emission2ndBlendMask)
-                #if defined(LIL_FEATURE_ANIMATE_EMISSION_MASK_UV)
-                    emission2ndColor *= LIL_GET_EMIMASK(_Emission2ndBlendMask, fd.uv0);
-                #else
-                    emission2ndColor *= LIL_SAMPLE_2D_ST(_Emission2ndBlendMask, samp, fd.uvMain);
-                #endif
-            #endif
-            // Gradation
-            #if defined(LIL_FEATURE_Emission2ndGradTex)
-                #if defined(LIL_FEATURE_EMISSION_GRADATION)
-                    if(_Emission2ndUseGrad) emission2ndColor *= LIL_SAMPLE_1D(_Emission2ndGradTex, lil_sampler_linear_repeat, _Emission2ndGradSpeed * LIL_TIME);
-                #endif
-            #endif
-            emission2ndColor.rgb = lerp(emission2ndColor.rgb, emission2ndColor.rgb * fd.invLighting, _Emission2ndFluorescence);
-            emission2ndColor.rgb = lerp(emission2ndColor.rgb, emission2ndColor.rgb * fd.albedo, _Emission2ndMainStrength);
-            float emission2ndBlend = _Emission2ndBlend * lilCalcBlink(_Emission2ndBlink) * emission2ndColor.a;
-            #if LIL_RENDER == 2
-                emission2ndBlend *= fd.col.a;
-            #endif
-            return float4(emission2ndColor.rgb, emission2ndBlend);
-        }
-        return 0.0;
-    }
 
-    void lilEmission2nd(inout lilFragData fd LIL_SAMP_IN_FUNC(samp))
-    {
-        if(_UseEmission2nd)
-        {
-            float4 emission = lilEmission2ndComponent(fd LIL_SAMP_IN(samp));
-            fd.col.rgb = lilBlendColor(fd.col.rgb, emission.rgb, emission.a, _Emission2ndBlendMode);
-        }
-    }
-#endif
-
-#if !defined(OVERRIDE_EMISSION_2ND)
-    #define OVERRIDE_EMISSION_2ND \
-        lilEmission2nd(fd LIL_SAMP_IN(sampler_MainTex));
-#endif
 
 //------------------------------------------------------------------------------------------------------------------------------
 // Dissolve Add
@@ -1807,13 +1674,7 @@ void lilPlanarReflection(inout lilFragData fd)
         return;
     }
 
-    // Resolve the same material inputs published by MetadataBuffer Target5.
-    float smoothness = _Smoothness;
-    #if defined(LIL_FEATURE_SmoothnessTex)
-        smoothness *= LIL_SAMPLE_2D_ST(_SmoothnessTex, sampler_MainTex, fd.uvMain).r;
-    #endif
-    GSAAForSmoothness(smoothness, fd.N, _GSAAStrength);
-    smoothness = saturate(smoothness);
+    float smoothness = saturate(lilGetSurfaceSmoothness(fd LIL_SAMP_IN(sampler_MainTex)));
 
     float smoothnessFade = saturate((smoothness - _PlanarReflectionMinSmoothness) / max(1.0 - _PlanarReflectionMinSmoothness, 0.0001));
     if(smoothnessFade <= 0.0)
@@ -1821,11 +1682,7 @@ void lilPlanarReflection(inout lilFragData fd)
         return;
     }
 
-    float metallic = _Metallic;
-    #if defined(LIL_FEATURE_MetallicGlossMap)
-        metallic *= LIL_SAMPLE_2D_ST(_MetallicGlossMap, sampler_MainTex, fd.uvMain).r;
-    #endif
-    metallic = saturate(metallic);
+    float metallic = saturate(lilGetSurfaceMetallic(fd LIL_SAMP_IN(sampler_MainTex)));
 
     float2 planarUV = GetNormalizedScreenSpaceUV(fd.positionCS);
     if(_PlanarReflectionFlipY != 0) planarUV.y = 1.0 - planarUV.y;

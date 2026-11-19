@@ -43,8 +43,7 @@ shader = shader.replace(common, common + "\n            #define sampler_MainTex 
 for suffix in ("", "Stripped"):
     probe = shader.replace('Shader "lilToon"', 'Shader "Hidden/HoTests/NormalReadout' + suffix + '"', 1)
     if suffix:
-        for feature in ("LIL_FEATURE_NORMAL_1ST", "LIL_FEATURE_NORMAL_2ND"):
-            probe = re.sub(r"^\s*#define " + feature + r"\s*$", "", probe, flags=re.M)
+        probe = re.sub(r"^\s*#define LIL_FEATURE_NORMAL_1ST\s*$", "", probe, flags=re.M)
     (destination / ("NormalReadout" + suffix + ".shader")).write_text(probe, encoding="utf-8")
 manifest = {
     "scope": "Shipping forward include and three shipping material variants, analytic quad normals.",

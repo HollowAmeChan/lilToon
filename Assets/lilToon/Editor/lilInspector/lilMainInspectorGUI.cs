@@ -224,72 +224,10 @@ namespace lilToon
                     DrawMenuButton(GetLoc("sAnchorEmission"), PropertyBlock.Emission);
                     if(edSet.isShowEmission)
                     {
-                        // Emission
-                        if(ShouldDrawBlock(PropertyBlock.Emission1st))
+                        using(new EditorGUILayout.VerticalScope(boxOuter))
                         {
-                            EditorGUILayout.BeginVertical(boxOuter);
                             LocalizedProperty(useEmission, false);
-                            DrawMenuButton(GetLoc("sAnchorEmission"), PropertyBlock.Emission1st);
-                            if(useEmission.floatValue == 1)
-                            {
-                                EditorGUILayout.BeginVertical(boxInnerHalf);
-                                TextureGUI(ref edSet.isShowEmissionMap, colorMaskRGBAContent, emissionMap, emissionColor, emissionMap_ScrollRotate, emissionMap_UVMode, true, true);
-                                LocalizedPropertyAlpha(emissionColor);
-                                LocalizedProperty(emissionMainStrength);
-                                lilEditorGUI.DrawLine();
-                                TextureGUI(ref edSet.isShowEmissionBlendMask, maskBlendRGBAContent, emissionBlendMask, emissionBlend, emissionBlendMask_ScrollRotate, true, true);
-                                LocalizedProperty(emissionBlendMode);
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emissionBlink);
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emissionUseGrad);
-                                if(emissionUseGrad.floatValue == 1)
-                                {
-                                    EditorGUI.indentLevel++;
-                                    LocalizedPropertyTexture(gradSpeedContent, emissionGradTex, emissionGradSpeed);
-                                    if(lilEditorGUI.CheckPropertyToDraw(emissionGradSpeed)) lilTextureUtils.GradientEditor(material, "_eg", emiGrad, emissionGradSpeed);
-                                    EditorGUI.indentLevel--;
-                                }
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emissionParallaxDepth);
-                                LocalizedProperty(emissionFluorescence);
-                                EditorGUILayout.EndVertical();
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-
-                        // Emission 2nd
-                        if(ShouldDrawBlock(PropertyBlock.Emission2nd))
-                        {
-                            EditorGUILayout.BeginVertical(boxOuter);
-                            LocalizedProperty(useEmission2nd, false);
-                            DrawMenuButton(GetLoc("sAnchorEmission"), PropertyBlock.Emission2nd);
-                            if(useEmission2nd.floatValue == 1)
-                            {
-                                EditorGUILayout.BeginVertical(boxInnerHalf);
-                                TextureGUI(ref edSet.isShowEmission2ndMap, colorMaskRGBAContent, emission2ndMap, emission2ndColor, emission2ndMap_ScrollRotate, emission2ndMap_UVMode, true, true);
-                                LocalizedPropertyAlpha(emission2ndColor);
-                                LocalizedProperty(emission2ndMainStrength);
-                                lilEditorGUI.DrawLine();
-                                TextureGUI(ref edSet.isShowEmission2ndBlendMask, maskBlendRGBAContent, emission2ndBlendMask, emission2ndBlend, emission2ndBlendMask_ScrollRotate, true, true);
-                                LocalizedProperty(emission2ndBlendMode);
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emission2ndBlink);
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emission2ndUseGrad);
-                                if(emission2ndUseGrad.floatValue == 1)
-                                {
-                                    EditorGUI.indentLevel++;
-                                    LocalizedPropertyTexture(gradSpeedContent, emission2ndGradTex, emission2ndGradSpeed);
-                                    if(lilEditorGUI.CheckPropertyToDraw(emission2ndGradSpeed)) lilTextureUtils.GradientEditor(material, "_e2g", emi2Grad, emission2ndGradSpeed);
-                                    EditorGUI.indentLevel--;
-                                }
-                                lilEditorGUI.DrawLine();
-                                LocalizedProperty(emission2ndParallaxDepth);
-                                LocalizedProperty(emission2ndFluorescence);
-                                EditorGUILayout.EndVertical();
-                            }
-                            EditorGUILayout.EndVertical();
+                            if(useEmission.hasMixedValue || useEmission.floatValue != 0f) DrawEmissionControls(material);
                         }
                     }
                 }
@@ -307,84 +245,18 @@ namespace lilToon
                     edSet.isShowBump = lilEditorGUI.Foldout(GetLoc("sNormalMapSetting"), edSet.isShowBump);
                     DrawMenuButton(GetLoc("sAnchorNormalMap"), PropertyBlock.NormalMap);
                     if(edSet.isShowBump)
+                        using(new EditorGUILayout.VerticalScope(boxOuter)) DrawNormalControls();
+                }
+                if(ShouldDrawBlock(PropertyBlock.Anisotropy))
+                {
+                    edSet.isShowAnisotropy = lilEditorGUI.Foldout(GetLoc("Anisotropy"), edSet.isShowAnisotropy);
+                    DrawMenuButton(GetLoc("sAnchorAnisotropy"), PropertyBlock.Anisotropy);
+                    if(edSet.isShowAnisotropy)
                     {
-                        //------------------------------------------------------------------------------------------------------------------------------
-                        // 1st
-                        if(ShouldDrawBlock(PropertyBlock.NormalMap1st))
+                        using(new EditorGUILayout.VerticalScope(boxOuter))
                         {
-                            EditorGUILayout.BeginVertical(boxOuter);
-                            LocalizedProperty(useBumpMap, false);
-                            DrawMenuButton(GetLoc("sAnchorNormalMap"), PropertyBlock.NormalMap1st);
-                            if(useBumpMap.floatValue == 1)
-                            {
-                                EditorGUILayout.BeginVertical(boxInnerHalf);
-                                TextureGUI(ref edSet.isShowBumpMap, normalMapContent, bumpMap, bumpScale);
-                                EditorGUILayout.EndVertical();
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-
-                        //------------------------------------------------------------------------------------------------------------------------------
-                        // 2nd
-                        if(ShouldDrawBlock(PropertyBlock.NormalMap2nd))
-                        {
-                            EditorGUILayout.BeginVertical(boxOuter);
-                            LocalizedProperty(useBump2ndMap, false);
-                            DrawMenuButton(GetLoc("sAnchorNormalMap"), PropertyBlock.NormalMap2nd);
-                            if(useBump2ndMap.floatValue == 1)
-                            {
-                                EditorGUILayout.BeginVertical(boxInnerHalf);
-                                TextureGUI(ref edSet.isShowBump2ndMap, normalMapContent, bump2ndMap, bump2ndScale, bump2ndMap_UVMode, "UV Mode|UV0|UV1|UV2|UV3");
-                                lilEditorGUI.DrawLine();
-                                TextureGUI(ref edSet.isShowBump2ndScaleMask, maskStrengthContent, bump2ndScaleMask);
-                                EditorGUILayout.EndVertical();
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-
-                        //------------------------------------------------------------------------------------------------------------------------------
-                        // Anisotropy
-                        if(ShouldDrawBlock(PropertyBlock.Anisotropy))
-                        {
-                            EditorGUILayout.BeginVertical(boxOuter);
                             LocalizedProperty(useAnisotropy, false);
-                            DrawMenuButton(GetLoc("sAnchorAnisotropy"), PropertyBlock.Anisotropy);
-                            if(useAnisotropy.floatValue == 1)
-                            {
-                                EditorGUILayout.BeginVertical(boxInnerHalf);
-                                TextureGUI(ref edSet.isShowAnisotropyTangentMap, normalMapContent, anisotropyTangentMap);
-                                lilEditorGUI.DrawLine();
-                                TextureGUI(ref edSet.isShowAnisotropyScaleMask, maskStrengthContent, anisotropyScaleMask, anisotropyScale);
-                                lilEditorGUI.DrawLine();
-                                GUILayout.Label(GetLoc("sApplyTo"), boldLabel);
-                                EditorGUI.indentLevel++;
-                                LocalizedProperty(anisotropy2Reflection);
-                                if(anisotropy2Reflection.floatValue != 0.0f)
-                                {
-                                    EditorGUI.indentLevel++;
-                                    EditorGUILayout.LabelField(GetLoc("1st Specular"), boldLabel);
-                                    LocalizedProperty(anisotropyTangentWidth);
-                                    LocalizedProperty(anisotropyBitangentWidth);
-                                    LocalizedProperty(anisotropyShift);
-                                    LocalizedProperty(anisotropyShiftNoiseScale);
-                                    LocalizedProperty(anisotropySpecularStrength);
-                                    lilEditorGUI.DrawLine();
-                                    EditorGUILayout.LabelField(GetLoc("2nd Specular"), boldLabel);
-                                    LocalizedProperty(anisotropy2ndTangentWidth);
-                                    LocalizedProperty(anisotropy2ndBitangentWidth);
-                                    LocalizedProperty(anisotropy2ndShift);
-                                    LocalizedProperty(anisotropy2ndShiftNoiseScale);
-                                    LocalizedProperty(anisotropy2ndSpecularStrength);
-                                    lilEditorGUI.DrawLine();
-                                    LocalizedProperty(anisotropyShiftNoiseMask);
-                                    EditorGUI.indentLevel--;
-                                }
-                                LocalizedProperty(anisotropy2MatCap);
-                                LocalizedProperty(anisotropy2MatCap2nd);
-                                EditorGUI.indentLevel--;
-                                EditorGUILayout.EndVertical();
-                            }
-                            EditorGUILayout.EndVertical();
+                            if(useAnisotropy.hasMixedValue || useAnisotropy.floatValue != 0f) DrawAnisotropyControls();
                         }
                     }
                 }
@@ -476,6 +348,13 @@ namespace lilToon
 
                 //------------------------------------------------------------------------------------------------------------------------------
                 // Reflection
+                if(ShouldDrawBlock(PropertyBlock.MetallicSmoothness))
+                {
+                    edSet.isShowMetallicSmoothness = lilEditorGUI.Foldout(GetLoc("Metallic and Smoothness"), edSet.isShowMetallicSmoothness);
+                    DrawMenuButton("Metallic and Smoothness", PropertyBlock.MetallicSmoothness);
+                    if(edSet.isShowMetallicSmoothness)
+                        using(new EditorGUILayout.VerticalScope(boxOuter)) DrawMetallicSmoothness();
+                }
                 if(ShouldDrawBlock(PropertyBlock.Reflection))
                 {
                     edSet.isShowReflections = lilEditorGUI.Foldout(GetLoc("sReflectionsSetting"), edSet.isShowReflections);
@@ -490,10 +369,7 @@ namespace lilToon
                         if(useReflection.floatValue == 1)
                         {
                             EditorGUILayout.BeginVertical(boxInnerHalf);
-                            TextureGUI(ref edSet.isShowSmoothnessTex, smoothnessContent, smoothnessTex, smoothness);
-                            LocalizedProperty(gsaaStrength, 1);
                             lilEditorGUI.DrawLine();
-                            TextureGUI(ref edSet.isShowMetallicGlossMap, metallicContent, metallicGlossMap, metallic);
                             lilEditorGUI.DrawLine();
                             TextureGUI(ref edSet.isShowReflectionColorTex, colorMaskRGBAContent, reflectionColorTex, reflectionColor);
                             EditorGUI.indentLevel++;

@@ -134,17 +134,17 @@ public class lilToonPreset : ScriptableObject
         private bool shouldSaveMain3rd = true;
         private bool shouldSaveAlphaMask = true;
         private bool shouldSaveShadow = true;
+        private bool shouldSaveSurfaceAO = true;
+        private bool shouldSaveAODarkening = true;
+        private bool shouldSaveMetallicSmoothness = true;
         private bool shouldSaveEmission = true;
-        private bool shouldSaveEmission2nd = true;
         private bool shouldSaveNormalMap = true;
-        private bool shouldSaveNormalMap2nd = true;
         private bool shouldSaveAnisotropy = true;
         private bool shouldSaveRimShade = true;
         private bool shouldSaveBacklight = true;
         private bool shouldSaveSSS = true;
         private bool shouldSaveReflection = true;
         private bool shouldSaveMatCap = true;
-        private bool shouldSaveMatCap2nd = true;
         private bool shouldSaveRim = true;
         private bool shouldSaveGlitter = true;
         private bool shouldSaveTesion = true;
@@ -251,21 +251,21 @@ public class lilToonPreset : ScriptableObject
                 shouldSaveMain3rd                   = EditorGUILayout.ToggleLeft(GetLoc("sMainColor3rd"), shouldSaveMain3rd);
                 shouldSaveAlphaMask                 = EditorGUILayout.ToggleLeft(GetLoc("sAlphaMask"), shouldSaveAlphaMask);
                 shouldSaveShadow                    = EditorGUILayout.ToggleLeft(GetLoc("sShadow"), shouldSaveShadow);
+                shouldSaveSurfaceAO                 = EditorGUILayout.ToggleLeft(GetLoc("AO"), shouldSaveSurfaceAO);
+                shouldSaveAODarkening               = EditorGUILayout.ToggleLeft(GetLoc("AO Darkening"), shouldSaveAODarkening);
                 shouldSaveEmission                  = EditorGUILayout.ToggleLeft(GetLoc("sEmission"), shouldSaveEmission);
-                shouldSaveEmission2nd               = EditorGUILayout.ToggleLeft(GetLoc("sEmission2nd"), shouldSaveEmission2nd);
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.LabelField(GetLoc("sNormalMapReflection"), EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
                 shouldSaveNormalMap                 = EditorGUILayout.ToggleLeft(GetLoc("sNormalMap"), shouldSaveNormalMap);
-                shouldSaveNormalMap2nd              = EditorGUILayout.ToggleLeft(GetLoc("sNormalMap2nd"), shouldSaveNormalMap2nd);
                 shouldSaveAnisotropy                = EditorGUILayout.ToggleLeft(GetLoc("sAnisotropy"), shouldSaveAnisotropy);
                 shouldSaveRimShade                  = EditorGUILayout.ToggleLeft(GetLoc("sRimShadeSetting"), shouldSaveRimShade);
                 shouldSaveBacklight                 = EditorGUILayout.ToggleLeft(GetLoc("sBacklight"), shouldSaveBacklight);
                 shouldSaveSSS                       = EditorGUILayout.ToggleLeft(GetLoc("SSS"), shouldSaveSSS);
                 shouldSaveReflection                = EditorGUILayout.ToggleLeft(GetLoc("sReflection"), shouldSaveReflection);
+                shouldSaveMetallicSmoothness        = EditorGUILayout.ToggleLeft(GetLoc("Metallic and Smoothness"), shouldSaveMetallicSmoothness);
                 shouldSaveMatCap                    = EditorGUILayout.ToggleLeft(GetLoc("sMatCap"), shouldSaveMatCap);
-                shouldSaveMatCap2nd                 = EditorGUILayout.ToggleLeft(GetLoc("sMatCap2nd"), shouldSaveMatCap2nd);
                 shouldSaveRim                       = EditorGUILayout.ToggleLeft(GetLoc("sRimLight"), shouldSaveRim);
                 shouldSaveGlitter                   = EditorGUILayout.ToggleLeft(GetLoc("sGlitter"), shouldSaveGlitter);
                 shouldSaveTesion = EditorGUILayout.ToggleLeft("Tesion", shouldSaveTesion);
@@ -373,17 +373,17 @@ public class lilToonPreset : ScriptableObject
                     shouldSaveMain3rd && lilPropertyNameChecker.IsMain3rdProperty(propName) ||
                     shouldSaveAlphaMask && lilPropertyNameChecker.IsAlphaMaskProperty(propName) ||
                     shouldSaveShadow && lilPropertyNameChecker.IsShadowProperty(propName) ||
+                    shouldSaveSurfaceAO && lilPropertyNameChecker.IsSurfaceAOProperty(propName) ||
+                    shouldSaveAODarkening && lilPropertyNameChecker.IsAODarkeningProperty(propName) ||
+                    shouldSaveMetallicSmoothness && lilPropertyNameChecker.IsMetallicSmoothnessProperty(propName) ||
                     shouldSaveEmission && lilPropertyNameChecker.IsEmissionProperty(propName) ||
-                    shouldSaveEmission2nd && lilPropertyNameChecker.IsEmission2ndProperty(propName) ||
                     shouldSaveNormalMap && lilPropertyNameChecker.IsNormalMapProperty(propName) ||
-                    shouldSaveNormalMap2nd && lilPropertyNameChecker.IsNormalMap2ndProperty(propName) ||
                     shouldSaveAnisotropy && lilPropertyNameChecker.IsAnisotropyProperty(propName) ||
                     shouldSaveRimShade && lilPropertyNameChecker.IsRimShadeProperty(propName) ||
                     shouldSaveBacklight && lilPropertyNameChecker.IsBacklightProperty(propName) ||
                     shouldSaveSSS && lilPropertyNameChecker.IsSSSProperty(propName) ||
                     shouldSaveReflection && lilPropertyNameChecker.IsReflectionProperty(propName) ||
                     shouldSaveMatCap && lilPropertyNameChecker.IsMatCapProperty(propName) ||
-                    shouldSaveMatCap2nd && lilPropertyNameChecker.IsMatCap2ndProperty(propName) ||
                     shouldSaveRim && lilPropertyNameChecker.IsRimProperty(propName) ||
                     shouldSaveGlitter && lilPropertyNameChecker.IsGlitterProperty(propName) ||
                     shouldSaveTesion && lilPropertyNameChecker.IsTesionProperty(propName) ||
@@ -449,17 +449,17 @@ public class lilToonPreset : ScriptableObject
             shouldSaveMain3rd = val;
             shouldSaveAlphaMask = val;
             shouldSaveShadow = val;
+            shouldSaveSurfaceAO = val;
+            shouldSaveAODarkening = val;
+            shouldSaveMetallicSmoothness = val;
             shouldSaveEmission = val;
-            shouldSaveEmission2nd = val;
             shouldSaveNormalMap = val;
-            shouldSaveNormalMap2nd = val;
             shouldSaveAnisotropy = val;
             shouldSaveRimShade = val;
             shouldSaveBacklight = val;
             shouldSaveSSS = val;
             shouldSaveReflection = val;
             shouldSaveMatCap = val;
-            shouldSaveMatCap2nd = val;
             shouldSaveRim = val;
             shouldSaveGlitter = val;
             shouldSaveParallax = val;

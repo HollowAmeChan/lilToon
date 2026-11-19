@@ -36,7 +36,7 @@ namespace lilToon
             if (!SupportsTesion || !ShouldDrawBlock(PropertyBlock.Tesion)) return;
             if (edSet.useNextInspector)
             {
-                DrawNextSection("effects.tesion", "Tesion", PropertyBlock.Tesion, DrawTesionContents, false, null, true, tesionEnabled);
+                DrawNextSection("surface.tesion", "Tesion", PropertyBlock.Tesion, DrawTesionContents, toggle: tesionEnabled);
                 return;
             }
             const string stateKey = "lilToon.Tesion.LegacyOpen";

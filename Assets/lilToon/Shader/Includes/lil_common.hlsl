@@ -84,7 +84,6 @@ struct lilFragData
     float3 origL;
     float3 reflectionN;
     float3 matcapN;
-    float3 matcap2ndN;
     float facing;
 
     // Dot
@@ -160,7 +159,6 @@ lilFragData lilInitFragData()
     fd.origL = float3(0.0, 1.0, 0.0);
     fd.reflectionN = 0.0;
     fd.matcapN = 0.0;
-    fd.matcap2ndN = 0.0;
     fd.facing = 1.0;
 
     fd.vl = 0.0;

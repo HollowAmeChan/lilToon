@@ -105,7 +105,7 @@
 // Optimization Macro
 
 // tangentWS / bitangentWS / normalWS
-#if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND) || defined(LIL_FEATURE_ANISOTROPY) || defined(LIL_FEATURE_MatCapBumpMap) || defined(LIL_FEATURE_MatCap2ndBumpMap) || defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_FEATURE_EMISSION_2ND) || defined(LIL_FEATURE_PARALLAX)
+#if defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_ANISOTROPY) || defined(LIL_FEATURE_MatCapBumpMap) || defined(LIL_FEATURE_EMISSION_1ST) || defined(LIL_FEATURE_PARALLAX)
     #define LIL_SHOULD_TBN
 #endif
 
@@ -115,7 +115,7 @@
 #endif
 
 // normalOS (vertex input)
-#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE))
+#if defined(LIL_SHOULD_TANGENT) || defined(LIL_FEATURE_SHADOW) || defined(LIL_FEATURE_RIMSHADE) || defined(LIL_FEATURE_REFLECTION) || defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_RIMLIGHT) || defined(LIL_FEATURE_GLITTER) || defined(LIL_FEATURE_BACKLIGHT) || defined(LIL_FEATURE_SSS) || defined(LIL_FEATURE_DISTANCE_FADE) || (defined(LIL_USE_LIGHTMAP) && defined(LIL_LIGHTMODE_SUBTRACTIVE))
     #define LIL_SHOULD_NORMAL
 #endif
 
@@ -130,7 +130,7 @@
 #endif
 
 // uv1
-#if defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_MATCAP_2ND) || defined(LIL_FEATURE_GLITTER)
+#if defined(LIL_FEATURE_MATCAP) || defined(LIL_FEATURE_GLITTER)
     #define LIL_SHOULD_UV1
 #endif
 

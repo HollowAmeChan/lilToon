@@ -287,9 +287,6 @@ msgstr "轮廓"
 msgid "sLimEmission"
 msgstr "发光"
 
-msgid "sLimEmission2nd"
-msgstr "第二发光"
-
 msgid "sBaseSetting"
 msgstr "基本设置"
 
@@ -644,6 +641,48 @@ msgstr "Shadow Caster Bias"
 msgid "AO Map"
 msgstr "环境光遮蔽贴图"
 
+msgid "Surface Definition"
+msgstr "表面定义"
+
+msgid "Shading Components"
+msgstr "着色组分"
+
+msgid "Rendering Settings"
+msgstr "渲染设置"
+
+msgid "Alpha"
+msgstr "透明度"
+
+msgid "Metallic and Smoothness"
+msgstr "金属度与平滑度"
+
+msgid "Ho Surface"
+msgstr "Ho 表面语义"
+
+msgid "Anisotropy"
+msgstr "各向异性"
+
+msgid "AO Source"
+msgstr "AO 来源"
+
+msgid "Baked AO"
+msgstr "烘焙"
+
+msgid "Mixed AO"
+msgstr "混合"
+
+msgid "AO Realtime Weight"
+msgstr "实时权重"
+
+msgid "AO Darkening"
+msgstr "AO 压暗"
+
+msgid "AO Influence on Shadow"
+msgstr "AO 对阴影的影响"
+
+msgid "AO Map RGB drives the three shadow levels. White means unoccluded."
+msgstr "贴图的 RGB 分别影响三层阴影。白色表示无遮挡。"
+
 msgid "sFlat"
 msgstr "Flat"
 
@@ -739,9 +778,6 @@ msgstr "您可以在此设置灯光主色和闪烁。"
 
 msgid "sEmission"
 msgstr "自发光"
-
-msgid "sEmission2nd"
-msgstr "第二自发光"
 
 msgid "sBlinkStrength"
 msgstr "闪烁强度"
@@ -854,9 +890,6 @@ msgstr "您可以在此设置法线贴图。"
 msgid "sNormalMap"
 msgstr "法线贴图"
 
-msgid "sNormalMap2nd"
-msgstr "第二法线贴图"
-
 msgid "sNormalRGB"
 msgstr "法线 (RGB)"
 
@@ -916,9 +949,6 @@ msgstr "MatCap"
 
 msgid "sMatCap"
 msgstr "MatCap"
-
-msgid "sMatCap2nd"
-msgstr "第二 MatCap"
 
 msgid "sBlendUV1"
 msgstr "Blend UV1"
@@ -1649,12 +1679,6 @@ msgstr "AO 压暗强度"
 msgid "AO Level"
 msgstr "AO 电平"
 
-msgid "AO Strength"
-msgstr "AO 强度"
-
-msgid "AO that shapes the toon shadow: the AO Map drives the per layer ramp offset, and the realtime HoAO adds screen space occlusion. The AO section reuses this same input for its darkening."
-msgstr "AO 对 toon 阴影的作用：AO Map 决定各层 ramp 偏移，实时 HoAO 补充屏幕空间遮挡。AO 栏的压暗共用同一份输入。"
-
 msgid "Apply Specular"
 msgstr "应用高光"
 
@@ -1796,9 +1820,6 @@ msgstr "实时 AO"
 msgid "Ref"
 msgstr "Ref"
 
-msgid "Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."
-msgstr "整体 AO 压暗。共用阴影栏里的 AO Map、实时 AO 与 AO Mask。"
-
 msgid "Right Only"
 msgstr "仅右侧"
 
@@ -1825,9 +1846,6 @@ msgstr "使用自发光"
 
 msgid "Use Outline"
 msgstr "使用轮廓"
-
-msgid "Uses the Shadow section's AO input"
-msgstr "使用阴影栏的 AO 输入"
 
 msgid "UV0"
 msgstr "UV0"

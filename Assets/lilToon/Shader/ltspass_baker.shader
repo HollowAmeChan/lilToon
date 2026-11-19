@@ -77,16 +77,13 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_SHADOW_LUT
             #define LIL_FEATURE_RIMSHADE
             #define LIL_FEATURE_EMISSION_1ST
-            #define LIL_FEATURE_EMISSION_2ND
             #define LIL_FEATURE_ANIMATE_EMISSION_UV
             #define LIL_FEATURE_ANIMATE_EMISSION_MASK_UV
             #define LIL_FEATURE_EMISSION_GRADATION
             #define LIL_FEATURE_NORMAL_1ST
-            #define LIL_FEATURE_NORMAL_2ND
             #define LIL_FEATURE_ANISOTROPY
             #define LIL_FEATURE_REFLECTION
             #define LIL_FEATURE_MATCAP
-            #define LIL_FEATURE_MATCAP_2ND
             #define LIL_FEATURE_RIMLIGHT
             #define LIL_FEATURE_RIMLIGHT_DIRECTION
             #define LIL_FEATURE_GLITTER
@@ -111,8 +108,6 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_Main3rdDissolveMask
             #define LIL_FEATURE_Main3rdDissolveNoiseMask
             #define LIL_FEATURE_BumpMap
-            #define LIL_FEATURE_Bump2ndMap
-            #define LIL_FEATURE_Bump2ndScaleMask
             #define LIL_FEATURE_AnisotropyTangentMap
             #define LIL_FEATURE_AnisotropyScaleMask
             #define LIL_FEATURE_AnisotropyShiftNoiseMask
@@ -134,18 +129,12 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_MatCapTex
             #define LIL_FEATURE_MatCapBlendMask
             #define LIL_FEATURE_MatCapBumpMap
-            #define LIL_FEATURE_MatCap2ndTex
-            #define LIL_FEATURE_MatCap2ndBlendMask
-            #define LIL_FEATURE_MatCap2ndBumpMap
             #define LIL_FEATURE_RimColorTex
             #define LIL_FEATURE_GlitterColorTex
             #define LIL_FEATURE_GlitterShapeTex
             #define LIL_FEATURE_EmissionMap
             #define LIL_FEATURE_EmissionBlendMask
             #define LIL_FEATURE_EmissionGradTex
-            #define LIL_FEATURE_Emission2ndMap
-            #define LIL_FEATURE_Emission2ndBlendMask
-            #define LIL_FEATURE_Emission2ndGradTex
             #define LIL_FEATURE_ParallaxMap
             #define LIL_FEATURE_DissolveMask
             #define LIL_FEATURE_DissolveNoiseMask

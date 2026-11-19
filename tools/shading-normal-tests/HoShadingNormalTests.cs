@@ -100,9 +100,7 @@ namespace lilToon.Tests
             material.SetFloat("_Cull", 0);
             material.SetFloat("_FlipNormal", flip ? 1 : 0);
             material.SetFloat("_UseBumpMap", 0);
-            material.SetFloat("_UseBump2ndMap", 0);
             material.SetTexture("_BumpMap", null);
-            material.SetTexture("_Bump2ndMap", null);
             material.SetFloat("_LightMinLimit", 1);
             material.SetFloat("_LightMaxLimit", 1);
             material.SetFloat("_HoAdditionalLightIntensity", 0);
@@ -110,7 +108,7 @@ namespace lilToon.Tests
             material.SetTexture("_MainTex", Texture2D.whiteTexture);
             material.SetColor("_Color", Color.white);
             material.SetFloat("_UseReflection", 0);
-            material.SetFloat("_UseRealtimeAO", 0);
+            material.SetFloat("_AOSource", 0);
             material.SetFloat("_UseShadow", 1);
             material.SetFloat("_ShadowStrength", 1);
             material.SetFloat("_ShadowBorderRange", 0);
@@ -167,14 +165,14 @@ namespace lilToon.Tests
             Assert.IsEmpty(errors, activeShader.name);
         }
 
-        void NormalMap(int channel, bool tilted, bool enabled = true)
+        void NormalMap(bool tilted, bool enabled = true)
         {
             var texture = Keep(new Texture2D(1, 1, TextureFormat.RGBAFloat, false, true));
             // R*A encodes X on desktop; RGB also describes a valid normal.
             texture.SetPixel(0, 0, new Color(tilted ? .9f : .5f, .5f, tilted ? .8f : 1, 1));
             texture.Apply();
-            material.SetTexture(channel == 1 ? "_BumpMap" : "_Bump2ndMap", texture);
-            material.SetFloat(channel == 1 ? "_UseBumpMap" : "_UseBump2ndMap", enabled ? 1 : 0);
+            material.SetTexture("_BumpMap", texture);
+            material.SetFloat("_UseBumpMap", enabled ? 1 : 0);
         }
 
         // Probe shaders differ from lts.shader only by a readout hook and, for Stripped,
@@ -228,48 +226,42 @@ namespace lilToon.Tests
             CheckDiagnostics();
         }
 
-        [TestCase(1, false)]
-        [TestCase(1, true)]
-        [TestCase(2, false)]
-        [TestCase(2, true)]
-        public void FlatNormalMapDoesNotChangeShadow(int channel, bool backface)
+        [TestCase(false)]
+        [TestCase(true)]
+        public void FlatNormalMapDoesNotChangeShadow(bool backface)
         {
             UseShader("lilToon");
             View(backface);
-            NormalMap(channel, false);
+            NormalMap(false);
             material.SetFloat("_ShadowNormalStrength", 1);
             Color expected = Render();
             foreach (float strength in new[] { 0, .5f, 1 })
             {
                 material.SetFloat("_ShadowNormalStrength", strength);
-                Expect(Render(), expected, "Flat normal, channel=" + channel);
+                Expect(Render(), expected, "Flat normal map");
             }
         }
 
-        [TestCase(1, false)]
-        [TestCase(1, true)]
-        [TestCase(2, false)]
-        [TestCase(2, true)]
-        public void DisabledTiltedMapDoesNotChangeShadow(int channel, bool backface)
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DisabledTiltedMapDoesNotChangeShadow(bool backface)
         {
             UseShader("lilToon");
             View(backface);
-            NormalMap(channel, true, false);
+            NormalMap(true, false);
             material.SetFloat("_ShadowNormalStrength", 1);
             Color expected = Render();
             material.SetFloat("_ShadowNormalStrength", 0);
             Expect(Render(), expected, "Disabled normal map");
         }
 
-        [TestCase(1, false)]
-        [TestCase(1, true)]
-        [TestCase(2, false)]
-        [TestCase(2, true)]
-        public void EnabledTiltedMapStillAffectsShadows(int channel, bool backface)
+        [TestCase(false)]
+        [TestCase(true)]
+        public void EnabledTiltedMapStillAffectsShadows(bool backface)
         {
             UseShader("lilToon");
             View(backface);
-            NormalMap(channel, true);
+            NormalMap(true);
             // Keep nested layers inactive so only the first layer responds.
             material.SetColor("_Shadow2ndColor", Color.clear);
             material.SetColor("_Shadow3rdColor", Color.clear);
@@ -280,7 +272,6 @@ namespace lilToon.Tests
             Assert.That(Difference(baseline, perturbed), Is.GreaterThan(.03f),
                 "Enabled normal map must retain a visible response.");
             material.SetFloat("_BumpScale", 0);
-            material.SetFloat("_Bump2ndScale", 0);
             Expect(Render(), baseline, "Zero map scale must restore the facing-correct base normal");
             CheckDiagnostics();
         }

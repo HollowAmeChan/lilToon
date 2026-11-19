@@ -15,6 +15,13 @@ namespace lilToon
 {
     public partial class lilToonInspector
     {
+        private void DrawMetallicSmoothness()
+        {
+            TextureGUI(ref edSet.isShowMetallicGlossMap, metallicContent, metallicGlossMap, metallic);
+            TextureGUI(ref edSet.isShowSmoothnessTex, smoothnessContent, smoothnessTex, smoothness);
+            LocalizedProperty(gsaaStrength, 1);
+        }
+
         private void DrawMatCapSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.MatCaps)) return;
@@ -22,80 +29,10 @@ namespace lilToon
             DrawMenuButton(GetLoc("sAnchorMatCap"), PropertyBlock.MatCaps);
             if(edSet.isShowMatCap)
             {
+                using(new EditorGUILayout.VerticalScope(boxOuter))
                 {
-                    //------------------------------------------------------------------------------------------------------------------------------
-                    // MatCap
-                    if(ShouldDrawBlock(PropertyBlock.MatCap1st))
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        LocalizedProperty(useMatCap, false);
-                        DrawMenuButton(GetLoc("sAnchorMatCap"), PropertyBlock.MatCap1st);
-                        if(useMatCap.floatValue == 1)
-                        {
-                            EditorGUILayout.BeginVertical(boxInnerHalf);
-                            MatCapTextureGUI(ref edSet.isShowMatCapUV, matcapContent, matcapTex, matcapColor, matcapBlendUV1, matcapZRotCancel, matcapPerspective);
-                            LocalizedPropertyAlpha(matcapColor);
-                            LocalizedProperty(matcapMainStrength);
-                            LocalizedProperty(matcapNormalStrength);
-                            lilEditorGUI.DrawLine();
-                            TextureGUI(ref edSet.isShowMatCapBlendMask, maskBlendRGBContent, matcapBlendMask, matcapBlend);
-                            LocalizedProperty(matcapEnableLighting);
-                            LocalizedProperty(matcapShadowMask);
-                            LocalizedProperty(matcapBackfaceMask);
-                            LocalizedProperty(matcapLod);
-                            LocalizedProperty(matcapBlendMode);
-                            if(matcapEnableLighting.floatValue != 0.0f && matcapBlendMode.floatValue == 3.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpMatCapBlending")))
-                            {
-                                matcapEnableLighting.floatValue = 0.0f;
-                            }
-                            if(isTransparent) LocalizedProperty(matcapApplyTransparency);
-                            lilEditorGUI.DrawLine();
-                            LocalizedProperty(matcapCustomNormal);
-                            if(matcapCustomNormal.floatValue == 1)
-                            {
-                                TextureGUI(ref edSet.isShowMatCapBumpMap, normalMapContent, matcapBumpMap, matcapBumpScale);
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-                        EditorGUILayout.EndVertical();
-                    }
-
-                    //------------------------------------------------------------------------------------------------------------------------------
-                    // MatCap 2nd
-                    if(ShouldDrawBlock(PropertyBlock.MatCap2nd))
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        LocalizedProperty(useMatCap2nd, false);
-                        DrawMenuButton(GetLoc("sAnchorMatCap"), PropertyBlock.MatCap2nd);
-                        if(useMatCap2nd.floatValue == 1)
-                        {
-                            EditorGUILayout.BeginVertical(boxInnerHalf);
-                            MatCapTextureGUI(ref edSet.isShowMatCap2ndUV, matcapContent, matcap2ndTex, matcap2ndColor, matcap2ndBlendUV1, matcap2ndZRotCancel, matcap2ndPerspective);
-                            LocalizedPropertyAlpha(matcap2ndColor);
-                            LocalizedProperty(matcap2ndMainStrength);
-                            LocalizedProperty(matcap2ndNormalStrength);
-                            lilEditorGUI.DrawLine();
-                            TextureGUI(ref edSet.isShowMatCap2ndBlendMask, maskBlendRGBContent, matcap2ndBlendMask, matcap2ndBlend);
-                            LocalizedProperty(matcap2ndEnableLighting);
-                            LocalizedProperty(matcap2ndShadowMask);
-                            LocalizedProperty(matcap2ndBackfaceMask);
-                            LocalizedProperty(matcap2ndLod);
-                            LocalizedProperty(matcap2ndBlendMode);
-                            if(matcap2ndEnableLighting.floatValue != 0.0f && matcap2ndBlendMode.floatValue == 3.0f && lilEditorGUI.AutoFixHelpBox(GetLoc("sHelpMatCapBlending")))
-                            {
-                                matcap2ndEnableLighting.floatValue = 0.0f;
-                            }
-                            if(isTransparent) LocalizedProperty(matcap2ndApplyTransparency);
-                            lilEditorGUI.DrawLine();
-                            LocalizedProperty(matcap2ndCustomNormal);
-                            if(matcap2ndCustomNormal.floatValue == 1)
-                            {
-                                TextureGUI(ref edSet.isShowMatCap2ndBumpMap, normalMapContent, matcap2ndBumpMap, matcap2ndBumpScale);
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-                        EditorGUILayout.EndVertical();
-                    }
+                    LocalizedProperty(useMatCap, false);
+                    if(useMatCap.hasMixedValue || useMatCap.floatValue != 0f) DrawMatCapControls();
                 }
             }
         }

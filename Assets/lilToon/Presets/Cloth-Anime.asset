@@ -73,40 +73,6 @@ MonoBehaviour:
     value: {r: 1, g: 0, b: 0, a: 0}
   - name: _ega7
     value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _Emission2ndColor
-    value: {r: 1, g: 1, b: 1, a: 1}
-  - name: _e2gc0
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc1
-    value: {r: 1, g: 1, b: 1, a: 1}
-  - name: _e2gc2
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc3
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc4
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc5
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc6
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2gc7
-    value: {r: 1, g: 1, b: 1, a: 0}
-  - name: _e2ga0
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga1
-    value: {r: 1, g: 0, b: 0, a: 1}
-  - name: _e2ga2
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga3
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga4
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga5
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga6
-    value: {r: 1, g: 0, b: 0, a: 0}
-  - name: _e2ga7
-    value: {r: 1, g: 0, b: 0, a: 0}
   - name: _OutlineColor
     value: {r: 0.45, g: 0.5499999, b: 0.65, a: 1}
   vectors:
@@ -125,12 +91,6 @@ MonoBehaviour:
   - name: _EmissionBlendMask_ScrollRotate
     value: {x: 0, y: 0, z: 0, w: 0}
   - name: _EmissionBlink
-    value: {x: 0, y: 0, z: 3.141593, w: 0}
-  - name: _Emission2ndMap_ScrollRotate
-    value: {x: 0, y: 0, z: 0, w: 0}
-  - name: _Emission2ndBlendMask_ScrollRotate
-    value: {x: 0, y: 0, z: 0, w: 0}
-  - name: _Emission2ndBlink
     value: {x: 0, y: 0, z: 3.141593, w: 0}
   - name: _OutlineTexHSVG
     value: {x: 0, y: 1, z: 1, w: 2}
@@ -188,10 +148,6 @@ MonoBehaviour:
   - name: _UseBumpMap
     value: 0
   - name: _BumpScale
-    value: 1
-  - name: _UseBump2ndMap
-    value: 0
-  - name: _Bump2ndScale
     value: 1
   - name: _UseShadow
     value: 1
@@ -266,22 +222,6 @@ MonoBehaviour:
   - name: _egci
     value: 2
   - name: _egai
-    value: 2
-  - name: _UseEmission2nd
-    value: 0
-  - name: _Emission2ndBlend
-    value: 1
-  - name: _Emission2ndUseGrad
-    value: 0
-  - name: _Emission2ndGradSpeed
-    value: 1
-  - name: _Emission2ndParallaxDepth
-    value: 0
-  - name: _Emission2ndFluorescence
-    value: 0
-  - name: _e2gci
-    value: 2
-  - name: _e2gai
     value: 2
   - name: _UseParallax
     value: 0

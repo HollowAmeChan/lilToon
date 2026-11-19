@@ -187,66 +187,69 @@ namespace lilToon
                     LocalizedProperty(shadowBorderRange);
                     EditorGUILayout.EndVertical();
                 }
-                // AO parameters that implicitly shape the toon shadow. They are the shared
-                // input of the whole AO system, so the AO section (the darkening) reuses
-                // them instead of exposing a second copy. Drawn outside the _UseShadow
-                // branches: the same input also drives the darkening, which works with the
-                // toon shadow off.
-                {
-                    EditorGUILayout.BeginVertical(boxInnerHalf);
-                    DrawShadowAOGroup();
-                    EditorGUILayout.EndVertical();
-                }
+                if(useShadow.floatValue != 0f) LocalizedProperty(aoStrength);
                 EditorGUILayout.EndVertical();
             }
         }
 
-        // Shared by the legacy and the next shadow sections. Kept editable even when the
-        // caller sits inside a DisabledScope it does not own (the next inspector disables
-        // the whole shadow section with _UseShadow), because the AO darkening depends on
-        // the same input.
-        private void DrawShadowAOGroup()
+        private string GetAOSourceLabel()
         {
-            using(new EditorGUI.DisabledScope(false))
+            if(aoSource.p == null || aoSource.hasMixedValue) return null;
+            switch((AOSource)(int)aoSource.floatValue)
             {
-                edSet.isShowShadowAO = lilEditorGUI.DrawSimpleFoldout(m_MaterialEditor, shadowAOContent, shadowBorderMask, edSet.isShowShadowAO, isCustomEditor);
-                if(edSet.isShowShadowAO)
-                {
-                    EditorGUI.indentLevel += 1;
-                    LocalizedProperty(shadowBorderMaskLOD, 2);
-                    lilEditorGUI.DrawLine();
-                    LocalizedProperty(aoStrength);
-                    lilEditorGUI.DrawLine();
-                    LocalizedProperty(useRealtimeAO);
-                    if(useRealtimeAO.floatValue == 1)
-                    {
-                        EditorGUI.indentLevel += 2;
-                        LocalizedProperty(aoLevel);
-                        LocalizedProperty(aoContrast);
-                        EditorGUI.indentLevel -= 2;
-                    }
-                    lilEditorGUI.DrawLine();
-                    if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, aoMaskContent, aoMask);
-                    EditorGUI.indentLevel -= 1;
-                }
+                case AOSource.Baked: return GetLoc("Baked AO");
+                case AOSource.Realtime: return GetLoc("Realtime AO");
+                case AOSource.Mixed: return GetLoc("Mixed AO");
+                default: return GetLoc("Off");
             }
         }
 
-        // The AO darkening is its own section: it reuses the shared AO input that lives in
-        // the shadow section and only adds the colour to darken toward plus its strength.
+        private void DrawSurfaceAO()
+        {
+            if(aoSource.p == null) return;
+            LocalizedProperty(aoSource);
+            var source = (AOSource)(int)aoSource.floatValue;
+            bool mixedSelection = aoSource.hasMixedValue;
+            if(!mixedSelection && source == AOSource.Off) return;
+            if(mixedSelection || source == AOSource.Baked || source == AOSource.Mixed)
+            {
+                LocalizedPropertyTexture(aoMapContent, aoMap);
+                LocalizedProperty(aoMapLOD, 2);
+            }
+            if(mixedSelection || source == AOSource.Realtime || source == AOSource.Mixed)
+            {
+                if(mixedSelection || source == AOSource.Mixed) LocalizedProperty(aoRealtimeWeight);
+                LocalizedProperty(aoLevel);
+                LocalizedProperty(aoContrast);
+            }
+            if(aoMask.p != null) TextureGUI(ref edSet.isShowRealtimeAOMask, aoMaskContent, aoMask);
+        }
+
+        private void DrawAODarkening()
+        {
+            LocalizedProperty(aoColor);
+            LocalizedProperty(aoDarkStrength);
+        }
+
         private void DrawAOSettings()
         {
-            if(!ShouldDrawBlock(PropertyBlock.Shadow)) return;
-            edSet.isShowAO = lilEditorGUI.Foldout(GetLoc("AO"), GetLoc("Overall AO darkening. Reuses the AO Map, realtime AO and AO Mask from the shadow section."), edSet.isShowAO);
-            DrawMenuButton(GetLoc("sAnchorShadow"), PropertyBlock.Shadow);
-            if(edSet.isShowAO)
+            if(ShouldDrawBlock(PropertyBlock.SurfaceAO))
             {
-                EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.BeginVertical(boxInnerHalf);
-                LocalizedProperty(aoColor);
-                LocalizedProperty(aoDarkStrength);
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndVertical();
+                edSet.isShowSurfaceAO = lilEditorGUI.Foldout(GetLoc("AO"), edSet.isShowSurfaceAO);
+                DrawMenuButton("AO", PropertyBlock.SurfaceAO);
+                if(edSet.isShowSurfaceAO)
+                    using(new EditorGUILayout.VerticalScope(boxOuter)) DrawSurfaceAO();
+            }
+            if(ShouldDrawBlock(PropertyBlock.AODarkening))
+            {
+                edSet.isShowAO = lilEditorGUI.Foldout(GetLoc("AO Darkening"), edSet.isShowAO);
+                DrawMenuButton("AO Darkening", PropertyBlock.AODarkening);
+                if(!edSet.isShowAO) return;
+                using(new EditorGUILayout.VerticalScope(boxOuter))
+                {
+                    LocalizedProperty(useAODarkening, false);
+                    if(useAODarkening.hasMixedValue || useAODarkening.floatValue != 0f) DrawAODarkening();
+                }
             }
         }
     }

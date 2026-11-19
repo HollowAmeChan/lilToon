@@ -103,7 +103,7 @@ namespace lilToon.Tests
             material.SetFloat("_ShadowBorderRange", 0);
             material.SetFloat("_BackfaceForceShadow", 0);
             material.SetFloat("_AOStrength", 0);
-            material.SetFloat("_UseRealtimeAO", 0);
+            material.SetFloat("_AOSource", 0);
             material.SetFloat("_RampProbeH", .7f);
             return material;
         }

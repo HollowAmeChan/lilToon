@@ -59,9 +59,6 @@ float4 frag(v2f input) : SV_Target
         OVERRIDE_EMISSION_1ST
     #endif
         BEFORE_EMISSION_1ST
-        #if defined(LIL_FEATURE_EMISSION_2ND)
-            OVERRIDE_EMISSION_2ND
-        #endif
     BEFORE_BLEND_EMISSION
     OVERRIDE_BLEND_EMISSION
 

@@ -24,12 +24,15 @@
                         _HoAdditionalLightIntensity ("附加光强度", Range(0, 4)) = 1
                         _HoAdditionalLightShadowStrength ("附加光阴影", Range(0, 1)) = 1
         [Enum(Main, 1, Full, 2)] _HoRPShadowMode ("HoRP阴影模式", Float) = 1
-        [lilToggle]     _UseRealtimeAO              ("Realtime AO", Int) = 1
+        [lilEnum]       _AOSource                    ("AO Source|Off|Baked AO|Realtime AO|Mixed AO", Int) = 3
+        [NoScaleOffset] _AOMap                       ("AO Map", 2D) = "white" {}
+        [lilLOD]        _AOMapLOD                    ("sSampleSoftening", Range(0, 1)) = 0
+                        _AORealtimeWeight           ("AO Realtime Weight", Range(0, 1)) = 1
                         _AOLevel                     ("AO Level", Range(-1, 1)) = 0
                         _AOContrast                  ("AO Contrast", Range(0, 4)) = 1
+        [lilToggle]     _UseAODarkening              ("AO Darkening", Int) = 1
                         _AODarkStrength              ("AO Dark Strength", Range(0, 1)) = 1
                         _AOColor                     ("AO Dark Color", Color) = (0,0,0,1)
-                        _AOStrength                  ("AO Strength", Range(0, 1)) = 1
         [NoScaleOffset] _AOMask                     ("AO Mask", 2D) = "white" {}
                         _HoCharacterCaptureOpacity  ("HoCharacter Capture Opacity", Range(0,1)) = 1
         // Tesion: optional GeometryData tension consumer
@@ -157,11 +160,6 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         // NormalMap 2nd
-        [lilToggleLeft] _UseBump2ndMap              ("sNormalMap2nd", Int) = 0
-        [Normal]        _Bump2ndMap                 ("Normal Map", 2D) = "bump" {}
-        [lilEnum]       _Bump2ndMap_UVMode          ("UV Mode|UV0|UV1|UV2|UV3", Int) = 0
-                        _Bump2ndScale               ("Scale", Range(-10,10)) = 1
-        [NoScaleOffset] _Bump2ndScaleMask           ("Mask", 2D) = "white" {}
 
         //----------------------------------------------------------------------------------------------------------------------
         // Anisotropy
@@ -182,7 +180,6 @@
                         _AnisotropyShiftNoiseMask   ("sNoise", 2D) = "white" {}
         [lilToggle]     _Anisotropy2Reflection      ("sReflection", Int) = 0
         [lilToggle]     _Anisotropy2MatCap          ("sMatCap", Int) = 0
-        [lilToggle]     _Anisotropy2MatCap2nd       ("sMatCap2nd", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
         // Backlight
@@ -221,10 +218,9 @@
         // Shadow
         [lilToggleLeft] _UseShadow                  ("sShadow", Int) = 0
                         _ShadowStrength             ("sStrength", Range(0, 1)) = 1
+                        _AOStrength                  ("AO Influence on Shadow", Range(0, 1)) = 1
         [NoScaleOffset] _ShadowStrengthMask         ("sStrength", 2D) = "white" {}
         [lilLOD]        _ShadowStrengthMaskLOD      ("sSampleSoftening", Range(0, 1)) = 0
-        [NoScaleOffset] _ShadowBorderMask           ("sBorder", 2D) = "white" {}
-        [lilLOD]        _ShadowBorderMaskLOD        ("sSampleSoftening", Range(0, 1)) = 0
         [NoScaleOffset] _ShadowBlurMask             ("sBlur", 2D) = "white" {}
         [lilLOD]        _ShadowBlurMaskLOD          ("sSampleSoftening", Range(0, 1)) = 0
         [lilEnum]       _ShadowColorType            ("sShadowColorTypes", Int) = 0
@@ -318,26 +314,6 @@
                         _MatCapBumpScale            ("Scale", Range(-10,10)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
-        // MatCap 2nd
-        [lilToggleLeft] _UseMatCap2nd               ("sMatCap2nd", Int) = 0
-        [lilHDR]        _MatCap2ndColor             ("sColor", Color) = (1,1,1,1)
-                        _MatCap2ndTex               ("Texture", 2D) = "white" {}
-                        _MatCap2ndMainStrength      ("sMainColorPower", Range(0, 1)) = 0
-        [lilVec2R]      _MatCap2ndBlendUV1          ("sBlendUV1", Vector) = (0,0,0,0)
-        [lilToggle]     _MatCap2ndZRotCancel        ("sMatCapZRotCancel", Int) = 1
-        [lilToggle]     _MatCap2ndPerspective       ("sFixPerspective", Int) = 1
-                        _MatCap2ndBlend             ("Blend", Range(0, 1)) = 1
-        [NoScaleOffset] _MatCap2ndBlendMask         ("Mask", 2D) = "white" {}
-                        _MatCap2ndEnableLighting    ("sEnableLighting", Range(0, 1)) = 1
-                        _MatCap2ndShadowMask        ("sShadowMask", Range(0, 1)) = 0
-        [lilToggle]     _MatCap2ndBackfaceMask      ("sBackfaceMask", Int) = 0
-                        _MatCap2ndLod               ("sSampleSoftening", Range(0, 10)) = 0
-        [lilEnum]       _MatCap2ndBlendMode         ("sBlendModes", Int) = 1
-        [lilToggle]     _MatCap2ndApplyTransparency ("sApplyTransparency", Int) = 1
-                        _MatCap2ndNormalStrength    ("sNormalStrength", Range(0, 1)) = 1.0
-        [lilToggle]     _MatCap2ndCustomNormal      ("sMatCapCustomNormal", Int) = 0
-        [Normal]        _MatCap2ndBumpMap           ("Normal Map", 2D) = "bump" {}
-                        _MatCap2ndBumpScale         ("Scale", Range(-10,10)) = 1
 
         //----------------------------------------------------------------------------------------------------------------------
         // Rim
@@ -425,41 +401,7 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         // Emmision2nd
-        [lilToggleLeft] _UseEmission2nd             ("sEmission2nd", Int) = 0
-        [HDR][lilHDR]   _Emission2ndColor           ("sColor", Color) = (1,1,1,1)
-                        _Emission2ndMap             ("Texture", 2D) = "white" {}
-        [lilUVAnim]     _Emission2ndMap_ScrollRotate ("sScrollRotates", Vector) = (0,0,0,0)
-        [lilEnum]       _Emission2ndMap_UVMode      ("UV Mode|UV0|UV1|UV2|UV3|Rim", Int) = 0
-                        _Emission2ndMainStrength    ("sMainColorPower", Range(0, 1)) = 0
-                        _Emission2ndBlend           ("Blend", Range(0,1)) = 1
-                        _Emission2ndBlendMask       ("Mask", 2D) = "white" {}
-        [lilUVAnim]     _Emission2ndBlendMask_ScrollRotate ("sScrollRotates", Vector) = (0,0,0,0)
-        [lilEnum]       _Emission2ndBlendMode       ("sBlendModes", Int) = 1
-        [lilBlink]      _Emission2ndBlink           ("sBlinkSettings", Vector) = (0,0,3.141593,0)
-        [lilToggle]     _Emission2ndUseGrad         ("sGradation", Int) = 0
-        [NoScaleOffset] _Emission2ndGradTex         ("Gradation Texture", 2D) = "white" {}
-                        _Emission2ndGradSpeed       ("Gradation Speed", Float) = 1
-                        _Emission2ndParallaxDepth   ("sParallaxDepth", float) = 0
-                        _Emission2ndFluorescence    ("sFluorescence", Range(0,1)) = 0
         // Gradation
-        [HideInInspector] _e2gci ("", Int) = 2
-        [HideInInspector] _e2gai ("", Int) = 2
-        [HideInInspector] _e2gc0 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc1 ("", Color) = (1,1,1,1)
-        [HideInInspector] _e2gc2 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc3 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc4 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc5 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc6 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2gc7 ("", Color) = (1,1,1,0)
-        [HideInInspector] _e2ga0 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga1 ("", Color) = (1,0,0,1)
-        [HideInInspector] _e2ga2 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga3 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga4 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga5 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga6 ("", Color) = (1,0,0,0)
-        [HideInInspector] _e2ga7 ("", Color) = (1,0,0,0)
 
         //----------------------------------------------------------------------------------------------------------------------
         // Parallax

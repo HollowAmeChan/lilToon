@@ -138,7 +138,7 @@ lilFragData lilHoSurfaceBuildFrag(v2f input, float facingValue)
     OVERRIDE_MAIN
 
     #if defined(LIL_V2F_NORMAL_WS)
-        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST) || defined(LIL_FEATURE_NORMAL_2ND))
+        #if defined(LIL_V2F_TANGENT_WS) && (defined(LIL_FEATURE_NORMAL_1ST))
             float3 normalmap = float3(0.0,0.0,1.0);
 
             BEFORE_NORMAL_1ST
@@ -146,10 +146,6 @@ lilFragData lilHoSurfaceBuildFrag(v2f input, float facingValue)
                 OVERRIDE_NORMAL_1ST
             #endif
 
-            BEFORE_NORMAL_2ND
-            #if defined(LIL_FEATURE_NORMAL_2ND)
-                OVERRIDE_NORMAL_2ND
-            #endif
 
             tangentNormal = normalize(normalmap);
             fd.N = normalize(mul(tangentNormal, fd.TBN));

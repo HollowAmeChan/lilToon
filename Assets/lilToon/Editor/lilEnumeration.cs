@@ -44,17 +44,17 @@ namespace lilToon
         Shadow,
         RimShade,
         Emission,
-        Emission1st,
-        Emission2nd,
+        Reserved12,
+        Reserved13,
         NormalMap,
-        NormalMap1st,
-        NormalMap2nd,
+        Reserved15,
+        Reserved16,
         Anisotropy,
         Reflections,
         Reflection,
         MatCaps,
-        MatCap1st,
-        MatCap2nd,
+        Reserved21,
+        Reserved22,
         RimLight,
         Glitter,
         Backlight,
@@ -78,7 +78,18 @@ namespace lilToon
         HoSurface,
         PlanarReflection,
         Other,
-        Tesion // Append only: existing serialized PropertyBlock IDs stay unchanged.
+        Tesion,
+        SurfaceAO,
+        AODarkening,
+        MetallicSmoothness
+    }
+
+    internal enum AOSource
+    {
+        Off = 0,
+        Baked = 1,
+        Realtime = 2,
+        Mixed = 3
     }
 
     public enum lilRenderPipeline

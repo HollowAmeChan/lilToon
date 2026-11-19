@@ -9,7 +9,7 @@ Set `HO_LIL_INSPECTOR_REPORT` to a unique absolute result path for each run.
 The runner draws real MaterialEditors in an EditorWindow. It covers English and
 Simplified Chinese, both Inspector implementations, and opaque, cutout and
 two-pass transparent outline shaders. All relevant foldouts are expanded. The
-new Inspector's four pages are drawn separately.
+new Inspector's three pages are drawn separately.
 
 Each draw compares the complete serialized material before and after viewing.
 Inputs include custom queues, stencil masks, GI flags, main/outline HSV values,
@@ -35,6 +35,7 @@ Optional arguments extend the checks for later cleanup steps.
 | Retire main/outline UV animation and backface shift | Static main/outline ST and both parallax GPU cases passed; 11 data passes and 2 lighting variants compiled |
 | Sampling/transition labels and final combined Inspector | 30 fresh GUI repaints passed; all five sampling labels verified in both languages; material state and GUI font restored |
 | Remove the remaining alpha-mask bake entry and its shader branch | 30 GUI repaints passed; normal-map and LUT conversions through the shared GPU path preserved output colors and dimensions |
+| Consolidate the Inspector into three pages; remove second normal, emission and MatCap; add selectable AO sources | 30 English/Chinese repaints passed without material changes; AO source modes, realtime fallback, mask, independent shadow/darkening, reflection-independent SurfaceBuffer material values and HDR emission passed on D3D12 |
 
 The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.
@@ -60,3 +61,9 @@ part of the qualification.
 
 The updated font contains 890 characters and occupies 216,272 bytes. All new
 label glyphs are present. GPOS, GSUB, GDEF, BASE, kern and STAT remain absent.
+
+Current three-page and surface qualification results are in
+`D:/Temp/liltoon-surface-shading-20261119/ThreePages-final.txt` and
+`Project/SurfaceShaderQualification.txt`. The single-normal GPU regression
+passed 20/20 EditMode cases in `ShadingNormal-final.xml`. The extension consumer
+checks passed in `SurfaceBuffer-final.log` and `RTGISecondary-final.log`.

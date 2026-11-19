@@ -173,7 +173,6 @@ namespace lilToon
                 if(IsPropZero(material, "_UseShadow", animatedProps))
                 {
                     material.SetTexture("_ShadowBlurMask", null);
-                    material.SetTexture("_ShadowBorderMask", null);
                     material.SetTexture("_ShadowStrengthMask", null);
                     material.SetTexture("_ShadowColorTex", null);
                     material.SetTexture("_Shadow2ndColorTex", null);
@@ -189,18 +188,7 @@ namespace lilToon
                     material.SetTexture("_EmissionBlendMask", null);
                     material.SetTexture("_EmissionGradTex", null);
                 }
-                if(IsPropZero(material, "_UseEmission2nd", animatedProps))
-                {
-                    material.SetTexture("_Emission2ndMap", null);
-                    material.SetTexture("_Emission2ndBlendMask", null);
-                    material.SetTexture("_Emission2ndGradTex", null);
-                }
                 if(IsPropZero(material, "_UseBumpMap", animatedProps)) material.SetTexture("_BumpMap", null);
-                if(IsPropZero(material, "_UseBump2ndMap", animatedProps))
-                {
-                    material.SetTexture("_Bump2ndMap", null);
-                    material.SetTexture("_Bump2ndScaleMask", null);
-                }
                 if(IsPropZero(material, "_UseAnisotropy", animatedProps))
                 {
                     material.SetTexture("_AnisotropyTangentMap", null);
@@ -209,8 +197,6 @@ namespace lilToon
                 }
                 if(IsPropZero(material, "_UseReflection", animatedProps))
                 {
-                    material.SetTexture("_SmoothnessTex", null);
-                    material.SetTexture("_MetallicGlossMap", null);
                     material.SetTexture("_ReflectionColorTex", null);
                     material.SetTexture("_ReflectionCubeTex", null);
                 }
@@ -219,12 +205,6 @@ namespace lilToon
                     material.SetTexture("_MatCapTex", null);
                     material.SetTexture("_MatCapBlendMask", null);
                     material.SetTexture("_MatCapBumpMap", null);
-                }
-                if(IsPropZero(material, "_UseMatCap2nd", animatedProps))
-                {
-                    material.SetTexture("_MatCap2ndTex", null);
-                    material.SetTexture("_MatCap2ndBlendMask", null);
-                    material.SetTexture("_MatCap2ndBumpMap", null);
                 }
                 var shaderName = material.shader.name;
                 if(!lilShaderUtils.IsOutlineShaderName(shaderName))
