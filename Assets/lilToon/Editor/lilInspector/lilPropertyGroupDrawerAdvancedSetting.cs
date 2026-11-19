@@ -49,7 +49,7 @@ namespace lilToon
                 if(isOutl)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
-                    TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
+                    TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor);
                     EditorGUI.indentLevel++;
                     ToneCorrectionGUI(outlineTexHSVG);
                     EditorGUI.indentLevel--;
@@ -95,7 +95,7 @@ namespace lilToon
                 else if(isOutl)
                 {
                     EditorGUILayout.BeginVertical(boxInnerHalf);
-                    TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
+                    TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor);
                     LocalizedProperty(outlineEnableLighting);
                     LocalizedProperty(outlineShadowStrength);
                     lilEditorGUI.DrawLine();

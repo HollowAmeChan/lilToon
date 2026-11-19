@@ -438,10 +438,6 @@ float2 lilCalcUVWithoutAnimation(float2 uv, float4 uv_st, float4 uv_sr)
     return lilRotateUV(uv * uv_st.xy + uv_st.zw, uv_sr.z);
 }
 
-float2 lilCalcDoubleSideUV(float2 uv, float facing, float shiftBackfaceUV)
-{
-    return facing < (shiftBackfaceUV-1.0) ? uv + float2(1.0,0.0) : uv;
-}
 
 // Decal
 float2 lilCalcDecalUV(

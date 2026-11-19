@@ -230,33 +230,17 @@
     LIL_UNPACK_INDLIGHTCOLOR(input,fd);
 
 //------------------------------------------------------------------------------------------------------------------------------
-// UV Animation
+// Main UV
 #if !defined(OVERRIDE_ANIMATE_MAIN_UV)
-    #if defined(LIL_PASS_META_INCLUDED) && (defined(LIL_FEATURE_ANIMATE_MAIN_UV))
-        #define OVERRIDE_ANIMATE_MAIN_UV \
-            fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
-            fd.uvMain = lilCalcUVWithoutAnimation(fd.uvMain, _MainTex_ST, _MainTex_ScrollRotate);
-    #elif defined(LIL_FEATURE_ANIMATE_MAIN_UV)
-        #define OVERRIDE_ANIMATE_MAIN_UV \
-            fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
-            fd.uvMain = lilCalcUV(fd.uvMain, _MainTex_ST, _MainTex_ScrollRotate);
-    #else
-        #define OVERRIDE_ANIMATE_MAIN_UV \
-            fd.uvMain = lilCalcDoubleSideUV(fd.uv0, fd.facing, _ShiftBackfaceUV); \
-            fd.uvMain = lilCalcUV(fd.uvMain, _MainTex_ST);
-    #endif
+    #define OVERRIDE_ANIMATE_MAIN_UV \
+        fd.uvMain = lilCalcUV(fd.uv0, _MainTex_ST);
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------
-// Outline UV Animation
+// Outline UV
 #if !defined(OVERRIDE_ANIMATE_OUTLINE_UV)
-    #if defined(LIL_FEATURE_ANIMATE_OUTLINE_UV)
-        #define OVERRIDE_ANIMATE_OUTLINE_UV \
-            fd.uvMain = lilCalcUV(fd.uv0, _OutlineTex_ST, _OutlineTex_ScrollRotate);
-    #else
-        #define OVERRIDE_ANIMATE_OUTLINE_UV \
-            fd.uvMain = lilCalcUV(fd.uv0, _OutlineTex_ST);
-    #endif
+    #define OVERRIDE_ANIMATE_OUTLINE_UV \
+        fd.uvMain = lilCalcUV(fd.uv0, _OutlineTex_ST);
 #endif
 
 //------------------------------------------------------------------------------------------------------------------------------

@@ -12,7 +12,6 @@ using Object = UnityEngine.Object;
 
 public class lilToonSetting : ScriptableObject
 {
-    public bool LIL_FEATURE_ANIMATE_MAIN_UV = true;
     public bool LIL_FEATURE_MAIN_TONE_CORRECTION = true;
     public bool LIL_FEATURE_MAIN_GRADATION_MAP = true;
     public bool LIL_FEATURE_MAIN2ND = true;
@@ -49,7 +48,6 @@ public class lilToonSetting : ScriptableObject
     public bool LIL_FEATURE_DISTANCE_FADE = true;
     public bool LIL_FEATURE_DISSOLVE = true;
     public bool LIL_FEATURE_DITHER = true;
-    public bool LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
     public bool LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
     public bool LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
 
@@ -220,7 +218,6 @@ public class lilToonSetting : ScriptableObject
     public static void TurnOffAllShaderSetting(ref lilToonSetting shaderSetting)
     {
         if(shaderSetting == null) return;
-        shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV = false;
         shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION = false;
         shaderSetting.LIL_FEATURE_MAIN_GRADATION_MAP = false;
         shaderSetting.LIL_FEATURE_MAIN2ND = false;
@@ -257,7 +254,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = false;
         shaderSetting.LIL_FEATURE_DISSOLVE = false;
         shaderSetting.LIL_FEATURE_DITHER = false;
-        shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = false;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = false;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = false;
 
@@ -324,7 +320,6 @@ public class lilToonSetting : ScriptableObject
     public static void TurnOnAllShaderSetting(ref lilToonSetting shaderSetting)
     {
         if(shaderSetting == null) return;
-        shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV = true;
         shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION = true;
         shaderSetting.LIL_FEATURE_MAIN_GRADATION_MAP = true;
         shaderSetting.LIL_FEATURE_MAIN2ND = true;
@@ -361,7 +356,6 @@ public class lilToonSetting : ScriptableObject
         shaderSetting.LIL_FEATURE_DISTANCE_FADE = true;
         shaderSetting.LIL_FEATURE_DISSOLVE = true;
         shaderSetting.LIL_FEATURE_DITHER = true;
-        shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
         shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = true;
         shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = true;
         shaderSetting.LIL_OPTIMIZE_USE_VERTEXLIGHT = true;
@@ -514,7 +508,6 @@ public class lilToonSetting : ScriptableObject
             sb.AppendLine("#define LIL_SETTING_INCLUDED");
             sb.AppendLine("");
         }
-        if (shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV) sb.AppendLine("#define LIL_FEATURE_ANIMATE_MAIN_UV");
         if (shaderSetting.LIL_FEATURE_MAIN_TONE_CORRECTION) sb.AppendLine("#define LIL_FEATURE_MAIN_TONE_CORRECTION");
         if (shaderSetting.LIL_FEATURE_MAIN_GRADATION_MAP) sb.AppendLine("#define LIL_FEATURE_MAIN_GRADATION_MAP");
         if (shaderSetting.LIL_FEATURE_MAIN2ND) sb.AppendLine("#define LIL_FEATURE_MAIN2ND");
@@ -571,7 +564,6 @@ public class lilToonSetting : ScriptableObject
         if (shaderSetting.LIL_FEATURE_DITHER) sb.AppendLine("#define LIL_FEATURE_DITHER");
         if (shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION) sb.AppendLine("#define LIL_FEATURE_OUTLINE_TONE_CORRECTION");
         if (shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW) sb.AppendLine("#define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW");
-        if (shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV) sb.AppendLine("#define LIL_FEATURE_ANIMATE_OUTLINE_UV");
 
         if (shaderSetting.LIL_FEATURE_MainGradationTex) sb.AppendLine("#define LIL_FEATURE_MainGradationTex");
         if (shaderSetting.LIL_FEATURE_MainColorAdjustMask) sb.AppendLine("#define LIL_FEATURE_MainColorAdjustMask");
@@ -910,11 +902,6 @@ public class lilToonSetting : ScriptableObject
         var shaderName = material.shader.name;
         if(!lilMaterialUtils.CheckShaderIslilToon(material.shader)) return;
 
-        if(!shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV && material.HasProperty("_MainTex_ScrollRotate") && material.GetVector("_MainTex_ScrollRotate") != lilConstants.defaultScrollRotate)
-        {
-            logs.Add("[lilToon] LIL_FEATURE_ANIMATE_MAIN_UV : " + AssetDatabase.GetAssetPath(material));
-            shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV = true;
-        }
         if(!shaderSetting.LIL_FEATURE_SHADOW && material.HasProperty("_UseShadow") && material.GetFloat("_UseShadow") != 0.0f)
         {
             logs.Add("[lilToon] LIL_FEATURE_SHADOW : " + AssetDatabase.GetAssetPath(material));
@@ -1116,11 +1103,6 @@ public class lilToonSetting : ScriptableObject
         // Outline
         if(lilShaderUtils.IsOutlineShaderName(shaderName))
         {
-            if(!shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV && material.HasProperty("_OutlineTex_ScrollRotate") && material.GetVector("_OutlineTex_ScrollRotate") != lilConstants.defaultScrollRotate)
-            {
-                logs.Add("[lilToon] LIL_FEATURE_ANIMATE_OUTLINE_UV : " + AssetDatabase.GetAssetPath(material));
-                shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = true;
-            }
             if(!shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION && material.HasProperty("_OutlineTexHSVG") && material.GetVector("_OutlineTexHSVG") != lilConstants.defaultHSVG)
             {
                 logs.Add("[lilToon] LIL_FEATURE_OUTLINE_TONE_CORRECTION : " + AssetDatabase.GetAssetPath(material));
@@ -1159,7 +1141,6 @@ public class lilToonSetting : ScriptableObject
             string propname = binding.propertyName;
             if(string.IsNullOrEmpty(propname) || !propname.Contains("material.")) continue;
 
-            shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV = shaderSetting.LIL_FEATURE_ANIMATE_MAIN_UV || propname.Contains("_MainTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_SHADOW = shaderSetting.LIL_FEATURE_SHADOW || propname.Contains("_UseShadow");
             shaderSetting.LIL_FEATURE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_RECEIVE_SHADOW || propname.Contains("_ShadowReceive") || propname.Contains("_Shadow2ndReceive") || propname.Contains("_Shadow3rdReceive");
             shaderSetting.LIL_FEATURE_DISTANCE_FADE = shaderSetting.LIL_FEATURE_DISTANCE_FADE || propname.Contains("_DistanceFade");
@@ -1197,7 +1178,6 @@ public class lilToonSetting : ScriptableObject
             shaderSetting.LIL_FEATURE_DISSOLVE = shaderSetting.LIL_FEATURE_DISSOLVE || propname.Contains("_DissolveParams");
             shaderSetting.LIL_FEATURE_DITHER = shaderSetting.LIL_FEATURE_DITHER || propname.Contains("_UseDither");
 
-            shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV = shaderSetting.LIL_FEATURE_ANIMATE_OUTLINE_UV || propname.Contains("_OutlineTex_ScrollRotate");
             shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION = shaderSetting.LIL_FEATURE_OUTLINE_TONE_CORRECTION || propname.Contains("_OutlineTexHSVG");
             shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW = shaderSetting.LIL_FEATURE_OUTLINE_RECEIVE_SHADOW || propname.Contains("_OutlineLitShadowReceive") || propname.Contains("_OutlineShadowStrength");
 

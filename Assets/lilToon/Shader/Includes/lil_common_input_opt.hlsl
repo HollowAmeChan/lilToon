@@ -15,9 +15,6 @@ float4  _BackfaceColor;
 // Main
 float4  _Color;
 float4  _MainTex_ST;
-#if defined(LIL_FEATURE_ANIMATE_MAIN_UV)
-    float4  _MainTex_ScrollRotate;
-#endif
 #if defined(LIL_FEATURE_MAIN_TONE_CORRECTION)
     float4  _MainTexHSVG;
 #endif
@@ -226,9 +223,6 @@ float4  _PlanarReflectionTint;
     float4  _OutlineColor;
     float4  _OutlineLitColor;
     float4  _OutlineTex_ST;
-    #if defined(LIL_FEATURE_ANIMATE_OUTLINE_UV)
-        float4  _OutlineTex_ScrollRotate;
-    #endif
     #if defined(LIL_FEATURE_OutlineTex)
         #if defined(LIL_FEATURE_OUTLINE_TONE_CORRECTION)
             float4  _OutlineTexHSVG;
@@ -243,7 +237,6 @@ float   _Cutoff;
 #endif
 float   _SubpassCutoff;
 float   _FlipNormal;
-float   _ShiftBackfaceUV;
 float   _LightMinLimit;
 float   _LightMaxLimit;
 float   _MonochromeLighting;

@@ -210,6 +210,44 @@ public sealed class HoSpecializationGpuTests
         Assert.That(hidden.Count(c => c.r > .9f), Is.LessThan(10), "Reproduce the old projection heuristic.");
         Assert.That(Delta(visible, candidate), Is.LessThan(.002f));
     }
+    [TestCase("Uv", "_MainTex")]
+    [TestCase("OutlineUv", "_OutlineTex")]
+    public void StaticUvPreservesTextureScaleAndOffset(string kind, string texture)
+    {
+        var material = Material("Candidate", kind);
+        material.SetFloat("_OutlineWidth", 0);
+        material.SetTextureScale(texture, new Vector2(1.4f, .6f));
+        material.SetTextureOffset(texture, new Vector2(.09f, -.04f));
+        Color pixel = Render(material)[Size * (Size / 2) + Size / 2];
+        Diagnostics(material.shader);
+        Assert.That(pixel.a, Is.GreaterThan(.9f), "The probe must draw visible pixels.");
+        Assert.That(pixel.r, Is.EqualTo(.17f * 1.4f + .09f).Within(.002f));
+        Assert.That(pixel.g, Is.EqualTo(.37f * .6f - .04f).Within(.002f));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ParallaxStillOffsetsStaticUv(bool pom)
+    {
+        var material = Material("Candidate", "Uv");
+        var height = Keep(new Texture2D(4, 4, TextureFormat.RGBAFloat, false, true));
+        height.SetPixels(Enumerable.Repeat(new Color(.3f, .3f, .3f, 1), 16).ToArray());
+        height.Apply();
+        material.SetTexture("_ParallaxMap", height);
+        material.SetFloat("_Parallax", .08f);
+        material.SetFloat("_ParallaxOffset", .5f);
+        material.SetFloat("_UseParallax", 0);
+        Color[] baseline = Render(material);
+        material.SetFloat("_UseParallax", 1);
+        material.SetFloat("_UsePOM", pom ? 1 : 0);
+        Color[] offset = Render(material);
+        Diagnostics(material.shader);
+        Assert.That(baseline.Count(pixel => pixel.a > .9f), Is.GreaterThan(20));
+        float delta = Delta(baseline, offset);
+        TestContext.WriteLine("POM=" + pom + " UV delta=" + delta);
+        Assert.That(delta, Is.GreaterThan(.0005f), "Height mapping must still affect UVs.");
+    }
+
     [TestCase("SHADOW_CASTER")]
     [TestCase("DEPTHONLY")]
     [TestCase("DEPTHNORMALS")]

@@ -41,15 +41,40 @@ def single_pass(text, name, shader_name):
 parser = argparse.ArgumentParser()
 parser.add_argument("--project", type=Path, required=True)
 parser.add_argument("--package", type=Path, required=True)
-parser.add_argument("--baseline", type=Path, required=True)
+parser.add_argument("--baseline", type=Path)
+parser.add_argument("--uv-probes-only", action="store_true")
 args = parser.parse_args()
-project, package, baseline = (p.resolve() for p in (args.project, args.package, args.baseline))
+project, package = (p.resolve() for p in (args.project, args.package))
 if (project / "Temp/UnityLockfile").exists():
     raise SystemExit("Close the private project first.")
 manifest = json.loads((project / "Packages/manifest.json").read_text(encoding="utf-8-sig"))
 assert manifest["dependencies"]["jp.lilxyzw.liltoon"].replace("\\", "/") == "file:" + package.as_posix()
 dest = project / "Assets/Editor/HoSpecializationTests"
 assert (dest / "HoSpecializationValidation.cs").is_file(), "Run stage.py first."
+if args.uv_probes_only:
+    include = "Packages/jp.lilxyzw.liltoon/Shader/Includes/"
+    for kind, filename, pass_name, hook in (
+        ("Uv", "lts.shader", "FORWARD",
+         "#define BEFORE_ANIMATE_MAIN_UV fd.uv0 = float2(.17,.37);\n"
+         "#define BEFORE_PARALLAX fd.parallaxOffset = float2(.2,.15); fd.parallaxViewDirection = float3(.2,.15,1);\n"
+         "#define BEFORE_MAIN return float4(fd.uvMain,0,1);\n"),
+        ("OutlineUv", "ltspass_opaque.shader", "FORWARD_OUTLINE",
+         "#define BEFORE_ANIMATE_OUTLINE_UV fd.uv0 = float2(.17,.37);\n"
+         "#define BEFORE_OUTLINE_COLOR return float4(fd.uvMain,0,1);\n"),
+    ):
+        text = single_pass((package / "Shader" / filename).read_text(encoding="utf-8-sig"),
+                           pass_name, "Hidden/HoTests/Specialization/Candidate" + kind)
+        text = re.sub(r'"Includes/([^"]+)"', lambda m: '"' + include + m[1] + '"', text)
+        common = '#include "' + include + 'lil_common.hlsl"'
+        assert text.count(common) == 1
+        text = text.replace(common, common + "\n" + hook)
+        (dest / ("Candidate" + kind + ".shader")).write_text(text, encoding="utf-8")
+    shutil.copy2(Path(__file__).with_name("HoSpecializationGpuTests.cs"), dest)
+    print(json.dumps({"uvReadouts": 2}))
+    raise SystemExit(0)
+
+assert args.baseline is not None, "--baseline is required for archived comparisons."
+baseline = args.baseline.resolve()
 archive = dest / "Baseline"
 archive.mkdir(exist_ok=True)
 hashes = []

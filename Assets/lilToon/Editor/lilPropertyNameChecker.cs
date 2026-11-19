@@ -69,8 +69,6 @@ namespace lilToon
         {
             bool res = false;
             res = res || name == "_MainTex";
-            res = res || name == "_MainTex_ScrollRotate";
-            res = res || name == "_ShiftBackfaceUV";
             return res;
         }
 

@@ -23,7 +23,6 @@ namespace lilToon
             public EditorMode editorMode = EditorMode.Advanced;
             public bool isShowBase                      = false;
             public bool isShowPrePreset                 = false;
-            public bool isShowMainUV                    = false;
             public bool isShowMain                      = false;
             public bool isShowMainTone                  = false;
             public bool isShowShadow                    = false;

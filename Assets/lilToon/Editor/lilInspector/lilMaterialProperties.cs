@@ -40,8 +40,6 @@ namespace lilToon
         private readonly lilMaterialProperty baseMap        = new lilMaterialProperty("_BaseMap", true);
         private readonly lilMaterialProperty baseColorMap   = new lilMaterialProperty("_BaseColorMap", true);
 
-        private readonly lilMaterialProperty shiftBackfaceUV        = new lilMaterialProperty("_ShiftBackfaceUV", PropertyBlock.UV);
-        private readonly lilMaterialProperty mainTex_ScrollRotate   = new lilMaterialProperty("_MainTex_ScrollRotate", PropertyBlock.UV);
 
         private readonly lilMaterialProperty mainColor              = new lilMaterialProperty("_Color", PropertyBlock.MainColor, PropertyBlock.MainColor1st);
         private readonly lilMaterialProperty mainTex                = new lilMaterialProperty("_MainTex", true, PropertyBlock.MainColor, PropertyBlock.MainColor1st);
@@ -390,7 +388,6 @@ namespace lilToon
 
         private readonly lilMaterialProperty outlineColor               = new lilMaterialProperty("_OutlineColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTex                 = new lilMaterialProperty("_OutlineTex", true, PropertyBlock.Outline);
-        private readonly lilMaterialProperty outlineTex_ScrollRotate    = new lilMaterialProperty("_OutlineTex_ScrollRotate", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineTexHSVG             = new lilMaterialProperty("_OutlineTexHSVG", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineLitColor            = new lilMaterialProperty("_OutlineLitColor", PropertyBlock.Outline);
         private readonly lilMaterialProperty outlineLitApplyTex         = new lilMaterialProperty("_OutlineLitApplyTex", PropertyBlock.Outline);
@@ -528,8 +525,6 @@ namespace lilToon
                 baseMap,
                 baseColorMap,
 
-                shiftBackfaceUV,
-                mainTex_ScrollRotate,
 
                 mainColor,
                 mainTex,
@@ -872,7 +867,6 @@ namespace lilToon
 
                 outlineColor,
                 outlineTex,
-                outlineTex_ScrollRotate,
                 outlineTexHSVG,
                 outlineLitColor,
                 outlineLitApplyTex,

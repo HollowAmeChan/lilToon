@@ -28,11 +28,20 @@ Optional arguments extend the checks for later cleanup steps.
 | Step | Result |
 | --- | --- |
 | Remove GI sections, main/outline baking and Stencil recipes | 30 GUI repaints passed, no material changes or GUI errors |
+| Retire main/outline UV animation and backface shift | Static main/outline ST and both parallax GPU cases passed; 11 data passes and 2 lighting variants compiled |
 
-The raw step-one output is
-`D:/Temp/liltoon-inspector-a9fcae14/Project/InspectorCleanupQualification.txt`;
-the Editor log is
+The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.
+The step-two GPU report is
+`D:/Temp/liltoon-inspector-a9fcae14/CleanupStep2-Gpu.xml`. Its first regular Forward
+case exceeded the framework's 180-second timeout during cold compilation.
+The targeted lighting retry passed both variants in 0.419 seconds, recorded in
+`D:/Temp/liltoon-inspector-a9fcae14/CleanupStep2-ForwardRetry.xml`.
 
-These checks qualify Inspector behavior. They do not measure performance or
-qualify production-scene rendering.
+The UV probes use the shipping forward/outline pass and include files. They
+read transformed UVs back from the GPU and verify that ordinary parallax and
+POM still move those UVs. Generate them with `probes.py --uv-probes-only` from
+the adjacent `ho-specialization-tests` tool, then filter the Unity tests to
+`StaticUvPreservesTextureScaleAndOffset` and `ParallaxStillOffsetsStaticUv`.
+
+These checks do not measure performance or qualify production-scene rendering.

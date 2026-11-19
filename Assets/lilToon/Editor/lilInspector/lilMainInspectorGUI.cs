@@ -36,25 +36,6 @@ namespace lilToon
                 DrawPlanarReflectionSettings();
 
                 //------------------------------------------------------------------------------------------------------------------------------
-                // UV
-                if(ShouldDrawBlock(PropertyBlock.UV))
-                {
-                    edSet.isShowMainUV = lilEditorGUI.Foldout(GetLoc("sMainUV"), edSet.isShowMainUV);
-                    DrawMenuButton(GetLoc("sAnchorUVSetting"), PropertyBlock.UV);
-                    if(edSet.isShowMainUV)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sMainUV"), customToggleFont);
-                        DrawMenuButton(GetLoc("sAnchorUVSetting"), PropertyBlock.UV);
-                        EditorGUILayout.BeginVertical(boxInnerHalf);
-                        UVSettingGUI(mainTex, mainTex_ScrollRotate);
-                        LocalizedProperty(shiftBackfaceUV);
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
-                    }
-                }
-
-                //------------------------------------------------------------------------------------------------------------------------------
                 // Custom Properties
                 if(isCustomShader)
                 {
@@ -90,6 +71,7 @@ namespace lilToon
                                 //{
                                     EditorGUILayout.BeginVertical(boxInnerHalf);
                                     LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
+                                    UVSettingGUI(mainTex);
                                     if(isUseAlpha) lilEditorGUI.SetAlphaIsTransparencyGUI(mainTex);
                                     lilEditorGUI.DrawLine();
                                     DrawMainAdjustSettings(material);

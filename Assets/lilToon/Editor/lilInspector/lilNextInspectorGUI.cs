@@ -271,11 +271,6 @@ namespace lilToon
                 DrawNextSection("surface.outline", GetLoc("sOutlineSetting"), PropertyBlock.Outline, delegate { DrawNextOutline(material); }, false); // 折叠栏默认全部收起：defaultOpen 一律 false
                 DrawNextSection("surface.main", GetLoc("sMainColorSetting"), PropertyBlock.MainColor, delegate { DrawNextMainSurface(material); }, false);
                 DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNextNormal, false);
-                DrawNextSection("surface.uv", GetLoc("sMainUV"), PropertyBlock.UV, delegate
-                {
-                    UVSettingGUI(mainTex, mainTex_ScrollRotate);
-                    LocalizedProperty(shiftBackfaceUV);
-                }, false);
                 if(SupportsAlphaClippedEffects) DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
                 DrawNextSection("surface.lighting", GetLoc("sLightingSettings"), PropertyBlock.Lighting, DrawNextLightingControls, false);
                 if(isCustomShader) DrawNextSection("surface.custom", GetLoc("sCustomProperties"), PropertyBlock.Other, delegate { DrawCustomProperties(material); }, false, null, false);
@@ -297,7 +292,7 @@ namespace lilToon
             if(!isOutl) return;
 
             {
-                TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
+                TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor);
                 EditorGUI.indentLevel++;
                 ToneCorrectionGUI(outlineTexHSVG);
                 EditorGUI.indentLevel--;
@@ -347,6 +342,7 @@ namespace lilToon
             {
                 EditorGUILayout.LabelField(GetLoc("sMainColorSetting") + " 1", EditorStyles.boldLabel);
                 LocalizedPropertyTexture(mainColorRGBAContent, mainTex, mainColor);
+                UVSettingGUI(mainTex);
                 if(isUseAlpha) lilEditorGUI.SetAlphaIsTransparencyGUI(mainTex);
                 if(mainColorAdjustMask.p != null && mainTexHSVG.p != null && mainGradationStrength.p != null)
                 {

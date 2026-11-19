@@ -6,7 +6,6 @@ Shader "Hidden/ltsother_baker"
         // Main
         [lilHDR]        _Color                      ("Color", Color) = (1,1,1,1)
         [MainTexture]   _MainTex                    ("Texture", 2D) = "white" {}
-        [lilUVAnim]     _MainTex_ScrollRotate       ("Angle|UV Animation|Scroll|Rotate", Vector) = (0,0,0,0)
         [lilHSVG]       _MainTexHSVG                ("Hue|Saturation|Value|Gamma", Vector) = (0,1,1,1)
                         _MainGradationStrength      ("Gradation Strength", Range(0, 1)) = 0
         [NoScaleOffset] _MainGradationTex           ("Gradation Map", 2D) = "white" {}
@@ -72,7 +71,6 @@ Shader "Hidden/ltsother_baker"
     SubShader
     {
         HLSLINCLUDE
-            #define LIL_FEATURE_ANIMATE_MAIN_UV
             #define LIL_FEATURE_MAIN_TONE_CORRECTION
             #define LIL_FEATURE_MAIN_GRADATION_MAP
             #define LIL_FEATURE_MAIN2ND
@@ -110,7 +108,6 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_DITHER
             #define LIL_FEATURE_OUTLINE_TONE_CORRECTION
             #define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW
-            #define LIL_FEATURE_ANIMATE_OUTLINE_UV
             #define LIL_FEATURE_MainGradationTex
             #define LIL_FEATURE_MainColorAdjustMask
             #define LIL_FEATURE_Main2ndTex

@@ -20,7 +20,6 @@ Shader "Hidden/lilToonTwoPassTransparent"
                         _Cutoff                     ("sCutoff", Range(-0.001,1.001)) = 0.5
                         _SubpassCutoff              ("sSubpassCutoff", Range(0,1)) = 0.5
         [lilToggle]     _FlipNormal                 ("sFlipBackfaceNormal", Int) = 0
-        [lilToggle]     _ShiftBackfaceUV            ("sShiftBackfaceUV", Int) = 0
                         _BackfaceForceShadow        ("sBackfaceForceShadow", Range(0,1)) = 0
         [lilHDR]        _BackfaceColor              ("sColor", Color) = (0,0,0,0)
                         _LightMinLimit              ("sLightMinLimit", Range(0,1)) = 0.05
@@ -80,7 +79,6 @@ Shader "Hidden/lilToonTwoPassTransparent"
         // Main
         [lilHDR] [MainColor] _Color                 ("sColor", Color) = (1,1,1,1)
         [MainTexture]   _MainTex                    ("Texture", 2D) = "white" {}
-        [lilUVAnim]     _MainTex_ScrollRotate       ("sScrollRotates", Vector) = (0,0,0,0)
         [lilHSVG]       _MainTexHSVG                ("sHSVGs", Vector) = (0,1,1,1)
                         _MainGradationStrength      ("Gradation Strength", Range(0, 1)) = 0
         [NoScaleOffset] _MainGradationTex           ("Gradation Map", 2D) = "white" {}
@@ -497,7 +495,6 @@ Shader "Hidden/lilToonTwoPassTransparent"
         // Outline
         [lilHDR]        _OutlineColor               ("sColor", Color) = (0.6,0.56,0.73,1)
                         _OutlineTex                 ("Texture", 2D) = "white" {}
-        [lilUVAnim]     _OutlineTex_ScrollRotate    ("sScrollRotates", Vector) = (0,0,0,0)
         [lilHSVG]       _OutlineTexHSVG             ("sHSVGs", Vector) = (0,1,1,1)
         [lilHDR]        _OutlineLitColor            ("sColor", Color) = (1.0,0.2,0,0)
         [lilToggle]     _OutlineLitApplyTex         ("sColorFromMain", Int) = 0
@@ -611,7 +608,6 @@ Shader "Hidden/lilToonTwoPassTransparent"
     {
         Tags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest+10" "RenderPipeline" = "UniversalPipeline"}
         HLSLINCLUDE
-            #define LIL_FEATURE_ANIMATE_MAIN_UV
             #define LIL_FEATURE_MAIN_TONE_CORRECTION
             #define LIL_FEATURE_MAIN_GRADATION_MAP
             #define LIL_FEATURE_MAIN2ND
@@ -649,7 +645,6 @@ Shader "Hidden/lilToonTwoPassTransparent"
             #define LIL_FEATURE_DITHER
             #define LIL_FEATURE_OUTLINE_TONE_CORRECTION
             #define LIL_FEATURE_OUTLINE_RECEIVE_SHADOW
-            #define LIL_FEATURE_ANIMATE_OUTLINE_UV
             #define LIL_FEATURE_MainGradationTex
             #define LIL_FEATURE_MainColorAdjustMask
             #define LIL_FEATURE_Main2ndTex

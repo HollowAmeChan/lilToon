@@ -8,6 +8,8 @@ package = root / "Assets/lilToon"
 source = [p for p in package.rglob("*") if p.suffix in
           {".cs", ".hlsl", ".shader", ".lilblock", ".lilinternal"}]
 retired = re.compile(r"\b(?:_EnvRimBorder|_EnvRimBlur|_MatCapVRParallaxStrength|"
+    r"_MainTex_ScrollRotate|_OutlineTex_ScrollRotate|_ShiftBackfaceUV|"
+    r"LIL_FEATURE_ANIMATE_MAIN_UV|LIL_FEATURE_ANIMATE_OUTLINE_UV|"
     r"_MatCap2ndVRParallaxStrength|_RimVRParallaxStrength|_OutlineDisableInVR|"
     r"_\w*Blend\w*FA|LIL_OPTIMIZE_USE_FORWARDADD|LIL_OPTIMIZE_APPLY_SHADOW_FA|"
     r"isOptimizeInNDMF|isOptimizeInTestBuild|lilHeadDirection|LIL_GET_HDRPDATA|"
