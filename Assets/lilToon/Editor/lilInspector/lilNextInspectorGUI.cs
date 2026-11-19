@@ -300,11 +300,6 @@ namespace lilToon
                 TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
                 EditorGUI.indentLevel++;
                 ToneCorrectionGUI(outlineTexHSVG);
-                if(lilEditorGUI.Button(GetLoc("sBake")))
-                {
-                    outlineTex.textureValue = AutoBakeOutlineTexture(material);
-                    outlineTexHSVG.vectorValue = lilConstants.defaultHSVG;
-                }
                 EditorGUI.indentLevel--;
                 lilEditorGUI.DrawLine();
                 GUILayout.Label(GetLoc("sHighlight"), boldLabel);
@@ -367,7 +362,6 @@ namespace lilToon
                         EditorGUI.indentLevel--;
                     }
                     lilEditorGUI.DrawLine();
-                    TextureBakeGUI(material, 4);
                 }
             }
             if(ShouldDrawBlock(PropertyBlock.MainColor2nd))
@@ -404,7 +398,6 @@ namespace lilToon
                         LocalizedProperty(main2ndDissolveColor);
                     }
                     lilEditorGUI.DrawLine();
-                    TextureBakeGUI(material, 5);
                 }
             }
             if(ShouldDrawBlock(PropertyBlock.MainColor3rd))
@@ -441,7 +434,6 @@ namespace lilToon
                         LocalizedProperty(main3rdDissolveColor);
                     }
                     lilEditorGUI.DrawLine();
-                    TextureBakeGUI(material, 6);
                 }
             }
         }
@@ -948,14 +940,6 @@ namespace lilToon
                 }, false);
                 DrawNextSection("pipeline.stencil", GetLoc("sStencilSetting"), PropertyBlock.Stencil, delegate { DrawNextStencil(material); }, false);
                 if(CanListMpbProperties) DrawNextSection("pipeline.mpb", GetLoc("MPB Parameter Overrides"), PropertyBlock.Other, delegate { DrawNextMaterialPropertyBlockInfo(material); }, false, null, false);
-                if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
-                {
-                    DrawNextSection("pipeline.bake", GetLoc("sLightBakeSetting"), PropertyBlock.Other, delegate
-                    {
-                        if(!isCustomEditor) DoubleSidedGIField();
-                        if(!isCustomEditor) LightmapEmissionFlagsProperty();
-                    }, false, null, false);
-                }
             });
         }
 
@@ -1287,119 +1271,6 @@ namespace lilToon
 
         private void DrawNextStencil(Material material)
         {
-            int stencilMode = -1;
-            if(stencilComp.floatValue == (float)CompareFunction.Always    && stencilPass.floatValue == (float)StencilOp.Keep)       stencilMode = 0; // Normal
-            if(stencilComp.floatValue == (float)CompareFunction.Always    && stencilPass.floatValue == (float)StencilOp.Replace)    stencilMode = 1; // Writer
-            if(stencilComp.floatValue == (float)CompareFunction.NotEqual  && stencilPass.floatValue == (float)StencilOp.Keep)       stencilMode = 2; // Reader
-            if(stencilComp.floatValue == (float)CompareFunction.Equal     && stencilPass.floatValue == (float)StencilOp.Keep)       stencilMode = 3; // Reader (Invert)
-            if(transparentModeBuf == TransparentMode.TwoPass &&
-                stencilComp.floatValue == (float)CompareFunction.Always    && stencilPass.floatValue == (float)StencilOp.Keep &&
-                preStencilComp.floatValue == (float)CompareFunction.Equal   && preStencilPass.floatValue == (float)StencilOp.Keep)   stencilMode = 4; // Reader (Fade)
-
-            int outlineStencilMode = -1;
-            EditorGUI.BeginChangeCheck();
-            if(transparentModeBuf == TransparentMode.TwoPass)   stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert"), GetLoc("sStencilModeReaderFade")});
-            else                                                stencilMode = lilEditorGUI.Popup(GetLoc("Mode"), stencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
-            if(isOutl)
-            {
-                if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 0; // Normal
-                if(outlineStencilComp.floatValue == (float)CompareFunction.Always     && outlineStencilPass.floatValue == (float)StencilOp.Replace) outlineStencilMode = 1; // Writer
-                if(outlineStencilComp.floatValue == (float)CompareFunction.NotEqual   && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 2; // Reader
-                if(outlineStencilComp.floatValue == (float)CompareFunction.Equal      && outlineStencilPass.floatValue == (float)StencilOp.Keep)    outlineStencilMode = 3; // Reader (Invert)
-                outlineStencilMode = lilEditorGUI.Popup(GetLoc("Mode") + " (" + GetLoc("sOutline") + ")", outlineStencilMode, new[]{GetLoc("sStencilModeNormal"), GetLoc("sStencilModeWriter"), GetLoc("sStencilModeReader"), GetLoc("sStencilModeReaderInvert")});
-            }
-            if(EditorGUI.EndChangeCheck())
-            {
-                SetupMaterialWithRenderingMode(renderingModeBuf, transparentModeBuf);
-                int shaderRenderQueue = material.shader.renderQueue;
-                switch(stencilMode)
-                {
-                    case 0:
-                        stencilRef.floatValue = 0;
-                        stencilComp.floatValue = (float)CompareFunction.Always;
-                        stencilPass.floatValue = (float)StencilOp.Keep;
-                        material.renderQueue = -1;
-                        break;
-                    case 1: // Writer
-                        stencilComp.floatValue = (float)CompareFunction.Always;
-                        stencilPass.floatValue = (float)StencilOp.Replace;
-                        material.renderQueue = shaderRenderQueue > 2451 ? -1 : 2451;
-                        break;
-                    case 2: // Reader
-                        stencilComp.floatValue = (float)CompareFunction.NotEqual;
-                        stencilPass.floatValue = (float)StencilOp.Keep;
-                        material.renderQueue = shaderRenderQueue > 2452 ? -1 : 2452;
-                        break;
-                    case 3: // Reader (Invert)
-                        stencilComp.floatValue = (float)CompareFunction.Equal;
-                        stencilPass.floatValue = (float)StencilOp.Keep;
-                        material.renderQueue = shaderRenderQueue > 2452 ? -1 : 2452;
-                        break;
-                    case 4: // Reader (Fade)
-                        stencilComp.floatValue = (float)CompareFunction.Always;
-                        stencilPass.floatValue = (float)StencilOp.Keep;
-                        material.renderQueue = shaderRenderQueue > 2452 ? -1 : 2452;
-                        break;
-                    default:
-                        break;
-                }
-                if(stencilMode != 0 && stencilRef.floatValue == 0) stencilRef.floatValue = 1;
-                stencilReadMask.floatValue = 255.0f;
-                stencilWriteMask.floatValue = 255.0f;
-                stencilFail.floatValue = (float)StencilOp.Keep;
-                stencilZFail.floatValue = (float)StencilOp.Keep;
-                if(isOutl)
-                {
-                    switch(outlineStencilMode)
-                    {
-                        case 0:
-                            outlineStencilComp.floatValue = (float)CompareFunction.Always;
-                            outlineStencilPass.floatValue = (float)StencilOp.Keep;
-                            break;
-                        case 1: // Writer
-                            outlineStencilComp.floatValue = (float)CompareFunction.Always;
-                            outlineStencilPass.floatValue = (float)StencilOp.Replace;
-                            break;
-                        case 2: // Reader
-                            outlineStencilComp.floatValue = (float)CompareFunction.NotEqual;
-                            outlineStencilPass.floatValue = (float)StencilOp.Keep;
-                            break;
-                        case 3: // Reader (Invert)
-                            outlineStencilComp.floatValue = (float)CompareFunction.Equal;
-                            outlineStencilPass.floatValue = (float)StencilOp.Keep;
-                            break;
-                        default:
-                            break;
-                    }
-                    outlineStencilRef.floatValue = stencilRef.floatValue;
-                    outlineStencilReadMask.floatValue = 255.0f;
-                    outlineStencilWriteMask.floatValue = 255.0f;
-                    outlineStencilFail.floatValue = (float)StencilOp.Keep;
-                    outlineStencilZFail.floatValue = (float)StencilOp.Keep;
-                }
-                if(transparentModeBuf == TransparentMode.TwoPass)
-                {
-                    ztest.floatValue = stencilMode == 4 ? (float)CompareFunction.Less : (float)CompareFunction.LessEqual;
-                    preStencilRef.floatValue = stencilRef.floatValue;
-                    preStencilComp.floatValue = stencilMode == 4 ? (float)CompareFunction.Equal : stencilComp.floatValue;
-                    preStencilPass.floatValue = stencilPass.floatValue;
-                    preStencilReadMask.floatValue = stencilReadMask.floatValue;
-                    preStencilWriteMask.floatValue = stencilWriteMask.floatValue;
-                    preStencilFail.floatValue = stencilFail.floatValue;
-                    preStencilZFail.floatValue = stencilZFail.floatValue;
-                }
-            }
-            if(stencilMode != 0 || isOutl && outlineStencilMode != 0)
-            {
-                EditorGUI.BeginChangeCheck();
-                LocalizedProperty(stencilRef);
-                if(EditorGUI.EndChangeCheck())
-                {
-                    if(isOutl) outlineStencilRef.floatValue = stencilRef.floatValue;
-                    if(transparentModeBuf == TransparentMode.TwoPass) preStencilRef.floatValue = stencilRef.floatValue;
-                }
-            }
-            lilEditorGUI.DrawLine();
             if(lilEditorGUI.Button(GetLoc("sReset")))
             {
                 isStWr = false;

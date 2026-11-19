@@ -138,7 +138,6 @@ namespace lilToon
                                         LocalizedProperty(main2ndDissolveColor);
                                     }
                                     lilEditorGUI.DrawLine();
-                                    TextureBakeGUI(material, 5);
                                     EditorGUILayout.EndVertical();
                                 }
                                 EditorGUILayout.EndVertical();
@@ -184,7 +183,6 @@ namespace lilToon
                                         LocalizedProperty(main3rdDissolveColor);
                                     }
                                     lilEditorGUI.DrawLine();
-                                    TextureBakeGUI(material, 6);
                                     EditorGUILayout.EndVertical();
                                 }
                                 EditorGUILayout.EndVertical();
@@ -746,24 +744,6 @@ namespace lilToon
                             EditorGUILayout.EndVertical();
                         }
 
-                    }
-                }
-
-                //------------------------------------------------------------------------------------------------------------------------------
-                // Light Bake
-                if(ShouldDrawBlock("Double Sided Global Illumination", "Global Illumination"))
-                {
-                    edSet.isShowLightBake = lilEditorGUI.Foldout(GetLoc("sLightBakeSetting"), edSet.isShowLightBake);
-                    //DrawMenuButton(GetLoc("sAnchorLightBake"), PropertyBlock.LightBake);
-                    if(edSet.isShowLightBake)
-                    {
-                        EditorGUILayout.BeginVertical(boxOuter);
-                        EditorGUILayout.LabelField(GetLoc("sLightBakeSetting"), customToggleFont);
-                        EditorGUILayout.BeginVertical(boxInner);
-                        if(!isCustomEditor) DoubleSidedGIField();
-                        if(!isCustomEditor) LightmapEmissionFlagsProperty();
-                        EditorGUILayout.EndVertical();
-                        EditorGUILayout.EndVertical();
                     }
                 }
 

@@ -52,11 +52,6 @@ namespace lilToon
                     TextureGUI(ref edSet.isShowOutlineMap, mainColorRGBAContent, outlineTex, outlineColor, outlineTex_ScrollRotate, true, true);
                     EditorGUI.indentLevel++;
                     ToneCorrectionGUI(outlineTexHSVG);
-                    if(lilEditorGUI.Button(GetLoc("sBake")))
-                    {
-                        outlineTex.textureValue = AutoBakeOutlineTexture(material);
-                        outlineTexHSVG.vectorValue = lilConstants.defaultHSVG;
-                    }
                     EditorGUI.indentLevel--;
                     lilEditorGUI.DrawLine();
                     GUILayout.Label(GetLoc("sHighlight"), boldLabel);

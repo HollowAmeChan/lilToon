@@ -36,8 +36,6 @@ namespace lilToon
                     lilTextureUtils.GradientEditor(material, mainGrad, mainGradationTex, true);
                     EditorGUI.indentLevel--;
                 }
-                lilEditorGUI.DrawLine();
-                TextureBakeGUI(material, 4);
                 EditorGUI.indentLevel--;
             }
         }

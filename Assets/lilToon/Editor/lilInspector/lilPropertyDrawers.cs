@@ -143,34 +143,6 @@ namespace lilToon
             lilEditorGUI.EnableInstancingField(m_MaterialEditor);
         }
 
-        private void DoubleSidedGIField()
-        {
-            lilEditorGUI.DoubleSidedGIField(m_MaterialEditor);
-        }
-
-        private void LightmapEmissionFlagsProperty()
-        {
-            lilEditorGUI.LightmapEmissionFlagsProperty(m_MaterialEditor);
-        }
-
-        private void TextureBakeGUI(Material material, int bakeType)
-        {
-            // bakeType
-            // 0 : All
-            // 1 : 1st
-            // 2 : 2nd
-            // 3 : 3rd
-            // 4 : 1st Simple Button
-            // 5 : 2nd Simple Button
-            // 6 : 3rd Simple Button
-            string[] sBake = {GetLoc("sBakeAll"), GetLoc("sBake1st"), GetLoc("sBake2nd"), GetLoc("sBake3rd"), GetLoc("sBake"), GetLoc("sBake"), GetLoc("sBake")};
-            if(lilEditorGUI.Button(sBake[bakeType]))
-            {
-                Undo.RecordObject(material, "Bake");
-                TextureBake(material, bakeType);
-            }
-        }
-
         private void AlphamaskToTextureGUI(Material material)
         {
             if(mainTex.textureValue != null && lilEditorGUI.Button(GetLoc("sBakeAlphamask")))
