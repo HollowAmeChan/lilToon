@@ -77,10 +77,10 @@ namespace lilToon
 
         public class LanguageSettings : ScriptableSingleton<LanguageSettings>
         {
-            private static readonly string[] oldLangCodes = new[] { "en-US", "ja-JP", "ko-KR", "zh-Hans", "zh-Hant" };
-            public int languageNum => Array.IndexOf(oldLangCodes, Settings.instance.language) == -1 ? 0 : Array.IndexOf(oldLangCodes, Settings.instance.language);
+            // Keep the simplified Chinese column at its original custom TSV offset.
+            public int languageNum => languageName == L10n.SimplifiedChinese ? 3 : 0;
             [Obsolete] public string languageNames = "";
-            public string languageName => Settings.instance.language;
+            public string languageName => L10n.ResolveLanguage(Settings.instance.language);
         }
 
         public static string GetLoc(string value) => loc.ContainsKey(value) ? loc[value] : L10n.L(value);
@@ -114,8 +114,8 @@ namespace lilToon
             InitializeLanguage();
             var langs = L10n.GetLanguages();
             EditorGUI.BeginChangeCheck();
-            var index = EditorGUILayout.Popup("Language", Array.IndexOf(langs, L10n.ResolveLanguage(Settings.instance.language)), L10n.GetLanguageNames());
-            if (EditorGUI.EndChangeCheck())
+            var index = EditorGUILayout.Popup("Language", Array.IndexOf(langs, langSet.languageName), L10n.GetLanguageNames());
+            if (EditorGUI.EndChangeCheck() && index >= 0 && index < langs.Length)
             {
                 Settings.instance.language = langs[index];
                 Settings.instance.Save();
@@ -125,23 +125,29 @@ namespace lilToon
 
         private static void LoadLanguage(string langPath)
         {
+            if(!string.IsNullOrEmpty(langPath) && langPath.StartsWith("Packages/", StringComparison.Ordinal))
+            {
+                var package = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(langPath);
+                if(package != null) langPath = Path.Combine(package.resolvedPath, langPath.Substring(package.assetPath.Length + 1));
+            }
             if(string.IsNullOrEmpty(langPath) || !File.Exists(langPath)) return;
-            var sr = new StreamReader(langPath);
+            using var sr = new StreamReader(langPath);
+            int column = langSet.languageNum + 1;
 
-            var str = sr.ReadLine();
+            sr.ReadLine();
+            string str;
             while ((str = sr.ReadLine()) != null)
             {
                 var lineContents = str.Split('\t');
-                if(lineContents.Length > langSet.languageNum + 1)
+                if(lineContents.Length > column)
                 {
-                    loc[lineContents[0]] = lineContents[langSet.languageNum + 1];
+                    loc[lineContents[0]] = lineContents[column];
                 }
                 else
                 {
                     loc.Remove(lineContents[0]);
                 }
             }
-            sr.Close();
         }
 
         private static void InitializeLabels()

@@ -128,9 +128,7 @@ namespace lilToon
         {
             string[] languages = L10n.GetLanguages();
             string[] languageNames = L10n.GetLanguageNames();
-            // Settings.language 可能是区域名（中文系统默认 "zh-CN"），要按实际存在的
-            // .po 归一化后再查下标，否则 IndexOf 返回 -1、下拉会错误地显示成 English。
-            int current = Mathf.Max(0, Array.IndexOf(languages, L10n.ResolveLanguage(lilLanguageManager.langSet.languageName)));
+            int current = Array.IndexOf(languages, lilLanguageManager.langSet.languageName);
             EditorGUI.BeginChangeCheck();
             int next = EditorGUI.Popup(rect, current, languageNames);
             if(!EditorGUI.EndChangeCheck() || next == current || next < 0 || next >= languages.Length) return;

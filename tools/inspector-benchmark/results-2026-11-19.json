@@ -1,0 +1,102 @@
+{
+  "date": "2026-11-19",
+  "baselineCommit": "d4ea18f",
+  "unity": "6000.3.15f1",
+  "graphicsApi": "Direct3D12",
+  "language": "zh-CN mapped to zh-Hans",
+  "fixture": "Temporary project with copied WTD materials and HoURP. Each sample starts a new editor process. Existing Library and shader caches are retained.",
+  "body": {
+    "bodyControl": {
+      "firstLayoutMs": 112.565,
+      "firstRepaintMs": 68.93,
+      "firstPairMs": 181.495,
+      "secondPairMs": 1.569,
+      "editorCreationMs": {
+        "0-Body": 38.813,
+        "1-Cloth": 4.79,
+        "2-Body": 0.738,
+        "3-Cloth__trans": 30.689,
+        "4-HeadAddons": 6.975,
+        "5-Cloth__trans": 0.808
+      }
+    },
+    "bodyOptimized": {
+      "firstLayoutMs": 44.009,
+      "firstRepaintMs": 13.914,
+      "firstPairMs": 57.923,
+      "secondPairMs": 1.829,
+      "editorCreationMs": {
+        "0-Body": 38.057,
+        "1-Cloth": 4.686,
+        "2-Body": 0.744,
+        "3-Cloth__trans": 32.884,
+        "4-HeadAddons": 6.921,
+        "5-Cloth__trans": 0.801
+      }
+    }
+  },
+  "selection": {
+    "selectionControl": {
+      "firstBodyBusyFrameMs": 621.81,
+      "firstClothBusyFrameMs": 50.242,
+      "returnBodyBusyFrameMs": 34.432,
+      "firstBodyMaterialGuiTotalMs": 194.203,
+      "firstBodyMaterialGlyphPairTotalMs": 123.793
+    },
+    "selectionOptimized": {
+      "firstBodyBusyFrameMs": 497.286,
+      "firstClothBusyFrameMs": 50.285,
+      "returnBodyBusyFrameMs": 39.918,
+      "firstBodyMaterialGuiTotalMs": 74.373,
+      "firstBodyMaterialGlyphPairTotalMs": 1.364
+    }
+  },
+  "qualification": [
+    "16 locale settings and legacy TSV offsets through Assets and Packages paths",
+    "2 .po assets and 2 language choices",
+    "4 language/UI combinations",
+    "Font restoration after every GUI event",
+    "Shared font-feature settings preserved"
+  ],
+  "font": {
+    "sourceCommit": "5bd87dfc525c8a0d1d8529d3684716e00c3fc59a",
+    "sourceSha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+    "sizeBytes": 215576,
+    "characterCount": 888,
+    "fontTools": "4.68.0"
+  },
+  "productionSha256": {
+    "Editor/Localization/Localization.cs": "7cd5696a85611705f5ec07d605edb96f25a20abfea3d889144ba774c9023d2c7",
+    "Editor/lilLanguageManager.cs": "b4c916545703854931548f7efe60d02a4ab746c235e95d4f2a19c0cd26504f4f",
+    "Editor/lilInspector/lilInspector.cs": "ecb38b5e7829ea99e22a1ab6490338cb4db0d945fc6842e95fa9a7f700f258b9",
+    "Editor/lilInspector/lilNextInspectorGUI.cs": "a24746e1cf5369ea6f5ab77e3c7293d5e91632e55fb0015c3ff2e1a6aefcccc1",
+    "Editor/lilToonPreset.cs": "6c6d8e0176fa53acae85390cc85d19a4d6fa7859e4cf7012207e66b358946ce5",
+    "Editor/Resources/HoLilToonInspectorSans.ttf": "39aad10d85f33a933e4639dd61602041d10c3fa0e63d49b077f46676e8c65ef7"
+  },
+  "rawLogs": {
+    "bodyControl": {
+      "path": "D:\\Temp\\liltoon-inspector-a9fcae14\\FinalBody-Control.txt",
+      "sha256": "4a59dd1754c8bcf30bec243efd6f7fd3d4ea12671b605b56aa7301a3b82229ad"
+    },
+    "bodyOptimized": {
+      "path": "D:\\Temp\\liltoon-inspector-a9fcae14\\FinalSimplified-Optimized.txt",
+      "sha256": "6e0ee97c3fcf9ab8d1dfd85c62d2e745c245ed7bb8d1058b82f683f2de081395"
+    },
+    "selectionControl": {
+      "path": "D:\\Temp\\liltoon-inspector-a9fcae14\\FinalSelection-Control.txt",
+      "sha256": "dd2b9f619c0774ac945e0d2aa2c365aacbaebf02160d45a75b03323ca0c08c87"
+    },
+    "selectionOptimized": {
+      "path": "D:\\Temp\\liltoon-inspector-a9fcae14\\FinalSimplifiedSelection-Optimized.txt",
+      "sha256": "02a2eb5f46e74e6483373c6defe52eb79374c751fe751c9501d9378cbee81308"
+    }
+  },
+  "limitations": [
+    "The selection fixture uses two enabled cube MeshRenderers, not the complete original scene.",
+    "Body timing includes the complete MaterialEditor.OnInspectorGUI call. It excludes editor creation, the header icon and the surrounding Inspector window.",
+    "Busy frame times subtract Application.Idle. Full text hierarchies omit nodes below 0.5 ms and beyond depth 20. Inclusive timings must not be added to parent timings.",
+    "Warm GUI draws and same-shader material switches did not improve. The measured second Layout/Repaint pair increased from 1.569 to 1.829 ms.",
+    "The patch changes the typeface for Chinese inspector bodies to a bundled Noto Sans SC subset. Characters outside the subset use Unity's fallback chain.",
+    "Language pruning alone saved approximately 1.9 ms of discovery in the earlier isolated test but did not reduce complete first drawing."
+  ]
+}

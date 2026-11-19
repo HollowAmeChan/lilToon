@@ -6,6 +6,7 @@ using lilToon;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using L10n = lilToon.L10n;
 
 public class lilToonPreset : ScriptableObject
 {
@@ -187,9 +188,9 @@ public class lilToonPreset : ScriptableObject
             var material = (Material)Selection.activeObject;
             if(preset == null) preset = CreateInstance<lilToonPreset>();
 
-            // load language
-            var langName = lilLanguageManager.langSet.languageNames.Split('\t');
-            Array.Resize(ref presetName, langName.Length);
+            var languages = L10n.GetLanguages();
+            var languageNames = L10n.GetLanguageNames();
+            Array.Resize(ref presetName, languages.Length);
 
             // Initialize
             Array.Resize(ref preset.bases, 0);
@@ -213,9 +214,9 @@ public class lilToonPreset : ScriptableObject
 
             // Name
             EditorGUILayout.LabelField(GetLoc("sPresetName"));
-            for(int i = 0; i < langName.Length; i++)
+            for(int i = 0; i < languages.Length; i++)
             {
-                presetName[i] = EditorGUILayout.TextField(langName[i], presetName[i]);
+                presetName[i] = EditorGUILayout.TextField(languageNames[i], presetName[i]);
             }
 
             preset.category = (lilPresetCategory)EditorGUILayout.Popup(GetLoc("sPresetCategory"), (int)preset.category, sCategorys);
@@ -317,14 +318,14 @@ public class lilToonPreset : ScriptableObject
             if(GUILayout.Button(GetLoc("Save")))
             {
                 // Preset Name
-                for(int i = 0; i < langName.Length; i++)
+                for(int i = 0; i < languages.Length; i++)
                 {
                     if(!string.IsNullOrEmpty(presetName[i]))
                     {
                         Array.Resize(ref preset.bases, preset.bases.Length+1);
-                        preset.bases[preset.bases.Length-1].language = langName[i];
+                        preset.bases[preset.bases.Length-1].language = languages[i];
                         preset.bases[preset.bases.Length-1].name = presetName[i];
-                        if(string.IsNullOrEmpty(filename) || langName[i] == "English") filename = preset.category.ToString() + "-" + presetName[i];
+                        if(string.IsNullOrEmpty(filename) || languages[i] == L10n.English) filename = preset.category.ToString() + "-" + presetName[i];
                     }
                 }
 

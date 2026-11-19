@@ -33,6 +33,8 @@ namespace lilToon
         //------------------------------------------------------------------------------------------------------------------------------
         // Main GUI
         #region
+        private static Font inspectorFont;
+
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
             isCustomEditor = false;
@@ -47,6 +49,37 @@ namespace lilToon
         }
 
         public void DrawAllGUI(MaterialEditor materialEditor, MaterialProperty[] props, Material material)
+        {
+            if(lilLanguageManager.langSet.languageName == L10n.English)
+            {
+                DrawInspectorGUI(materialEditor, props, material);
+                return;
+            }
+
+            if(!inspectorFont)
+                inspectorFont = AssetDatabase.LoadAssetAtPath<Font>(lilDirectoryManager.GetEditorFolderPath() + "/Resources/HoLilToonInspectorSans.ttf");
+            if(!inspectorFont)
+            {
+                DrawInspectorGUI(materialEditor, props, material);
+                return;
+            }
+
+            var skin = GUI.skin;
+            var original = skin.font;
+            // The bundled CJK subset avoids repeated OpenType layout-table extraction
+            // in Unity 6.3 IMGUI. Restore the caller's font even when a GUI control exits.
+            skin.font = inspectorFont;
+            try
+            {
+                DrawInspectorGUI(materialEditor, props, material);
+            }
+            finally
+            {
+                skin.font = original;
+            }
+        }
+
+        private void DrawInspectorGUI(MaterialEditor materialEditor, MaterialProperty[] props, Material material)
         {
             // workaround for Unity bug (https://issuetracker.unity3d.com/issues/uv1-data-is-lost-during-assetbundle-build-when-optimize-mesh-data-is-on)
             if(PlayerSettings.stripUnusedMeshComponents && lilEditorGUI.AutoFixHelpBox(GetLoc("sWarnOptimiseMeshData")))
