@@ -11,7 +11,8 @@ using Object = UnityEngine.Object;
 // Install in a disposable project's Assets/Editor.
 public sealed class LilInspectorCleanupQualification : EditorWindow
 {
-    private static readonly string ResultPath = Path.GetFullPath("InspectorCleanupQualification.txt");
+    private static readonly string ResultPath = Environment.GetEnvironmentVariable("HO_LIL_INSPECTOR_REPORT")
+        ?? Path.GetFullPath("InspectorCleanupQualification.txt");
     private readonly List<string> errors = new List<string>();
     private MaterialEditor materialEditor;
     private int repaints;
@@ -78,6 +79,18 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                 editorSettings.GetType().GetField("useNextInspector").SetValue(editorSettings, next);
                 languageField.SetValue(languageSettings, language);
                 updateLanguage.Invoke(null, null);
+                if (Environment.GetCommandLineArgs().Contains("-qualifyLilSoftening"))
+                {
+                    var getLoc = assembly.GetType("lilToon.lilLanguageManager", true).GetMethod("GetLoc");
+                    var shader = Shader.Find("lilToon");
+                    foreach (string key in new[] { "_ShadowStrengthMaskLOD", "_ShadowBorderMaskLOD",
+                        "_ShadowBlurMaskLOD", "_MatCapLod", "_MatCap2ndLod" })
+                    {
+                        string label = shader.GetPropertyDescription(shader.FindPropertyIndex(key));
+                        Check((string)getLoc.Invoke(null, new object[] { label })
+                            == (language == "en-US" ? "Sampling Softness" : "柔化采样"), key + " sampling label");
+                    }
+                }
                 foreach (string shaderName in new[] { "Hidden/lilToonOutline", "Hidden/lilToonCutoutOutline", "Hidden/lilToonTwoPassTransparentOutline" })
                 {
                     var shader = Shader.Find(shaderName);

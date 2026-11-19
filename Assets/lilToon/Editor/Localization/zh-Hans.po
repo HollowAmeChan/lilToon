@@ -108,16 +108,16 @@ msgid "sBorderRGB"
 msgstr "边界 (RGB = 第一/第二/第三)"
 
 msgid "sBlur"
-msgstr "模糊"
+msgstr "过渡宽度"
 
 msgid "sBlurR"
-msgstr "模糊 (R)"
+msgstr "过渡宽度 (R)"
 
 msgid "sBlurRGB"
-msgstr "模糊 (RGB = 第一/第二/第三)"
+msgstr "过渡宽度 (RGB = 第一/第二/第三)"
 
 msgid "sBlurMask"
-msgstr "模糊蒙版"
+msgstr "过渡遮罩"
 
 msgid "sAlphaR"
 msgstr "透明度 (R)"
@@ -2071,3 +2071,6 @@ msgstr "当前 Unity 版本不支持 MaterialPropertyBlock.HasProperty，无法�
 
 msgid "sGlitterViewDirectionBlend"
 msgstr "视线方向混合"
+
+msgid "sSampleSoftening"
+msgstr "柔化采样"

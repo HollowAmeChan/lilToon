@@ -4,6 +4,7 @@ Run `LilInspectorCleanupQualification.Run` from a disposable Unity project.
 Install the C# file in that project's `Assets/Editor` and reference a physical
 copy of the candidate lilToon package. The runner writes
 `InspectorCleanupQualification.txt` and exits with code 0 on success.
+Set `HO_LIL_INSPECTOR_REPORT` to a unique absolute result path for each run.
 
 The runner draws real MaterialEditors in an EditorWindow. It covers English and
 Simplified Chinese, both Inspector implementations, and opaque, cutout and
@@ -29,6 +30,7 @@ Optional arguments extend the checks for later cleanup steps.
 | --- | --- |
 | Remove GI sections, main/outline baking and Stencil recipes | 30 GUI repaints passed, no material changes or GUI errors |
 | Retire main/outline UV animation and backface shift | Static main/outline ST and both parallax GPU cases passed; 11 data passes and 2 lighting variants compiled |
+| Sampling/transition labels and final combined Inspector | 30 fresh GUI repaints passed; all five sampling labels verified in both languages; material state and GUI font restored |
 
 The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.
@@ -45,3 +47,12 @@ the adjacent `ho-specialization-tests` tool, then filter the Unity tests to
 `StaticUvPreservesTextureScaleAndOffset` and `ParallaxStillOffsetsStaticUv`.
 
 These checks do not measure performance or qualify production-scene rendering.
+
+The final GUI result is
+`D:/Temp/liltoon-inspector-a9fcae14/CleanupStep3-Gui.txt`, with its Editor log
+at the same path ending in `.log`. An earlier parallel GUI attempt was stopped
+during cold shader compilation. Its stale result file was discarded and is not
+part of the qualification.
+
+The updated font contains 890 characters and occupies 216,272 bytes. All new
+label glyphs are present. GPOS, GSUB, GDEF, BASE, kern and STAT remain absent.

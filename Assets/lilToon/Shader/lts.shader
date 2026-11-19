@@ -226,11 +226,11 @@ Shader "lilToon"
         [lilToggleLeft] _UseShadow                  ("sShadow", Int) = 0
                         _ShadowStrength             ("sStrength", Range(0, 1)) = 1
         [NoScaleOffset] _ShadowStrengthMask         ("sStrength", 2D) = "white" {}
-        [lilLOD]        _ShadowStrengthMaskLOD      ("LOD", Range(0, 1)) = 0
+        [lilLOD]        _ShadowStrengthMaskLOD      ("sSampleSoftening", Range(0, 1)) = 0
         [NoScaleOffset] _ShadowBorderMask           ("sBorder", 2D) = "white" {}
-        [lilLOD]        _ShadowBorderMaskLOD        ("LOD", Range(0, 1)) = 0
+        [lilLOD]        _ShadowBorderMaskLOD        ("sSampleSoftening", Range(0, 1)) = 0
         [NoScaleOffset] _ShadowBlurMask             ("sBlur", 2D) = "white" {}
-        [lilLOD]        _ShadowBlurMaskLOD          ("LOD", Range(0, 1)) = 0
+        [lilLOD]        _ShadowBlurMaskLOD          ("sSampleSoftening", Range(0, 1)) = 0
         [lilEnum]       _ShadowColorType            ("sShadowColorTypes", Int) = 0
                         _ShadowColor                ("Shadow Color", Color) = (0.82,0.76,0.85,1.0)
         [NoScaleOffset] _ShadowColorTex             ("Shadow Color", 2D) = "black" {}
@@ -313,7 +313,7 @@ Shader "lilToon"
                         _MatCapEnableLighting       ("sEnableLighting", Range(0, 1)) = 1
                         _MatCapShadowMask           ("sShadowMask", Range(0, 1)) = 0
         [lilToggle]     _MatCapBackfaceMask         ("sBackfaceMask", Int) = 0
-                        _MatCapLod                  ("sBlur", Range(0, 10)) = 0
+                        _MatCapLod                  ("sSampleSoftening", Range(0, 10)) = 0
         [lilEnum]       _MatCapBlendMode            ("sBlendModes", Int) = 1
         [lilToggle]     _MatCapApplyTransparency    ("sApplyTransparency", Int) = 1
                         _MatCapNormalStrength       ("sNormalStrength", Range(0, 1)) = 1.0
@@ -335,7 +335,7 @@ Shader "lilToon"
                         _MatCap2ndEnableLighting    ("sEnableLighting", Range(0, 1)) = 1
                         _MatCap2ndShadowMask        ("sShadowMask", Range(0, 1)) = 0
         [lilToggle]     _MatCap2ndBackfaceMask      ("sBackfaceMask", Int) = 0
-                        _MatCap2ndLod               ("sBlur", Range(0, 10)) = 0
+                        _MatCap2ndLod               ("sSampleSoftening", Range(0, 10)) = 0
         [lilEnum]       _MatCap2ndBlendMode         ("sBlendModes", Int) = 1
         [lilToggle]     _MatCap2ndApplyTransparency ("sApplyTransparency", Int) = 1
                         _MatCap2ndNormalStrength    ("sNormalStrength", Range(0, 1)) = 1.0

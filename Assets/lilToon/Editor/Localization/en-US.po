@@ -108,16 +108,16 @@ msgid "sBorderRGB"
 msgstr "Border (RGB = 1st/2nd/3rd)"
 
 msgid "sBlur"
-msgstr "Blur"
+msgstr "Transition Width"
 
 msgid "sBlurR"
-msgstr "Blur (R)"
+msgstr "Transition Width (R)"
 
 msgid "sBlurRGB"
-msgstr "Blur (RGB = 1st/2nd/3rd)"
+msgstr "Transition Width (RGB = 1st/2nd/3rd)"
 
 msgid "sBlurMask"
-msgstr "Blur Mask"
+msgstr "Transition Mask"
 
 msgid "sAlphaR"
 msgstr "Alpha (R)"
@@ -2071,3 +2071,6 @@ msgstr "This Unity version has no MaterialPropertyBlock.HasProperty, so the over
 
 msgid "sGlitterViewDirectionBlend"
 msgstr "View Direction Blend"
+
+msgid "sSampleSoftening"
+msgstr "Sampling Softness"

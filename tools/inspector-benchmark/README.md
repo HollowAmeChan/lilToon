@@ -68,7 +68,11 @@
 
 ## 字体来源与重建
 
-`Editor/Resources/HoLilToonInspectorSans.ttf` 是 Noto Sans SC 的 Regular 子集，最终包含 888 个字符，占 215,576 字节。使用时仅替换中文 lilToon 正文的默认字体，在 `finally` 中恢复调用方字体。字形外观会与 Unity 系统字体略有区别。
+后续界面精简新增了采样与过渡标签。当前字体已扩展为 890 个字符、216,272 字节，
+仍移除下列布局表。上面的性能数据与 `results-2026-11-19.json` 记录首轮 888 字符版本，
+本次扩展的功能验证见 `../inspector-cleanup-tests/README.md`。
+
+`Editor/Resources/HoLilToonInspectorSans.ttf` 是 Noto Sans SC 的 Regular 子集。首轮包含 888 个字符，占 215,576 字节。使用时仅替换中文 lilToon 正文的默认字体，在 `finally` 中恢复调用方字体。字形外观会与 Unity 系统字体略有区别。
 
 字体保留 SIL OFL 1.1 授权和版权记录，授权文件随资源提供。上游为 Google Fonts 仓库提交 `5bd87dfc525c8a0d1d8529d3684716e00c3fc59a` 下的 `ofl/notosanssc/NotoSansSC[wght].ttf`，源文件 SHA-256 如下。
 
