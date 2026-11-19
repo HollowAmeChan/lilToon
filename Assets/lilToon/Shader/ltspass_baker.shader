@@ -44,13 +44,6 @@ Shader "Hidden/ltsother_baker"
         [lilEnum]       _Main3rdTexBlendMode        ("Blend Mode|Normal|Add|Screen|Multiply", Int) = 0
 
         //----------------------------------------------------------------------------------------------------------------------
-        // Alpha Mask
-        [lilEnumLabel]  _AlphaMaskMode              ("AlphaMask|", Int) = 0
-                        _AlphaMask                  ("AlphaMask", 2D) = "white" {}
-                        _AlphaMaskScale             ("Scale", Float) = 1
-                        _AlphaMaskValue             ("Offset", Float) = 0
-
-        //----------------------------------------------------------------------------------------------------------------------
         // Texture Packing
         [NoScaleOffset] _PackingTexture1            ("Texture", 2D) = "white" {}
         [NoScaleOffset] _PackingTexture2            ("Texture", 2D) = "white" {}
@@ -78,7 +71,6 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_DECAL
             #define LIL_FEATURE_ANIMATE_DECAL
             #define LIL_FEATURE_LAYER_DISSOLVE
-            #define LIL_FEATURE_ALPHAMASK
             #define LIL_FEATURE_SHADOW
             #define LIL_FEATURE_RECEIVE_SHADOW
             #define LIL_FEATURE_SHADOW_3RD
@@ -118,7 +110,6 @@ Shader "Hidden/ltsother_baker"
             #define LIL_FEATURE_Main3rdBlendMask
             #define LIL_FEATURE_Main3rdDissolveMask
             #define LIL_FEATURE_Main3rdDissolveNoiseMask
-            #define LIL_FEATURE_AlphaMask
             #define LIL_FEATURE_BumpMap
             #define LIL_FEATURE_Bump2ndMap
             #define LIL_FEATURE_Bump2ndScaleMask
@@ -175,7 +166,7 @@ Shader "Hidden/ltsother_baker"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma shader_feature _ _TRIMASK _ALPHAMASK _NORMAL_DXGL _TEXTURE_PACKING _LUT3D_TO_2D
+            #pragma shader_feature _ _TRIMASK _NORMAL_DXGL _TEXTURE_PACKING _LUT3D_TO_2D
 
             //------------------------------------------------------------------------------------------------------------------
             // Shader
@@ -224,14 +215,6 @@ Shader "Hidden/ltsother_baker"
                     float rim = lilGray(col2.rgb);
                     float emi = lilGray(col3.rgb);
                     float4 col = float4(mat,rim,emi,1);
-                #elif defined(_ALPHAMASK)
-                    float4 col = LIL_SAMPLE_2D(_MainTex,sampler_MainTex,input.uv0);
-                    float alphaMask = LIL_SAMPLE_2D(_AlphaMask,sampler_MainTex,input.uv0).r;
-                    alphaMask = saturate(alphaMask * _AlphaMaskScale + _AlphaMaskValue);
-                    if(_AlphaMaskMode == 1) col.a = alphaMask;
-                    if(_AlphaMaskMode == 2) col.a = col.a * alphaMask;
-                    if(_AlphaMaskMode == 3) col.a = saturate(col.a + alphaMask);
-                    if(_AlphaMaskMode == 4) col.a = saturate(col.a - alphaMask);
                 #elif defined(_NORMAL_DXGL)
                     float4 col = LIL_SAMPLE_2D(_MainTex,sampler_MainTex,input.uv0);
                     col.g = 1.0 - col.g;

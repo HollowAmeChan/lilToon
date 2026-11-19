@@ -143,19 +143,6 @@ namespace lilToon
             lilEditorGUI.EnableInstancingField(m_MaterialEditor);
         }
 
-        private void AlphamaskToTextureGUI(Material material)
-        {
-            if(mainTex.textureValue != null && lilEditorGUI.Button(GetLoc("sBakeAlphamask")))
-            {
-                var bakedTexture = AutoBakeAlphaMask(material);
-                if(bakedTexture == mainTex.textureValue) return;
-
-                mainTex.textureValue = bakedTexture;
-                alphaMaskMode.floatValue = 0.0f;
-                alphaMask.textureValue = null;
-                alphaMaskValue.floatValue = 0.0f;
-            }
-        }
         #endregion
     }
 }

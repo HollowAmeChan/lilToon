@@ -68,13 +68,10 @@ CBUFFER_START(UnityPerMaterial)
     float   _MainGradationStrength;
     float   _Main2ndTexAngle;
     float   _Main3rdTexAngle;
-    float   _AlphaMaskScale;
-    float   _AlphaMaskValue;
     uint    _Main2ndTexBlendMode;
     uint    _Main2ndTex_UVMode;
     uint    _Main3rdTexBlendMode;
     uint    _Main3rdTex_UVMode;
-    uint    _AlphaMaskMode;
     lilBool _UseMain2ndTex;
     float4 _Main2ndTexDecalAnimation;
     float4 _Main2ndTexDecalSubParam;

@@ -40,7 +40,7 @@ namespace lilToon
             }
         }
 
-        private void DrawAlphaMaskSettings(Material material)
+        private void DrawAlphaMaskSettings()
         {
             if(!ShouldDrawBlock(PropertyBlock.AlphaMask) || !SupportsAlphaClippedEffects) return;
             {
@@ -77,7 +77,6 @@ namespace lilToon
                         LocalizedProperty(alphaMaskValue);
                         EditorGUI.indentLevel--;
                     }
-                    AlphamaskToTextureGUI(material);
                     EditorGUILayout.EndVertical();
                 }
                 EditorGUILayout.EndVertical();

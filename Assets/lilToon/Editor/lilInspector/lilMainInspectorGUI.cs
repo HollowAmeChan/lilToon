@@ -172,7 +172,7 @@ namespace lilToon
 
                             //------------------------------------------------------------------------------------------------------------------------------
                             // Alpha Mask
-                            DrawAlphaMaskSettings(material);
+                            DrawAlphaMaskSettings();
                         }
                     }
                 }

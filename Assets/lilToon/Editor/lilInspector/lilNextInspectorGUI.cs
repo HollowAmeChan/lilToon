@@ -271,7 +271,7 @@ namespace lilToon
                 DrawNextSection("surface.outline", GetLoc("sOutlineSetting"), PropertyBlock.Outline, delegate { DrawNextOutline(material); }, false); // 折叠栏默认全部收起：defaultOpen 一律 false
                 DrawNextSection("surface.main", GetLoc("sMainColorSetting"), PropertyBlock.MainColor, delegate { DrawNextMainSurface(material); }, false);
                 DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNextNormal, false);
-                if(SupportsAlphaClippedEffects) DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, delegate { DrawNextAlphaMask(material); }, false);
+                if(SupportsAlphaClippedEffects) DrawNextSection("surface.alpha", GetLoc("sAlphaMask"), PropertyBlock.AlphaMask, DrawNextAlphaMask, false);
                 DrawNextSection("surface.lighting", GetLoc("sLightingSettings"), PropertyBlock.Lighting, DrawNextLightingControls, false);
                 if(isCustomShader) DrawNextSection("surface.custom", GetLoc("sCustomProperties"), PropertyBlock.Other, delegate { DrawCustomProperties(material); }, false, null, false);
             });
@@ -700,7 +700,7 @@ namespace lilToon
         private bool SupportsAlphaClippedEffects =>
             renderingModeBuf != RenderingMode.Opaque;
 
-        private void DrawNextAlphaMask(Material material)
+        private void DrawNextAlphaMask()
         {
             if(alphaMaskMode.p == null) return;
             if(!SupportsAlphaClippedEffects) return;
@@ -731,7 +731,6 @@ namespace lilToon
                     LocalizedProperty(alphaMaskValue);
                     EditorGUI.indentLevel--;
                 }
-                AlphamaskToTextureGUI(material);
             }
         }
 

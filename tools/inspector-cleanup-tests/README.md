@@ -12,15 +12,18 @@ two-pass transparent outline shaders. All relevant foldouts are expanded. The
 new Inspector's four pages are drawn separately.
 
 Each draw compares the complete serialized material before and after viewing.
-Inputs include custom queues, stencil masks, GI flags, main/outline HSV values
-and enabled parallax. GUI errors and leaked GUI fonts fail the run. Main and
-outline baking methods must be absent, while the shared `RunBake` API remains.
+Inputs include custom queues, stencil masks, GI flags, main/outline HSV values,
+enabled parallax and alpha-mask settings. GUI errors and leaked GUI fonts fail
+the run. Main, outline and alpha-mask baking implementations must be absent,
+while the shared `RunBake` API remains.
 
 Optional arguments extend the checks for later cleanup steps.
 
 - `-qualifyLilStaticUv` checks retired UV properties and retained static texture,
   outline-vector UV and parallax properties.
 - `-qualifyLilSoftening` checks the concise Chinese labels.
+- `-qualifyLilTextureConversions` reads normal-map and LUT conversion results
+  back from the GPU and checks the output colors and dimensions.
 
 ## Results
 
@@ -31,6 +34,7 @@ Optional arguments extend the checks for later cleanup steps.
 | Remove GI sections, main/outline baking and Stencil recipes | 30 GUI repaints passed, no material changes or GUI errors |
 | Retire main/outline UV animation and backface shift | Static main/outline ST and both parallax GPU cases passed; 11 data passes and 2 lighting variants compiled |
 | Sampling/transition labels and final combined Inspector | 30 fresh GUI repaints passed; all five sampling labels verified in both languages; material state and GUI font restored |
+| Remove the remaining alpha-mask bake entry and its shader branch | 30 GUI repaints passed; normal-map and LUT conversions through the shared GPU path preserved output colors and dimensions |
 
 The step-one Editor log is
 `D:/Temp/liltoon-inspector-a9fcae14/CleanupStep1.log`.

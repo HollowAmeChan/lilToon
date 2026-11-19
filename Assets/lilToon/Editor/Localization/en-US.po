@@ -1058,9 +1058,6 @@ msgstr "BlendOp Alpha"
 msgid "sRenderingReset"
 msgstr "Reset Rendering Properties"
 
-msgid "sLightBakeSetting"
-msgstr "Light Bake"
-
 msgid "sOptimization"
 msgstr "Optimization"
 
@@ -1072,27 +1069,6 @@ msgstr "Custom Properties"
 
 msgid "sCustomPropertiesTips"
 msgstr "Displays the properties added by the user."
-
-msgid "sBake"
-msgstr "Bake"
-
-msgid "sBakeAll"
-msgstr "Bake all layer"
-
-msgid "sBake1st"
-msgstr "Bake Color Shift"
-
-msgid "sBake2nd"
-msgstr "Bake 2nd Layer"
-
-msgid "sBake3rd"
-msgstr "Bake 3rd layer"
-
-msgid "sBakeAlphamask"
-msgstr "Bake Alphamask"
-
-msgid "sSelectAlphamask"
-msgstr "Select Alphamask"
 
 msgid "sRemoveUnused"
 msgstr "Remove unused textures"
@@ -1141,45 +1117,6 @@ msgstr "Reset UV Setting"
 
 msgid "sDialogResetUVMes"
 msgstr "Are you sure you want to reset UV setting?"
-
-msgid "sDialogCannotBake"
-msgstr "Cannot run a bake"
-
-msgid "sDialogNoNeedBake"
-msgstr "No need to run a bake"
-
-msgid "sDialogSetMainTex"
-msgstr "You need to set texture to Main Color."
-
-msgid "sDialogNoChange"
-msgstr "You are not changing the color."
-
-msgid "sDialogNotUse2nd"
-msgstr "You are not using the 2nd layer."
-
-msgid "sDialogNotUse3rd"
-msgstr "You are not using the 3rd layer."
-
-msgid "sDialogNotUseAll"
-msgstr "You are not changing the color and not using layers."
-
-msgid "sDialogRunBake"
-msgstr "Run bake?"
-
-msgid "sDialogBakeMain"
-msgstr "Do you want to bake main texture?"
-
-msgid "sDialogBakeShadow"
-msgstr "Do you want to bake shadow texture?"
-
-msgid "sDialogBakeMatCap"
-msgstr "Do you want to bake matcap?"
-
-msgid "sDialogBakeTriMask"
-msgstr "Do you want to bake TriMask (Mask of Matcap / Rim / Emission)?"
-
-msgid "sDialogBakeOutline"
-msgstr "Do you want to bake outline texture?"
 
 msgid "sDialogGifToAtlas"
 msgstr "Convert Gif to Atlas"

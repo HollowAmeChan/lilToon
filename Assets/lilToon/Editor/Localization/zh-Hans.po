@@ -1058,9 +1058,6 @@ msgstr "BlendOp Alpha"
 msgid "sRenderingReset"
 msgstr "重置渲染设置"
 
-msgid "sLightBakeSetting"
-msgstr "光照烘培设置"
-
 msgid "sOptimization"
 msgstr "优化"
 
@@ -1072,27 +1069,6 @@ msgstr "自定义属性"
 
 msgid "sCustomPropertiesTips"
 msgstr "显示由用户添加的属性"
-
-msgid "sBake"
-msgstr "烘培"
-
-msgid "sBakeAll"
-msgstr "烘培并合并所有主色"
-
-msgid "sBake1st"
-msgstr "烘培第一层主色"
-
-msgid "sBake2nd"
-msgstr "烘培第二层主色"
-
-msgid "sBake3rd"
-msgstr "烘培第三层主色"
-
-msgid "sBakeAlphamask"
-msgstr "烘焙 Alpha 蒙版"
-
-msgid "sSelectAlphamask"
-msgstr "选择 Alpha 蒙版"
 
 msgid "sRemoveUnused"
 msgstr "移除未使用的纹理"
@@ -1141,45 +1117,6 @@ msgstr "重置 UV 设置"
 
 msgid "sDialogResetUVMes"
 msgstr "您确定要重置 UV 设置吗？"
-
-msgid "sDialogCannotBake"
-msgstr "目前不能进行烘培"
-
-msgid "sDialogNoNeedBake"
-msgstr "目前不需要进行烘培"
-
-msgid "sDialogSetMainTex"
-msgstr "您需要将纹理设置为主色。"
-
-msgid "sDialogNoChange"
-msgstr "您没有调节主色，不需要进行烘焙。"
-
-msgid "sDialogNotUse2nd"
-msgstr "您没有使用第二层主色。"
-
-msgid "sDialogNotUse3rd"
-msgstr "您没有使用第三层主色。"
-
-msgid "sDialogNotUseAll"
-msgstr "您既没有更改主色，也没有使用图层。"
-
-msgid "sDialogRunBake"
-msgstr "进行烘培？"
-
-msgid "sDialogBakeMain"
-msgstr "您确定要烘培主纹理吗？"
-
-msgid "sDialogBakeShadow"
-msgstr "您确定要烘培阴影纹理吗？"
-
-msgid "sDialogBakeMatCap"
-msgstr "您确定要烘培 matcap 吗？"
-
-msgid "sDialogBakeTriMask"
-msgstr "您确定要烘培这三个蒙版 (MatCap/Rim/发光) 吗？"
-
-msgid "sDialogBakeOutline"
-msgstr "您确定要烘培轮廓纹理吗？"
 
 msgid "sDialogGifToAtlas"
 msgstr "将 Gif 转换成图集"

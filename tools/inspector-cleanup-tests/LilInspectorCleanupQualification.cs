@@ -100,6 +100,10 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                     {
                         material.SetTexture("_MainTex", Texture2D.whiteTexture);
                         material.SetTexture("_OutlineTex", Texture2D.whiteTexture);
+                        material.SetTexture("_AlphaMask", Texture2D.whiteTexture);
+                        material.SetFloat("_AlphaMaskMode", 2f);
+                        material.SetFloat("_AlphaMaskScale", -1f);
+                        material.SetFloat("_AlphaMaskValue", 1.1f);
                         foreach (string property in new[] { "_UseMain2ndTex", "_UseMain3rdTex", "_UseParallax", "_UsePOM",
                             "_UseMatCap", "_UseMatCap2nd", "_UseRim", "_UseRimShade", "_UseBacklight", "_UseSSS", "_UseEmission" })
                             if (material.HasProperty(property)) material.SetFloat(property, 1);
@@ -142,6 +146,7 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
             }
             Check(inspector.GetMethod("TextureBake", BindingFlags.Instance | BindingFlags.NonPublic) == null, "Main texture baking retired");
             Check(inspector.GetMethod("AutoBakeOutlineTexture", BindingFlags.Instance | BindingFlags.NonPublic) == null, "Outline texture baking retired");
+            Check(inspector.GetMethod("AutoBakeAlphaMask", BindingFlags.Instance | BindingFlags.NonPublic) == null, "Alpha mask baking retired");
             Check(inspector.GetMethod("RunBake", BindingFlags.Public | BindingFlags.Static) != null, "Shared texture conversion API retained");
             if (Environment.GetCommandLineArgs().Contains("-qualifyLilStaticUv"))
             {
@@ -156,6 +161,8 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
                 Check((string)getLoc.Invoke(null, new object[] { "sSampleSoftening" }) == "柔化采样", "Concise sample label");
                 Check((string)getLoc.Invoke(null, new object[] { "sBlur" }) == "过渡宽度", "Transition label");
             }
+            if (Environment.GetCommandLineArgs().Contains("-qualifyLilTextureConversions"))
+                VerifyTextureConversions(assembly, inspector);
             File.AppendAllText(ResultPath, "Verified " + repaints + " repaints, no material changes or GUI errors\n");
         }
         finally
@@ -165,6 +172,58 @@ public sealed class LilInspectorCleanupQualification : EditorWindow
             languageField.SetValue(languageSettings, originalLanguage);
             updateLanguage.Invoke(null, null);
         }
+    }
+
+    private static void VerifyTextureConversions(Assembly assembly, Type inspector)
+    {
+        var shader = Shader.Find("Hidden/ltsother_baker");
+        Check(shader != null, "Shared texture conversion shader exists");
+        Check(shader.FindPropertyIndex("_AlphaMaskMode") < 0, "Alpha mask baking shader property retired");
+        Check(shader.FindPropertyIndex("_AlphaMask") < 0, "Alpha mask baking shader texture retired");
+        var material = new Material(shader);
+        var source = new Texture2D(2, 2, TextureFormat.RGBA32, false, true);
+        var lut = new Texture3D(2, 2, 2, TextureFormat.RGBA32, false);
+        Texture2D normalResult = null;
+        Texture2D lutResult = null;
+        try
+        {
+            source.SetPixels(Enumerable.Repeat(new Color(.2f, .35f, .65f, .8f), 4).ToArray());
+            source.Apply();
+            material.SetTexture("_MainTex", source);
+            material.EnableKeyword("_NORMAL_DXGL");
+            object[] arguments = { null, source, material, null };
+            inspector.GetMethod("RunBake").Invoke(null, arguments);
+            normalResult = (Texture2D)arguments[0];
+            Check(normalResult.width == 2 && normalResult.height == 2, "Normal conversion preserves dimensions");
+            CheckTextureColor(normalResult.GetPixel(0, 0), new Color(.2f, .65f, .65f, .8f), "Normal conversion");
+
+            var lutColor = new Color(.125f, .25f, .75f, 1f);
+            lut.SetPixels(Enumerable.Repeat(lutColor, 8).ToArray());
+            lut.Apply();
+            var conversion = assembly.GetType("lilToon.lilTextureUtils", true)
+                .GetMethod("ConvertLUT3Dto2D", BindingFlags.NonPublic | BindingFlags.Static);
+            lutResult = (Texture2D)conversion.Invoke(null, new object[] { lut });
+            Check(lutResult.width == 256 && lutResult.height == 16, "LUT conversion preserves dimensions");
+            CheckTextureColor(lutResult.GetPixel(0, 0), lutColor, "LUT conversion");
+            CheckTextureColor(lutResult.GetPixel(255, 15), lutColor, "LUT conversion far corner");
+            File.AppendAllText(ResultPath, "Shared normal and LUT GPU conversions passed\n");
+        }
+        finally
+        {
+            if (normalResult != null) DestroyImmediate(normalResult);
+            if (lutResult != null) DestroyImmediate(lutResult);
+            DestroyImmediate(material);
+            DestroyImmediate(source);
+            DestroyImmediate(lut);
+        }
+    }
+
+    private static void CheckTextureColor(Color actual, Color expected, string message)
+    {
+        Check(Mathf.Abs(actual.r - expected.r) < .01f
+            && Mathf.Abs(actual.g - expected.g) < .01f
+            && Mathf.Abs(actual.b - expected.b) < .01f
+            && Mathf.Abs(actual.a - expected.a) < .01f, message + " " + actual);
     }
 
     private void OnGUI()
