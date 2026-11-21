@@ -1127,6 +1127,75 @@ msgstr "Presets"
 msgid "sPresetIsMaterial"
 msgstr "Currently selected is not a Material."
 
+msgid "Material Presets"
+msgstr "Material Presets"
+
+msgid "Preset workspace description"
+msgstr "Material recipes and diagnostics organized by purpose."
+
+msgid "Preset group debug"
+msgstr "Debug and Diagnostics"
+
+msgid "Preset group debug description"
+msgstr "Temporarily isolate material influences with a recoverable session."
+
+msgid "Preset group surface"
+msgstr "Surface Starting Points"
+
+msgid "Preset group surface description"
+msgstr "Editable starting combinations for common surface properties."
+
+msgid "Preset group shading"
+msgstr "Shading Components"
+
+msgid "Preset group shading description"
+msgstr "Focused recipes for shadows, reflections, rim light, and other shading."
+
+msgid "Preset group rendering"
+msgstr "Rendering Setups"
+
+msgid "Preset group rendering description"
+msgstr "Configure opaque, cutout, transparent, and depth-related behavior."
+
+msgid "Preset group workflow"
+msgstr "Workflow"
+
+msgid "Preset group workflow description"
+msgstr "Actions that support inspection, export, and content production."
+
+msgid "Preset group custom"
+msgstr "Custom"
+
+msgid "Preset group custom description"
+msgstr "Browse and save user-authored material recipes."
+
+msgid "No presets in group"
+msgstr "No presets in this group"
+
+msgid "Preset description"
+msgstr "Description (current language)"
+
+msgid "Preset description English"
+msgstr "Description (English)"
+
+msgid "Preset preview"
+msgstr "Preview Texture"
+
+msgid "Debug session active"
+msgstr "{0} materials are in a debug session"
+
+msgid "Restore original materials"
+msgstr "Restore Original Materials"
+
+msgid "Keep debug result"
+msgstr "Keep Debug Result"
+
+msgid "Apply normal debug"
+msgstr "Enter Normal Debug"
+
+msgid "Apply preset"
+msgstr "Apply Recipe"
+
 msgid "sPresetRefresh"
 msgstr "Refresh List"
 

@@ -126,65 +126,137 @@ namespace lilToon
         #region
         private static void DrawPreset()
         {
-            GUILayout.Label(GetLoc("sPresets"), boldLabel);
+            EditorGUILayout.LabelField(GetLoc("Material Presets"), boldLabel);
+            EditorGUILayout.LabelField(GetLoc("Preset workspace description"), EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.Space(4f);
             if(presets == null) presets = lilToonPreset.LoadPresets();
             ShowPresets();
-            EditorGUILayout.Space();
+            EditorGUILayout.Space(4f);
             GUILayout.BeginHorizontal();
             if(lilEditorGUI.EditorButton(GetLoc("sPresetRefresh"))) presets = lilToonPreset.LoadPresets();
-            if(lilEditorGUI.EditorButton(GetLoc("sPresetSave"))) EditorWindow.GetWindow<lilToonPreset.lilPresetWindow>("[lilToon] 预设窗口");
+            if(lilEditorGUI.EditorButton(GetLoc("sPresetSave"))) EditorWindow.GetWindow<lilToonPreset.lilPresetWindow>(GetLoc("sPresetSave"));
             GUILayout.EndHorizontal();
         }
 
         private static void ShowPresets()
         {
-            if(edSet.isShowCategorys == null || edSet.isShowCategorys.Length <= (int)lilPresetCategory.Ho)
+            var materials = m_MaterialEditor.targets.OfType<Material>().ToArray();
+            if(edSet.isShowPresetGroups == null || edSet.isShowPresetGroups.Length != 6)
             {
-                Array.Resize(ref edSet.isShowCategorys, (int)lilPresetCategory.Ho+1);
+                edSet.isShowPresetGroups = new bool[]{true, false, false, false, false, false};
             }
 
-            string[] sCategorys = { GetLoc("sPresetCategorySkin"),
-                                    GetLoc("sPresetCategoryHair"),
-                                    GetLoc("sPresetCategoryCloth"),
-                                    GetLoc("sPresetCategoryNature"),
-                                    GetLoc("sPresetCategoryInorganic"),
-                                    GetLoc("sPresetCategoryEffect"),
-                                    GetLoc("sPresetCategoryOther"),
-                                    GetLoc("Ho Presets") };
-            for(int i=0; i<(int)lilPresetCategory.Ho+1; i++)
+            lilPresetCategory[] categories = {
+                lilPresetCategory.Debug, lilPresetCategory.Surface, lilPresetCategory.Shading,
+                lilPresetCategory.Rendering, lilPresetCategory.Workflow, lilPresetCategory.Custom
+            };
+            string[] titles = {
+                GetLoc("Preset group debug"), GetLoc("Preset group surface"), GetLoc("Preset group shading"),
+                GetLoc("Preset group rendering"), GetLoc("Preset group workflow"), GetLoc("Preset group custom")
+            };
+            string[] descriptions = {
+                GetLoc("Preset group debug description"), GetLoc("Preset group surface description"),
+                GetLoc("Preset group shading description"), GetLoc("Preset group rendering description"),
+                GetLoc("Preset group workflow description"), GetLoc("Preset group custom description")
+            };
+
+            int restoreCount = lilPresetDebugSession.CountFor(materials);
+            if(restoreCount > 0)
             {
-                edSet.isShowCategorys[i] = lilEditorGUI.Foldout(sCategorys[i], edSet.isShowCategorys[i]);
-                if(edSet.isShowCategorys[i])
+                GUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(string.Format(GetLoc("Debug session active"), restoreCount), EditorStyles.miniLabel);
+                if(GUILayout.Button(GetLoc("Restore original materials"), GUILayout.Width(180f)))
+                    lilPresetDebugSession.Restore(materials);
+                GUILayout.EndHorizontal();
+            }
+
+            for(int i=0; i<categories.Length; i++)
+            {
+                EditorGUILayout.Space(4f);
+                using(new EditorGUILayout.VerticalScope())
                 {
-                    for(int j=0; j<presets.Length; j++)
+                    edSet.isShowPresetGroups[i] = EditorGUILayout.Foldout(edSet.isShowPresetGroups[i], titles[i], true, EditorStyles.foldoutHeader);
+                    EditorGUILayout.LabelField(descriptions[i], EditorStyles.wordWrappedMiniLabel);
+                    if(!edSet.isShowPresetGroups[i]) continue;
+
+                    var groupPresets = presets.Where(preset => IsInPresetGroup(preset, categories[i]))
+                        .OrderBy(GetPresetName).ToArray();
+                    if(groupPresets.Length == 0)
                     {
-                        if(i == (int)presets[j].category)
+                        EditorGUILayout.LabelField(GetLoc("No presets in group"), EditorStyles.centeredGreyMiniLabel);
+                        continue;
+                    }
+
+                    foreach(var preset in groupPresets)
+                        DrawPresetCard(preset, materials);
+                }
+            }
+        }
+
+        private static bool IsInPresetGroup(lilToonPreset preset, lilPresetCategory group)
+        {
+            if(preset == null) return false;
+            if(group != lilPresetCategory.Custom) return preset.category == group;
+            return preset.category == lilPresetCategory.Custom || !Enum.IsDefined(typeof(lilPresetCategory), preset.category) ||
+                   (int)preset.category < (int)lilPresetCategory.Debug;
+        }
+
+        private static void DrawPresetCard(lilToonPreset preset, Material[] materials)
+        {
+            using(new EditorGUILayout.HorizontalScope(EditorStyles.helpBox))
+            {
+                Rect previewRect = GUILayoutUtility.GetRect(76f, 76f, GUILayout.Width(76f), GUILayout.Height(76f));
+                if(preset.previewTexture != null)
+                    EditorGUI.DrawPreviewTexture(previewRect, preset.previewTexture, null, ScaleMode.ScaleToFit);
+                else
+                    EditorGUI.DrawRect(previewRect, EditorGUIUtility.isProSkin ? new Color(.18f, .19f, .20f) : new Color(.84f, .85f, .86f));
+
+                using(new EditorGUILayout.VerticalScope())
+                {
+                    string name = GetPresetName(preset);
+                    EditorGUILayout.LabelField(name, EditorStyles.boldLabel);
+                    string description = lilLanguageManager.langSet.languageName.StartsWith("zh", StringComparison.OrdinalIgnoreCase)
+                        ? preset.description
+                        : preset.descriptionEnglish;
+                    if(string.IsNullOrEmpty(description)) description = preset.descriptionEnglish;
+                    if(!string.IsNullOrEmpty(description))
+                        EditorGUILayout.LabelField(description, EditorStyles.wordWrappedMiniLabel, GUILayout.MinHeight(30f));
+
+                    GUILayout.FlexibleSpace();
+                    using(new EditorGUILayout.HorizontalScope())
+                    {
+                        string action = preset.applicationMode == lilPresetApplicationMode.NormalDebug
+                            ? GetLoc("Apply normal debug")
+                            : GetLoc("Apply preset");
+                        if(GUILayout.Button(action, GUILayout.Height(24f)))
                         {
-                            string showName = "";
-                            for(int k=0; k<presets[j].bases.Length; k++)
-                            {
-                                if(string.IsNullOrEmpty(showName))
-                                {
-                                    showName = presets[j].bases[k].name;
-                                }
-                                if(presets[j].bases[k].language == lilLanguageManager.langSet.languageName)
-                                {
-                                    showName = presets[j].bases[k].name;
-                                    k = 256;
-                                }
-                            }
-                            if(lilEditorGUI.EditorButton(showName))
-                            {
-                                var objs = m_MaterialEditor.targets.Where(obj => obj is Material);
-                                foreach(var obj in objs)
-                                {
-                                    lilToonPreset.ApplyPreset((Material)obj, presets[j]);
-                                }
-                            }
+                            foreach(var material in materials)
+                                lilToonPreset.ApplyPreset(material, preset);
                         }
+                        if(preset.applicationMode == lilPresetApplicationMode.NormalDebug && RestoreCountFor(materials) > 0 &&
+                           GUILayout.Button(GetLoc("Keep debug result"), GUILayout.Width(120f), GUILayout.Height(24f)))
+                            lilPresetDebugSession.Forget(materials);
                     }
                 }
             }
+        }
+
+        private static int RestoreCountFor(Material[] materials)
+        {
+            return lilPresetDebugSession.CountFor(materials);
+        }
+
+        private static string GetPresetName(lilToonPreset preset)
+        {
+            if(preset.bases == null || preset.bases.Length == 0) return preset.name;
+            string showName = preset.bases[0].name;
+            for(int i=0; i<preset.bases.Length; i++)
+            {
+                if(preset.bases[i].language == lilLanguageManager.langSet.languageName)
+                    return preset.bases[i].name;
+                if(preset.bases[i].language == L10n.English) showName = preset.bases[i].name;
+            }
+            return showName;
         }
         #endregion
     }

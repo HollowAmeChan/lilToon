@@ -12,6 +12,10 @@ public class lilToonPreset : ScriptableObject
 {
     public lilPresetBase[] bases;
     public lilPresetCategory category;
+    public string description;
+    public string descriptionEnglish;
+    public Texture previewTexture;
+    public lilPresetApplicationMode applicationMode;
     public string renderingMode;
     public Shader shader;
     public lilPresetColor[] colors;
@@ -63,6 +67,14 @@ public class lilToonPreset : ScriptableObject
     {
         if(material == null || preset == null) return;
         Undo.RecordObject(material, "Apply Preset");
+        if(preset.applicationMode == lilPresetApplicationMode.NormalDebug)
+        {
+            lilPresetDebugSession.Capture(material);
+            lilPresetNormalDebug.Apply(material, preset.previewTexture);
+            EditorUtility.SetDirty(material);
+            return;
+        }
+
         foreach(var f in preset.floats.Where(f => f.name == "_StencilPass"))
         {
             material.SetFloat(f.name, f.value);
@@ -161,6 +173,9 @@ public class lilToonPreset : ScriptableObject
 
         private lilToonPreset preset;
         private string[] presetName;
+        private string description = "";
+        private string descriptionEnglish = "";
+        private Texture previewTexture;
         private string filename = "";
         private RenderingMode renderingMode;
         private bool isOutl        = false;
@@ -175,14 +190,14 @@ public class lilToonPreset : ScriptableObject
                 return;
             }
 
-            string[] sCategorys = { GetLoc("sPresetCategorySkin"),
-                                    GetLoc("sPresetCategoryHair"),
-                                    GetLoc("sPresetCategoryCloth"),
-                                    GetLoc("sPresetCategoryNature"),
-                                    GetLoc("sPresetCategoryInorganic"),
-                                    GetLoc("sPresetCategoryEffect"),
-                                    GetLoc("sPresetCategoryOther"),
-                                    GetLoc("Ho Presets") };
+            lilPresetCategory[] categories = {
+                lilPresetCategory.Debug, lilPresetCategory.Surface, lilPresetCategory.Shading,
+                lilPresetCategory.Rendering, lilPresetCategory.Workflow, lilPresetCategory.Custom
+            };
+            string[] categoryLabels = {
+                GetLoc("Preset group debug"), GetLoc("Preset group surface"), GetLoc("Preset group shading"),
+                GetLoc("Preset group rendering"), GetLoc("Preset group workflow"), GetLoc("Preset group custom")
+            };
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             var material = (Material)Selection.activeObject;
@@ -219,7 +234,14 @@ public class lilToonPreset : ScriptableObject
                 presetName[i] = EditorGUILayout.TextField(languageNames[i], presetName[i]);
             }
 
-            preset.category = (lilPresetCategory)EditorGUILayout.Popup(GetLoc("sPresetCategory"), (int)preset.category, sCategorys);
+            description = EditorGUILayout.TextField(GetLoc("Preset description"), description);
+            descriptionEnglish = EditorGUILayout.TextField(GetLoc("Preset description English"), descriptionEnglish);
+            previewTexture = (Texture)EditorGUILayout.ObjectField(GetLoc("Preset preview"), previewTexture, typeof(Texture), false);
+
+            int categoryIndex = Array.IndexOf(categories, preset.category);
+            if(categoryIndex < 0) categoryIndex = categories.Length - 1;
+            categoryIndex = EditorGUILayout.Popup(GetLoc("sPresetCategory"), categoryIndex, categoryLabels);
+            preset.category = categories[categoryIndex];
 
             // Features
             EditorGUILayout.Space();
@@ -337,6 +359,9 @@ public class lilToonPreset : ScriptableObject
                 preset.renderQueue = shouldSaveQueue ? material.renderQueue : -2;
                 preset.outline = shouldSaveOutline ? (isOutl?1:0) : -1;
                 preset.outlineMainTex = shouldSaveMainTex2Outline;
+                preset.description = description;
+                preset.descriptionEnglish = descriptionEnglish;
+                preset.previewTexture = previewTexture;
 
                 EditorUtility.SetDirty(preset);
                 string presetFolderPath = lilDirectoryManager.GetPresetsFolderPath();
@@ -494,14 +519,26 @@ namespace lilToon
 {
     public enum lilPresetCategory
     {
-        Skin,
-        Hair,
-        Cloth,
-        Nature,
-        Inorganic,
-        Effect,
-        Other,
-        Ho
+        Skin = 0,
+        Hair = 1,
+        Cloth = 2,
+        Nature = 3,
+        Inorganic = 4,
+        Effect = 5,
+        Other = 6,
+        Ho = 7,
+        Debug = 100,
+        Surface = 101,
+        Shading = 102,
+        Rendering = 103,
+        Workflow = 104,
+        Custom = 105
+    }
+
+    public enum lilPresetApplicationMode
+    {
+        Overlay,
+        NormalDebug
     }
 }
 #endif

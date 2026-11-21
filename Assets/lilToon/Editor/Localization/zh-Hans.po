@@ -1169,6 +1169,75 @@ msgstr "预设"
 msgid "sPresetIsMaterial"
 msgstr "当前选择的不是材质。"
 
+msgid "Material Presets"
+msgstr "材质预设"
+
+msgid "Preset workspace description"
+msgstr "按用途组织材质方案与诊断工具。"
+
+msgid "Preset group debug"
+msgstr "调试与诊断"
+
+msgid "Preset group debug description"
+msgstr "临时隔离材质干扰项，并提供恢复原材质的会话操作。"
+
+msgid "Preset group surface"
+msgstr "表面起点"
+
+msgid "Preset group surface description"
+msgstr "为常见表面属性提供可继续编辑的初始组合。"
+
+msgid "Preset group shading"
+msgstr "着色组分"
+
+msgid "Preset group shading description"
+msgstr "针对阴影、反射、边缘光等着色组分的局部配方。"
+
+msgid "Preset group rendering"
+msgstr "渲染方案"
+
+msgid "Preset group rendering description"
+msgstr "配置不透明、裁剪、透明与深度相关的渲染行为。"
+
+msgid "Preset group workflow"
+msgstr "工作流"
+
+msgid "Preset group workflow description"
+msgstr "服务于检查、导出和内容制作流程的操作配方。"
+
+msgid "Preset group custom"
+msgstr "自定义"
+
+msgid "Preset group custom description"
+msgstr "浏览和保存用户自建的材质配方。"
+
+msgid "No presets in group"
+msgstr "暂无此类预设"
+
+msgid "Preset description"
+msgstr "说明（当前语言）"
+
+msgid "Preset description English"
+msgstr "说明（英语）"
+
+msgid "Preset preview"
+msgstr "预览纹理"
+
+msgid "Debug session active"
+msgstr "当前有 {0} 个材质正在调试"
+
+msgid "Restore original materials"
+msgstr "恢复原材质"
+
+msgid "Keep debug result"
+msgstr "保留调试结果"
+
+msgid "Apply normal debug"
+msgstr "进入法线调试"
+
+msgid "Apply preset"
+msgstr "应用配方"
+
 msgid "sPresetRefresh"
 msgstr "刷新列表"
 

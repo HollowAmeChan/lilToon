@@ -1,0 +1,9 @@
+{
+  "repository": "HollowAmeChan/lilToon",
+  "packages": [
+    {
+      "path": "Assets/lilToon",
+      "unitypackage": "Assets/lilToon"
+    }
+  ]
+}

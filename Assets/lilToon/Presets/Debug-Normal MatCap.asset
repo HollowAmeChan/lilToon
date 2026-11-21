@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330d117753a947947bf5a4f237b9a9f3, type: 3}
+  m_Name: Debug-Normal MatCap
+  m_EditorClassIdentifier:
+  bases:
+  - language: en-US
+    name: Normal Debug - Basic 2 MatCap
+  - language: zh-Hans
+    name: 法线调试 - Basic 2 MatCap
+  category: 100
+  description: "使用当前法线贴图生成MatCap；材质效果和专用渲染缓冲临时关闭，可一键恢复。场景雾与相机后处理仍会生效。"
+  descriptionEnglish: "Uses the current normal map for the MatCap and temporarily disables material effects and dedicated render buffers. Scene fog and camera post-processing still apply."
+  previewTexture: {fileID: 2800000, guid: 6dac3c7c7af94a77a63a67dbbde3399b, type: 3}
+  applicationMode: 1
+  renderingMode:
+  shader: {fileID: 0}
+  colors: []
+  vectors: []
+  floats: []
+  textures: []
+  renderQueue: -2
+  outline: -1
+  outlineMainTex: 0

@@ -282,7 +282,7 @@ namespace lilToon
             {
                 DrawNextSection("surface.main", GetLoc("sMainColorSetting"), PropertyBlock.MainColor, () => DrawNextMainSurface(material));
                 if(SupportsAlphaClippedEffects) DrawNextSection("surface.alpha", GetLoc("Alpha"), PropertyBlock.AlphaMask, DrawNextAlphaMask);
-                DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNormalControls);
+                DrawNextSection("surface.normal", GetLoc("sNormalMapSetting"), PropertyBlock.NormalMap, DrawNormalControls, defaultOpen: true, toggle: useBumpMap);
                 DrawNextSection("surface.metallic", GetLoc("Metallic and Smoothness"), PropertyBlock.MetallicSmoothness, DrawMetallicSmoothness);
                 DrawNextSection("surface.ao", GetLoc("AO"), PropertyBlock.SurfaceAO, DrawSurfaceAO, summary: GetAOSourceLabel());
                 DrawTesionSettings();
@@ -577,9 +577,7 @@ namespace lilToon
 
         private void DrawNormalControls()
         {
-            LocalizedProperty(useBumpMap, false);
-            if(useBumpMap.p != null && (useBumpMap.hasMixedValue || useBumpMap.floatValue != 0f))
-                TextureGUI(ref edSet.isShowBumpMap, normalMapContent, bumpMap, bumpScale);
+            TextureGUI(ref edSet.isShowBumpMap, normalMapContent, bumpMap, bumpScale);
         }
 
         private void DrawAnisotropyControls()
